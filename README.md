@@ -1,2 +1,2 @@
 # UniteJS Core
-Core of the UniteJS JavaScript Framework Management Tool.
+Core of the UniteJS JavaScript framework management tool.
