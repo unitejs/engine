@@ -1,10 +1,10 @@
-import { PackageBugs } from "./packageBugs";
-import { PackagePerson } from "./packagePerson";
-import { PackageRepository } from "./packageRepository";
 /**
  * Model of Package Configuration (package.json) file.
  * The properties defined here are sourced from https://docs.npmjs.com/files/package.json
  */
+import { PackageBugs } from "./packageBugs";
+import { PackagePerson } from "./packagePerson";
+import { PackageRepository } from "./packageRepository";
 export declare class PackageConfiguration {
     name: string;
     version: string;

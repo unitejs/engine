@@ -1,13 +1,14 @@
+/**
+ * Model of TypeScript Configuration (tsconfig.json) file.
+ * The properties defined here are sourced from https://github.com/Microsoft/TypeScript/blob/master/src/compiler/commandLineParser.ts
+ */
 import { TypeScriptJsx } from "./typeScriptJsx";
 import { TypeScriptLib } from "./typeScriptLib";
 import { TypeScriptModule } from "./typeScriptModule";
 import { TypeScriptModuleResolution } from "./typeScriptModuleResolution";
 import { TypeScriptNewLine } from "./typeScriptNewLine";
 import { TypeScriptTarget } from "./typeScriptTarget";
-/**
- * Model of TypeScript Configuration (tsconfig.json) file.
- * The properties defined here are sourced from https://github.com/Microsoft/TypeScript/blob/master/src/compiler/commandLineParser.ts
- */
+
 export class TypeScriptConfiguration {
     // Basic
     public target?: TypeScriptTarget;
