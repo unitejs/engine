@@ -1,8 +1,11 @@
 /**
  * Main engine
  */
+import { UniteLanguage } from "../configuration/models/unite/uniteLanguage";
+import { EnumEx } from "../core/enumEx";
 import { IDisplay } from "../interfaces/IDisplay";
 import { IEngine } from "../interfaces/IEngine";
+import { IKeyValue } from "../interfaces/IKeyValueT";
 import { ILogger } from "../interfaces/ILogger";
 
 export class Engine implements IEngine {
@@ -14,8 +17,12 @@ export class Engine implements IEngine {
         this._display = display;
     }
 
-    public init(args: { [id: string]: string | null }): number {
+    public init(name: string, language: UniteLanguage): number {
         this._display.info("Inside engine:init");
         return 0;
+    }
+
+    public getAvailableLanguages(): IKeyValue<UniteLanguage>[] {
+        return EnumEx.getNamesAndValues(UniteLanguage);
     }
 }

@@ -1,8 +1,8 @@
 /**
- * Enum for Unit Configuration language.
+ * Enum for Unite Configuration language.
  */
 export enum UniteLanguage {
-    es5,
-    es6,
-    typeScript
+    ES5,
+    ES6,
+    TypeScript
 }
