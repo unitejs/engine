@@ -3,7 +3,7 @@
         "target": "es6",
         "declaration": true,
         "module": "commonjs",
-        "sourceMap": false,
+        "sourceMap": true,
         "moduleResolution": "node",
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,

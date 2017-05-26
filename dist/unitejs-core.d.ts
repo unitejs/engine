@@ -8,5 +8,6 @@ export * from "./configuration/models/unite/uniteLanguage";
 export * from "./engine/engine";
 export * from "./interfaces/IDisplay";
 export * from "./interfaces/IEngine";
+export * from "./interfaces/IFileSystem";
 export * from "./interfaces/ILogger";
 export * from "./interfaces/IKeyValueT";

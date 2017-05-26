@@ -39,11 +39,11 @@ gulp.task('build', ['lint-build'], function () {
         .pipe(tsProject());
 
     return merge([
-        tsResult.dts.pipe(gulp.dest(distFolder)),
-        tsResult.js.pipe(sourcemaps.write({
-            includeContent: true
-        }))
-        .pipe(gulp.dest(distFolder))
+        tsResult.dts
+            .pipe(gulp.dest(distFolder)),
+        tsResult.js
+            .pipe(sourcemaps.write({includeContent: false, sourceRoot: '../src'}))
+            .pipe(gulp.dest(distFolder))
     ]);
 });
 

@@ -1,10 +1,8 @@
-import { UniteLanguage } from "../configuration/models/unite/uniteLanguage";
-import { IKeyValue } from "./IKeyValueT";
 /**
  * Interface for main engine.
  */
 export interface IEngine {
-    init(name: string, language: UniteLanguage): number;
-
-    getAvailableLanguages(): IKeyValue<UniteLanguage>[];
+    init(packageName: string | undefined | null,
+         language: string | undefined | null,
+         outputDirectory: string | undefined | null): Promise<number>;
 }

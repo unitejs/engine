@@ -11,4 +11,7 @@ export interface ILogger {
     error(message: string, args?: {
         [id: string]: any;
     }): void;
+    exception(message: string, exception: any, args?: {
+        [id: string]: any;
+    }): void;
 }
