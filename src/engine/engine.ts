@@ -1,13 +1,18 @@
 /**
  * Main engine
  */
-import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
+import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { UniteLanguage } from "../configuration/models/unite/uniteLanguage";
 import { EnumEx } from "../core/enumEx";
 import { IDisplay } from "../interfaces/IDisplay";
 import { IEngine } from "../interfaces/IEngine";
+import { IEnginePipelineStep } from "../interfaces/IEnginePipelineStep";
 import { IFileSystem } from "../interfaces/IFileSystem";
 import { ILogger } from "../interfaces/ILogger";
+import { CreateOutputDirectory } from "../pipelineSteps/createOutputDirectory";
+import { GenerateHtmlTemplate } from "../pipelineSteps/generateHtmlTemplate";
+import { GeneratePackageJson } from "../pipelineSteps/generatePackageJson";
+import { GenerateUniteConfiguration } from "../pipelineSteps/generateUniteConfiguration";
 import { EngineValidation } from "./engineValidation";
 
 export class Engine implements IEngine {
@@ -35,23 +40,22 @@ export class Engine implements IEngine {
 
         this._logger.info("Engine::init", { packageName, language, outputDirectory });
 
-        try {
-            this._display.log("Creating Directory: " + outputDirectory);
-            await this._fileSystem.directoryCreate(outputDirectory);
-        } catch (err) {
-            this._logger.exception("Creating Directory", err, { outputDirectory });
-            return 1;
-        }
+        const uniteConfiguration = new UniteConfiguration();
+        uniteConfiguration.name = packageName!;
+        uniteConfiguration.language = language!;
+        uniteConfiguration.outputDirectory = outputDirectory;
 
-        try {
-            this._display.log("Writing package.json in: " + outputDirectory);
-            const packageJson = new PackageConfiguration();
-            packageJson.name = packageName!;
-            packageJson.version = "0.0.1";
-            await this._fileSystem.fileWrite(outputDirectory, "package.json", JSON.stringify(packageJson, null, "\t"));
-        } catch (err) {
-            this._logger.exception("Writing package.json", err, { outputDirectory });
-            return 1;
+        const pipelineSteps: IEnginePipelineStep[] = [];
+        pipelineSteps.push(new CreateOutputDirectory());
+        pipelineSteps.push(new GeneratePackageJson());
+        pipelineSteps.push(new GenerateHtmlTemplate());
+        pipelineSteps.push(new GenerateUniteConfiguration());
+
+        for (const pipelineStep of pipelineSteps) {
+            const ret = await pipelineStep.process(this._logger, this._display, this._fileSystem, uniteConfiguration);
+            if (ret !== 0) {
+                return ret;
+            }
         }
 
         return 0;

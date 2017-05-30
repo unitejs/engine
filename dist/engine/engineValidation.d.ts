@@ -1,5 +1,5 @@
 /**
- * Engine validation
+ * Engine validation.
  */
 import { IDisplay } from "../interfaces/IDisplay";
 export declare class EngineValidation {
