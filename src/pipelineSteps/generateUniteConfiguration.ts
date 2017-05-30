@@ -3,12 +3,13 @@
  */
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { EnginePipelineStepBase } from "../engine/enginePipelineStepBase";
+import { EngineVariables } from "../engine/engineVariables";
 import { IDisplay } from "../interfaces/IDisplay";
 import { IFileSystem } from "../interfaces/IFileSystem";
 import { ILogger } from "../interfaces/ILogger";
 
 export class GenerateUniteConfiguration extends EnginePipelineStepBase {
-    public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration): Promise<number> {
+    public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
             super.log(logger, display, "Generating unite.json in", { outputDirectory: uniteConfiguration.outputDirectory });
             await fileSystem.fileWriteJson(uniteConfiguration.outputDirectory, "unite.json", uniteConfiguration);

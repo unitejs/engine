@@ -10,10 +10,15 @@ import { IEnginePipelineStep } from "../interfaces/IEnginePipelineStep";
 import { IFileSystem } from "../interfaces/IFileSystem";
 import { ILogger } from "../interfaces/ILogger";
 import { CreateOutputDirectory } from "../pipelineSteps/createOutputDirectory";
+import { GenerateGulpBuildConfiguration } from "../pipelineSteps/generateGulpBuildConfiguration";
+import { GenerateGulpScaffold } from "../pipelineSteps/generateGulpScaffold";
+import { GenerateGulpTasksBuild } from "../pipelineSteps/generateGulpTasksBuild";
+import { GenerateGulpTasksUtil } from "../pipelineSteps/generateGulpTasksUtil";
 import { GenerateHtmlTemplate } from "../pipelineSteps/generateHtmlTemplate";
 import { GeneratePackageJson } from "../pipelineSteps/generatePackageJson";
 import { GenerateUniteConfiguration } from "../pipelineSteps/generateUniteConfiguration";
 import { EngineValidation } from "./engineValidation";
+import { EngineVariables } from "./engineVariables";
 
 export class Engine implements IEngine {
     private _logger: ILogger;
@@ -44,15 +49,22 @@ export class Engine implements IEngine {
         uniteConfiguration.name = packageName!;
         uniteConfiguration.language = language!;
         uniteConfiguration.outputDirectory = outputDirectory;
+        uniteConfiguration.devDependencies = {};
+
+        const engineVariables: EngineVariables = new EngineVariables();
 
         const pipelineSteps: IEnginePipelineStep[] = [];
         pipelineSteps.push(new CreateOutputDirectory());
-        pipelineSteps.push(new GeneratePackageJson());
         pipelineSteps.push(new GenerateHtmlTemplate());
+        pipelineSteps.push(new GenerateGulpScaffold());
+        pipelineSteps.push(new GenerateGulpBuildConfiguration());
+        pipelineSteps.push(new GenerateGulpTasksBuild());
+        pipelineSteps.push(new GenerateGulpTasksUtil());
         pipelineSteps.push(new GenerateUniteConfiguration());
+        pipelineSteps.push(new GeneratePackageJson());
 
         for (const pipelineStep of pipelineSteps) {
-            const ret = await pipelineStep.process(this._logger, this._display, this._fileSystem, uniteConfiguration);
+            const ret = await pipelineStep.process(this._logger, this._display, this._fileSystem, uniteConfiguration, engineVariables);
             if (ret !== 0) {
                 return ret;
             }

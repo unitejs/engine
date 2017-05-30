@@ -7,9 +7,10 @@ import { IDisplay } from "../interfaces/IDisplay";
 import { IEnginePipelineStep } from "../interfaces/IEnginePipelineStep";
 import { IFileSystem } from "../interfaces/IFileSystem";
 import { ILogger } from "../interfaces/ILogger";
+import { EngineVariables } from "./engineVariables";
 
 export abstract class EnginePipelineStepBase implements IEnginePipelineStep {
-    public abstract process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration): Promise<number>;
+    public abstract process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
 
     public log(logger: ILogger, display: IDisplay, message: string, args: { [id: string]: any}): void {
         const objKeys = Object.keys(args);

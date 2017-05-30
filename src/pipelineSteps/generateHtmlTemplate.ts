@@ -3,13 +3,14 @@
  */
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { EnginePipelineStepBase } from "../engine/enginePipelineStepBase";
+import { EngineVariables } from "../engine/engineVariables";
 import { HtmlTemplate } from "../html/htmlTemplate";
 import { IDisplay } from "../interfaces/IDisplay";
 import { IFileSystem } from "../interfaces/IFileSystem";
 import { ILogger } from "../interfaces/ILogger";
 
 export class GenerateHtmlTemplate extends EnginePipelineStepBase {
-    public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration): Promise<number> {
+    public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
             super.log(logger, display, "Generating index.html.template int", { outputDirectory: uniteConfiguration.outputDirectory });
             const htmlTemplate = new HtmlTemplate();

@@ -5,4 +5,6 @@ export class UniteConfiguration {
     public name: string;
     public language: string;
     public outputDirectory: string;
+
+    public devDependencies: { [id: string]: string };
 }

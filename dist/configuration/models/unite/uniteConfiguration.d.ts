@@ -5,4 +5,7 @@ export declare class UniteConfiguration {
     name: string;
     language: string;
     outputDirectory: string;
+    devDependencies: {
+        [id: string]: string;
+    };
 }
