@@ -16,7 +16,8 @@ export class GeneratePackageJson extends EnginePipelineStepBase {
             const packageJson = new PackageConfiguration();
             packageJson.name = uniteConfiguration.name;
             packageJson.version = "0.0.1";
-            packageJson.devDependencies = uniteConfiguration.devDependencies;
+            packageJson.dependencies = this.sortDictionary(uniteConfiguration.dependencies);
+            packageJson.devDependencies = this.sortDictionary(uniteConfiguration.devDependencies);
 
             await fileSystem.fileWriteJson(uniteConfiguration.outputDirectory, "package.json", packageJson);
             return 0;
@@ -24,5 +25,14 @@ export class GeneratePackageJson extends EnginePipelineStepBase {
             super.error(logger, display, "Generating package.json failed", err, { outputDirectory: uniteConfiguration.outputDirectory });
             return 1;
         }
+    }
+
+    private sortDictionary(dict: { [id: string]: string}): { [id: string]: string} {
+        const keys = Object.keys(dict);
+        keys.sort();
+
+        const newDict: { [id: string]: string } = {};
+        keys.forEach(k => newDict[k] = dict[k]);
+        return newDict;
     }
 }

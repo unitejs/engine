@@ -14,7 +14,7 @@ export abstract class EnginePipelineStepBase implements IEnginePipelineStep {
 
     public log(logger: ILogger, display: IDisplay, message: string, args: { [id: string]: any}): void {
         const objKeys = Object.keys(args);
-        display.log(message + ": " + (objKeys.length === 1 ? args[objKeys[0]] : JSON.stringify(args)));
+        display.log(message + ": " + (objKeys.length === 0 ? "" : (objKeys.length === 1 ? args[objKeys[0]] : JSON.stringify(args))));
         logger.log(message, args);
     }
 

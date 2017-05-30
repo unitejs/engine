@@ -69,10 +69,10 @@ export class GenerateGulpTasksUtil extends EnginePipelineStepBase {
         lines.push("/**");
         lines.push(" * Gulp utils for build configuration.");
         lines.push(" */");
-        lines.push("const buildConfig = require('../../build.config.json');");
+        lines.push("const buildConfigJson = require('../../build.config.json');");
         lines.push("");
         lines.push("function getBuildConfig() {");
-        lines.push("   return buildConfig;");
+        lines.push("   return buildConfigJson;");
         lines.push("}");
         lines.push("");
         lines.push("module.exports = {");

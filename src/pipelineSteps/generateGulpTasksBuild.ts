@@ -3,7 +3,6 @@
  */
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { UniteLanguage } from "../configuration/models/unite/uniteLanguage";
-import { EnumEx } from "../core/enumEx";
 import { EnginePipelineStepBase } from "../engine/enginePipelineStepBase";
 import { EngineVariables } from "../engine/engineVariables";
 import { IDisplay } from "../interfaces/IDisplay";
@@ -21,7 +20,7 @@ export class GenerateGulpTasksBuild extends EnginePipelineStepBase {
             lines.push(" * Gulp tasks for building.");
             lines.push(" */");
 
-            switch (EnumEx.getValueByName<UniteLanguage>(UniteLanguage, uniteConfiguration.language)) {
+            switch (engineVariables.uniteLanguage) {
                 case UniteLanguage.ES5: this.buildES5BuildTasks(lines, uniteConfiguration); break;
                 // case UniteLanguage.ES6: this.buildES6BuildTasks(lines); break;
                 // case UniteLanguage.TypeScript: this.buildTypeScriptBuildTasks(lines); break;
@@ -41,18 +40,22 @@ export class GenerateGulpTasksBuild extends EnginePipelineStepBase {
         uniteConfiguration.devDependencies.del = "^2.2.2";
 
         lines.push("const display = require('./util/display');");
-        lines.push("const buildConfig = require('./util/build-config');");
+        lines.push("const bc = require('./util/build-config');");
         lines.push("const gulp = require('gulp');");
+        lines.push("const babel = require('gulp-babel');");
         lines.push("const path = require('path');");
         lines.push("const del = require('del');");
         lines.push("");
         lines.push("gulp.task('build', ['clean'], () => {");
-        lines.push("");
+        lines.push("    const buildConfig = bc.getBuildConfig();");
+        lines.push("    return gulp.src(buildConfig.srcFolder + '**/*.js')");
+        lines.push("        .pipe(babel())");
+        lines.push("        .pipe(gulp.dest(buildConfig.distFolder));");
         lines.push("});");
         lines.push("");
         lines.push("gulp.task('clean', (callback) => {");
-        lines.push("    const config = buildConfig.getBuildConfig();");
-        lines.push("    const folder = path.resolve(config.destFolder);");
+        lines.push("    const buildConfig = bc.getBuildConfig();");
+        lines.push("    const folder = path.resolve(buildConfig.distFolder);");
         lines.push("    display.info('Cleaning', folder);");
         lines.push("    return del(folder, callback);");
         lines.push("");

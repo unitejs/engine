@@ -16,8 +16,8 @@ export class GenerateGulpBuildConfiguration extends EnginePipelineStepBase {
 
             const buildConfiguration = new BuildConfiguration();
 
-            buildConfiguration.sourceFolder = "./src/";
-            buildConfiguration.destFolder = "./dest/";
+            buildConfiguration.srcFolder = "./src/";
+            buildConfiguration.distFolder = "./dist/";
 
             await fileSystem.fileWriteJson(engineVariables.gulpBuildFolder, "build.config.json", buildConfiguration);
 
