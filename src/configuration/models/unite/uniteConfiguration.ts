@@ -2,11 +2,11 @@
  * Model of Unite Configuration (unite.json) file.
  */
 export class UniteConfiguration {
-    public name: string;
-    public language: string;
+    public packageName: string;
+    public title: string;
+    public sourceLanguage: string;
     public moduleLoader: string;
     public outputDirectory: string;
 
-    public dependencies: { [id: string]: string };
-    public devDependencies: { [id: string]: string };
+    public staticClientModules: string[];
 }

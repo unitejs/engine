@@ -13,72 +13,22 @@ export class GenerateGulpTasksUtil extends EnginePipelineStepBase {
         try {
             super.log(logger, display, "Generating gulp tasks utils in", { gulpUtilFolder: engineVariables.gulpUtilFolder });
 
-            await this.buildUtilsDisplay(logger, display, fileSystem, uniteConfiguration, engineVariables);
-            await this.buildUtilsBuildConfiguration(logger, display, fileSystem, uniteConfiguration, engineVariables);
+            engineVariables.requiredDevDependencies.push("gulp-util");
+            engineVariables.requiredDevDependencies.push("gulp-rename");
+            engineVariables.requiredDevDependencies.push("gulp-replace");
+
+            const assetUtils = fileSystem.directoryPathCombine(engineVariables.assetsDirectory, "gulp/tasks/util/");
+
+            await this.copyFile(logger, display, fileSystem, assetUtils, "build-config.js", engineVariables.gulpUtilFolder, "build-config.js");
+
+            await this.copyFile(logger, display, fileSystem, assetUtils, "display.js", engineVariables.gulpUtilFolder, "display.js");
+
+            await this.copyFile(logger, display, fileSystem, assetUtils, "template.js", engineVariables.gulpUtilFolder, "template.js");
 
             return 0;
         } catch (err) {
             super.error(logger, display, "Generating gulp tasks utils failed", err, { gulpUtilFolder: engineVariables.gulpUtilFolder });
             return 1;
         }
-    }
-
-    private async buildUtilsDisplay(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<void> {
-        super.log(logger, display, "Generating gulp tasks utils display.js in", { gulpUtilFolder: engineVariables.gulpUtilFolder });
-
-        const lines: string[] = [];
-
-        lines.push("/**");
-        lines.push(" * Gulp utils for display.");
-        lines.push(" */");
-        lines.push("const gutil = require('gulp-util');");
-        lines.push("");
-        lines.push("function log(text) {");
-        lines.push("    gutil.log(text);");
-        lines.push("}");
-        lines.push("");
-        lines.push("function info(caption, text) {");
-        lines.push("    gutil.log('[' + gutil.colors.cyan(caption) + ']', text);");
-        lines.push("}");
-        lines.push("");
-        lines.push("function error(text) {");
-        lines.push("    gutil.log(gutil.colors.red(text));");
-        lines.push("}");
-        lines.push("");
-        lines.push("function success(text) {");
-        lines.push("    gutil.log(gutil.colors.blue(text));");
-        lines.push("}");
-        lines.push("");
-        lines.push("module.exports = {");
-        lines.push("    log: log,");
-        lines.push("    info: info,");
-        lines.push("    error: error,");
-        lines.push("    success: success");
-        lines.push("};");
-
-        await fileSystem.fileWriteLines(engineVariables.gulpUtilFolder, "display.js", lines);
-
-        uniteConfiguration.devDependencies["gulp-util"] = "^3.0.7";
-    }
-
-    private async buildUtilsBuildConfiguration(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<void> {
-        super.log(logger, display, "Generating gulp tasks utils build-config.js in", { gulpUtilFolder: engineVariables.gulpUtilFolder });
-
-        const lines: string[] = [];
-
-        lines.push("/**");
-        lines.push(" * Gulp utils for build configuration.");
-        lines.push(" */");
-        lines.push("const buildConfigJson = require('../../build.config.json');");
-        lines.push("");
-        lines.push("function getBuildConfig() {");
-        lines.push("   return buildConfigJson;");
-        lines.push("}");
-        lines.push("");
-        lines.push("module.exports = {");
-        lines.push("    getBuildConfig: getBuildConfig");
-        lines.push("};");
-
-        await fileSystem.fileWriteLines(engineVariables.gulpUtilFolder, "build-config.js", lines);
     }
 }

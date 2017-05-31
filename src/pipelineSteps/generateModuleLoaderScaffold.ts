@@ -15,7 +15,11 @@ export class GenerateModuleLoaderScaffold extends EnginePipelineStepBase {
             super.log(logger, display, "Generating Module Loader Scaffold", { });
 
             switch (engineVariables.uniteModuleLoader) {
-                case UniteModuleLoader.RequireJS: uniteConfiguration.dependencies.requirejs = "^2.3.3"; break;
+                case UniteModuleLoader.RequireJS: {
+                    engineVariables.requiredDependencies.push("requirejs");
+                    uniteConfiguration.staticClientModules.push("requirejs/require.js");
+                    break;
+                }
                 default: break;
             }
 

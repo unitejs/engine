@@ -2,7 +2,7 @@
  * Pipeline step to generate scaffolding for app.
  */
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
-import { UniteLanguage } from "../configuration/models/unite/uniteLanguage";
+import { UniteSourceLanguage } from "../configuration/models/unite/uniteSourceLanguage";
 import { EnginePipelineStepBase } from "../engine/enginePipelineStepBase";
 import { EngineVariables } from "../engine/engineVariables";
 import { IDisplay } from "../interfaces/IDisplay";
@@ -26,10 +26,9 @@ export class GenerateAppScaffold extends EnginePipelineStepBase {
             const lines: string[] = [];
             let ext = "";
 
-            switch (engineVariables.uniteLanguage) {
-                case UniteLanguage.ES5: this.buildES5AppMain(lines); ext = "js"; break;
-                // case UniteLanguage.ES6: this.buildES6AppMain(lines); break;
-                // case UniteLanguage.TypeScript: this.buildTypeScriptAppMain(lines); break;
+            switch (engineVariables.uniteSourceLanguage) {
+                case UniteSourceLanguage.JavaScript: this.buildJavaScriptAppMain(lines); ext = "js"; break;
+                // case UniteSourceLanguage.TypeScript: this.buildTypeScriptAppMain(lines); break;
                 default: break;
             }
 
@@ -41,13 +40,12 @@ export class GenerateAppScaffold extends EnginePipelineStepBase {
         }
     }
 
-    private buildES5AppMain(lines: string[]): void {
+    private buildJavaScriptAppMain(lines: string[]): void {
         lines.push("/**");
         lines.push(" * Main entry point for app.");
         lines.push(" */");
-        lines.push("\"use strict\";");
-        lines.push("function main() {");
-        lines.push("    console.log('Hello ES5 UniteJS World');");
+        lines.push("export function entryPoint() {");
+        lines.push("    console.log('Hello JavaScript UniteJS World');");
         lines.push("}");
     }
 }

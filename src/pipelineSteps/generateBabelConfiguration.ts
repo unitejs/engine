@@ -3,8 +3,8 @@
  */
 import { BabelConfiguration } from "../configuration/models/babel/babelConfiguration";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
-import { UniteLanguage } from "../configuration/models/unite/uniteLanguage";
 import { UniteModuleLoader } from "../configuration/models/unite/uniteModuleLoader";
+import { UniteSourceLanguage } from "../configuration/models/unite/uniteSourceLanguage";
 import { EnginePipelineStepBase } from "../engine/enginePipelineStepBase";
 import { EngineVariables } from "../engine/engineVariables";
 import { IDisplay } from "../interfaces/IDisplay";
@@ -14,16 +14,16 @@ import { ILogger } from "../interfaces/ILogger";
 export class GenerateBabelConfiguration extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
 
-        if (engineVariables.uniteLanguage === UniteLanguage.ES5 || engineVariables.uniteLanguage === UniteLanguage.ES6) {
+        if (engineVariables.uniteSourceLanguage === UniteSourceLanguage.JavaScript) {
             try {
                 super.log(logger, display, "Generating .babelrc", { outputDirectory: uniteConfiguration.outputDirectory });
 
-                uniteConfiguration.devDependencies["gulp-babel"] = "^6.1.2";
+                engineVariables.requiredDevDependencies.push("gulp-babel");
 
                 const babelConfiguration = new BabelConfiguration();
                 babelConfiguration.plugins = [];
 
-                uniteConfiguration.devDependencies["babel-preset-es2015"] = "^6.24.1";
+                engineVariables.requiredDevDependencies.push("babel-preset-es2015");
 
                 let modules = "";
                 if (engineVariables.uniteModuleLoader === UniteModuleLoader.RequireJS) {

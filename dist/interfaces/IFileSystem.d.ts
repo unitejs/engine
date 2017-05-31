@@ -8,4 +8,6 @@ export interface IFileSystem {
     directoryCreate(directoryName: string): Promise<void>;
     fileWriteLines(directoryName: string, fileName: string, contents: string[]): Promise<void>;
     fileWriteJson(directoryName: string, fileName: string, obj: any): Promise<void>;
+    fileReadLines(directoryName: string, fileName: string): Promise<string[]>;
+    fileReadJson<T>(directoryName: string, fileName: string): Promise<T>;
 }

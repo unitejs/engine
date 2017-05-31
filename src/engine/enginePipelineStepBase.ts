@@ -13,13 +13,29 @@ export abstract class EnginePipelineStepBase implements IEnginePipelineStep {
     public abstract process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
 
     public log(logger: ILogger, display: IDisplay, message: string, args: { [id: string]: any}): void {
-        const objKeys = Object.keys(args);
-        display.log(message + ": " + (objKeys.length === 0 ? "" : (objKeys.length === 1 ? args[objKeys[0]] : JSON.stringify(args))));
+        display.log(message + ": " + this.arrayToReadable(args));
         logger.log(message, args);
     }
 
     public error(logger: ILogger, display: IDisplay, message: string, err: any, args: { [id: string]: any}): void {
-        display.error(message + ": " + ErrorHandler.format(err));
-        logger.exception(message, err, args);
+        if (err) {
+            display.error(message + ": " + ErrorHandler.format(err));
+            logger.exception(message, err, args);
+        } else {
+            display.error(message + ": " + this.arrayToReadable(args));
+            logger.error(message, args);
+        }
+    }
+
+    public async copyFile(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, sourceFolder: string, sourceFilename: string, destFolder: string, destFilename: string): Promise<void> {
+        this.log(logger, display, "Copying " + sourceFilename, { from: sourceFolder, to: destFolder });
+
+        const lines = await fileSystem.fileReadLines(sourceFolder, sourceFilename);
+        await fileSystem.fileWriteLines(destFolder, destFilename, lines);
+    }
+
+    private arrayToReadable(args: { [id: string]: any}): string {
+        const objKeys = Object.keys(args);
+        return (objKeys.length === 0 ? "" : (objKeys.length === 1 ? args[objKeys[0]] : JSON.stringify(args)));
     }
 }

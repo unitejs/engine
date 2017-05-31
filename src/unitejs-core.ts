@@ -4,7 +4,7 @@
 export * from "./configuration/models/packages/packageConfiguration";
 export * from "./configuration/models/typeScript/typeScriptConfiguration";
 export * from "./configuration/models/unite/uniteConfiguration";
-export * from "./configuration/models/unite/uniteLanguage";
+export * from "./configuration/models/unite/uniteSourceLanguage";
 
 export * from "./engine/engine";
 

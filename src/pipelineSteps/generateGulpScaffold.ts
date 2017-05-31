@@ -17,8 +17,8 @@ export class GenerateGulpScaffold extends EnginePipelineStepBase {
 
             lines.push("require('require-dir')('build/tasks');");
 
-            uniteConfiguration.devDependencies.gulp = "^3.9.1";
-            uniteConfiguration.devDependencies["require-dir"] = "^0.3.0";
+            engineVariables.requiredDevDependencies.push("gulp");
+            engineVariables.requiredDevDependencies.push("require-dir");
 
             await fileSystem.fileWriteLines(uniteConfiguration.outputDirectory, "gulpfile.js", lines);
         } catch (err) {

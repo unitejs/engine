@@ -12,6 +12,7 @@ const tsConfigFile = 'tsconfig.json';
 const srcFolder = './src/';
 const distFolder = './dist/';
 const testFolder = 'test/';
+const assetsFolder = 'assets/';
 const tsSrcGlob = srcFolder + '**/*.ts';
 const cleanTestGlob = testFolder + '/**/*.js';
 const tsTestGlob = testFolder + '**/*.spec.ts';
@@ -33,7 +34,12 @@ gulp.task('lint-build', ['clean-build'], function () {
         .pipe(gulpTslint.report());
 });
 
-gulp.task('build', ['lint-build'], function () {
+gulp.task('copy-assets', ['lint-build'], function () {
+  return gulp.src(srcFolder + assetsFolder + "**/*")
+    .pipe(gulp.dest(distFolder + assetsFolder));
+});
+
+gulp.task('build', ['copy-assets'], function () {
     var tsResult = gulp.src(tsSrcGlob)
         .pipe(sourcemaps.init())
         .pipe(tsProject());

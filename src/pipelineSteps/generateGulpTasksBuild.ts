@@ -2,7 +2,7 @@
  * Pipeline step to generate gulp tasks for build.
  */
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
-import { UniteLanguage } from "../configuration/models/unite/uniteLanguage";
+import { UniteSourceLanguage } from "../configuration/models/unite/uniteSourceLanguage";
 import { EnginePipelineStepBase } from "../engine/enginePipelineStepBase";
 import { EngineVariables } from "../engine/engineVariables";
 import { IDisplay } from "../interfaces/IDisplay";
@@ -14,20 +14,14 @@ export class GenerateGulpTasksBuild extends EnginePipelineStepBase {
         try {
             super.log(logger, display, "Generating gulp tasks for build in", { gulpTasksgulpTasksFolderBuildFolder: engineVariables.gulpTasksFolder });
 
-            const lines: string[] = [];
+            const assetTasks = fileSystem.directoryPathCombine(engineVariables.assetsDirectory, "gulp/tasks/");
+            engineVariables.requiredDevDependencies.push("del");
 
-            lines.push("/**");
-            lines.push(" * Gulp tasks for building.");
-            lines.push(" */");
-
-            switch (engineVariables.uniteLanguage) {
-                case UniteLanguage.ES5: this.buildES5BuildTasks(lines, uniteConfiguration); break;
-                // case UniteLanguage.ES6: this.buildES6BuildTasks(lines); break;
-                // case UniteLanguage.TypeScript: this.buildTypeScriptBuildTasks(lines); break;
-                default: break;
+            if (engineVariables.uniteSourceLanguage === UniteSourceLanguage.JavaScript) {
+                await this.copyFile(logger, display, fileSystem, assetTasks, "build-javascript.js", engineVariables.gulpTasksFolder, "build.js");
+            } else if (engineVariables.uniteSourceLanguage === UniteSourceLanguage.TypeScript) {
+                await this.copyFile(logger, display, fileSystem, assetTasks, "build-typescript.js", engineVariables.gulpTasksFolder, "build.js");
             }
-
-            await fileSystem.fileWriteLines(engineVariables.gulpTasksFolder, "build.js", lines);
 
             return 0;
         } catch (err) {
@@ -35,36 +29,4 @@ export class GenerateGulpTasksBuild extends EnginePipelineStepBase {
             return 1;
         }
     }
-
-    private buildES5BuildTasks(lines: string[], uniteConfiguration: UniteConfiguration): void {
-        uniteConfiguration.devDependencies.del = "^2.2.2";
-
-        lines.push("const display = require('./util/display');");
-        lines.push("const bc = require('./util/build-config');");
-        lines.push("const gulp = require('gulp');");
-        lines.push("const babel = require('gulp-babel');");
-        lines.push("const path = require('path');");
-        lines.push("const del = require('del');");
-        lines.push("");
-        lines.push("gulp.task('build', ['clean'], () => {");
-        lines.push("    const buildConfig = bc.getBuildConfig();");
-        lines.push("    return gulp.src(buildConfig.srcFolder + '**/*.js')");
-        lines.push("        .pipe(babel())");
-        lines.push("        .pipe(gulp.dest(buildConfig.distFolder));");
-        lines.push("});");
-        lines.push("");
-        lines.push("gulp.task('clean', (callback) => {");
-        lines.push("    const buildConfig = bc.getBuildConfig();");
-        lines.push("    const folder = path.resolve(buildConfig.distFolder);");
-        lines.push("    display.info('Cleaning', folder);");
-        lines.push("    return del(folder, callback);");
-        lines.push("");
-        lines.push("});");
-    }
-
-    // private buildES6BuildTasks(lines: string[]): void {
-    // }
-
-    // private buildTypeScriptBuildTasks(lines: string[]): void {
-    // }
 }
