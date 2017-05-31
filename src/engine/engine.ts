@@ -4,7 +4,6 @@
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { UniteModuleLoader } from "../configuration/models/unite/uniteModuleLoader";
 import { UniteSourceLanguage } from "../configuration/models/unite/uniteSourceLanguage";
-import { EnumEx } from "../core/enumEx";
 import { IDisplay } from "../interfaces/IDisplay";
 import { IEngine } from "../interfaces/IEngine";
 import { IEnginePipelineStep } from "../interfaces/IEnginePipelineStep";
@@ -20,6 +19,7 @@ import { GenerateGulpTasksUtil } from "../pipelineSteps/generateGulpTasksUtil";
 import { GenerateHtmlTemplate } from "../pipelineSteps/generateHtmlTemplate";
 import { GenerateModuleLoaderScaffold } from "../pipelineSteps/generateModuleLoaderScaffold";
 import { GeneratePackageJson } from "../pipelineSteps/generatePackageJson";
+import { GenerateTypeScriptConfiguration } from "../pipelineSteps/generateTypeScriptConfiguration";
 import { GenerateUniteConfiguration } from "../pipelineSteps/generateUniteConfiguration";
 import { EngineValidation } from "./engineValidation";
 import { EngineVariables } from "./engineVariables";
@@ -37,8 +37,8 @@ export class Engine implements IEngine {
 
     public async init(packageName: string | undefined | null,
                       title: string | undefined | null,
-                      sourceLanguage: string | undefined | null,
-                      moduleLoader: string | undefined | null,
+                      sourceLanguage: UniteSourceLanguage | undefined | null,
+                      moduleLoader: UniteModuleLoader | undefined | null,
                       outputDirectory: string | undefined | null): Promise<number> {
         if (!EngineValidation.checkPackageName(this._display, "packageName", packageName)) {
             return 1;
@@ -46,10 +46,10 @@ export class Engine implements IEngine {
         if (!EngineValidation.notEmpty(this._display, "title", title)) {
             return 1;
         }
-        if (!EngineValidation.checkOneOf(this._display, "sourceLanguage", sourceLanguage, EnumEx.getNames(UniteSourceLanguage))) {
+        if (!EngineValidation.checkOneOf<UniteSourceLanguage>(this._display, "sourceLanguage", sourceLanguage, [ "JavaScript", "TypeScript"])) {
             return 1;
         }
-        if (!EngineValidation.checkOneOf(this._display, "moduleLoader", moduleLoader, EnumEx.getNames(UniteModuleLoader))) {
+        if (!EngineValidation.checkOneOf<UniteModuleLoader>(this._display, "moduleLoader", moduleLoader, [ "RequireJS", "Webpack", "Browserify", "JSPM"])) {
             return 1;
         }
         outputDirectory = this._fileSystem.directoryPathFormat(outputDirectory!);
@@ -68,8 +68,8 @@ export class Engine implements IEngine {
         uniteConfiguration.staticClientModules = [];
 
         const engineVariables: EngineVariables = new EngineVariables();
-        engineVariables.uniteSourceLanguage = EnumEx.getValueByName<UniteSourceLanguage>(UniteSourceLanguage, uniteConfiguration.sourceLanguage);
-        engineVariables.uniteModuleLoader = EnumEx.getValueByName<UniteModuleLoader>(UniteModuleLoader, uniteConfiguration.moduleLoader);
+        engineVariables.uniteSourceLanguage = uniteConfiguration.sourceLanguage;
+        engineVariables.uniteModuleLoader = uniteConfiguration.moduleLoader;
         engineVariables.requiredDependencies = [];
         engineVariables.requiredDevDependencies = [];
         engineVariables.assetsDirectory = "./node_modules/unitejs-core/dist/assets/";
@@ -85,6 +85,7 @@ export class Engine implements IEngine {
         pipelineSteps.push(new GenerateModuleLoaderScaffold());
         pipelineSteps.push(new GenerateHtmlTemplate());
         pipelineSteps.push(new GenerateBabelConfiguration());
+        pipelineSteps.push(new GenerateTypeScriptConfiguration());
         pipelineSteps.push(new GenerateUniteConfiguration());
         pipelineSteps.push(new GeneratePackageJson());
 

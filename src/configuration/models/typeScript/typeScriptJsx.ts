@@ -1,8 +1,7 @@
 /**
- * Enum for TypeScript Configuration jsx.
+ * Type for TypeScript Configuration jsx.
  */
-export enum TypeScriptJsx {
-    "preserve",
-    "react-native",
-    "react"
-}
+export type TypeScriptJsx =
+    "preserve" |
+    "react-native" |
+    "react";

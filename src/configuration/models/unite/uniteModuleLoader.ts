@@ -1,9 +1,8 @@
 /**
- * Enum for Unite Configuration moduleLoader.
+ * Type for Unite Configuration moduleLoader.
  */
-export enum UniteModuleLoader {
-    RequireJS,
-    Webpack,
-    Browserify,
-    JSPM
-}
+export type UniteModuleLoader =
+    "RequireJS" |
+    "Webpack" |
+    "Browserify" |
+    "JSPM";

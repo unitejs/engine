@@ -1,7 +1,6 @@
 /**
- * Enum for TypeScript Configuration newLine.
+ * Type for TypeScript Configuration newLine.
  */
-export enum TypeScriptNewLine {
-    "crlf",
-    "lf"
-}
+export type TypeScriptNewLine =
+    "crlf" |
+    "lf";

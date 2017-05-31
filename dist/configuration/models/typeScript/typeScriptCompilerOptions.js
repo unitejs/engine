@@ -1,0 +1,7 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class TypeScriptCompilerOptions {
+}
+exports.TypeScriptCompilerOptions = TypeScriptCompilerOptions;
+
+//# sourceMappingURL=data:application/json;charset=utf8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNvbmZpZ3VyYXRpb24vbW9kZWxzL3R5cGVTY3JpcHQvdHlwZVNjcmlwdENvbXBpbGVyT3B0aW9ucy50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQVdBO0NBNEVDO0FBNUVELDhEQTRFQyIsImZpbGUiOiJjb25maWd1cmF0aW9uL21vZGVscy90eXBlU2NyaXB0L3R5cGVTY3JpcHRDb21waWxlck9wdGlvbnMuanMiLCJzb3VyY2VSb290IjoiLi4vc3JjIn0=

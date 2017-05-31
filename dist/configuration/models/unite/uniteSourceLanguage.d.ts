@@ -1,7 +1,4 @@
 /**
- * Enum for Unite Configuration language.
+ * Type for Unite Configuration language.
  */
-export declare enum UniteSourceLanguage {
-    JavaScript = 0,
-    TypeScript = 1,
-}
+export declare type UniteSourceLanguage = "JavaScript" | "TypeScript";

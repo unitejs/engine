@@ -3,8 +3,6 @@
  */
 import { BabelConfiguration } from "../configuration/models/babel/babelConfiguration";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
-import { UniteModuleLoader } from "../configuration/models/unite/uniteModuleLoader";
-import { UniteSourceLanguage } from "../configuration/models/unite/uniteSourceLanguage";
 import { EnginePipelineStepBase } from "../engine/enginePipelineStepBase";
 import { EngineVariables } from "../engine/engineVariables";
 import { IDisplay } from "../interfaces/IDisplay";
@@ -14,11 +12,9 @@ import { ILogger } from "../interfaces/ILogger";
 export class GenerateBabelConfiguration extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
 
-        if (engineVariables.uniteSourceLanguage === UniteSourceLanguage.JavaScript) {
+        if (engineVariables.uniteSourceLanguage === "JavaScript") {
             try {
                 super.log(logger, display, "Generating .babelrc", { outputDirectory: uniteConfiguration.outputDirectory });
-
-                engineVariables.requiredDevDependencies.push("gulp-babel");
 
                 const babelConfiguration = new BabelConfiguration();
                 babelConfiguration.plugins = [];
@@ -26,9 +22,9 @@ export class GenerateBabelConfiguration extends EnginePipelineStepBase {
                 engineVariables.requiredDevDependencies.push("babel-preset-es2015");
 
                 let modules = "";
-                if (engineVariables.uniteModuleLoader === UniteModuleLoader.RequireJS) {
+                if (engineVariables.uniteModuleLoader === "RequireJS") {
                     modules = "amd";
-                } else if (engineVariables.uniteModuleLoader === UniteModuleLoader.JSPM) {
+                } else if (engineVariables.uniteModuleLoader === "JSPM") {
                     modules = "systemjs";
                 } else {
                     modules = "commonjs";

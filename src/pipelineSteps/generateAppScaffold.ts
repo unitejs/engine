@@ -24,13 +24,9 @@ export class GenerateAppScaffold extends EnginePipelineStepBase {
             super.log(logger, display, "Generating App Main in", { appSourceFolder: engineVariables.appSourceFolder });
 
             const lines: string[] = [];
-            let ext = "";
+            const ext = engineVariables.uniteSourceLanguage === "JavaScript" ? "js" : "ts";
 
-            switch (engineVariables.uniteSourceLanguage) {
-                case UniteSourceLanguage.JavaScript: this.buildJavaScriptAppMain(lines); ext = "js"; break;
-                // case UniteSourceLanguage.TypeScript: this.buildTypeScriptAppMain(lines); break;
-                default: break;
-            }
+            this.buildAppMain(lines, engineVariables.uniteSourceLanguage);
 
             await fileSystem.fileWriteLines(engineVariables.appSourceFolder, "main." + ext, lines);
             return 0;
@@ -40,12 +36,14 @@ export class GenerateAppScaffold extends EnginePipelineStepBase {
         }
     }
 
-    private buildJavaScriptAppMain(lines: string[]): void {
+    private buildAppMain(lines: string[], language: UniteSourceLanguage): void {
+        const quote = language === "JavaScript" ? "'" : "\"";
+
         lines.push("/**");
         lines.push(" * Main entry point for app.");
         lines.push(" */");
         lines.push("export function entryPoint() {");
-        lines.push("    console.log('Hello JavaScript UniteJS World');");
+        lines.push("    document.body.innerHTML = " + quote + "Hello " + language + " UniteJS World!" + quote + ";");
         lines.push("}");
     }
 }

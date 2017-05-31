@@ -2,7 +2,6 @@
  * Pipeline step to generate scaffolding for gulp.
  */
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
-import { UniteModuleLoader } from "../configuration/models/unite/uniteModuleLoader";
 import { EnginePipelineStepBase } from "../engine/enginePipelineStepBase";
 import { EngineVariables } from "../engine/engineVariables";
 import { IDisplay } from "../interfaces/IDisplay";
@@ -15,7 +14,7 @@ export class GenerateModuleLoaderScaffold extends EnginePipelineStepBase {
             super.log(logger, display, "Generating Module Loader Scaffold", { });
 
             switch (engineVariables.uniteModuleLoader) {
-                case UniteModuleLoader.RequireJS: {
+                case "RequireJS": {
                     engineVariables.requiredDependencies.push("requirejs");
                     uniteConfiguration.staticClientModules.push("requirejs/require.js");
                     break;

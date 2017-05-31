@@ -1,7 +1,4 @@
 /**
- * Enum for TypeScript Configuration moduleResolution.
+ * Type for TypeScript Configuration moduleResolution.
  */
-export declare enum TypeScriptModuleResolution {
-    node = 0,
-    classic = 1,
-}
+export declare type TypeScriptModuleResolution = "node" | "classic";

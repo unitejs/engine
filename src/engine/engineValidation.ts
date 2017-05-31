@@ -59,7 +59,7 @@ export class EngineValidation {
         return true;
     }
 
-    public static checkOneOf(display: IDisplay, name: string, value: string | undefined | null, values: string[]): boolean {
+    public static checkOneOf<T extends string>(display: IDisplay, name: string, value: T | undefined | null, values: T[]): boolean {
         if (value === undefined || value === null || value.length === 0) {
             display.error(name + ": parameter is missing.");
             return false;

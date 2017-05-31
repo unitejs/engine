@@ -1,12 +1,4 @@
 /**
- * Enum for TypeScript Configuration target.
+ * Type for TypeScript Configuration target.
  */
-export declare enum TypeScriptTarget {
-    es3 = 0,
-    es5 = 1,
-    es6 = 2,
-    es2015 = 3,
-    es2016 = 4,
-    es2017 = 5,
-    esnext = 6,
-}
+export declare type TypeScriptTarget = "es3" | "es5" | "es6" | "es2015" | "es2016" | "es2017" | "esnext";

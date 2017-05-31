@@ -2,7 +2,6 @@
  * Pipeline step to generate gulp tasks for build.
  */
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
-import { UniteSourceLanguage } from "../configuration/models/unite/uniteSourceLanguage";
 import { EnginePipelineStepBase } from "../engine/enginePipelineStepBase";
 import { EngineVariables } from "../engine/engineVariables";
 import { IDisplay } from "../interfaces/IDisplay";
@@ -17,9 +16,14 @@ export class GenerateGulpTasksBuild extends EnginePipelineStepBase {
             const assetTasks = fileSystem.directoryPathCombine(engineVariables.assetsDirectory, "gulp/tasks/");
             engineVariables.requiredDevDependencies.push("del");
 
-            if (engineVariables.uniteSourceLanguage === UniteSourceLanguage.JavaScript) {
+            if (engineVariables.uniteSourceLanguage === "JavaScript") {
+                engineVariables.requiredDevDependencies.push("gulp-babel");
+
                 await this.copyFile(logger, display, fileSystem, assetTasks, "build-javascript.js", engineVariables.gulpTasksFolder, "build.js");
-            } else if (engineVariables.uniteSourceLanguage === UniteSourceLanguage.TypeScript) {
+            } else if (engineVariables.uniteSourceLanguage === "TypeScript") {
+                engineVariables.requiredDevDependencies.push("gulp-typescript");
+                engineVariables.requiredDevDependencies.push("typescript");
+
                 await this.copyFile(logger, display, fileSystem, assetTasks, "build-typescript.js", engineVariables.gulpTasksFolder, "build.js");
             }
 
