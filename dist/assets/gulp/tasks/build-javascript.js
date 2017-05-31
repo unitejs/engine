@@ -18,6 +18,7 @@ gulp.task('clean', (callback) => {
 });
 
 gulp.task('transpile', ['clean'], () => {
+    display.info('Running', "Babel");
     const buildConfig = bc.getBuildConfig();
     return gulp.src(buildConfig.srcFolder + '**/*.js')
         .pipe(babel())
@@ -25,6 +26,7 @@ gulp.task('transpile', ['clean'], () => {
 });
 
 gulp.task('copy-template', ['transpile'], () => {
+    display.info('Generating', "index.html from index.html.template");
     return template.copyTemplate("index.html.template", uniteConfiguration, "node_modules");
 });
 

@@ -4,4 +4,5 @@
 export class BuildConfiguration {
     public srcFolder: string;
     public distFolder: string;
+    public sourceMaps: boolean;
 }

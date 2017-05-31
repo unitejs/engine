@@ -18,6 +18,7 @@ export class GenerateGulpBuildConfiguration extends EnginePipelineStepBase {
 
             buildConfiguration.srcFolder = "./src/";
             buildConfiguration.distFolder = "./dist/";
+            buildConfiguration.sourceMaps = uniteConfiguration.sourceMaps;
 
             await fileSystem.fileWriteJson(engineVariables.gulpBuildFolder, "build.config.json", buildConfiguration);
 

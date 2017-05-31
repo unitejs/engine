@@ -9,6 +9,7 @@ import { IEngine } from "../interfaces/IEngine";
 import { IEnginePipelineStep } from "../interfaces/IEnginePipelineStep";
 import { IFileSystem } from "../interfaces/IFileSystem";
 import { ILogger } from "../interfaces/ILogger";
+import { ModuleOperation } from "../interfaces/moduleOperation";
 import { CreateOutputDirectory } from "../pipelineSteps/createOutputDirectory";
 import { GenerateAppScaffold } from "../pipelineSteps/generateAppScaffold";
 import { GenerateBabelConfiguration } from "../pipelineSteps/generateBabelConfiguration";
@@ -39,6 +40,7 @@ export class Engine implements IEngine {
                       title: string | undefined | null,
                       sourceLanguage: UniteSourceLanguage | undefined | null,
                       moduleLoader: UniteModuleLoader | undefined | null,
+                      sourceMaps: boolean,
                       outputDirectory: string | undefined | null): Promise<number> {
         if (!EngineValidation.checkPackageName(this._display, "packageName", packageName)) {
             return 1;
@@ -64,6 +66,7 @@ export class Engine implements IEngine {
         uniteConfiguration.title = title!;
         uniteConfiguration.sourceLanguage = sourceLanguage!;
         uniteConfiguration.moduleLoader = moduleLoader!;
+        uniteConfiguration.sourceMaps = sourceMaps;
         uniteConfiguration.outputDirectory = outputDirectory;
         uniteConfiguration.staticClientModules = [];
 
@@ -94,6 +97,18 @@ export class Engine implements IEngine {
             if (ret !== 0) {
                 return ret;
             }
+        }
+
+        return 0;
+    }
+
+    public async module(operation: ModuleOperation | undefined | null,
+                        name: string | undefined | null): Promise<number> {
+        if (!EngineValidation.checkOneOf<ModuleOperation>(this._display, "operation", operation, [ "add" ])) {
+            return 1;
+        }
+        if (!EngineValidation.notEmpty(this._display, "name", name)) {
+            return 1;
         }
 
         return 0;

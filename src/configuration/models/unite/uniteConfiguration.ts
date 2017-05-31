@@ -9,6 +9,7 @@ export class UniteConfiguration {
     public title: string;
     public sourceLanguage: UniteSourceLanguage;
     public moduleLoader: UniteModuleLoader;
+    public sourceMaps: boolean;
     public outputDirectory: string;
 
     public staticClientModules: string[];

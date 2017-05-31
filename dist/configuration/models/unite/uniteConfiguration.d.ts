@@ -8,6 +8,7 @@ export declare class UniteConfiguration {
     title: string;
     sourceLanguage: UniteSourceLanguage;
     moduleLoader: UniteModuleLoader;
+    sourceMaps: boolean;
     outputDirectory: string;
     staticClientModules: string[];
 }

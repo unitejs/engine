@@ -9,5 +9,6 @@ import { IFileSystem } from "../interfaces/IFileSystem";
 import { ILogger } from "../interfaces/ILogger";
 export declare class GenerateAppScaffold extends EnginePipelineStepBase {
     process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
-    private buildAppMain(lines, language);
+    private buildMain(lines, quote, language);
+    private buildApp(lines, quote, language);
 }

@@ -16,6 +16,10 @@ export class GenerateGulpTasksBuild extends EnginePipelineStepBase {
             const assetTasks = fileSystem.directoryPathCombine(engineVariables.assetsDirectory, "gulp/tasks/");
             engineVariables.requiredDevDependencies.push("del");
 
+            if (uniteConfiguration.sourceMaps) {
+                engineVariables.requiredDevDependencies.push("gulp-sourcemaps");
+            }
+
             if (engineVariables.uniteSourceLanguage === "JavaScript") {
                 engineVariables.requiredDevDependencies.push("gulp-babel");
 
