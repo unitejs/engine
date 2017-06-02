@@ -12,9 +12,13 @@
         "gulp-sourcemaps": "^2.6.0",
         "gulp-typescript": "^3.1.6",
         "jasmine-core": "^2.5.2",
+        "karma": "^0.13.19",
         "require-dir": "^0.3.0",
         "requirejs": "^2.3.3",
+        "run-sequence": "^1.2.2",
         "typescript": "^2.3.2",
+        "@types/chai": "^0.0.0",
+        "@types/jasmine": "^0.0.0",
         "@types/mocha": "^2.2.41"
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Pipeline step to generate chai configuration.
+ * Pipeline step to generate jasmine configuration.
  */
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { EnginePipelineStepBase } from "../engine/enginePipelineStepBase";
@@ -8,22 +8,22 @@ import { IDisplay } from "../interfaces/IDisplay";
 import { IFileSystem } from "../interfaces/IFileSystem";
 import { ILogger } from "../interfaces/ILogger";
 
-export class Chai extends EnginePipelineStepBase {
+export class Jasmine extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
 
-        if (uniteConfiguration.unitTestFramework === "Chai") {
+        if (uniteConfiguration.unitTestFramework === "Jasmine") {
             try {
-                super.log(logger, display, "Generating Chai Configuration");
+                super.log(logger, display, "Generating Jasmine Configuration");
 
-                engineVariables.requiredDevDependencies.push("chai");
+                engineVariables.requiredDevDependencies.push("jasmine-core");
 
                 if (uniteConfiguration.sourceLanguage === "TypeScript") {
-                    engineVariables.requiredDevDependencies.push("@types/chai");
+                    engineVariables.requiredDevDependencies.push("@types/jasmine");
                 }
 
                 return 0;
             } catch (err) {
-                super.error(logger, display, "Generating Chai Configuration failed", err);
+                super.error(logger, display, "Generating Jasmine Configuration failed", err);
                 return 1;
             }
         }

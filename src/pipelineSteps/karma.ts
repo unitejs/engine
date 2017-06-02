@@ -1,5 +1,5 @@
 /**
- * Pipeline step to generate chai configuration.
+ * Pipeline step to generate karma configuration.
  */
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { EnginePipelineStepBase } from "../engine/enginePipelineStepBase";
@@ -8,22 +8,18 @@ import { IDisplay } from "../interfaces/IDisplay";
 import { IFileSystem } from "../interfaces/IFileSystem";
 import { ILogger } from "../interfaces/ILogger";
 
-export class Chai extends EnginePipelineStepBase {
+export class Karma extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
 
-        if (uniteConfiguration.unitTestFramework === "Chai") {
+        if (uniteConfiguration.unitTestRunner === "Karma") {
             try {
-                super.log(logger, display, "Generating Chai Configuration");
+                super.log(logger, display, "Generating Karma Configuration");
 
-                engineVariables.requiredDevDependencies.push("chai");
-
-                if (uniteConfiguration.sourceLanguage === "TypeScript") {
-                    engineVariables.requiredDevDependencies.push("@types/chai");
-                }
+                engineVariables.requiredDevDependencies.push("karma");
 
                 return 0;
             } catch (err) {
-                super.error(logger, display, "Generating Chai Configuration failed", err);
+                super.error(logger, display, "Generating Karma Configuration failed", err);
                 return 1;
             }
         }

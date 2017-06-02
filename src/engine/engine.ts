@@ -22,6 +22,8 @@ import { GulpTasksBuild } from "../pipelineSteps/gulpTasksBuild";
 import { GulpTasksUnit } from "../pipelineSteps/gulpTasksUnit";
 import { GulpTasksUtil } from "../pipelineSteps/gulpTasksUtil";
 import { HtmlTemplate } from "../pipelineSteps/htmlTemplate";
+import { Jasmine } from "../pipelineSteps/jasmine";
+import { Karma } from "../pipelineSteps/karma";
 import { Mocha } from "../pipelineSteps/mocha";
 import { ModuleLoader } from "../pipelineSteps/moduleLoader";
 import { OutputDirectory } from "../pipelineSteps/outputDirectory";
@@ -106,10 +108,16 @@ export class Engine implements IEngine {
         pipelineSteps.push(new GulpTasksUnit());
         pipelineSteps.push(new ModuleLoader());
         pipelineSteps.push(new HtmlTemplate());
+
         pipelineSteps.push(new Babel());
         pipelineSteps.push(new TypeScript());
+
         pipelineSteps.push(new Mocha());
+        pipelineSteps.push(new Karma());
+
         pipelineSteps.push(new Chai());
+        pipelineSteps.push(new Jasmine());
+
         pipelineSteps.push(new UniteConfigurationJson());
         pipelineSteps.push(new PackageJson());
 
