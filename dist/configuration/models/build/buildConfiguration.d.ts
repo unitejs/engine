@@ -4,5 +4,7 @@
 export declare class BuildConfiguration {
     srcFolder: string;
     distFolder: string;
+    unitTestFolder: string;
+    e2eTestFolder: string;
     sourceMaps: boolean;
 }

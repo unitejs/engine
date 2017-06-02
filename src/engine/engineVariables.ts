@@ -1,11 +1,10 @@
 /**
  * Variables used by the engine.
  */
-import { UniteModuleLoader } from "../configuration/models/unite/uniteModuleLoader";
-import { UniteSourceLanguage } from "../configuration/models/unite/uniteSourceLanguage";
-
 export class EngineVariables {
-    public appSourceFolder: string;
+    public sourceFolder: string;
+    public unitTestFolder: string;
+    public e2eTestFolder: string;
 
     public gulpBuildFolder: string;
     public gulpTasksFolder: string;
@@ -17,6 +16,5 @@ export class EngineVariables {
     public requiredDependencies: string[];
     public requiredDevDependencies: string[];
 
-    public uniteSourceLanguage: UniteSourceLanguage;
-    public uniteModuleLoader: UniteModuleLoader;
+    public sourceLanguageExt: string;
 }
