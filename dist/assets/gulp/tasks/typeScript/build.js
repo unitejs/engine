@@ -9,7 +9,6 @@ const gulp = require('gulp');
 const gulpUtil = require('gulp-util');
 const typescript = require('gulp-typescript');
 const path = require('path');
-const os = require('os');
 const del = require('del');
 const uniteConfiguration = require('../../unite.json');
 

@@ -26,7 +26,7 @@ export class GulpScaffold extends EnginePipelineStepBase {
             return 1;
         }
 
-        engineVariables.gulpBuildFolder = fileSystem.directoryPathCombine(uniteConfiguration.outputDirectory, "\\build");
+        engineVariables.gulpBuildFolder = fileSystem.pathCombine(uniteConfiguration.outputDirectory, "\\build");
         try {
             super.log(logger, display, "Creating Gulp Build Directory", { gulpBuildFolder: engineVariables.gulpBuildFolder });
             await fileSystem.directoryCreate(engineVariables.gulpBuildFolder);
@@ -35,7 +35,7 @@ export class GulpScaffold extends EnginePipelineStepBase {
             return 1;
         }
 
-        engineVariables.gulpTasksFolder = fileSystem.directoryPathCombine(engineVariables.gulpBuildFolder, "\\tasks");
+        engineVariables.gulpTasksFolder = fileSystem.pathCombine(engineVariables.gulpBuildFolder, "\\tasks");
         try {
             super.log(logger, display, "Creating Gulp Tasks Directory", { gulpTasksFolder: engineVariables.gulpTasksFolder });
             await fileSystem.directoryCreate(engineVariables.gulpTasksFolder);
@@ -44,7 +44,7 @@ export class GulpScaffold extends EnginePipelineStepBase {
             return 1;
         }
 
-        engineVariables.gulpUtilFolder = fileSystem.directoryPathCombine(engineVariables.gulpTasksFolder, "\\util");
+        engineVariables.gulpUtilFolder = fileSystem.pathCombine(engineVariables.gulpTasksFolder, "\\util");
         try {
             super.log(logger, display, "Creating Gulp Util Directory", { gulpUtilFolder: engineVariables.gulpUtilFolder });
             await fileSystem.directoryCreate(engineVariables.gulpUtilFolder);

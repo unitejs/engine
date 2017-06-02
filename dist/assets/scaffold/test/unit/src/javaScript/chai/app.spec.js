@@ -2,7 +2,7 @@
  * Tests for App.
  */
 import * as Chai from "chai";
-import { entryPoint } from "../../../../dist/app";
+import { App } from "../../../dist/app";
 
 describe("App", () => {
     it("can be created", async(done) => {

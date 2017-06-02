@@ -11,7 +11,9 @@ import { ILogger } from "../interfaces/ILogger";
 
 export class AppScaffold extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.sourceFolder = fileSystem.directoryPathCombine(uniteConfiguration.outputDirectory, "\\src");
+        engineVariables.sourceFolder = fileSystem.pathCombine(uniteConfiguration.outputDirectory, "\\src");
+        engineVariables.distFolder = fileSystem.pathCombine(uniteConfiguration.outputDirectory, "\\dist");
+
         try {
             super.log(logger, display, "Creating App Source Directory", { appSourceFolder: engineVariables.sourceFolder });
             await fileSystem.directoryCreate(engineVariables.sourceFolder);
@@ -20,7 +22,7 @@ export class AppScaffold extends EnginePipelineStepBase {
             return 1;
         }
 
-        const scaffoldFolder = fileSystem.directoryPathCombine(engineVariables.assetsDirectory, "\\scaffold\\src\\" + StringHelper.toCamelCase(uniteConfiguration.sourceLanguage));
+        const scaffoldFolder = fileSystem.pathCombine(engineVariables.assetsDirectory, "\\scaffold\\src\\" + StringHelper.toCamelCase(uniteConfiguration.sourceLanguage));
 
         try {
             super.log(logger, display, "Generating Main in", { appSourceFolder: engineVariables.sourceFolder });

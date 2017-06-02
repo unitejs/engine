@@ -15,6 +15,7 @@ import { ModuleOperation } from "../interfaces/moduleOperation";
 import { AppScaffold } from "../pipelineSteps/appScaffold";
 import { Babel } from "../pipelineSteps/babel";
 import { Chai } from "../pipelineSteps/chai";
+import { E2eTestScaffold } from "../pipelineSteps/e2eTestScaffold";
 import { GulpBuild } from "../pipelineSteps/gulpBuild";
 import { GulpScaffold } from "../pipelineSteps/gulpScaffold";
 import { GulpTasksBuild } from "../pipelineSteps/gulpTasksBuild";
@@ -68,7 +69,7 @@ export class Engine implements IEngine {
         if (!EngineValidation.checkOneOf<UniteUnitTestFramework>(this._display, "unitTestFramework", unitTestFramework, [ "Chai", "Jasmine" ])) {
             return 1;
         }
-        outputDirectory = this._fileSystem.directoryPathFormat(outputDirectory!);
+        outputDirectory = this._fileSystem.pathFormat(outputDirectory!);
         if (!EngineValidation.notEmpty(this._display, "outputDirectory", outputDirectory)) {
             return 1;
         }
@@ -96,8 +97,9 @@ export class Engine implements IEngine {
         const pipelineSteps: IEnginePipelineStep[] = [];
         pipelineSteps.push(new OutputDirectory());
         pipelineSteps.push(new AppScaffold());
-        pipelineSteps.push(new GulpScaffold());
         pipelineSteps.push(new UnitTestScaffold());
+        pipelineSteps.push(new E2eTestScaffold());
+        pipelineSteps.push(new GulpScaffold());
         pipelineSteps.push(new GulpBuild());
         pipelineSteps.push(new GulpTasksBuild());
         pipelineSteps.push(new GulpTasksUtil());

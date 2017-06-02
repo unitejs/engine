@@ -3,8 +3,11 @@
  */
 export declare class EngineVariables {
     sourceFolder: string;
-    unitTestFolder: string;
-    e2eTestFolder: string;
+    distFolder: string;
+    unitTestSrcFolder: string;
+    unitTestDistFolder: string;
+    e2eTestSrcFolder: string;
+    e2eTestDistFolder: string;
     gulpBuildFolder: string;
     gulpTasksFolder: string;
     gulpUtilFolder: string;

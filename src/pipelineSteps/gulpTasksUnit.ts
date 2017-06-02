@@ -14,10 +14,10 @@ export class GulpTasksUnit extends EnginePipelineStepBase {
         try {
             super.log(logger, display, "Generating gulp tasks for unit in", { gulpTasksFolder: engineVariables.gulpTasksFolder });
 
-            const assetUnitTest = fileSystem.directoryPathCombine(engineVariables.assetsDirectory,
-                                                                  "gulp/tasks/" +
-                                                                  StringHelper.toCamelCase(uniteConfiguration.sourceLanguage) + "/" +
-                                                                  StringHelper.toCamelCase(uniteConfiguration.unitTestRunner) + "/");
+            const assetUnitTest = fileSystem.pathCombine(engineVariables.assetsDirectory,
+                                                         "gulp/tasks/" +
+                                                         StringHelper.toCamelCase(uniteConfiguration.sourceLanguage) + "/" +
+                                                         StringHelper.toCamelCase(uniteConfiguration.unitTestRunner) + "/");
 
             if (uniteConfiguration.unitTestRunner === "Mocha") {
                 engineVariables.requiredDevDependencies.push("gulp-mocha");

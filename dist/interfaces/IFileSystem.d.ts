@@ -2,8 +2,9 @@
  * Interface for file system abstraction.
  */
 export interface IFileSystem {
-    directoryPathCombine(directoryName: string, additional: string): string;
-    directoryPathFormat(directoryName: string): string;
+    pathCombine(pathName: string, additional: string): string;
+    pathRelative(pathName1: string, pathName2: string): string;
+    pathFormat(pathName: string): string;
     directoryExists(directoryName: string): Promise<boolean>;
     directoryCreate(directoryName: string): Promise<void>;
     fileExists(directoryName: string, fileName: string): Promise<boolean>;

@@ -4,7 +4,7 @@
 const display = require('./util/display');
 const bc = require('./util/build-config');
 const gulp = require('gulp');
-const typescript = require('gulp-typescript');
+const babel = require('gulp-babel');
 const path = require('path');
 const del = require('del');
 const mocha = require('gulp-mocha');
@@ -19,16 +19,13 @@ gulp.task('unit-clean', (callback) => {
 });
 
 gulp.task('unit-transpile', ['unit-clean'], () => {
-    display.info('Running', "TypeScript");
+    display.info('Running', "Babel");
 
     const buildConfig = bc.getBuildConfig();
 
-    const tsProject = typescript.createProject('tsconfig.json', { lib: ["es2015"], allowJs: true });
-
-    return gulp.src(buildConfig.unitTestSrcFolder + '**/*.spec.ts')
-            .pipe(tsProject())
-            .js
-                .pipe(gulp.dest(buildConfig.unitTestDistFolder));
+    return gulp.src(buildConfig.unitTestSrcFolder + '**/*.spec.js')
+        .pipe(babel())
+        .pipe(gulp.dest(buildConfig.unitTestDistFolder));
 });
 
 gulp.task('unit-run-test', ['unit-transpile'], () => {

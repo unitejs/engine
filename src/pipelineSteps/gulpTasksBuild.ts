@@ -14,7 +14,7 @@ export class GulpTasksBuild extends EnginePipelineStepBase {
         try {
             super.log(logger, display, "Generating gulp tasks for build in", { gulpTasksFolder: engineVariables.gulpTasksFolder });
 
-            const assetTasks = fileSystem.directoryPathCombine(engineVariables.assetsDirectory, "gulp/tasks/" + StringHelper.toCamelCase(uniteConfiguration.sourceLanguage) + "/");
+            const assetTasks = fileSystem.pathCombine(engineVariables.assetsDirectory, "gulp/tasks/" + StringHelper.toCamelCase(uniteConfiguration.sourceLanguage) + "/");
             engineVariables.requiredDevDependencies.push("del");
 
             if (uniteConfiguration.sourceMaps) {

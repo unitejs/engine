@@ -4,7 +4,9 @@
 export class BuildConfiguration {
     public srcFolder: string;
     public distFolder: string;
-    public unitTestFolder: string;
-    public e2eTestFolder: string;
+    public unitTestSrcFolder: string;
+    public unitTestDistFolder: string;
+    public e2eTestSrcFolder: string;
+    public e2eTestDistFolder: string;
     public sourceMaps: boolean;
 }
