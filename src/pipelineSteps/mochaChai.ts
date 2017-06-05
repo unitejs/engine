@@ -8,16 +8,24 @@ import { IDisplay } from "../interfaces/IDisplay";
 import { IFileSystem } from "../interfaces/IFileSystem";
 import { ILogger } from "../interfaces/ILogger";
 
-export class Mocha extends EnginePipelineStepBase {
+export class MochaChai extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
 
-        if (uniteConfiguration.unitTestRunner === "Mocha") {
+        if (uniteConfiguration.unitTestFramework === "Mocha-Chai") {
             try {
-                super.log(logger, display, "Generating Mocha Configuration");
+                super.log(logger, display, "Generating Mocha-Chai Configuration");
+
+                engineVariables.requiredDevDependencies.push("mocha");
+                engineVariables.requiredDevDependencies.push("chai");
+
+                if (uniteConfiguration.sourceLanguage === "TypeScript") {
+                    engineVariables.requiredDevDependencies.push("@types/mocha");
+                    engineVariables.requiredDevDependencies.push("@types/chai");
+                }
 
                 return 0;
             } catch (err) {
-                super.error(logger, display, "Generating Mocha Configuration failed", err);
+                super.error(logger, display, "Generating Mocha-Chai Configuration failed", err);
                 return 1;
             }
         }

@@ -46,7 +46,7 @@
         "no-duplicate-case": true,
         "no-duplicate-variable": true,
         "no-empty": true,
-        "no-increment-decrement": true,
+        "no-increment-decrement": false,
         "no-invalid-regexp": true,
         "no-invalid-this": true,
         "no-jquery-raw-elements": true,
@@ -96,6 +96,7 @@
         "no-default-export": true,
         "no-empty-interfaces": true,
         "no-for-in": true,
+        "prefer-for-of": false,
         "no-function-expression": true,
         "no-inferrable-types": false, // turn no-inferrable-types off in order to make the code consistent in its use of type decorations
         "no-multiline-string": true, // multiline-strings often introduce unnecessary whitespace into the string literals

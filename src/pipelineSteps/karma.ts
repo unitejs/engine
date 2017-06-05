@@ -16,6 +16,8 @@ export class Karma extends EnginePipelineStepBase {
                 super.log(logger, display, "Generating Karma Configuration");
 
                 engineVariables.requiredDevDependencies.push("karma");
+                engineVariables.requiredDevDependencies.push("karma-chrome-launcher");
+                engineVariables.requiredDevDependencies.push("karma-phantomjs-launcher");
 
                 return 0;
             } catch (err) {

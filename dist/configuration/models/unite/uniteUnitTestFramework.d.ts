@@ -1,4 +1,4 @@
 /**
  * Type for Unite Configuration unitTestFramework.
  */
-export declare type UniteUnitTestFramework = "Chai" | "Jasmine";
+export declare type UniteUnitTestFramework = "Mocha-Chai" | "Jasmine";

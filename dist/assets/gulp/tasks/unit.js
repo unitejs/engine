@@ -21,3 +21,7 @@ gulp.task('unit', (cb) => {
     runSequence('unit-clean', 'unit-transpile', 'unit-run-test', cb);
 });
 
+gulp.task('unit-ui', (cb) => {
+    runSequence('unit-clean', 'unit-transpile', 'unit-run-test-ui', cb);
+});
+

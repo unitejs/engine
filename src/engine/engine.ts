@@ -14,7 +14,6 @@ import { ILogger } from "../interfaces/ILogger";
 import { ModuleOperation } from "../interfaces/moduleOperation";
 import { AppScaffold } from "../pipelineSteps/appScaffold";
 import { Babel } from "../pipelineSteps/babel";
-import { Chai } from "../pipelineSteps/chai";
 import { E2eTestScaffold } from "../pipelineSteps/e2eTestScaffold";
 import { GulpBuild } from "../pipelineSteps/gulpBuild";
 import { GulpScaffold } from "../pipelineSteps/gulpScaffold";
@@ -24,7 +23,7 @@ import { GulpTasksUtil } from "../pipelineSteps/gulpTasksUtil";
 import { HtmlTemplate } from "../pipelineSteps/htmlTemplate";
 import { Jasmine } from "../pipelineSteps/jasmine";
 import { Karma } from "../pipelineSteps/karma";
-import { Mocha } from "../pipelineSteps/mocha";
+import { MochaChai } from "../pipelineSteps/mochaChai";
 import { ModuleLoader } from "../pipelineSteps/moduleLoader";
 import { OutputDirectory } from "../pipelineSteps/outputDirectory";
 import { PackageJson } from "../pipelineSteps/packageJson";
@@ -65,10 +64,10 @@ export class Engine implements IEngine {
         if (!EngineValidation.checkOneOf<UniteModuleLoader>(this._display, "moduleLoader", moduleLoader, [ "RequireJS", "Webpack", "Browserify", "JSPM"])) {
             return 1;
         }
-        if (!EngineValidation.checkOneOf<UniteUnitTestRunner>(this._display, "unitTestRunner", unitTestRunner, [ "None", "Mocha", "Karma" ])) {
+        if (!EngineValidation.checkOneOf<UniteUnitTestRunner>(this._display, "unitTestRunner", unitTestRunner, [ "None", "Karma" ])) {
             return 1;
         }
-        if (!EngineValidation.checkOneOf<UniteUnitTestFramework>(this._display, "unitTestFramework", unitTestFramework, [ "Chai", "Jasmine" ])) {
+        if (!EngineValidation.checkOneOf<UniteUnitTestFramework>(this._display, "unitTestFramework", unitTestFramework, [ "Mocha-Chai", "Jasmine" ])) {
             return 1;
         }
         outputDirectory = this._fileSystem.pathFormat(outputDirectory!);
@@ -112,10 +111,9 @@ export class Engine implements IEngine {
         pipelineSteps.push(new Babel());
         pipelineSteps.push(new TypeScript());
 
-        pipelineSteps.push(new Mocha());
         pipelineSteps.push(new Karma());
 
-        pipelineSteps.push(new Chai());
+        pipelineSteps.push(new MochaChai());
         pipelineSteps.push(new Jasmine());
 
         pipelineSteps.push(new UniteConfigurationJson());

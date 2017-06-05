@@ -3,5 +3,4 @@
  */
 export type UniteUnitTestRunner =
     "None" |
-    "Mocha" |
     "Karma";

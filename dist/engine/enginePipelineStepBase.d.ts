@@ -15,6 +15,6 @@ export declare abstract class EnginePipelineStepBase implements IEnginePipelineS
     error(logger: ILogger, display: IDisplay, message: string, err: any, args?: {
         [id: string]: any;
     }): void;
-    copyFile(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, sourceFolder: string, sourceFilename: string, destFolder: string, destFilename: string): Promise<void>;
+    copyFile(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, sourceFolder: string, sourceFilename: string, destFolder: string, destFilename: string, replacer?: ((line: string) => string) | undefined): Promise<void>;
     private arrayToReadable(args?);
 }

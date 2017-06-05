@@ -4,6 +4,7 @@
 export declare class EngineVariables {
     sourceFolder: string;
     distFolder: string;
+    unitTestRootFolder: string;
     unitTestSrcFolder: string;
     unitTestDistFolder: string;
     e2eTestSrcFolder: string;

@@ -4,6 +4,7 @@
 export class EngineVariables {
     public sourceFolder: string;
     public distFolder: string;
+    public unitTestRootFolder: string;
     public unitTestSrcFolder: string;
     public unitTestDistFolder: string;
     public e2eTestSrcFolder: string;
