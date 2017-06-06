@@ -1,7 +1,7 @@
 /**
  * Tests for Main.
  */
-import * as Chai from "chai";
+import Chai from "chai";
 import { entryPoint } from "../../../src/main";
 
 describe("Main", () => {

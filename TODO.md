@@ -1,7 +1,15 @@
 # To Do
 
-Add model definitions:
-    unite.config.json
-    tslint.json
-    .gitignore
-    karma.conf
+Module loaders
+commonjs - webpack/browserify
+
+Linting TypeScript and JavaScript
+Sourcemaps for unit tests
+HTML Report for unit tests
+Unit Test Coverage
+
+Jest Test Framework
+
+Alternate UI Browsers for testing Firefox/IE/Edge
+
+.gitignore file to exclude generated reports

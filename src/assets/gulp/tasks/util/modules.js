@@ -13,7 +13,9 @@ function createModuleConfig(filename, indexFile, uniteConfiguration, clientModul
 
     if (uniteConfiguration) {
         if (uniteConfiguration.moduleLoader === "RequireJS") {
-            configContent.push(' RequireJS');
+            configContent.push(' * RequireJS');
+        } else if (uniteConfiguration.moduleLoader === "SystemJS") {
+            configContent.push(' * SystemJS');
         }
     }    
     configContent.push(' */');
@@ -22,6 +24,16 @@ function createModuleConfig(filename, indexFile, uniteConfiguration, clientModul
             configContent.push('var baseUrl = window.location.origin + window.location.pathname.replace(\'' + indexFile + '\', \'\');');
             configContent.push('require.config({');
             configContent.push('    baseUrl: baseUrl');
+            configContent.push('});');
+        } else if (uniteConfiguration.moduleLoader === "SystemJS") {
+            configContent.push('var baseUrl = window.location.origin + window.location.pathname.replace(\'' + indexFile + '\', \'\');');
+            configContent.push('SystemJS.config({');
+            configContent.push('    baseUrl: baseUrl,');
+            configContent.push('    packages: {');
+            configContent.push('        \'\': {');
+            configContent.push('            defaultExtension: \'js\'');
+            configContent.push('        }');
+            configContent.push('    }');
             configContent.push('});');
         }
     }    

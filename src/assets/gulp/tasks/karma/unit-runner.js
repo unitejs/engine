@@ -21,7 +21,7 @@ gulp.task('unit-run-test', (done) => {
 
     const serverOpts = {
         'singleRun': true,
-        'frameworks': ['requirejs', 'mocha'],
+        'frameworks': {KARMA_FRAMEWORKS},
         'reporters': ['story'],
         'browsers': ['PhantomJS'],
         'files': unitFiles
@@ -52,7 +52,7 @@ gulp.task('unit-run-test-ui', (done) => {
 
     const serverOpts = {
         'singleRun': false,
-        'frameworks': ['requirejs', 'mocha'],
+        'frameworks': {KARMA_FRAMEWORKS},
         'browsers': ['Chrome'],
         'files': unitFiles
     };

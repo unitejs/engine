@@ -29,6 +29,12 @@ function copyTemplate(templateFile, indexFile, moduleConfigFilename, uniteConfig
             bootstrap.push("require(['dist/main'], function(main) {");
             bootstrap.push("    main.entryPoint();");
             bootstrap.push("});");
+        } else if (uniteConfiguration.moduleLoader === "SystemJS") {
+            moduleConfig = '<script src="' + moduleConfigFilename + '"></script>';
+
+            bootstrap.push("SystemJS.import('dist/main').then(function(main) {");
+            bootstrap.push("    main.entryPoint();");
+            bootstrap.push("});");
         }
         bootstrap.push("</script>");
     }

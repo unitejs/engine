@@ -1,7 +1,7 @@
 /**
  * Tests for App.
  */
-import * as Chai from "chai";
+import Chai from "chai";
 import { App } from "../../../src/app";
 
 describe("App", () => {

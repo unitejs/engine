@@ -3,6 +3,4 @@
  */
 export type UniteModuleLoader =
     "RequireJS" |
-    "Webpack" |
-    "Browserify" |
-    "JSPM";
+    "SystemJS";

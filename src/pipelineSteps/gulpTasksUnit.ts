@@ -38,25 +38,37 @@ export class GulpTasksUnit extends EnginePipelineStepBase {
                     srcDistReplace = "replace(\/(define)*?(..\\/src\\/)/g, \"..\/dist\/\")";
                     karmaFrameworks.push("requirejs");
                     engineVariables.requiredDevDependencies.push("karma-requirejs");
+                } else if (uniteConfiguration.moduleLoader === "SystemJS") {
+                    srcDistReplace = "replace(\/(System.register)*?(..\\/src\\/)/g, \"..\/dist\/\")";
+
+                    engineVariables.requiredDevDependencies.push("bluebird");
+                    unitFiles.push({ pattern: "node_modules/bluebird/js/browser/bluebird.js", included: true });
+
+                    engineVariables.requiredDevDependencies.push("karma-systemjs");
+                    unitFiles.push({ pattern: "node_modules/systemjs/dist/system.js", included: true });
                 }
 
                 if (uniteConfiguration.unitTestFramework === "Mocha-Chai") {
                     karmaFrameworks.push("mocha");
-
-                    unitFiles.push({ pattern: "node_modules/chai/chai.js", included: false });
+                    karmaFrameworks.push("chai");
 
                     engineVariables.requiredDevDependencies.push("karma-mocha");
+                    engineVariables.requiredDevDependencies.push("karma-chai");
+                } else if (uniteConfiguration.unitTestFramework === "Jasmine") {
+                    karmaFrameworks.push("jasmine");
+
+                    engineVariables.requiredDevDependencies.push("karma-jasmine");
                 }
 
                 transpileReplacer = (line) => line.replace("{SRC_DIST_REPLACE}", srcDistReplace);
                 let karmaUnitFiles = "";
                 for (let i = 0; i < unitFiles.length; i++) {
-                    karmaUnitFiles += "unitFiles.push({ pattern: '" + unitFiles[i].pattern + "', included: " + unitFiles[i].included + " });";
+                    karmaUnitFiles += "unitFiles.push({ pattern: '" + unitFiles[i].pattern + "', included: " + unitFiles[i].included + " });\r\n    ";
                 }
 
                 runnerReplacer = (line) => {
-                    line = line.replace("{KARMA_FRAMEWORKS}", "[" + karmaFrameworks.map(f => "\"" + f + "\"").join(", ") + "]");
-                    line = line.replace("{UNIT_FILES}", karmaUnitFiles);
+                    line = line.replace("{KARMA_FRAMEWORKS}", "[" + karmaFrameworks.map(f => "'" + f + "'").join(", ") + "]");
+                    line = line.replace("{UNIT_FILES}", karmaUnitFiles.trim());
                     return line;
                 };
 

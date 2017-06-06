@@ -13,13 +13,12 @@ export class ModuleLoader extends EnginePipelineStepBase {
         try {
             super.log(logger, display, "Generating Module Loader Scaffold", { });
 
-            switch (uniteConfiguration.moduleLoader) {
-                case "RequireJS": {
-                    engineVariables.requiredDependencies.push("requirejs");
-                    uniteConfiguration.staticClientModules.push("requirejs/require.js");
-                    break;
-                }
-                default: break;
+            if (uniteConfiguration.moduleLoader === "RequireJS") {
+                engineVariables.requiredDependencies.push("requirejs");
+                uniteConfiguration.staticClientModules.push("requirejs/require.js");
+            } else if (uniteConfiguration.moduleLoader === "SystemJS") {
+                engineVariables.requiredDependencies.push("systemjs");
+                uniteConfiguration.staticClientModules.push("systemjs/dist/system.js");
             }
 
             return 0;

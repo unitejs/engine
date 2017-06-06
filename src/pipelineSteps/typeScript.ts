@@ -26,7 +26,7 @@ export class TypeScript extends EnginePipelineStepBase {
 
                 if (uniteConfiguration.moduleLoader === "RequireJS") {
                     typeScriptConfiguration.compilerOptions.module = "amd";
-                } else if (uniteConfiguration.moduleLoader === "JSPM") {
+                } else if (uniteConfiguration.moduleLoader === "SystemJS") {
                     typeScriptConfiguration.compilerOptions.module = "system";
                 } else {
                     typeScriptConfiguration.compilerOptions.module = "commonjs";

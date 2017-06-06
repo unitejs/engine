@@ -1,3 +1,6 @@
+/* Stop the tests from running while we manually load the modules */
+window.__karma__.loaded = function() {};
+
 var TEST_REGEXP = /(spec)\.js$/i;
 var allTestFiles = [];
 
@@ -16,15 +19,16 @@ var packages = {
 
 {REQUIRE_PATHS}
 {REQUIRE_PACKAGES}
-require.config({
-    baseUrl: '/base/',
+
+SystemJS.config({
+    baseURL: '/base/',
     paths: paths,
     packages: packages
 });
 
-SystemJS.import("bluebird", function () {
-    Promise.all(allTestFiles.map(function(module) { return SystemJS.import(module) })).then(function(modules) {
-        window.__karma__.start();
-    });
+Promise.all(allTestFiles.map(function(module) { return SystemJS.import(module) })).then(function(modules) {
+    /* Now we have loaded all the modules async we can start the tests */
+    window.__karma__.start();
 });
+
 

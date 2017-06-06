@@ -58,20 +58,18 @@ export class UnitTestScaffold extends EnginePipelineStepBase {
                                     engineVariables.unitTestSrcFolder,
                                     "app.spec." + engineVariables.sourceLanguageExt);
 
-                if (uniteConfiguration.moduleLoader === "RequireJS") {
-                    const keys = Object.keys(unitFrameworks);
-                    let requirePaths = "";
-                    const requirePackages = "";
-                    for (let i = 0; i < keys.length; i++) {
-                        requirePaths += "paths['" + keys[i] + "'] = '" + unitFrameworks[keys[i]] + "';\n";
-                    }
-
-                    bootstrapReplacer = (line) => {
-                        line = line.replace("{REQUIRE_PATHS}", requirePaths);
-                        line = line.replace("{REQUIRE_PACKAGES}", requirePackages);
-                        return line;
-                    };
+                const keys = Object.keys(unitFrameworks);
+                let requirePaths = "";
+                const requirePackages = "";
+                for (let i = 0; i < keys.length; i++) {
+                    requirePaths += "paths['" + keys[i] + "'] = '" + unitFrameworks[keys[i]] + "';\n";
                 }
+
+                bootstrapReplacer = (line) => {
+                    line = line.replace("{REQUIRE_PATHS}", requirePaths);
+                    line = line.replace("{REQUIRE_PACKAGES}", requirePackages);
+                    return line;
+                };
 
                 await this.copyFile(logger, display, fileSystem, unitTestsScaffoldModuleLoader,
                                     "unitBootstrap.js",

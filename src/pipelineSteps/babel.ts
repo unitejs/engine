@@ -24,7 +24,7 @@ export class Babel extends EnginePipelineStepBase {
                 let modules = "";
                 if (uniteConfiguration.moduleLoader === "RequireJS") {
                     modules = "amd";
-                } else if (uniteConfiguration.moduleLoader === "JSPM") {
+                } else if (uniteConfiguration.moduleLoader === "SystemJS") {
                     modules = "systemjs";
                 } else {
                     modules = "commonjs";

@@ -21,7 +21,7 @@ gulp.task('unit-run-test', (done) => {
 
     const serverOpts = {
         'singleRun': true,
-        'frameworks': ['requirejs', 'mocha'],
+        'frameworks': {KARMA_FRAMEWORKS},
         'reporters': ['story'],
         'browsers': ['PhantomJS'],
         'files': unitFiles
@@ -47,12 +47,12 @@ gulp.task('unit-run-test-ui', (done) => {
 
     {UNIT_FILES}
     unitFiles.push({ pattern: path.join(buildConfig.distFolder, "**/*.js"), included: false });
-    unitFiles.push({ pattern: path.join(buildConfig.unitTestDistFolder, "**/*.spec.js"), included: true });
+    unitFiles.push({ pattern: path.join(buildConfig.unitTestDistFolder, "**/*.spec.js"), included: false });
     unitFiles.push({ pattern: path.join(buildConfig.unitTestDistFolder, '../unitBootstrap.js'), included: true });
 
     const serverOpts = {
         'singleRun': false,
-        'frameworks': ['requirejs', 'mocha'],
+        'frameworks': {KARMA_FRAMEWORKS},
         'browsers': ['Chrome'],
         'files': unitFiles
     };
