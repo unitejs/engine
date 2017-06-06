@@ -31,6 +31,8 @@
         "typescript": "^2.3.2",
         "@types/chai": "^4.0.0",
         "@types/jasmine": "^2.5.51",
-        "@types/mocha": "^2.2.41"
+        "@types/mocha": "^2.2.41",
+        "webpack": "^2.6.1",
+        "webpack-stream": "^3.2.0"
     }
 }

@@ -16,6 +16,7 @@ export class GulpTasksBuild extends EnginePipelineStepBase {
 
             const assetTasks = fileSystem.pathCombine(engineVariables.assetsDirectory, "gulp/tasks/");
             const assetTasksLanguage = fileSystem.pathCombine(engineVariables.assetsDirectory, "gulp/tasks/" + StringHelper.toCamelCase(uniteConfiguration.sourceLanguage) + "/");
+            const assetTasksModuleLoader = fileSystem.pathCombine(engineVariables.assetsDirectory, "gulp/tasks/" + StringHelper.toCamelCase(uniteConfiguration.moduleLoader) + "/");
 
             engineVariables.requiredDevDependencies.push("del");
             engineVariables.requiredDevDependencies.push("run-sequence");
@@ -31,7 +32,13 @@ export class GulpTasksBuild extends EnginePipelineStepBase {
                 engineVariables.requiredDevDependencies.push("typescript");
             }
 
+            if (uniteConfiguration.moduleLoader === "Webpack") {
+                engineVariables.requiredDevDependencies.push("webpack");
+                engineVariables.requiredDevDependencies.push("webpack-stream");
+            }
+
             await this.copyFile(logger, display, fileSystem, assetTasksLanguage, "build-transpile.js", engineVariables.gulpTasksFolder, "build-transpile.js");
+            await this.copyFile(logger, display, fileSystem, assetTasksModuleLoader, "build-bundle.js", engineVariables.gulpTasksFolder, "build-bundle.js");
 
             await this.copyFile(logger, display, fileSystem, assetTasks, "build.js", engineVariables.gulpTasksFolder, "build.js");
 

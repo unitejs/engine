@@ -16,10 +16,8 @@ var packages = {
         defaultExtension: 'js'
     }
 };
-
 {REQUIRE_PATHS}
 {REQUIRE_PACKAGES}
-
 SystemJS.config({
     baseURL: '/base/',
     paths: paths,
@@ -27,7 +25,7 @@ SystemJS.config({
 });
 
 Promise.all(allTestFiles.map(function(module) { return SystemJS.import(module) })).then(function(modules) {
-    /* Now we have loaded all the modules async we can start the tests */
+    /* Now we have loaded all the modules we can start the tests */
     window.__karma__.start();
 });
 

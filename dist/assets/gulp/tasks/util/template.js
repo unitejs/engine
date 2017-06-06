@@ -22,7 +22,6 @@ function copyTemplate(templateFile, indexFile, moduleConfigFilename, uniteConfig
             });
         }
 
-        bootstrap.push("<script>");
         if (uniteConfiguration.moduleLoader === "RequireJS") {
             moduleConfig = '<script src="' + moduleConfigFilename + '"></script>';
 
@@ -35,8 +34,13 @@ function copyTemplate(templateFile, indexFile, moduleConfigFilename, uniteConfig
             bootstrap.push("SystemJS.import('dist/main').then(function(main) {");
             bootstrap.push("    main.entryPoint();");
             bootstrap.push("});");
+        } else if (uniteConfiguration.moduleLoader === "Webpack") {
+            moduleConfig = '<script src="dist/main.bundle.js"></script>';
         }
-        bootstrap.push("</script>");
+        if (bootstrap.length > 0) {
+            bootstrap.unshift("<script>");
+            bootstrap.push("</script>");
+        }
     }
 
     return gulp.src(templateFile)

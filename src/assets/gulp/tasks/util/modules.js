@@ -35,6 +35,7 @@ function createModuleConfig(filename, indexFile, uniteConfiguration, clientModul
             configContent.push('        }');
             configContent.push('    }');
             configContent.push('});');
+        } else if (uniteConfiguration.moduleLoader === "Webpack") {
         }
     }    
 

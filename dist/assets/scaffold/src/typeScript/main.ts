@@ -7,3 +7,4 @@ export function entryPoint(): void {
     const app = new App();
     app.run();
 }
+{INIT}

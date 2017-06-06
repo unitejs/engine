@@ -6,6 +6,7 @@ const template = require('./util/template');
 const modules = require('./util/modules');
 const bc = require('./util/build-config');
 const buildTranspile = require('./build-transpile');
+const buildBundle = require('./build-bundle');
 const gulp = require('gulp');
 const gulpUtil = require('gulp-util');
 const path = require('path');
@@ -38,6 +39,6 @@ gulp.task('build-generate-module-config', (cb) => {
 });
 
 gulp.task('build', (cb) => {
-    runSequence('build-clean', 'build-transpile', 'build-generate-index', 'build-generate-module-config', cb);
+    runSequence('build-clean', 'build-transpile', 'build-bundle', 'build-generate-index', 'build-generate-module-config', cb);
 });
 
