@@ -3,8 +3,11 @@
  */
 export interface IFileSystem {
     pathCombine(pathName: string, additional: string): string;
-    pathRelative(pathName1: string, pathName2: string): string;
+    pathDirectoryRelative(pathName1: string, pathName2: string): string;
+    pathFileRelative(pathName1: string, pathName2: string): string;
     pathFormat(pathName: string): string;
+
+    pathToWeb(pathName: string): string;
 
     directoryExists(directoryName: string): Promise<boolean>;
     directoryCreate(directoryName: string): Promise<void>;

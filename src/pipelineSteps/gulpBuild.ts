@@ -16,12 +16,13 @@ export class GulpBuild extends EnginePipelineStepBase {
 
             const buildConfiguration = new BuildConfiguration();
 
-            buildConfiguration.srcFolder = fileSystem.pathRelative(uniteConfiguration.outputDirectory, engineVariables.sourceFolder);
-            buildConfiguration.distFolder = fileSystem.pathRelative(uniteConfiguration.outputDirectory, engineVariables.distFolder);
-            buildConfiguration.unitTestSrcFolder = fileSystem.pathRelative(uniteConfiguration.outputDirectory, engineVariables.unitTestSrcFolder);
-            buildConfiguration.unitTestDistFolder = fileSystem.pathRelative(uniteConfiguration.outputDirectory, engineVariables.unitTestDistFolder);
-            buildConfiguration.e2eTestSrcFolder = fileSystem.pathRelative(uniteConfiguration.outputDirectory, engineVariables.e2eTestSrcFolder);
-            buildConfiguration.e2eTestDistFolder = fileSystem.pathRelative(uniteConfiguration.outputDirectory, engineVariables.e2eTestDistFolder);
+            buildConfiguration.srcFolder = fileSystem.pathDirectoryRelative(uniteConfiguration.outputDirectory, engineVariables.sourceFolder);
+            buildConfiguration.distFolder = fileSystem.pathDirectoryRelative(uniteConfiguration.outputDirectory, engineVariables.distFolder);
+            buildConfiguration.unitTestFolder = fileSystem.pathDirectoryRelative(uniteConfiguration.outputDirectory, engineVariables.unitTestFolder);
+            buildConfiguration.unitTestSrcFolder = fileSystem.pathDirectoryRelative(uniteConfiguration.outputDirectory, engineVariables.unitTestSrcFolder);
+            buildConfiguration.unitTestDistFolder = fileSystem.pathDirectoryRelative(uniteConfiguration.outputDirectory, engineVariables.unitTestDistFolder);
+            buildConfiguration.e2eTestSrcFolder = fileSystem.pathDirectoryRelative(uniteConfiguration.outputDirectory, engineVariables.e2eTestSrcFolder);
+            buildConfiguration.e2eTestDistFolder = fileSystem.pathDirectoryRelative(uniteConfiguration.outputDirectory, engineVariables.e2eTestDistFolder);
             buildConfiguration.sourceMaps = uniteConfiguration.sourceMaps;
 
             await fileSystem.fileWriteJson(engineVariables.gulpBuildFolder, "build.config.json", buildConfiguration);

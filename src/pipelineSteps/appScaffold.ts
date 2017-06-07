@@ -27,21 +27,29 @@ export class AppScaffold extends EnginePipelineStepBase {
         try {
             super.log(logger, display, "Generating Main in", { appSourceFolder: engineVariables.sourceFolder });
 
-            let initReplacer: ((line: string) => string) | undefined;
-
-            if (uniteConfiguration.moduleLoader === "Webpack") {
-                initReplacer = (line) => line.replace("{INIT}", "entryPoint();");
-            }
-
             await this.copyFile(logger, display, fileSystem,
                                 scaffoldFolder,
                                 "main." + engineVariables.sourceLanguageExt,
                                 engineVariables.sourceFolder,
-                                "main." + engineVariables.sourceLanguageExt,
-                                initReplacer);
+                                "main." + engineVariables.sourceLanguageExt);
         } catch (err) {
             super.error(logger, display, "Generating Main failed", err, { appSourceFolder: engineVariables.sourceFolder });
             return 1;
+        }
+
+        if (uniteConfiguration.moduleLoader === "Webpack") {
+            try {
+                super.log(logger, display, "Generating EntryPoint in", { appSourceFolder: engineVariables.sourceFolder });
+
+                await this.copyFile(logger, display, fileSystem,
+                                    scaffoldFolder,
+                                    "entryPoint." + engineVariables.sourceLanguageExt,
+                                    engineVariables.sourceFolder,
+                                    "entryPoint." + engineVariables.sourceLanguageExt);
+            } catch (err) {
+                super.error(logger, display, "Generating EntryPoint failed", err, { appSourceFolder: engineVariables.sourceFolder });
+                return 1;
+            }
         }
 
         try {

@@ -7,16 +7,25 @@ const path = require('path');
 const webpack = require('webpack-stream');
 const bc = require('./util/build-config');
 
-gulp.task('build-bundle', function() {
+gulp.task('build-bundle', function () {
     display.info('Running', "webpack");
 
     const buildConfig = bc.getBuildConfig();
 
-    return gulp.src(path.join(buildConfig.distFolder, "main.js"))
-        .pipe(webpack({ 
+    return gulp.src(path.join(buildConfig.distFolder, "entryPoint.js"))
+        .pipe(webpack({
+            devtool: buildConfig.sourceMaps ? 'inline-source-map' : false,
             output: {
-                 filename: 'main.bundle.js'
-             }
+                filename: 'app-bundle.js'
+            },
+            module: {
+                preLoaders: [
+                    {
+                        test: /\.js$/,
+                        loader: "source-map-loader"
+                    }
+                ]
+            }
         }))
         .pipe(gulp.dest(buildConfig.distFolder));
 });

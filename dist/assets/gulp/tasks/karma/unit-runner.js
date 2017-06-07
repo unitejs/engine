@@ -13,18 +13,13 @@ gulp.task('unit-run-test', (done) => {
     const buildConfig = bc.getBuildConfig();
 
     const unitFiles = [];
-
     {UNIT_FILES}
-    unitFiles.push({ pattern: path.join(buildConfig.distFolder, '**/*.js'), included: false });
-    unitFiles.push({ pattern: path.join(buildConfig.unitTestDistFolder, '**/*.spec.js'), included: false });
-    unitFiles.push({ pattern: path.join(buildConfig.unitTestDistFolder, '../unitBootstrap.js'), included: true });
-
     const serverOpts = {
-        'singleRun': true,
-        'frameworks': {KARMA_FRAMEWORKS},
-        'reporters': ['story'],
-        'browsers': ['PhantomJS'],
-        'files': unitFiles
+        singleRun: true,
+        frameworks: {KARMA_FRAMEWORKS},
+        reporters: ['story'],
+        browsers: ['PhantomJS'],
+        files: unitFiles
     };
 
     const server = new karma.Server(serverOpts, function (exitCode) {
@@ -44,17 +39,12 @@ gulp.task('unit-run-test-ui', (done) => {
     const buildConfig = bc.getBuildConfig();
 
     const unitFiles = [];
-
     {UNIT_FILES}
-    unitFiles.push({ pattern: path.join(buildConfig.distFolder, "**/*.js"), included: false });
-    unitFiles.push({ pattern: path.join(buildConfig.unitTestDistFolder, "**/*.spec.js"), included: false });
-    unitFiles.push({ pattern: path.join(buildConfig.unitTestDistFolder, '../unitBootstrap.js'), included: true });
-
     const serverOpts = {
-        'singleRun': false,
-        'frameworks': {KARMA_FRAMEWORKS},
-        'browsers': ['Chrome'],
-        'files': unitFiles
+        singleRun: false,
+        frameworks: {KARMA_FRAMEWORKS},
+        browsers: ['Chrome'],
+        files: unitFiles
     };
 
     const server = new karma.Server(serverOpts, function (exitCode) {

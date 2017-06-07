@@ -7,16 +7,16 @@ const path = require('path');
 const webpack = require('webpack-stream');
 const bc = require('./util/build-config');
 
-gulp.task('build-bundle', function () {
+gulp.task('unit-bundle', function () {
     display.info('Running', "webpack");
 
     const buildConfig = bc.getBuildConfig();
 
-    return gulp.src(path.join(buildConfig.distFolder, "entryPoint.js"))
+    return gulp.src(path.join(buildConfig.unitTestFolder, "unitBootstrap.js"))
         .pipe(webpack({
-            devtool: buildConfig.sourceMaps ? 'inline-source-map' : false,
+            devtool: 'inline-source-map',
             output: {
-                filename: 'app-bundle.js'
+                filename: 'test-bundle.js'
             },
             module: {
                 preLoaders: [
@@ -27,5 +27,5 @@ gulp.task('build-bundle', function () {
                 ]
             }
         }))
-        .pipe(gulp.dest(buildConfig.distFolder));
+        .pipe(gulp.dest(buildConfig.unitTestDistFolder));
 });

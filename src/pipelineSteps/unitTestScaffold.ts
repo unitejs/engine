@@ -12,7 +12,7 @@ import { ILogger } from "../interfaces/ILogger";
 export class UnitTestScaffold extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.unitTestRunner === "Karma") {
-            engineVariables.unitTestRootFolder = fileSystem.pathCombine(uniteConfiguration.outputDirectory, "\\test\\unit");
+            engineVariables.unitTestFolder = fileSystem.pathCombine(uniteConfiguration.outputDirectory, "\\test\\unit");
             engineVariables.unitTestSrcFolder = fileSystem.pathCombine(uniteConfiguration.outputDirectory, "\\test\\unit\\src");
             engineVariables.unitTestDistFolder = fileSystem.pathCombine(uniteConfiguration.outputDirectory, "\\test\\unit\\dist");
 
@@ -73,7 +73,7 @@ export class UnitTestScaffold extends EnginePipelineStepBase {
 
                 await this.copyFile(logger, display, fileSystem, unitTestsScaffoldModuleLoader,
                                     "unitBootstrap.js",
-                                    engineVariables.unitTestRootFolder,
+                                    engineVariables.unitTestFolder,
                                     "unitBootstrap.js", bootstrapReplacer);
 
                 return 0;

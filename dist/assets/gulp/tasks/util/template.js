@@ -35,7 +35,7 @@ function copyTemplate(templateFile, indexFile, moduleConfigFilename, uniteConfig
             bootstrap.push("    main.entryPoint();");
             bootstrap.push("});");
         } else if (uniteConfiguration.moduleLoader === "Webpack") {
-            moduleConfig = '<script src="dist/main.bundle.js"></script>';
+            moduleConfig = '<script src="dist/app-bundle.js"></script>';
         }
         if (bootstrap.length > 0) {
             bootstrap.unshift("<script>");

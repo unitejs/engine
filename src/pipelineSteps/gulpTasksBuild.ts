@@ -35,6 +35,7 @@ export class GulpTasksBuild extends EnginePipelineStepBase {
             if (uniteConfiguration.moduleLoader === "Webpack") {
                 engineVariables.requiredDevDependencies.push("webpack");
                 engineVariables.requiredDevDependencies.push("webpack-stream");
+                engineVariables.requiredDevDependencies.push("source-map-loader");
             }
 
             await this.copyFile(logger, display, fileSystem, assetTasksLanguage, "build-transpile.js", engineVariables.gulpTasksFolder, "build-transpile.js");

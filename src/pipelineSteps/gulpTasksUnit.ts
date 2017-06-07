@@ -25,14 +25,39 @@ export class GulpTasksUnit extends EnginePipelineStepBase {
                                                                    "gulp/tasks/" +
                                                                    StringHelper.toCamelCase(uniteConfiguration.unitTestRunner) + "/");
 
+                const assetUnitTestModule = fileSystem.pathCombine(engineVariables.assetsDirectory,
+                                                                   "gulp/tasks/" +
+                                                                   StringHelper.toCamelCase(uniteConfiguration.moduleLoader) + "/");
+
                 engineVariables.requiredDevDependencies.push("gulp-karma-runner");
                 engineVariables.requiredDevDependencies.push("karma-story-reporter");
 
                 let transpileReplacer: ((line: string) => string) | undefined;
                 let runnerReplacer: ((line: string) => string) | undefined;
                 let srcDistReplace: string;
-                const unitFiles: { pattern: string, included: boolean}[] = [];
+                const unitFiles: { pattern: string, included: boolean }[] = [];
                 const karmaFrameworks: string[] = [];
+
+                if (uniteConfiguration.moduleLoader === "Webpack") {
+                    unitFiles.push({
+                        pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(uniteConfiguration.outputDirectory, fileSystem.pathCombine(engineVariables.unitTestDistFolder, "test-bundle.js"))),
+                        included: true
+                    });
+                } else {
+                    unitFiles.push({
+                        pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(uniteConfiguration.outputDirectory, fileSystem.pathCombine(engineVariables.distFolder, "**/*.js"))),
+                        included: false
+                    });
+                    unitFiles.push({
+                        pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(uniteConfiguration.outputDirectory, fileSystem.pathCombine(engineVariables.unitTestDistFolder, "**/*.spec.js"))),
+                        included: false
+                    });
+                    unitFiles.push({
+                        pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(uniteConfiguration.outputDirectory,
+                                                                                  fileSystem.pathCombine(engineVariables.unitTestDistFolder, "../unitBootstrap.js"))),
+                        included: true
+                    });
+                }
 
                 if (uniteConfiguration.moduleLoader === "RequireJS") {
                     srcDistReplace = "replace(\/(define)*?(..\\/src\\/)/g, \"..\/dist\/\")";
@@ -46,6 +71,9 @@ export class GulpTasksUnit extends EnginePipelineStepBase {
 
                     engineVariables.requiredDevDependencies.push("karma-systemjs");
                     unitFiles.push({ pattern: "node_modules/systemjs/dist/system.js", included: true });
+                } else if (uniteConfiguration.moduleLoader === "Webpack") {
+                    srcDistReplace = "replace(\/(require)*?(..\\/src\\/)/g, \"..\/dist\/\")";
+                    engineVariables.requiredDevDependencies.push("karma-commonjs");
                 }
 
                 if (uniteConfiguration.unitTestFramework === "Mocha-Chai") {
@@ -75,6 +103,7 @@ export class GulpTasksUnit extends EnginePipelineStepBase {
                 await this.copyFile(logger, display, fileSystem, assetUnitTest, "unit.js", engineVariables.gulpTasksFolder, "unit.js");
                 await this.copyFile(logger, display, fileSystem, assetUnitTestLanguage, "unit-transpile.js", engineVariables.gulpTasksFolder, "unit-transpile.js", transpileReplacer);
                 await this.copyFile(logger, display, fileSystem, assetUnitTestRunner, "unit-runner.js", engineVariables.gulpTasksFolder, "unit-runner.js", runnerReplacer);
+                await this.copyFile(logger, display, fileSystem, assetUnitTestModule, "unit-bundle.js", engineVariables.gulpTasksFolder, "unit-bundle.js");
             }
 
             return 0;
