@@ -14,7 +14,6 @@ export class UniteConfiguration {
     public moduleLoader: UniteModuleLoader;
     public unitTestRunner: UniteUnitTestRunner;
     public unitTestFramework: UniteUnitTestFramework;
-    public outputDirectory: string;
 
     public staticClientModules: string[];
 

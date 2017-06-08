@@ -42,16 +42,16 @@ export class GulpTasksUnit extends EnginePipelineStepBase {
 
                 if (uniteConfiguration.moduleLoader === "Webpack") {
                     uniteConfiguration.testIncludes.push({
-                        pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(uniteConfiguration.outputDirectory, fileSystem.pathCombine(engineVariables.unitTestDistFolder, "test-bundle.js"))),
+                        pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, fileSystem.pathCombine(engineVariables.unitTestDistFolder, "test-bundle.js"))),
                         included: true
                     });
                 } else {
                     uniteConfiguration.testIncludes.push({
-                        pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(uniteConfiguration.outputDirectory, fileSystem.pathCombine(engineVariables.distFolder, "**/*.js"))),
+                        pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, fileSystem.pathCombine(engineVariables.distFolder, "**/*.js"))),
                         included: false
                     });
                     uniteConfiguration.testIncludes.push({
-                        pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(uniteConfiguration.outputDirectory, fileSystem.pathCombine(engineVariables.unitTestDistFolder, "**/*.spec.js"))),
+                        pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, fileSystem.pathCombine(engineVariables.unitTestDistFolder, "**/*.spec.js"))),
                         included: false
                     });
                 }
@@ -91,7 +91,7 @@ export class GulpTasksUnit extends EnginePipelineStepBase {
 
                 if (uniteConfiguration.moduleLoader === "RequireJS" || uniteConfiguration.moduleLoader === "SystemJS") {
                     uniteConfiguration.testIncludes.push({
-                        pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(uniteConfiguration.outputDirectory,
+                        pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder,
                                                                                   fileSystem.pathCombine(engineVariables.unitTestDistFolder, "../unitBootstrap.js"))),
                         included: true
                     });

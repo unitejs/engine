@@ -2,7 +2,6 @@
  * Model of Unite Configuration directories element.
  */
 export class UniteDirectories {
-    public root: string;
     public src: string;
     public dist: string;
     public unitTest: string;

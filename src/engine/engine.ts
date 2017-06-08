@@ -15,6 +15,7 @@ import { ModuleOperation } from "../interfaces/moduleOperation";
 import { AppScaffold } from "../pipelineSteps/appScaffold";
 import { Babel } from "../pipelineSteps/babel";
 import { E2eTestScaffold } from "../pipelineSteps/e2eTestScaffold";
+import { GitIgnore } from "../pipelineSteps/gitIgnore";
 import { GulpScaffold } from "../pipelineSteps/gulpScaffold";
 import { GulpTasksBuild } from "../pipelineSteps/gulpTasksBuild";
 import { GulpTasksUnit } from "../pipelineSteps/gulpTasksUnit";
@@ -65,15 +66,17 @@ export class Engine implements IEngine {
         if (!EngineValidation.checkOneOf<UniteUnitTestRunner>(this._display, "unitTestRunner", unitTestRunner, [ "None", "Karma" ])) {
             return 1;
         }
-        if (!EngineValidation.checkOneOf<UniteUnitTestFramework>(this._display, "unitTestFramework", unitTestFramework, [ "Mocha-Chai", "Jasmine" ])) {
-            return 1;
+        if (unitTestRunner !== "None") {
+            if (!EngineValidation.checkOneOf<UniteUnitTestFramework>(this._display, "unitTestFramework", unitTestFramework, [ "Mocha-Chai", "Jasmine" ])) {
+                return 1;
+            }
         }
         outputDirectory = this._fileSystem.pathFormat(outputDirectory!);
         if (!EngineValidation.notEmpty(this._display, "outputDirectory", outputDirectory)) {
             return 1;
         }
 
-        this._logger.info("Engine::init", { packageName, sourceLanguage, moduleLoader, outputDirectory });
+        this._logger.info("Engine::init", { packageName, sourceLanguage, moduleLoader, unitTestRunner, unitTestFramework, outputDirectory });
 
         const uniteConfiguration = new UniteConfiguration();
         uniteConfiguration.packageName = packageName!;
@@ -82,25 +85,28 @@ export class Engine implements IEngine {
         uniteConfiguration.moduleLoader = moduleLoader!;
         uniteConfiguration.unitTestRunner = unitTestRunner!;
         uniteConfiguration.unitTestFramework = unitTestFramework!;
-        uniteConfiguration.outputDirectory = outputDirectory;
         uniteConfiguration.staticClientModules = [];
 
         const engineVariables: EngineVariables = new EngineVariables();
+        engineVariables.rootFolder = outputDirectory;
         engineVariables.requiredDependencies = [];
         engineVariables.requiredDevDependencies = [];
         engineVariables.assetsDirectory = "./node_modules/unitejs-core/dist/assets/";
         engineVariables.dependenciesFile = "unite-dependencies.json";
         engineVariables.sourceLanguageExt = uniteConfiguration.sourceLanguage === "JavaScript" ? "js" : "ts";
+        engineVariables.gitIgnore = [];
 
         const pipelineSteps: IEnginePipelineStep[] = [];
         pipelineSteps.push(new OutputDirectory());
         pipelineSteps.push(new AppScaffold());
-        pipelineSteps.push(new UnitTestScaffold());
         pipelineSteps.push(new E2eTestScaffold());
         pipelineSteps.push(new GulpScaffold());
         pipelineSteps.push(new GulpTasksBuild());
         pipelineSteps.push(new GulpTasksUtil());
+
+        pipelineSteps.push(new UnitTestScaffold());
         pipelineSteps.push(new GulpTasksUnit());
+
         pipelineSteps.push(new ModuleLoader());
         pipelineSteps.push(new HtmlTemplate());
 
@@ -112,6 +118,7 @@ export class Engine implements IEngine {
         pipelineSteps.push(new MochaChai());
         pipelineSteps.push(new Jasmine());
 
+        pipelineSteps.push(new GitIgnore());
         pipelineSteps.push(new UniteConfigurationJson());
         pipelineSteps.push(new PackageJson());
 

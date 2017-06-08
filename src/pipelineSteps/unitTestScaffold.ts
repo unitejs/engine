@@ -12,9 +12,9 @@ import { ILogger } from "../interfaces/ILogger";
 export class UnitTestScaffold extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.unitTestRunner === "Karma") {
-            engineVariables.unitTestFolder = fileSystem.pathCombine(uniteConfiguration.outputDirectory, "\\test\\unit");
-            engineVariables.unitTestSrcFolder = fileSystem.pathCombine(uniteConfiguration.outputDirectory, "\\test\\unit\\src");
-            engineVariables.unitTestDistFolder = fileSystem.pathCombine(uniteConfiguration.outputDirectory, "\\test\\unit\\dist");
+            engineVariables.unitTestFolder = fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\unit");
+            engineVariables.unitTestSrcFolder = fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\unit\\src");
+            engineVariables.unitTestDistFolder = fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\unit\\dist");
 
             try {
                 super.log(logger, display, "Creating Unit Test Directory", { unitTestSrcFolder: engineVariables.unitTestSrcFolder });

@@ -11,11 +11,11 @@ import { ILogger } from "../interfaces/ILogger";
 export class OutputDirectory extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
-            super.log(logger, display, "Creating Directory", { outputDirectory: uniteConfiguration.outputDirectory });
-            await fileSystem.directoryCreate(uniteConfiguration.outputDirectory);
+            super.log(logger, display, "Creating Directory", { rootFolder: engineVariables.rootFolder });
+            await fileSystem.directoryCreate(engineVariables.rootFolder);
             return 0;
         } catch (err) {
-            super.error(logger, display, "Creating Directory failed", err, { outputDirectory: uniteConfiguration.outputDirectory });
+            super.error(logger, display, "Creating Directory failed", err, { rootFolder: engineVariables.rootFolder });
             return 1;
         }
     }

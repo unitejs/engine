@@ -11,7 +11,7 @@ import { ILogger } from "../interfaces/ILogger";
 export class GulpScaffold extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
-            super.log(logger, display, "Generating gulpfile.js in", { outputDirectory: uniteConfiguration.outputDirectory });
+            super.log(logger, display, "Generating gulpfile.js in", { rootFolder: engineVariables.rootFolder });
 
             const lines: string[] = [];
 
@@ -20,13 +20,13 @@ export class GulpScaffold extends EnginePipelineStepBase {
             engineVariables.requiredDevDependencies.push("gulp");
             engineVariables.requiredDevDependencies.push("require-dir");
 
-            await fileSystem.fileWriteLines(uniteConfiguration.outputDirectory, "gulpfile.js", lines);
+            await fileSystem.fileWriteLines(engineVariables.rootFolder, "gulpfile.js", lines);
         } catch (err) {
-            super.error(logger, display, "Generating gulpfile.js failed", err, { outputDirectory: uniteConfiguration.outputDirectory });
+            super.error(logger, display, "Generating gulpfile.js failed", err, { rootFolder: engineVariables.rootFolder });
             return 1;
         }
 
-        engineVariables.gulpBuildFolder = fileSystem.pathCombine(uniteConfiguration.outputDirectory, "\\build");
+        engineVariables.gulpBuildFolder = fileSystem.pathCombine(engineVariables.rootFolder, "\\build");
         try {
             super.log(logger, display, "Creating Gulp Build Directory", { gulpBuildFolder: engineVariables.gulpBuildFolder });
             await fileSystem.directoryCreate(engineVariables.gulpBuildFolder);

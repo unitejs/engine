@@ -1,19 +1,58 @@
 # To Do
 
-Module loaders
+README.MD
+license
+
+## Module loaders
 browserify
 
-Linting TypeScript and JavaScript
-Sourcemaps for unit tests
-HTML Report for unit tests
-Unit Test Coverage
+## Test Frameworks
+Jest
 
-E2E Tests
+## Linting
+TSLint
+ESLint
+JSLInt
 
-CSS/SASS/LESS/Postfix
-
-Jest Test Framework
-
+## Unit Testing
 Alternate UI Browsers for testing Firefox/IE/Edge
 
-.gitignore file to exclude generated reports
+## Code coverage
+
+
+## HTML Reports
+Unit tests
+Code Coverage
+
+## E2E Tests
+Webdriver
+Protractor
+
+## CSS Frameworks
+CSS
+SASS
+LESS
+Postfix
+
+## SPA Frameworks
+Angular 2
+Aurelia
+React
+Vue
+
+## Icon Generation
+
+## Packaging
+Web App
+Electron
+PhoneGap/Cordova
+Windows Universal App
+
+
+## Client Side Modules
+Add/Remove e.g. moment
+
+## IDE Configuration
+vscode
+visual studio
+webstorm

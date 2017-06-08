@@ -24,7 +24,7 @@ export class PackageJson extends EnginePipelineStepBase {
         }
 
         try {
-            super.log(logger, display, "Generating package.json in", { outputDirectory: uniteConfiguration.outputDirectory });
+            super.log(logger, display, "Generating package.json in", { rootFolder: engineVariables.rootFolder });
 
             const packageJson = new PackageConfiguration();
             packageJson.name = uniteConfiguration.packageName;
@@ -32,10 +32,10 @@ export class PackageJson extends EnginePipelineStepBase {
             packageJson.dependencies = this.lookupDependencies(logger, display, engineVariables.requiredDependencies, uniteDependencies);
             packageJson.devDependencies = this.lookupDependencies(logger, display, engineVariables.requiredDevDependencies, uniteDependencies);
 
-            await fileSystem.fileWriteJson(uniteConfiguration.outputDirectory, "package.json", packageJson);
+            await fileSystem.fileWriteJson(engineVariables.rootFolder, "package.json", packageJson);
             return 0;
         } catch (err) {
-            super.error(logger, display, "Generating package.json failed", err, { outputDirectory: uniteConfiguration.outputDirectory });
+            super.error(logger, display, "Generating package.json failed", err, { rootFolder: engineVariables.rootFolder });
             return 1;
         }
     }

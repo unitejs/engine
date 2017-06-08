@@ -14,12 +14,12 @@ class OutputDirectory extends enginePipelineStepBase_1.EnginePipelineStepBase {
         const _super = name => super[name];
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                _super("log").call(this, logger, display, "Creating Directory", { outputDirectory: uniteConfiguration.outputDirectory });
-                yield fileSystem.directoryCreate(uniteConfiguration.outputDirectory);
+                _super("log").call(this, logger, display, "Creating Directory", { rootFolder: engineVariables.rootFolder });
+                yield fileSystem.directoryCreate(engineVariables.rootFolder);
                 return 0;
             }
             catch (err) {
-                _super("error").call(this, logger, display, "Creating Directory failed", err, { outputDirectory: uniteConfiguration.outputDirectory });
+                _super("error").call(this, logger, display, "Creating Directory failed", err, { rootFolder: engineVariables.rootFolder });
                 return 1;
             }
         });
@@ -27,4 +27,4 @@ class OutputDirectory extends enginePipelineStepBase_1.EnginePipelineStepBase {
 }
 exports.OutputDirectory = OutputDirectory;
 
-//# sourceMappingURL=data:application/json;charset=utf8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInBpcGVsaW5lU3RlcHMvb3V0cHV0RGlyZWN0b3J5LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7QUFJQSw2RUFBMEU7QUFNMUUscUJBQTZCLFNBQVEsK0NBQXNCO0lBQzFDLE9BQU8sQ0FBQyxNQUFlLEVBQUUsT0FBaUIsRUFBRSxVQUF1QixFQUFFLGtCQUFzQyxFQUFFLGVBQWdDOzs7WUFDdEosSUFBSSxDQUFDO2dCQUNELGFBQVMsWUFBQyxNQUFNLEVBQUUsT0FBTyxFQUFFLG9CQUFvQixFQUFFLEVBQUUsZUFBZSxFQUFFLGtCQUFrQixDQUFDLGVBQWUsRUFBRSxFQUFFO2dCQUMxRyxNQUFNLFVBQVUsQ0FBQyxlQUFlLENBQUMsa0JBQWtCLENBQUMsZUFBZSxDQUFDLENBQUM7Z0JBQ3JFLE1BQU0sQ0FBQyxDQUFDLENBQUM7WUFDYixDQUFDO1lBQUMsS0FBSyxDQUFDLENBQUMsR0FBRyxDQUFDLENBQUMsQ0FBQztnQkFDWCxlQUFXLFlBQUMsTUFBTSxFQUFFLE9BQU8sRUFBRSwyQkFBMkIsRUFBRSxHQUFHLEVBQUUsRUFBRSxlQUFlLEVBQUUsa0JBQWtCLENBQUMsZUFBZSxFQUFFLEVBQUU7Z0JBQ3hILE1BQU0sQ0FBQyxDQUFDLENBQUM7WUFDYixDQUFDO1FBQ0wsQ0FBQztLQUFBO0NBQ0o7QUFYRCwwQ0FXQyIsImZpbGUiOiJwaXBlbGluZVN0ZXBzL291dHB1dERpcmVjdG9yeS5qcyIsInNvdXJjZVJvb3QiOiIuLi9zcmMifQ==
+//# sourceMappingURL=data:application/json;charset=utf8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInBpcGVsaW5lU3RlcHMvb3V0cHV0RGlyZWN0b3J5LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7QUFJQSw2RUFBMEU7QUFNMUUscUJBQTZCLFNBQVEsK0NBQXNCO0lBQzFDLE9BQU8sQ0FBQyxNQUFlLEVBQUUsT0FBaUIsRUFBRSxVQUF1QixFQUFFLGtCQUFzQyxFQUFFLGVBQWdDOzs7WUFDdEosSUFBSSxDQUFDO2dCQUNELGFBQVMsWUFBQyxNQUFNLEVBQUUsT0FBTyxFQUFFLG9CQUFvQixFQUFFLEVBQUUsVUFBVSxFQUFFLGVBQWUsQ0FBQyxVQUFVLEVBQUUsRUFBRTtnQkFDN0YsTUFBTSxVQUFVLENBQUMsZUFBZSxDQUFDLGVBQWUsQ0FBQyxVQUFVLENBQUMsQ0FBQztnQkFDN0QsTUFBTSxDQUFDLENBQUMsQ0FBQztZQUNiLENBQUM7WUFBQyxLQUFLLENBQUMsQ0FBQyxHQUFHLENBQUMsQ0FBQyxDQUFDO2dCQUNYLGVBQVcsWUFBQyxNQUFNLEVBQUUsT0FBTyxFQUFFLDJCQUEyQixFQUFFLEdBQUcsRUFBRSxFQUFFLFVBQVUsRUFBRSxlQUFlLENBQUMsVUFBVSxFQUFFLEVBQUU7Z0JBQzNHLE1BQU0sQ0FBQyxDQUFDLENBQUM7WUFDYixDQUFDO1FBQ0wsQ0FBQztLQUFBO0NBQ0o7QUFYRCwwQ0FXQyIsImZpbGUiOiJwaXBlbGluZVN0ZXBzL291dHB1dERpcmVjdG9yeS5qcyIsInNvdXJjZVJvb3QiOiIuLi9zcmMifQ==

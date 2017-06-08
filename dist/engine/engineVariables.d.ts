@@ -2,6 +2,7 @@
  * Variables used by the engine.
  */
 export declare class EngineVariables {
+    rootFolder: string;
     sourceFolder: string;
     distFolder: string;
     unitTestFolder: string;
@@ -17,4 +18,5 @@ export declare class EngineVariables {
     requiredDependencies: string[];
     requiredDevDependencies: string[];
     sourceLanguageExt: string;
+    gitIgnore: string[];
 }

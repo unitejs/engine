@@ -14,7 +14,7 @@ export class Babel extends EnginePipelineStepBase {
 
         if (uniteConfiguration.sourceLanguage === "JavaScript") {
             try {
-                super.log(logger, display, "Generating .babelrc", { outputDirectory: uniteConfiguration.outputDirectory });
+                super.log(logger, display, "Generating .babelrc", { rootFolder: engineVariables.rootFolder });
 
                 const babelConfiguration = new BabelConfiguration();
                 babelConfiguration.plugins = [];
@@ -33,10 +33,10 @@ export class Babel extends EnginePipelineStepBase {
                                                 ["es2015", { modules }]
                                              ];
 
-                await fileSystem.fileWriteJson(uniteConfiguration.outputDirectory, ".babelrc", babelConfiguration);
+                await fileSystem.fileWriteJson(engineVariables.rootFolder, ".babelrc", babelConfiguration);
                 return 0;
             } catch (err) {
-                super.error(logger, display, "Generating .babelrc failed", err, { outputDirectory: uniteConfiguration.outputDirectory });
+                super.error(logger, display, "Generating .babelrc failed", err, { rootFolder: engineVariables.rootFolder });
                 return 1;
             }
         }

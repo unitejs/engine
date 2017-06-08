@@ -23,7 +23,7 @@ export class ModuleLoader extends EnginePipelineStepBase {
 
             return 0;
         } catch (err) {
-            super.error(logger, display, "Generating Module Loader Scaffold failed", err, { outputDirectory: uniteConfiguration.outputDirectory });
+            super.error(logger, display, "Generating Module Loader Scaffold failed", err);
             return 1;
         }
     }

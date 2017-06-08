@@ -15,7 +15,7 @@ export class TypeScript extends EnginePipelineStepBase {
 
         if (uniteConfiguration.sourceLanguage === "TypeScript") {
             try {
-                super.log(logger, display, "Generating tsconfig.json", { outputDirectory: uniteConfiguration.outputDirectory });
+                super.log(logger, display, "Generating tsconfig.json", { rootFolder: engineVariables.rootFolder });
 
                 const typeScriptConfiguration = new TypeScriptConfiguration();
                 typeScriptConfiguration.compilerOptions = new TypeScriptCompilerOptions();
@@ -32,10 +32,10 @@ export class TypeScript extends EnginePipelineStepBase {
                     typeScriptConfiguration.compilerOptions.module = "commonjs";
                 }
 
-                await fileSystem.fileWriteJson(uniteConfiguration.outputDirectory, "tsconfig.json", typeScriptConfiguration);
+                await fileSystem.fileWriteJson(engineVariables.rootFolder, "tsconfig.json", typeScriptConfiguration);
                 return 0;
             } catch (err) {
-                super.error(logger, display, "Generating tsconfig.json failed", err, { outputDirectory: uniteConfiguration.outputDirectory });
+                super.error(logger, display, "Generating tsconfig.json failed", err, { rootFolder: engineVariables.rootFolder });
                 return 1;
             }
         }

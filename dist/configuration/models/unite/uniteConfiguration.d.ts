@@ -13,7 +13,6 @@ export declare class UniteConfiguration {
     moduleLoader: UniteModuleLoader;
     unitTestRunner: UniteUnitTestRunner;
     unitTestFramework: UniteUnitTestFramework;
-    outputDirectory: string;
     staticClientModules: string[];
     directories: UniteDirectories;
     srcDistReplace: string;
