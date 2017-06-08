@@ -15,10 +15,27 @@ gulp.task('unit-run-test', (done) => {
     const serverOpts = {
         singleRun: true,
         frameworks: uniteConfig.testFrameworks,
-        reporters: ['story'],
+        reporters: ['story', 'coverage', 'html'],
         browsers: ['PhantomJS'],
-        files: uniteConfig.testIncludes
+        files: uniteConfig.testIncludes,
+        coverageReporter: {
+            reporters: [
+                {
+                    type: 'json',
+                    dir: uniteConfig.directories.reports,
+                    subdir: '.'
+                }
+            ]
+        },
+        htmlReporter: {
+            outputDir: uniteConfig.directories.reports,
+            reportName: 'unit'
+        },
     };
+
+    const distFolder = path.join(uniteConfig.directories.dist, '**/*.js');
+    serverOpts.preprocessors = {};
+    serverOpts.preprocessors[distFolder] = ['sourcemap', 'coverage'];
 
     const server = new karma.Server(serverOpts, function (exitCode) {
         if (exitCode === 0) {
@@ -52,5 +69,4 @@ gulp.task('unit-run-test-ui', (done) => {
     });
 
     server.start();
-
 });

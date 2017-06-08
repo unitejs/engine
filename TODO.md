@@ -17,13 +17,6 @@ JSLInt
 ## Unit Testing
 Alternate UI Browsers for testing Firefox/IE/Edge
 
-## Code coverage
-
-
-## HTML Reports
-Unit tests
-Code Coverage
-
 ## E2E Tests
 Webdriver
 Protractor

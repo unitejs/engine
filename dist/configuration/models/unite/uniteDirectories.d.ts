@@ -9,4 +9,5 @@ export declare class UniteDirectories {
     unitTestDist: string;
     e2eTestSrc: string;
     e2eTestDist: string;
+    reports: string;
 }

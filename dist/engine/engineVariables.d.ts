@@ -10,6 +10,7 @@ export declare class EngineVariables {
     unitTestDistFolder: string;
     e2eTestSrcFolder: string;
     e2eTestDistFolder: string;
+    reportsFolder: string;
     gulpBuildFolder: string;
     gulpTasksFolder: string;
     gulpUtilFolder: string;

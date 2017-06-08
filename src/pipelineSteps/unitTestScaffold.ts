@@ -15,6 +15,7 @@ export class UnitTestScaffold extends EnginePipelineStepBase {
             engineVariables.unitTestFolder = fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\unit");
             engineVariables.unitTestSrcFolder = fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\unit\\src");
             engineVariables.unitTestDistFolder = fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\unit\\dist");
+            engineVariables.reportsFolder = fileSystem.pathCombine(engineVariables.rootFolder, "\\reports");
 
             try {
                 super.log(logger, display, "Creating Unit Test Directory", { unitTestSrcFolder: engineVariables.unitTestSrcFolder });

@@ -31,6 +31,10 @@ export class GulpTasksUnit extends EnginePipelineStepBase {
 
                 engineVariables.requiredDevDependencies.push("gulp-karma-runner");
                 engineVariables.requiredDevDependencies.push("karma-story-reporter");
+                engineVariables.requiredDevDependencies.push("karma-html-reporter");
+                engineVariables.requiredDevDependencies.push("remap-istanbul");
+                engineVariables.requiredDevDependencies.push("karma-coverage");
+                engineVariables.requiredDevDependencies.push("karma-sourcemap-loader");
 
                 uniteConfiguration.testFrameworks = [];
                 uniteConfiguration.testIncludes = [];
@@ -98,6 +102,7 @@ export class GulpTasksUnit extends EnginePipelineStepBase {
                 }
 
                 await this.copyFile(logger, display, fileSystem, assetUnitTest, "unit.js", engineVariables.gulpTasksFolder, "unit.js");
+                await this.copyFile(logger, display, fileSystem, assetUnitTest, "unit-report.js", engineVariables.gulpTasksFolder, "unit-report.js");
                 await this.copyFile(logger, display, fileSystem, assetUnitTestLanguage, "unit-transpile.js", engineVariables.gulpTasksFolder, "unit-transpile.js");
                 await this.copyFile(logger, display, fileSystem, assetUnitTestRunner, "unit-runner.js", engineVariables.gulpTasksFolder, "unit-runner.js");
                 await this.copyFile(logger, display, fileSystem, assetUnitTestModule, "unit-bundle.js", engineVariables.gulpTasksFolder, "unit-bundle.js");

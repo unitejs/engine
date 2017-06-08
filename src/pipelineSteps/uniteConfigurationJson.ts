@@ -15,15 +15,16 @@ export class UniteConfigurationJson extends EnginePipelineStepBase {
             super.log(logger, display, "Generating unite.json in", { rootFolder: engineVariables.rootFolder });
 
             uniteConfiguration.directories = new UniteDirectories();
-            uniteConfiguration.directories.src = fileSystem.pathDirectoryRelative(engineVariables.rootFolder, engineVariables.sourceFolder);
-            uniteConfiguration.directories.dist = fileSystem.pathDirectoryRelative(engineVariables.rootFolder, engineVariables.distFolder);
+            uniteConfiguration.directories.src = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.rootFolder, engineVariables.sourceFolder));
+            uniteConfiguration.directories.dist = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.rootFolder, engineVariables.distFolder));
             if (uniteConfiguration.unitTestRunner !== "None") {
-                uniteConfiguration.directories.unitTest = fileSystem.pathDirectoryRelative(engineVariables.rootFolder, engineVariables.unitTestFolder);
-                uniteConfiguration.directories.unitTestSrc = fileSystem.pathDirectoryRelative(engineVariables.rootFolder, engineVariables.unitTestSrcFolder);
-                uniteConfiguration.directories.unitTestDist = fileSystem.pathDirectoryRelative(engineVariables.rootFolder, engineVariables.unitTestDistFolder);
+                uniteConfiguration.directories.unitTest = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.rootFolder, engineVariables.unitTestFolder));
+                uniteConfiguration.directories.unitTestSrc = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.rootFolder, engineVariables.unitTestSrcFolder));
+                uniteConfiguration.directories.unitTestDist = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.rootFolder, engineVariables.unitTestDistFolder));
             }
-            uniteConfiguration.directories.e2eTestSrc = fileSystem.pathDirectoryRelative(engineVariables.rootFolder, engineVariables.e2eTestSrcFolder);
-            uniteConfiguration.directories.e2eTestDist = fileSystem.pathDirectoryRelative(engineVariables.rootFolder, engineVariables.e2eTestDistFolder);
+            uniteConfiguration.directories.e2eTestSrc = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.rootFolder, engineVariables.e2eTestSrcFolder));
+            uniteConfiguration.directories.e2eTestDist = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.rootFolder, engineVariables.e2eTestDistFolder));
+            uniteConfiguration.directories.reports = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.rootFolder, engineVariables.reportsFolder));
 
             await fileSystem.fileWriteJson(engineVariables.rootFolder, "unite.json", uniteConfiguration);
             return 0;
