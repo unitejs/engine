@@ -2,7 +2,7 @@
  * Gulp tasks for unit testing TypeScript.
  */
 const display = require('./util/display');
-const bc = require('./util/build-config');
+const uc = require('./util/unite-config');
 const gulp = require('gulp');
 const path = require('path');
 const karma = require('karma');
@@ -10,16 +10,14 @@ const karma = require('karma');
 gulp.task('unit-run-test', (done) => {
     display.info('Running', 'Karma');
 
-    const buildConfig = bc.getBuildConfig();
+    const uniteConfig = uc.getUniteConfig();
 
-    const unitFiles = [];
-    {UNIT_FILES}
     const serverOpts = {
         singleRun: true,
-        frameworks: {KARMA_FRAMEWORKS},
+        frameworks: uniteConfig.testFrameworks,
         reporters: ['story'],
         browsers: ['PhantomJS'],
-        files: unitFiles
+        files: uniteConfig.testIncludes
     };
 
     const server = new karma.Server(serverOpts, function (exitCode) {
@@ -36,15 +34,13 @@ gulp.task('unit-run-test', (done) => {
 gulp.task('unit-run-test-ui', (done) => {
     display.info('Running', 'Karma');
 
-    const buildConfig = bc.getBuildConfig();
+    const uniteConfig = uc.getUniteConfig();
 
-    const unitFiles = [];
-    {UNIT_FILES}
     const serverOpts = {
         singleRun: false,
-        frameworks: {KARMA_FRAMEWORKS},
+        frameworks: uniteConfig.testFrameworks,
         browsers: ['Chrome'],
-        files: unitFiles
+        files: uniteConfig.testIncludes
     };
 
     const server = new karma.Server(serverOpts, function (exitCode) {

@@ -8,7 +8,6 @@ export interface IEngine {
          moduleLoader: string | undefined | null,
          unitTestRunner: string | undefined | null,
          unitTestFramework: string | undefined | null,
-         sourceMaps: boolean,
          outputDirectory: string | undefined | null): Promise<number>;
 
     module(operation: string | undefined | null,

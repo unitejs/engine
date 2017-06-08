@@ -1,7 +1,7 @@
 # To Do
 
 Module loaders
-commonjs - webpack/browserify
+browserify
 
 Linting TypeScript and JavaScript
 Sourcemaps for unit tests

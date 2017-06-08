@@ -2,20 +2,25 @@
  * Gulp tasks for unit testing JavaScript.
  */
 const display = require('./util/display');
-const bc = require('./util/build-config');
+const uc = require('./util/unite-config');
 const gulp = require('gulp');
 const gulpUtil = require('gulp-util');
 const replace = require('gulp-replace');
 const babel = require('gulp-babel');
+const sourceMaps = require('gulp-sourcemaps');
 
 gulp.task('unit-transpile', () => {
     display.info('Running', "Babel");
 
-    const buildConfig = bc.getBuildConfig();
+    const uniteConfig = uc.getUniteConfig();
 
-    return gulp.src(buildConfig.unitTestSrcFolder + '**/*.spec.js')
+    const regEx = new RegExp(uniteConfig.srcDistReplace, 'g');
+
+    return gulp.src(uniteConfig.directories.unitTestSrc + '**/*.spec.js')
+        .pipe(sourceMaps.init())
         .pipe(babel())
-        .pipe({SRC_DIST_REPLACE})
-        .pipe(gulp.dest(buildConfig.unitTestDistFolder));
+        .pipe(replace(regEx, uniteConfig.srcDistReplaceWith))
+        .pipe(sourceMaps.write({ includeContent: true }))
+        .pipe(gulp.dest(uniteConfig.directories.unitTestDist));
 });
 

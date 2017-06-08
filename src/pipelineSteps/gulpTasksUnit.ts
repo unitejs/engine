@@ -32,77 +32,74 @@ export class GulpTasksUnit extends EnginePipelineStepBase {
                 engineVariables.requiredDevDependencies.push("gulp-karma-runner");
                 engineVariables.requiredDevDependencies.push("karma-story-reporter");
 
-                let transpileReplacer: ((line: string) => string) | undefined;
-                let runnerReplacer: ((line: string) => string) | undefined;
-                let srcDistReplace: string;
-                const unitFiles: { pattern: string, included: boolean }[] = [];
-                const karmaFrameworks: string[] = [];
+                uniteConfiguration.testFrameworks = [];
+                uniteConfiguration.testIncludes = [];
+
+                uniteConfiguration.testIncludes.push({
+                    pattern: "unite.json",
+                    included: false
+                });
 
                 if (uniteConfiguration.moduleLoader === "Webpack") {
-                    unitFiles.push({
+                    uniteConfiguration.testIncludes.push({
                         pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(uniteConfiguration.outputDirectory, fileSystem.pathCombine(engineVariables.unitTestDistFolder, "test-bundle.js"))),
                         included: true
                     });
                 } else {
-                    unitFiles.push({
+                    uniteConfiguration.testIncludes.push({
                         pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(uniteConfiguration.outputDirectory, fileSystem.pathCombine(engineVariables.distFolder, "**/*.js"))),
                         included: false
                     });
-                    unitFiles.push({
+                    uniteConfiguration.testIncludes.push({
                         pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(uniteConfiguration.outputDirectory, fileSystem.pathCombine(engineVariables.unitTestDistFolder, "**/*.spec.js"))),
                         included: false
                     });
-                    unitFiles.push({
+                }
+
+                if (uniteConfiguration.moduleLoader === "RequireJS") {
+                    uniteConfiguration.srcDistReplace = "(define)*?(..\/src\/)";
+                    uniteConfiguration.srcDistReplaceWith = "../dist/";
+                    uniteConfiguration.testFrameworks.push("requirejs");
+                    engineVariables.requiredDevDependencies.push("karma-requirejs");
+                } else if (uniteConfiguration.moduleLoader === "SystemJS") {
+                    uniteConfiguration.srcDistReplace = "(System.register)*?(..\/src\/)";
+                    uniteConfiguration.srcDistReplaceWith = "../dist/";
+
+                    engineVariables.requiredDevDependencies.push("bluebird");
+                    uniteConfiguration.testIncludes.push({ pattern: "node_modules/bluebird/js/browser/bluebird.js", included: true });
+
+                    engineVariables.requiredDevDependencies.push("karma-systemjs");
+                    uniteConfiguration.testIncludes.push({ pattern: "node_modules/systemjs/dist/system.js", included: true });
+                } else if (uniteConfiguration.moduleLoader === "Webpack") {
+                    uniteConfiguration.srcDistReplace = "(require)*?(..\/src\/)";
+                    uniteConfiguration.srcDistReplaceWith = "../dist/";
+
+                    engineVariables.requiredDevDependencies.push("karma-commonjs");
+                }
+
+                if (uniteConfiguration.unitTestFramework === "Mocha-Chai") {
+                    uniteConfiguration.testFrameworks.push("mocha");
+                    uniteConfiguration.testFrameworks.push("chai");
+
+                    engineVariables.requiredDevDependencies.push("karma-mocha");
+                    engineVariables.requiredDevDependencies.push("karma-chai");
+                } else if (uniteConfiguration.unitTestFramework === "Jasmine") {
+                    uniteConfiguration.testFrameworks.push("jasmine");
+
+                    engineVariables.requiredDevDependencies.push("karma-jasmine");
+                }
+
+                if (uniteConfiguration.moduleLoader === "RequireJS" || uniteConfiguration.moduleLoader === "SystemJS") {
+                    uniteConfiguration.testIncludes.push({
                         pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(uniteConfiguration.outputDirectory,
                                                                                   fileSystem.pathCombine(engineVariables.unitTestDistFolder, "../unitBootstrap.js"))),
                         included: true
                     });
                 }
 
-                if (uniteConfiguration.moduleLoader === "RequireJS") {
-                    srcDistReplace = "replace(\/(define)*?(..\\/src\\/)/g, \"..\/dist\/\")";
-                    karmaFrameworks.push("requirejs");
-                    engineVariables.requiredDevDependencies.push("karma-requirejs");
-                } else if (uniteConfiguration.moduleLoader === "SystemJS") {
-                    srcDistReplace = "replace(\/(System.register)*?(..\\/src\\/)/g, \"..\/dist\/\")";
-
-                    engineVariables.requiredDevDependencies.push("bluebird");
-                    unitFiles.push({ pattern: "node_modules/bluebird/js/browser/bluebird.js", included: true });
-
-                    engineVariables.requiredDevDependencies.push("karma-systemjs");
-                    unitFiles.push({ pattern: "node_modules/systemjs/dist/system.js", included: true });
-                } else if (uniteConfiguration.moduleLoader === "Webpack") {
-                    srcDistReplace = "replace(\/(require)*?(..\\/src\\/)/g, \"..\/dist\/\")";
-                    engineVariables.requiredDevDependencies.push("karma-commonjs");
-                }
-
-                if (uniteConfiguration.unitTestFramework === "Mocha-Chai") {
-                    karmaFrameworks.push("mocha");
-                    karmaFrameworks.push("chai");
-
-                    engineVariables.requiredDevDependencies.push("karma-mocha");
-                    engineVariables.requiredDevDependencies.push("karma-chai");
-                } else if (uniteConfiguration.unitTestFramework === "Jasmine") {
-                    karmaFrameworks.push("jasmine");
-
-                    engineVariables.requiredDevDependencies.push("karma-jasmine");
-                }
-
-                transpileReplacer = (line) => line.replace("{SRC_DIST_REPLACE}", srcDistReplace);
-                let karmaUnitFiles = "";
-                for (let i = 0; i < unitFiles.length; i++) {
-                    karmaUnitFiles += "unitFiles.push({ pattern: '" + unitFiles[i].pattern + "', included: " + unitFiles[i].included + " });\r\n    ";
-                }
-
-                runnerReplacer = (line) => {
-                    line = line.replace("{KARMA_FRAMEWORKS}", "[" + karmaFrameworks.map(f => "'" + f + "'").join(", ") + "]");
-                    line = line.replace("{UNIT_FILES}", karmaUnitFiles.trim());
-                    return line;
-                };
-
                 await this.copyFile(logger, display, fileSystem, assetUnitTest, "unit.js", engineVariables.gulpTasksFolder, "unit.js");
-                await this.copyFile(logger, display, fileSystem, assetUnitTestLanguage, "unit-transpile.js", engineVariables.gulpTasksFolder, "unit-transpile.js", transpileReplacer);
-                await this.copyFile(logger, display, fileSystem, assetUnitTestRunner, "unit-runner.js", engineVariables.gulpTasksFolder, "unit-runner.js", runnerReplacer);
+                await this.copyFile(logger, display, fileSystem, assetUnitTestLanguage, "unit-transpile.js", engineVariables.gulpTasksFolder, "unit-transpile.js");
+                await this.copyFile(logger, display, fileSystem, assetUnitTestRunner, "unit-runner.js", engineVariables.gulpTasksFolder, "unit-runner.js");
                 await this.copyFile(logger, display, fileSystem, assetUnitTestModule, "unit-bundle.js", engineVariables.gulpTasksFolder, "unit-bundle.js");
             }
 

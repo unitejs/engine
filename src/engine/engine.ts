@@ -15,7 +15,6 @@ import { ModuleOperation } from "../interfaces/moduleOperation";
 import { AppScaffold } from "../pipelineSteps/appScaffold";
 import { Babel } from "../pipelineSteps/babel";
 import { E2eTestScaffold } from "../pipelineSteps/e2eTestScaffold";
-import { GulpBuild } from "../pipelineSteps/gulpBuild";
 import { GulpScaffold } from "../pipelineSteps/gulpScaffold";
 import { GulpTasksBuild } from "../pipelineSteps/gulpTasksBuild";
 import { GulpTasksUnit } from "../pipelineSteps/gulpTasksUnit";
@@ -50,7 +49,6 @@ export class Engine implements IEngine {
                       moduleLoader: UniteModuleLoader | undefined | null,
                       unitTestRunner: UniteUnitTestRunner | undefined | null,
                       unitTestFramework: UniteUnitTestFramework | undefined | null,
-                      sourceMaps: boolean,
                       outputDirectory: string | undefined | null): Promise<number> {
         if (!EngineValidation.checkPackageName(this._display, "packageName", packageName)) {
             return 1;
@@ -82,7 +80,6 @@ export class Engine implements IEngine {
         uniteConfiguration.title = title!;
         uniteConfiguration.sourceLanguage = sourceLanguage!;
         uniteConfiguration.moduleLoader = moduleLoader!;
-        uniteConfiguration.sourceMaps = sourceMaps;
         uniteConfiguration.unitTestRunner = unitTestRunner!;
         uniteConfiguration.unitTestFramework = unitTestFramework!;
         uniteConfiguration.outputDirectory = outputDirectory;
@@ -101,7 +98,6 @@ export class Engine implements IEngine {
         pipelineSteps.push(new UnitTestScaffold());
         pipelineSteps.push(new E2eTestScaffold());
         pipelineSteps.push(new GulpScaffold());
-        pipelineSteps.push(new GulpBuild());
         pipelineSteps.push(new GulpTasksBuild());
         pipelineSteps.push(new GulpTasksUtil());
         pipelineSteps.push(new GulpTasksUnit());

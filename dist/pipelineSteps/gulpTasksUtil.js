@@ -19,7 +19,7 @@ class GulpTasksUtil extends enginePipelineStepBase_1.EnginePipelineStepBase {
                 engineVariables.requiredDevDependencies.push("gulp-rename");
                 engineVariables.requiredDevDependencies.push("gulp-replace");
                 const assetUtils = fileSystem.pathCombine(engineVariables.assetsDirectory, "gulp/tasks/util/");
-                yield this.copyFile(logger, display, fileSystem, assetUtils, "build-config.js", engineVariables.gulpUtilFolder, "build-config.js");
+                yield this.copyFile(logger, display, fileSystem, assetUtils, "unite-config.js", engineVariables.gulpUtilFolder, "unite-config.js");
                 yield this.copyFile(logger, display, fileSystem, assetUtils, "display.js", engineVariables.gulpUtilFolder, "display.js");
                 yield this.copyFile(logger, display, fileSystem, assetUtils, "modules.js", engineVariables.gulpUtilFolder, "modules.js");
                 yield this.copyFile(logger, display, fileSystem, assetUtils, "template.js", engineVariables.gulpUtilFolder, "template.js");

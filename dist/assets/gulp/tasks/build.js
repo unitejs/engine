@@ -4,7 +4,7 @@
 const display = require('./util/display');
 const template = require('./util/template');
 const modules = require('./util/modules');
-const bc = require('./util/build-config');
+const uc = require('./util/unite-config');
 const buildTranspile = require('./build-transpile');
 const buildBundle = require('./build-bundle');
 const gulp = require('gulp');
@@ -13,11 +13,9 @@ const path = require('path');
 const del = require('del');
 const runSequence = require('run-sequence');
 
-const uniteConfiguration = require('../../unite.json');
-
 gulp.task('build-clean', (callback) => {
-    const buildConfig = bc.getBuildConfig();
-    const toClean = path.resolve(buildConfig.distFolder);
+    const uniteConfig = uc.getUniteConfig();
+    const toClean = path.resolve(uniteConfig.directories.dist);
     display.info('Cleaning', toClean);
     return del(toClean, callback);
 });
@@ -25,17 +23,17 @@ gulp.task('build-clean', (callback) => {
 gulp.task('build-generate-index', () => {
     display.info('Generating', "index.html from index.html.template");
 
-    const buildConfig = bc.getBuildConfig();
-    const moduleConfig = path.join(buildConfig.distFolder, "module-config.js")
+    const uniteConfig = uc.getUniteConfig();
+    const moduleConfig = path.join(uniteConfig.directories.dist, "module-config.js")
 
-    return template.copyTemplate("index.html.template", "index.html", moduleConfig.replace(/\\/g, '/'), uniteConfiguration, "node_modules");
+    return template.copyTemplate("index.html.template", "index.html", moduleConfig.replace(/\\/g, '/'), uniteConfig, "node_modules");
 });
 
 gulp.task('build-generate-module-config', (cb) => {
-    const buildConfig = bc.getBuildConfig();
+    const uniteConfig = uc.getUniteConfig();
     
     display.info('Generating Module Configuration', "module-config.js");
-    modules.createModuleConfig(path.join(buildConfig.distFolder, "module-config.js"), "index.html", uniteConfiguration, "node_modules", cb);
+    modules.createModuleConfig(path.join(uniteConfig.directories.dist, "module-config.js"), "index.html", uniteConfig, "node_modules", cb);
 });
 
 gulp.task('build', (cb) => {

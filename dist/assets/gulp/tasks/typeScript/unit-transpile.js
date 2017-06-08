@@ -2,22 +2,27 @@
  * Gulp tasks for unit testing TypeScript.
  */
 const display = require('./util/display');
-const bc = require('./util/build-config');
+const uc = require('./util/unite-config');
 const gulp = require('gulp');
 const gulpUtil = require('gulp-util');
 const replace = require('gulp-replace');
 const typescript = require('gulp-typescript');
+const sourceMaps = require('gulp-sourcemaps');
 
 gulp.task('unit-transpile', () => {
     display.info('Running', "TypeScript");
 
-    const buildConfig = bc.getBuildConfig();
+    const uniteConfig = uc.getUniteConfig();
+
+    const regEx = new RegExp(uniteConfig.srcDistReplace, 'g');
 
     const tsProject = typescript.createProject('tsconfig.json');
 
-    return gulp.src(buildConfig.unitTestSrcFolder + '**/*.spec.ts')
-            .pipe(tsProject())
-            .js
-                .pipe({SRC_DIST_REPLACE})
-                .pipe(gulp.dest(buildConfig.unitTestDistFolder));
+    return gulp.src(uniteConfig.directories.unitTestSrc + '**/*.spec.ts')
+        .pipe(sourceMaps.init())
+        .pipe(tsProject())
+        .js
+            .pipe(replace(regEx, uniteConfig.srcDistReplaceWith))
+            .pipe(sourceMaps.write({ includeContent: true }))
+            .pipe(gulp.dest(uniteConfig.directories.unitTestDist));
 });

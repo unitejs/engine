@@ -12,6 +12,6 @@ export declare class Engine implements IEngine {
     private _display;
     private _fileSystem;
     constructor(logger: ILogger, display: IDisplay, fileSystem: IFileSystem);
-    init(packageName: string | undefined | null, title: string | undefined | null, sourceLanguage: UniteSourceLanguage | undefined | null, moduleLoader: UniteModuleLoader | undefined | null, unitTestRunner: UniteUnitTestRunner | undefined | null, unitTestFramework: UniteUnitTestFramework | undefined | null, sourceMaps: boolean, outputDirectory: string | undefined | null): Promise<number>;
+    init(packageName: string | undefined | null, title: string | undefined | null, sourceLanguage: UniteSourceLanguage | undefined | null, moduleLoader: UniteModuleLoader | undefined | null, unitTestRunner: UniteUnitTestRunner | undefined | null, unitTestFramework: UniteUnitTestFramework | undefined | null, outputDirectory: string | undefined | null): Promise<number>;
     module(operation: ModuleOperation | undefined | null, name: string | undefined | null): Promise<number>;
 }

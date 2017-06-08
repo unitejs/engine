@@ -5,16 +5,16 @@ const display = require('./util/display');
 const gulp = require('gulp');
 const path = require('path');
 const webpack = require('webpack-stream');
-const bc = require('./util/build-config');
+const uc = require('./util/unite-config');
 
 gulp.task('build-bundle', function () {
     display.info('Running', "webpack");
 
-    const buildConfig = bc.getBuildConfig();
+    const uniteConfig = uc.getUniteConfig();
 
-    return gulp.src(path.join(buildConfig.distFolder, "entryPoint.js"))
+    return gulp.src(path.join(uniteConfig.directories.dist, "entryPoint.js"))
         .pipe(webpack({
-            devtool: buildConfig.sourceMaps ? 'inline-source-map' : false,
+            devtool: 'inline-source-map',
             output: {
                 filename: 'app-bundle.js'
             },
@@ -27,5 +27,5 @@ gulp.task('build-bundle', function () {
                 ]
             }
         }))
-        .pipe(gulp.dest(buildConfig.distFolder));
+        .pipe(gulp.dest(uniteConfig.directories.dist));
 });

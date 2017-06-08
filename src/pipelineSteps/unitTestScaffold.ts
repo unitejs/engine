@@ -36,14 +36,13 @@ export class UnitTestScaffold extends EnginePipelineStepBase {
                                                                              "scaffold/test/unit/src/" +
                                                                              StringHelper.toCamelCase(uniteConfiguration.moduleLoader) + "/");
 
-                const unitFrameworks: { [id: string]: string} = {};
-                let bootstrapReplacer: ((line: string) => string) | undefined;
+                uniteConfiguration.testPaths = {};
 
                 if (uniteConfiguration.unitTestFramework === "Mocha-Chai") {
                     engineVariables.requiredDevDependencies.push("mocha");
                     engineVariables.requiredDevDependencies.push("chai");
 
-                    unitFrameworks.chai = "node_modules/chai/chai";
+                    uniteConfiguration.testPaths.chai = "node_modules/chai/chai";
                 } else if (uniteConfiguration.unitTestFramework === "Jasmine") {
                     engineVariables.requiredDevDependencies.push("jasmine-core");
                 }
@@ -58,23 +57,10 @@ export class UnitTestScaffold extends EnginePipelineStepBase {
                                     engineVariables.unitTestSrcFolder,
                                     "app.spec." + engineVariables.sourceLanguageExt);
 
-                const keys = Object.keys(unitFrameworks);
-                let requirePaths = "";
-                const requirePackages = "";
-                for (let i = 0; i < keys.length; i++) {
-                    requirePaths += "paths['" + keys[i] + "'] = '" + unitFrameworks[keys[i]] + "';\n";
-                }
-
-                bootstrapReplacer = (line) => {
-                    line = line.replace("{REQUIRE_PATHS}", requirePaths);
-                    line = line.replace("{REQUIRE_PACKAGES}", requirePackages);
-                    return line;
-                };
-
                 await this.copyFile(logger, display, fileSystem, unitTestsScaffoldModuleLoader,
                                     "unitBootstrap.js",
                                     engineVariables.unitTestFolder,
-                                    "unitBootstrap.js", bootstrapReplacer);
+                                    "unitBootstrap.js");
 
                 return 0;
             } catch (err) {

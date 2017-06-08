@@ -1,6 +1,7 @@
 /**
  * Model of Unite Configuration (unite.json) file.
  */
+import { UniteDirectories } from "./uniteDirectories";
 import { UniteModuleLoader } from "./uniteModuleLoader";
 import { UniteSourceLanguage } from "./uniteSourceLanguage";
 import { UniteUnitTestFramework } from "./uniteUnitTestFramework";
@@ -12,7 +13,17 @@ export declare class UniteConfiguration {
     moduleLoader: UniteModuleLoader;
     unitTestRunner: UniteUnitTestRunner;
     unitTestFramework: UniteUnitTestFramework;
-    sourceMaps: boolean;
     outputDirectory: string;
     staticClientModules: string[];
+    directories: UniteDirectories;
+    srcDistReplace: string;
+    srcDistReplaceWith: string;
+    testFrameworks: string[];
+    testPaths: {
+        [id: string]: string;
+    };
+    testIncludes: {
+        pattern: string;
+        included: boolean;
+    }[];
 }

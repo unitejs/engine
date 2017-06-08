@@ -2,7 +2,7 @@
  * Gulp tasks for unit testing TypeScript.
  */
 const display = require('./util/display');
-const bc = require('./util/build-config');
+const uc = require('./util/unite-config');
 const unitTranspile = require('./unit-transpile');
 const unitRunner = require('./unit-runner');
 const gulp = require('gulp');
@@ -11,8 +11,8 @@ const del = require('del');
 const runSequence = require('run-sequence');
 
 gulp.task('unit-clean', (callback) => {
-    const buildConfig = bc.getBuildConfig();
-    const toClean = path.join(path.resolve(buildConfig.unitTestDistFolder), "**/*.spec.js");
+    const uniteConfig = uc.getUniteConfig();
+    const toClean = path.join(path.resolve(uniteConfig.directories.unitTestDist), "**/*.spec.js");
     display.info('Cleaning', toClean);
     return del(toClean, callback);
 });

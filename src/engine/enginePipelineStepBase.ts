@@ -28,13 +28,10 @@ export abstract class EnginePipelineStepBase implements IEnginePipelineStep {
     }
 
     public async copyFile(logger: ILogger, display: IDisplay, fileSystem: IFileSystem,
-                          sourceFolder: string, sourceFilename: string, destFolder: string, destFilename: string, replacer?: ((line: string) => string) | undefined): Promise<void> {
+                          sourceFolder: string, sourceFilename: string, destFolder: string, destFilename: string): Promise<void> {
         this.log(logger, display, "Copying " + sourceFilename, { from: sourceFolder, to: destFolder });
 
-        let lines = await fileSystem.fileReadLines(sourceFolder, sourceFilename);
-        if (replacer) {
-            lines = lines.map(replacer);
-        }
+        const lines = await fileSystem.fileReadLines(sourceFolder, sourceFilename);
         await fileSystem.fileWriteLines(destFolder, destFilename, lines);
     }
 

@@ -21,9 +21,7 @@ export class GulpTasksBuild extends EnginePipelineStepBase {
             engineVariables.requiredDevDependencies.push("del");
             engineVariables.requiredDevDependencies.push("run-sequence");
 
-            if (uniteConfiguration.sourceMaps) {
-                engineVariables.requiredDevDependencies.push("gulp-sourcemaps");
-            }
+            engineVariables.requiredDevDependencies.push("gulp-sourcemaps");
 
             if (uniteConfiguration.sourceLanguage === "JavaScript") {
                 engineVariables.requiredDevDependencies.push("gulp-babel");
