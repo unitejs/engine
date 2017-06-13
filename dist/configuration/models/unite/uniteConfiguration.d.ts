@@ -14,6 +14,12 @@ export declare class UniteConfiguration {
     unitTestRunner: UniteUnitTestRunner;
     unitTestFramework: UniteUnitTestFramework;
     staticClientModules: string[];
+    clientPackages: {
+        [id: string]: {
+            version: string;
+            preload: boolean;
+        };
+    };
     directories: UniteDirectories;
     srcDistReplace: string;
     srcDistReplaceWith: string;

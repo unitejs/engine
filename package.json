@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/unitejs/core#readme",
   "devDependencies": {
+    "@types/mocha": "^2.2.41",
     "chai": "^3.5.0",
     "del": "^2.2.2",
     "gulp": "^3.9.1",
@@ -30,7 +31,6 @@
     "merge2": "^1.0.3",
     "tslint": "^5.2.0",
     "tslint-microsoft-contrib": "^5.0.0",
-    "typescript": "^2.3.2",
-    "@types/mocha": "^2.2.41"
+    "typescript": "^2.3.4"
   }
 }

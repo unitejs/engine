@@ -6,6 +6,7 @@ export interface IFileSystem {
     pathDirectoryRelative(pathName1: string, pathName2: string): string;
     pathFileRelative(pathName1: string, pathName2: string): string;
     pathFormat(pathName: string): string;
+    pathGetDirectory(pathName: string): string;
     pathToWeb(pathName: string): string;
     directoryExists(directoryName: string): Promise<boolean>;
     directoryCreate(directoryName: string): Promise<void>;

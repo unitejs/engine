@@ -3,6 +3,9 @@
 README.MD
 license
 
+## Client Side Modules
+Yarn Package Manager
+
 ## Module loaders
 browserify
 
@@ -40,10 +43,6 @@ Web App
 Electron
 PhoneGap/Cordova
 Windows Universal App
-
-
-## Client Side Modules
-Add/Remove e.g. moment
 
 ## IDE Configuration
 vscode

@@ -1,4 +1,4 @@
 /**
  * Module operations
  */
-export type ModuleOperation = "add";
+export type ModuleOperation = "add" | "remove";

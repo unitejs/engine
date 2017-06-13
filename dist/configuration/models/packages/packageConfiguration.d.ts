@@ -8,52 +8,52 @@ import { PackageRepository } from "./packageRepository";
 export declare class PackageConfiguration {
     name: string;
     version: string;
-    description?: string;
-    keywords?: string[];
-    homepage?: string;
-    bugs?: string | PackageBugs;
-    license?: string;
-    author?: string | PackagePerson;
-    contributors?: string[] | PackagePerson[];
-    maintainers?: string[] | PackagePerson[];
-    files?: string;
-    main?: string;
-    types?: string;
-    bin?: string | {
+    description: string;
+    keywords: string[];
+    homepage: string;
+    bugs: string | PackageBugs;
+    license: string;
+    author: string | PackagePerson;
+    contributors: string[] | PackagePerson[];
+    maintainers: string[] | PackagePerson[];
+    files: string;
+    main: string;
+    types: string;
+    bin: string | {
         [id: string]: string;
     };
-    man?: string | string[];
-    directories?: {
+    man: string | string[];
+    directories: {
         [id: string]: string;
     };
     repository: PackageRepository;
-    scripts?: {
+    scripts: {
         [id: string]: string;
     };
-    config?: {
+    config: {
         [id: string]: string;
     };
-    dependencies?: {
+    dependencies: {
         [id: string]: string;
     };
-    devDependencies?: {
+    devDependencies: {
         [id: string]: string;
     };
-    peerDependencies?: {
+    peerDependencies: {
         [id: string]: string;
     };
-    bundledDependencies?: string[];
-    optionalDependencies?: {
+    bundledDependencies: string[];
+    optionalDependencies: {
         [id: string]: string;
     };
-    engines?: {
+    engines: {
         [id: string]: string;
     };
-    os?: string[];
-    cpu?: string[];
-    preferGlobal?: boolean;
-    private?: boolean;
-    publishConfig?: {
+    os: string[];
+    cpu: string[];
+    preferGlobal: boolean;
+    private: boolean;
+    publishConfig: {
         [id: string]: string;
     };
 }

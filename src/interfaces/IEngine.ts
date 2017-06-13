@@ -10,6 +10,9 @@ export interface IEngine {
          unitTestFramework: string | undefined | null,
          outputDirectory: string | undefined | null): Promise<number>;
 
-    module(operation: string | undefined | null,
-           name: string | undefined | null): Promise<number>;
+    clientPackage(operation: string | undefined | null,
+                  packageName: string | undefined | null,
+                  version: string | undefined | null,
+                  preload: boolean,
+                  outputDirectory: string | undefined | null): Promise<number>;
 }

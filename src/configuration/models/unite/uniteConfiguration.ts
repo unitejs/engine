@@ -17,6 +17,8 @@ export class UniteConfiguration {
 
     public staticClientModules: string[];
 
+    public clientPackages: { [id: string]: { version: string, preload: boolean } };
+
     public directories: UniteDirectories;
 
     public srcDistReplace: string;

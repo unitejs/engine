@@ -32,6 +32,12 @@ export class PackageJson extends EnginePipelineStepBase {
             packageJson.dependencies = this.lookupDependencies(logger, display, engineVariables.requiredDependencies, uniteDependencies);
             packageJson.devDependencies = this.lookupDependencies(logger, display, engineVariables.requiredDevDependencies, uniteDependencies);
 
+            if (uniteConfiguration.clientPackages) {
+                for (const pkg in uniteConfiguration.clientPackages) {
+                    packageJson.dependencies[pkg] = uniteConfiguration.clientPackages[pkg].version;
+                }
+            }
+
             await fileSystem.fileWriteJson(engineVariables.rootFolder, "package.json", packageJson);
             return 0;
         } catch (err) {

@@ -30,7 +30,7 @@
          * common bug patterns in the code or enforce type safety.
          */
         "chai-vague-errors": true,
-        "forin": true,
+        "forin": false,
         "jquery-deferred-must-complete": true,
         "label-position": true,
         "mocha-avoid-only": true,
@@ -95,7 +95,7 @@
         "no-construct": true,
         "no-default-export": true,
         "no-empty-interfaces": true,
-        "no-for-in": true,
+        "no-for-in": false,
         "prefer-for-of": false,
         "no-function-expression": true,
         "no-inferrable-types": false, // turn no-inferrable-types off in order to make the code consistent in its use of type decorations
@@ -166,7 +166,7 @@
         "no-unexternalized-strings": false, // the VS Code team has a specific localization process that this rule enforces
         // pick one of the two following type-cast formats and use it consistently
         "prefer-type-cast": false,
-        "no-angle-bracket-type-assertion": true,
+        "no-angle-bracket-type-assertion": false,
 
         /**
          * Deprecated rules.  The following rules are deprecated for various reasons.
