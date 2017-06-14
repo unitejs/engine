@@ -38,7 +38,12 @@ readJSON("/base/unite.json", function(uniteConfiguration) {
     SystemJS.config({
         baseURL: '/base/',
         paths: paths,
-        packages: packages
+        packages: packages,
+        meta: { /* Must set the module format to system, otherwise when coverage processed it it won't be recognised */
+            'dist/*': {
+                format: 'system'
+            }
+        }
     });
 
     Promise.all(allTestFiles.map(function(module) { return SystemJS.import(module) })).then(function(modules) {

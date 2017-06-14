@@ -4,28 +4,44 @@
 const display = require('./util/display');
 const gulp = require('gulp');
 const path = require('path');
-const webpack = require('webpack-stream');
+const webpack = require('webpack');
+const webpackStream = require('webpack-stream');
 const uc = require('./util/unite-config');
+const packageJson = require('../../package.json');
 
 gulp.task('build-bundle', function () {
     display.info('Running', "webpack");
 
     const uniteConfig = uc.getUniteConfig();
 
-    return gulp.src(path.join(uniteConfig.directories.dist, "entryPoint.js"))
-        .pipe(webpack({
+    const entry = {};
+    const plugins = [];
+
+    const keys = Object.keys(packageJson.dependencies);
+    if (keys.length > 0) {
+        entry.vendor = keys;
+        plugins.push(new webpack.optimize.CommonsChunkPlugin({ name: 'vendor', filename: 'vendor-bundle.js' }));
+    }
+    entry.app = './' + path.join(uniteConfig.directories.dist, "entryPoint.js");
+
+    return gulp.src(entry.app)
+        .pipe(webpackStream({
             devtool: 'inline-source-map',
+            entry,
             output: {
                 filename: 'app-bundle.js'
             },
             module: {
-                preLoaders: [
+                rules: [
                     {
+                        enforce: 'pre',
                         test: /\.js$/,
                         loader: "source-map-loader"
                     }
                 ]
-            }
-        }))
+            },
+            plugins
+        }, webpack))
         .pipe(gulp.dest(uniteConfig.directories.dist));
 });
+

@@ -13,7 +13,7 @@ export abstract class EnginePipelineStepBase implements IEnginePipelineStep {
     public abstract process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
 
     public log(logger: ILogger, display: IDisplay, message: string, args?: { [id: string]: any}): void {
-        display.log(message + ": " + this.arrayToReadable(args));
+        display.log(message, this.arrayToReadable(args));
         logger.log(message, args);
     }
 

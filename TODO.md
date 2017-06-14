@@ -17,6 +17,9 @@ TSLint
 ESLint
 JSLInt
 
+## Serve
+Browser Sync
+
 ## Unit Testing
 Alternate UI Browsers for testing Firefox/IE/Edge
 

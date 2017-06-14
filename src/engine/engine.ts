@@ -92,6 +92,9 @@ export class Engine implements IEngine {
                 return 1;
             }
         }
+
+        this._display.log("");
+
         return this.initRun(outputDirectory!, uniteConfiguration);
     }
 
@@ -116,6 +119,8 @@ export class Engine implements IEngine {
         if (!EngineValidation.notEmpty(this._display, "packageName", packageName)) {
             return 1;
         }
+
+        this._display.log("");
 
         if (operation === "add") {
             return await this.clientPackageAdd(packageName!, version!, preload, outputDirectory, uniteConfiguration);
@@ -197,6 +202,8 @@ export class Engine implements IEngine {
                 return ret;
             }
         }
+
+        this._display.banner("You should probably run npm install / yarn install before running any gulp commands.");
 
         return 0;
     }

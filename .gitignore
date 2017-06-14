@@ -4,3 +4,4 @@ test/**/*.js
 *.log
 *.bat
 yarn.lock
+yarn-error.log

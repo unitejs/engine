@@ -2,6 +2,7 @@
  * Pipeline step to generate gulp tasks utils.
  */
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
+import { StringHelper } from "../core/stringHelper";
 import { EnginePipelineStepBase } from "../engine/enginePipelineStepBase";
 import { EngineVariables } from "../engine/engineVariables";
 import { IDisplay } from "../interfaces/IDisplay";
@@ -18,14 +19,14 @@ export class GulpTasksUtil extends EnginePipelineStepBase {
             engineVariables.requiredDevDependencies.push("gulp-replace");
 
             const assetUtils = fileSystem.pathCombine(engineVariables.assetsDirectory, "gulp/tasks/util/");
+            const assetTasksModuleLoaderUtils = fileSystem.pathCombine(engineVariables.assetsDirectory, "gulp/tasks/" + StringHelper.toCamelCase(uniteConfiguration.moduleLoader) + "/util/");
 
             await this.copyFile(logger, display, fileSystem, assetUtils, "unite-config.js", engineVariables.gulpUtilFolder, "unite-config.js");
 
             await this.copyFile(logger, display, fileSystem, assetUtils, "display.js", engineVariables.gulpUtilFolder, "display.js");
 
-            await this.copyFile(logger, display, fileSystem, assetUtils, "modules.js", engineVariables.gulpUtilFolder, "modules.js");
-
-            await this.copyFile(logger, display, fileSystem, assetUtils, "template.js", engineVariables.gulpUtilFolder, "template.js");
+            await this.copyFile(logger, display, fileSystem, assetTasksModuleLoaderUtils, "template.js", engineVariables.gulpUtilFolder, "template.js");
+            await this.copyFile(logger, display, fileSystem, assetTasksModuleLoaderUtils, "modules.js", engineVariables.gulpUtilFolder, "modules.js");
 
             return 0;
         } catch (err) {

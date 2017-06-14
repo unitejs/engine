@@ -30,7 +30,7 @@ gulp.task('unit-run-test', (done) => {
         htmlReporter: {
             outputDir: uniteConfig.directories.reports,
             reportName: 'unit'
-        },
+        }
     };
 
     const distFolder = path.join(uniteConfig.directories.dist, '**/*.js');

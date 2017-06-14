@@ -72,7 +72,6 @@ export class GulpTasksUnit extends EnginePipelineStepBase {
                     engineVariables.requiredDevDependencies.push("bluebird");
                     uniteConfiguration.testIncludes.push({ pattern: "node_modules/bluebird/js/browser/bluebird.js", included: true });
 
-                    engineVariables.requiredDevDependencies.push("karma-systemjs");
                     uniteConfiguration.testIncludes.push({ pattern: "node_modules/systemjs/dist/system.js", included: true });
                 } else if (uniteConfiguration.moduleLoader === "Webpack") {
                     uniteConfiguration.srcDistReplace = "(require)*?(..\/src\/)";
