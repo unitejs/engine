@@ -1,4 +1,4 @@
 /**
  * Type for Unite Configuration moduleLoader.
  */
-export declare type UniteModuleLoader = "RequireJS" | "SystemJS" | "Webpack";
+export declare type UniteModuleLoader = "Browserify" | "RequireJS" | "SystemJS" | "Webpack";

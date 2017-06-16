@@ -5,6 +5,7 @@ const os = require('os');
 const gulp = require('gulp');
 const replace = require('gulp-replace');
 const rename = require('gulp-rename');
+const packageJson = require('../../../package.json');
 
 function copyTemplate(templateFile, indexFile, moduleConfigFilename, uniteConfiguration, clientModulesFolder) {
     let appName = "";
@@ -21,15 +22,10 @@ function copyTemplate(templateFile, indexFile, moduleConfigFilename, uniteConfig
         });
     }
 
-    moduleConfig = '<script src="./' + moduleConfigFilename + '"></script>';
-
-    bootstrap.push("<script>");
-    bootstrap.push("require(preloadModules, function() {");
-    bootstrap.push("    require(['dist/main'], function(main) {");
-    bootstrap.push("        main.entryPoint();");
-    bootstrap.push("    });");
-    bootstrap.push("});");
-    bootstrap.push("</script>");
+    if (Object.keys(packageJson.dependencies).length > 0) {
+        moduleConfig += '<script src="./dist/vendor-bundle.js"></script>' + os.EOL + '        ';
+    }
+    moduleConfig += '<script src="./dist/app-bundle.js"></script>';
 
     return gulp.src(templateFile)
         .pipe(replace('{APP_NAME}', appName))

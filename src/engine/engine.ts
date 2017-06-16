@@ -81,7 +81,7 @@ export class Engine implements IEngine {
         if (!EngineValidation.checkOneOf<UniteSourceLanguage>(this._display, "sourceLanguage", uniteConfiguration.sourceLanguage, [ "JavaScript", "TypeScript"])) {
             return 1;
         }
-        if (!EngineValidation.checkOneOf<UniteModuleLoader>(this._display, "moduleLoader", uniteConfiguration.moduleLoader, [ "RequireJS", "SystemJS", "Webpack" ])) {
+        if (!EngineValidation.checkOneOf<UniteModuleLoader>(this._display, "moduleLoader", uniteConfiguration.moduleLoader, [ "Browserify", "RequireJS", "SystemJS", "Webpack" ])) {
             return 1;
         }
         if (!EngineValidation.checkOneOf<UniteUnitTestRunner>(this._display, "unitTestRunner", uniteConfiguration.unitTestRunner, [ "None", "Karma" ])) {

@@ -25,10 +25,6 @@ export class GulpTasksUnit extends EnginePipelineStepBase {
                                                                    "gulp/tasks/" +
                                                                    StringHelper.toCamelCase(uniteConfiguration.unitTestRunner) + "/");
 
-                const assetUnitTestModule = fileSystem.pathCombine(engineVariables.assetsDirectory,
-                                                                   "gulp/tasks/" +
-                                                                   StringHelper.toCamelCase(uniteConfiguration.moduleLoader) + "/");
-
                 engineVariables.requiredDevDependencies.push("gulp-karma-runner");
                 engineVariables.requiredDevDependencies.push("karma-story-reporter");
                 engineVariables.requiredDevDependencies.push("karma-html-reporter");
@@ -38,33 +34,20 @@ export class GulpTasksUnit extends EnginePipelineStepBase {
 
                 uniteConfiguration.testFrameworks = [];
                 uniteConfiguration.testIncludes = [];
+                uniteConfiguration.testAppPreprocessors = ["sourcemap", "coverage"];
+                uniteConfiguration.testUnitPreprocessors = [];
 
                 uniteConfiguration.testIncludes.push({
                     pattern: "unite.json",
                     included: false
                 });
 
-                if (uniteConfiguration.moduleLoader === "Webpack") {
-                    uniteConfiguration.testIncludes.push({
-                        pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, fileSystem.pathCombine(engineVariables.unitTestDistFolder, "test-bundle.js"))),
-                        included: true
-                    });
-                } else {
-                    uniteConfiguration.testIncludes.push({
-                        pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, fileSystem.pathCombine(engineVariables.distFolder, "**/*.js"))),
-                        included: false
-                    });
-                    uniteConfiguration.testIncludes.push({
-                        pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, fileSystem.pathCombine(engineVariables.unitTestDistFolder, "**/*.spec.js"))),
-                        included: false
-                    });
-                }
-
                 if (uniteConfiguration.moduleLoader === "RequireJS") {
                     uniteConfiguration.srcDistReplace = "(define)*?(..\/src\/)";
                     uniteConfiguration.srcDistReplaceWith = "../dist/";
-                    uniteConfiguration.testFrameworks.push("requirejs");
-                    engineVariables.requiredDevDependencies.push("karma-requirejs");
+
+                    engineVariables.requiredDevDependencies.push("requirejs");
+                    uniteConfiguration.testIncludes.push({ pattern: "node_modules/requirejs/require.js", included: true });
                 } else if (uniteConfiguration.moduleLoader === "SystemJS") {
                     uniteConfiguration.srcDistReplace = "(System.register)*?(..\/src\/)";
                     uniteConfiguration.srcDistReplaceWith = "../dist/";
@@ -73,11 +56,12 @@ export class GulpTasksUnit extends EnginePipelineStepBase {
                     uniteConfiguration.testIncludes.push({ pattern: "node_modules/bluebird/js/browser/bluebird.js", included: true });
 
                     uniteConfiguration.testIncludes.push({ pattern: "node_modules/systemjs/dist/system.js", included: true });
-                } else if (uniteConfiguration.moduleLoader === "Webpack") {
+                } else if (uniteConfiguration.moduleLoader === "Webpack" || uniteConfiguration.moduleLoader === "Browserify") {
                     uniteConfiguration.srcDistReplace = "(require)*?(..\/src\/)";
                     uniteConfiguration.srcDistReplaceWith = "../dist/";
 
-                    engineVariables.requiredDevDependencies.push("karma-commonjs");
+                    uniteConfiguration.testIncludes.push({ pattern: "node_modules/cajon/cajon.js", included: true });
+                    engineVariables.requiredDevDependencies.push("cajon");
                 }
 
                 if (uniteConfiguration.unitTestFramework === "Mocha-Chai") {
@@ -92,19 +76,34 @@ export class GulpTasksUnit extends EnginePipelineStepBase {
                     engineVariables.requiredDevDependencies.push("karma-jasmine");
                 }
 
+                let srcInclude;
                 if (uniteConfiguration.moduleLoader === "RequireJS" || uniteConfiguration.moduleLoader === "SystemJS") {
+                    srcInclude = "**/*.js";
+                } else if (uniteConfiguration.moduleLoader === "Webpack" || uniteConfiguration.moduleLoader === "Browserify") {
+                    srcInclude = "**/!(*-bundle|entryPoint).js";
+                }
+
+                if (srcInclude) {
                     uniteConfiguration.testIncludes.push({
-                        pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder,
-                                                                                  fileSystem.pathCombine(engineVariables.unitTestDistFolder, "../unitBootstrap.js"))),
-                        included: true
+                        pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, fileSystem.pathCombine(engineVariables.distFolder, srcInclude))),
+                        included: false
                     });
                 }
+
+                uniteConfiguration.testIncludes.push({
+                    pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, fileSystem.pathCombine(engineVariables.unitTestDistFolder, "**/*.spec.js"))),
+                    included: false
+                });
+
+                uniteConfiguration.testIncludes.push({
+                    pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, fileSystem.pathCombine(engineVariables.unitTestDistFolder, "../unitBootstrap.js"))),
+                    included: true
+                });
 
                 await this.copyFile(logger, display, fileSystem, assetUnitTest, "unit.js", engineVariables.gulpTasksFolder, "unit.js");
                 await this.copyFile(logger, display, fileSystem, assetUnitTest, "unit-report.js", engineVariables.gulpTasksFolder, "unit-report.js");
                 await this.copyFile(logger, display, fileSystem, assetUnitTestLanguage, "unit-transpile.js", engineVariables.gulpTasksFolder, "unit-transpile.js");
                 await this.copyFile(logger, display, fileSystem, assetUnitTestRunner, "unit-runner.js", engineVariables.gulpTasksFolder, "unit-runner.js");
-                await this.copyFile(logger, display, fileSystem, assetUnitTestModule, "unit-bundle.js", engineVariables.gulpTasksFolder, "unit-bundle.js");
             }
 
             return 0;

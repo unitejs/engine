@@ -37,7 +37,7 @@ export class AppScaffold extends EnginePipelineStepBase {
             return 1;
         }
 
-        if (uniteConfiguration.moduleLoader === "Webpack") {
+        if (uniteConfiguration.moduleLoader === "Webpack" || uniteConfiguration.moduleLoader === "Browserify") {
             try {
                 super.log(logger, display, "Generating EntryPoint in", { appSourceFolder: engineVariables.sourceFolder });
 

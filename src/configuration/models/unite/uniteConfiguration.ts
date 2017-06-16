@@ -24,6 +24,8 @@ export class UniteConfiguration {
     public srcDistReplace: string;
     public srcDistReplaceWith: string;
 
+    public testAppPreprocessors: string[];
+    public testUnitPreprocessors: string[];
     public testFrameworks: string[];
     public testPaths: { [id: string]: string };
     public testIncludes: { pattern: string, included: boolean}[];

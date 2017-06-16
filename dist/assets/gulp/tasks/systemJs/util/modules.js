@@ -19,6 +19,7 @@ function createModuleConfig(filename, indexFile, uniteConfiguration, clientModul
 
     const preloadModules = [];
     uniteConfig.createPaths(uniteConfiguration, clientModulesFolder, configContent, preloadModules);
+    
     configContent.push('    },');
     configContent.push('    packages: {');
     configContent.push('        \'\': {');
@@ -26,9 +27,7 @@ function createModuleConfig(filename, indexFile, uniteConfiguration, clientModul
     configContent.push('        }');
     configContent.push('    }');
     configContent.push('});');
-    if (preloadModules.length > 0) {
-        configContent.push('var preloadModules = [' + preloadModules.join(',') + '];');
-    }
+    configContent.push('var preloadModules = [' + preloadModules.join(',') + '];');
 
     fs.writeFile(filename, configContent.join(os.EOL), (err) => {
         if (err) {

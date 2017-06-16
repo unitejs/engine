@@ -23,16 +23,13 @@ function copyTemplate(templateFile, indexFile, moduleConfigFilename, uniteConfig
 
     moduleConfig = '<script src="./' + moduleConfigFilename + '"></script>';
 
+    bootstrap.push("<script>");
     bootstrap.push("Promise.all(preloadModules.map(function(module) { return SystemJS.import(module); })).then(function() {");
     bootstrap.push("    SystemJS.import('dist/main').then(function(main) {");
     bootstrap.push("        main.entryPoint();");
     bootstrap.push("    });");
     bootstrap.push("});");
-
-    if (bootstrap.length > 0) {
-        bootstrap.unshift("<script>");
-        bootstrap.push("</script>");
-    }
+    bootstrap.push("</script>");
 
     return gulp.src(templateFile)
         .pipe(replace('{APP_NAME}', appName))

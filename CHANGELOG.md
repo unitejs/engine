@@ -1,3 +1,11 @@
+# v0.05
+* Added browserify support
+* Added yarn support for clientPackages
+* Sourcemap src location is now consitent for all loaders
+* Webpack and Browserify Unit Tests use cajon loader instead of loading packs
+* Fixed coverage report for Webpack and Browserify
+* Fixed bug with missing preloadModules for SystemJS and RequireJS
+
 # v0.04
 
 * Output directory can be omitted which will use current directory

@@ -16,9 +16,12 @@ gulp.task('build-transpile', () => {
     const tsProject = typescript.createProject('tsconfig.json');
 
     return gulp.src(uniteConfig.directories.src + '**/*.ts')
-            .pipe(sourceMaps.init())
-            .pipe(tsProject())
-            .js
-                .pipe(sourceMaps.write({includeContent: true}))
-                .pipe(gulp.dest(uniteConfig.directories.dist));
+        .pipe(sourceMaps.init())
+        .pipe(tsProject())
+        .js
+            .pipe(sourceMaps.mapSources(function (sourcePath, file) {
+                return './src/' + sourcePath;
+            }))
+            .pipe(sourceMaps.write({ includeContent: true, sourceRoot: '' }))
+            .pipe(gulp.dest(uniteConfig.directories.dist));
 });

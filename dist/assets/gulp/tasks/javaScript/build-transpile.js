@@ -16,7 +16,10 @@ gulp.task('build-transpile', () => {
     return gulp.src(uniteConfig.directories.src + '**/*.js')
         .pipe(sourceMaps.init())
         .pipe(babel())
-        .pipe(sourceMaps.write({includeContent: true}))
+        .pipe(sourceMaps.mapSources(function(sourcePath, file) {
+            return './src/' + sourcePath;
+        }))
+        .pipe(sourceMaps.write({ includeContent: true, sourceRoot: '' }))
         .pipe(gulp.dest(uniteConfig.directories.dist));
 });
 

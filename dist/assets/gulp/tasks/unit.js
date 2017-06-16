@@ -22,10 +22,10 @@ gulp.task('unit-clean', (callback) => {
 });
 
 gulp.task('unit', (cb) => {
-    runSequence('unit-clean', 'unit-transpile', 'unit-bundle', 'unit-run-test', 'unit-report', cb);
+    runSequence('unit-clean', 'unit-transpile', 'unit-run-test', 'unit-report', cb);
 });
 
 gulp.task('unit-ui', (cb) => {
-    runSequence('unit-clean', 'unit-transpile', 'unit-bundle', 'unit-run-test-ui', cb);
+    runSequence('unit-clean', 'unit-transpile', 'unit-run-test-ui', cb);
 });
 

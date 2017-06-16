@@ -1,6 +1,6 @@
 {
   "name": "unitejs-core",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Core of the UniteJS JavaScript framework management tool.",
   "main": "dist/unitejs-core.js",
   "types": "dist/unitejs-core.d.ts",
@@ -11,7 +11,17 @@
   "keywords": [
     "javascript",
     "typescript",
-    "scaffolding"
+    "babel",
+    "browserify",
+    "webpack",
+    "requirejs",
+    "systemjs",
+    "karma",
+    "mocha",
+    "jasmine",
+    "chai",
+    "scaffolding",
+    "boilerplate"
   ],
   "author": "martyn@unitejs.com",
   "license": "MIT",

@@ -30,12 +30,18 @@ gulp.task('unit-run-test', (done) => {
         htmlReporter: {
             outputDir: uniteConfig.directories.reports,
             reportName: 'unit'
-        }
+        },
+        preprocessors: {}
     };
 
-    const distFolder = path.join(uniteConfig.directories.dist, '**/*.js');
-    serverOpts.preprocessors = {};
-    serverOpts.preprocessors[distFolder] = ['sourcemap', 'coverage'];
+    if (uniteConfig.testAppPreprocessors && uniteConfig.testAppPreprocessors.length > 0) {
+        const appDistFolder = path.join(uniteConfig.directories.dist, '**/*.js');
+        serverOpts.preprocessors[appDistFolder] = uniteConfig.testAppPreprocessors;
+    }
+    if (uniteConfig.testUnitPreprocessors && uniteConfig.testUnitPreprocessors.length > 0) {
+        const unitDistFolder = path.join(uniteConfig.directories.unitTestDist, '**/*.spec.js');
+        serverOpts.preprocessors[unitDistFolder] = uniteConfig.testUnitPreprocessors;
+    }
 
     const server = new karma.Server(serverOpts, function (exitCode) {
         if (exitCode === 0) {
@@ -57,8 +63,18 @@ gulp.task('unit-run-test-ui', (done) => {
         singleRun: false,
         frameworks: uniteConfig.testFrameworks,
         browsers: ['Chrome'],
-        files: uniteConfig.testIncludes
+        files: uniteConfig.testIncludes,
+        preprocessors: {}
     };
+
+    if (uniteConfig.testAppPreprocessors && uniteConfig.testAppPreprocessors.length > 0) {
+        const appDistFolder = path.join(uniteConfig.directories.dist, '**/*.js');
+        serverOpts.preprocessors[appDistFolder] = uniteConfig.testAppPreprocessors;
+    }
+    if (uniteConfig.testUnitPreprocessors && uniteConfig.testUnitPreprocessors.length > 0) {
+        const unitDistFolder = path.join(uniteConfig.directories.unitTestDist, '**/*.spec.js');
+        serverOpts.preprocessors[unitDistFolder] = uniteConfig.testUnitPreprocessors;
+    }
 
     const server = new karma.Server(serverOpts, function (exitCode) {
         if (exitCode === 0) {

@@ -3,12 +3,6 @@
 README.MD
 license
 
-## Client Side Modules
-Yarn Package Manager
-
-## Module loaders
-browserify
-
 ## Test Frameworks
 Jest
 

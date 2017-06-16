@@ -23,6 +23,8 @@ export declare class UniteConfiguration {
     directories: UniteDirectories;
     srcDistReplace: string;
     srcDistReplaceWith: string;
+    testAppPreprocessors: string[];
+    testUnitPreprocessors: string[];
     testFrameworks: string[];
     testPaths: {
         [id: string]: string;

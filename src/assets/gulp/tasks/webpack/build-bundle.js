@@ -29,7 +29,8 @@ gulp.task('build-bundle', function () {
             devtool: 'inline-source-map',
             entry,
             output: {
-                filename: 'app-bundle.js'
+                filename: 'app-bundle.js',
+                devtoolModuleFilenameTemplate: '[resource-path]'
             },
             module: {
                 rules: [

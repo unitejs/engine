@@ -34,6 +34,11 @@ export class GulpTasksBuild extends EnginePipelineStepBase {
                 engineVariables.requiredDevDependencies.push("webpack");
                 engineVariables.requiredDevDependencies.push("webpack-stream");
                 engineVariables.requiredDevDependencies.push("source-map-loader");
+            } else if (uniteConfiguration.moduleLoader === "Browserify") {
+                engineVariables.requiredDevDependencies.push("browserify");
+                engineVariables.requiredDevDependencies.push("vinyl-source-stream");
+                engineVariables.requiredDevDependencies.push("vinyl-buffer");
+                engineVariables.requiredDevDependencies.push("merge2");
             }
 
             await this.copyFile(logger, display, fileSystem, assetTasksLanguage, "build-transpile.js", engineVariables.gulpTasksFolder, "build-transpile.js");
