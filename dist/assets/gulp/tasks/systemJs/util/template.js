@@ -24,7 +24,15 @@ function copyTemplate(templateFile, indexFile, moduleConfigFilename, uniteConfig
     moduleConfig = '<script src="./' + moduleConfigFilename + '"></script>';
 
     bootstrap.push("<script>");
-    bootstrap.push("Promise.all(preloadModules.map(function(module) { return SystemJS.import(module); })).then(function() {");
+    bootstrap.push('var baseUrl = window.location.origin + window.location.pathname.replace(\'' + indexFile + '\', \'\');');
+    bootstrap.push('var packages = unitModuleConfig.packages;');
+    bootstrap.push('packages[\'\'] = { defaultExtension: \'js\' };');
+    bootstrap.push('SystemJS.config({');
+    bootstrap.push('    baseUrl: baseUrl,');
+    bootstrap.push('    paths: appModuleConfig.paths,');
+    bootstrap.push('    packages: packages');
+    bootstrap.push('});');
+    bootstrap.push("Promise.all(appModuleConfig.preload.map(function(module) { return SystemJS.import(module); })).then(function() {");
     bootstrap.push("    SystemJS.import('dist/main').then(function(main) {");
     bootstrap.push("        main.entryPoint();");
     bootstrap.push("    });");

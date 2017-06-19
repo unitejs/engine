@@ -20,4 +20,6 @@ export interface IFileSystem {
 
     fileReadLines(directoryName: string, fileName: string): Promise<string[]>;
     fileReadJson<T>(directoryName: string, fileName: string): Promise<T>;
+
+    fileDelete(directoryName: string, fileName: string): Promise<void>;
 }

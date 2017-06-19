@@ -26,7 +26,6 @@ export class GulpScaffold extends EnginePipelineStepBase {
             return 1;
         }
 
-        engineVariables.gulpBuildFolder = fileSystem.pathCombine(engineVariables.rootFolder, "\\build");
         try {
             super.log(logger, display, "Creating Gulp Build Directory", { gulpBuildFolder: engineVariables.gulpBuildFolder });
             await fileSystem.directoryCreate(engineVariables.gulpBuildFolder);

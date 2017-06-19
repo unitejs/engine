@@ -15,4 +15,5 @@ export interface IFileSystem {
     fileWriteJson(directoryName: string, fileName: string, obj: any): Promise<void>;
     fileReadLines(directoryName: string, fileName: string): Promise<string[]>;
     fileReadJson<T>(directoryName: string, fileName: string): Promise<T>;
+    fileDelete(directoryName: string, fileName: string): Promise<void>;
 }

@@ -11,13 +11,7 @@ import { ILogger } from "../interfaces/ILogger";
 
 export class UnitTestScaffold extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.reportsFolder = fileSystem.pathCombine(engineVariables.rootFolder, "\\reports");
-
         if (uniteConfiguration.unitTestRunner === "Karma") {
-            engineVariables.unitTestFolder = fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\unit");
-            engineVariables.unitTestSrcFolder = fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\unit\\src");
-            engineVariables.unitTestDistFolder = fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\unit\\dist");
-
             try {
                 super.log(logger, display, "Creating Unit Test Directory", { unitTestSrcFolder: engineVariables.unitTestSrcFolder });
                 await fileSystem.directoryCreate(engineVariables.unitTestSrcFolder);
@@ -38,17 +32,6 @@ export class UnitTestScaffold extends EnginePipelineStepBase {
                                                                              "scaffold/test/unit/src/" +
                                                                              StringHelper.toCamelCase(uniteConfiguration.moduleLoader) + "/");
 
-                uniteConfiguration.testPaths = {};
-
-                if (uniteConfiguration.unitTestFramework === "Mocha-Chai") {
-                    engineVariables.requiredDevDependencies.push("mocha");
-                    engineVariables.requiredDevDependencies.push("chai");
-
-                    uniteConfiguration.testPaths.chai = "node_modules/chai/chai";
-                } else if (uniteConfiguration.unitTestFramework === "Jasmine") {
-                    engineVariables.requiredDevDependencies.push("jasmine-core");
-                }
-
                 await this.copyFile(logger, display, fileSystem, unitTestsScaffold,
                                     "main.spec." + engineVariables.sourceLanguageExt,
                                     engineVariables.unitTestSrcFolder,
@@ -60,9 +43,9 @@ export class UnitTestScaffold extends EnginePipelineStepBase {
                                     "app.spec." + engineVariables.sourceLanguageExt);
 
                 await this.copyFile(logger, display, fileSystem, unitTestsScaffoldModuleLoader,
-                                    "unitBootstrap.js",
+                                    "unit-bootstrap.js",
                                     engineVariables.unitTestFolder,
-                                    "unitBootstrap.js");
+                                    "unit-bootstrap.js");
 
                 return 0;
             } catch (err) {

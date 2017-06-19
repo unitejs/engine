@@ -9,7 +9,6 @@ const source = require('vinyl-source-stream');
 const buffer = require('vinyl-buffer');
 const sourceMaps = require('gulp-sourcemaps');
 const uc = require('./util/unite-config');
-const packageJson = require('../../package.json');
 const merge = require('merge2');
 
 gulp.task('build-bundle', function () {
@@ -26,11 +25,14 @@ gulp.task('build-bundle', function () {
         debug: true
     });
 
-    const vendorKeys = Object.keys(packageJson.dependencies);
-    if (vendorKeys && vendorKeys.length > 0) {
-        vendorKeys.forEach(function(vendor) {
-            bVendor.require(vendor);
-            bApp.exclude(vendor);
+    const appPackageKeys = Object.keys(uniteConfig.clientPackages).filter(function (key) {
+        return uniteConfig.clientPackages[key].includeMode === "app" || uniteConfig.clientPackages[key].includeMode === "both";
+    });
+
+    if (appPackageKeys && appPackageKeys.length > 0) {
+        appPackageKeys.forEach(function(appPackage) {
+            bVendor.require(appPackage);
+            bApp.exclude(appPackage);
         });
     }
 

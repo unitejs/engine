@@ -11,9 +11,6 @@ import { ILogger } from "../interfaces/ILogger";
 
 export class AppScaffold extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.sourceFolder = fileSystem.pathCombine(engineVariables.rootFolder, "\\src");
-        engineVariables.distFolder = fileSystem.pathCombine(engineVariables.rootFolder, "\\dist");
-
         try {
             super.log(logger, display, "Creating App Source Directory", { appSourceFolder: engineVariables.sourceFolder });
             await fileSystem.directoryCreate(engineVariables.sourceFolder);

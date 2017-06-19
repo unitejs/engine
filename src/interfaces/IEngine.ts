@@ -14,5 +14,6 @@ export interface IEngine {
                   packageName: string | undefined | null,
                   version: string | undefined | null,
                   preload: boolean,
+                  includeMode: string | undefined | null,
                   outputDirectory: string | undefined | null): Promise<number>;
 }

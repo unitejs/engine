@@ -10,9 +10,6 @@ import { ILogger } from "../interfaces/ILogger";
 
 export class E2eTestScaffold extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.e2eTestSrcFolder = fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\e2e\\src");
-        engineVariables.e2eTestDistFolder = fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\e2e\\dist");
-
         try {
             super.log(logger, display, "Creating E2E Test Directory", { e2eTestSrcFolder: engineVariables.e2eTestSrcFolder });
             await fileSystem.directoryCreate(engineVariables.e2eTestSrcFolder);

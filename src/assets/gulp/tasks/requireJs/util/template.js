@@ -24,7 +24,13 @@ function copyTemplate(templateFile, indexFile, moduleConfigFilename, uniteConfig
     moduleConfig = '<script src="./' + moduleConfigFilename + '"></script>';
 
     bootstrap.push("<script>");
-    bootstrap.push("require(preloadModules, function() {");
+    bootstrap.push('var baseUrl = window.location.origin + window.location.pathname.replace(\'' + indexFile + '\', \'\');');
+    bootstrap.push('require.config({');
+    bootstrap.push('    baseUrl: baseUrl,');
+    bootstrap.push('    paths: appModuleConfig.paths,');
+    bootstrap.push('    packages: appModuleConfig.packages');
+    bootstrap.push('});');
+    bootstrap.push("require(appModuleConfig.preload, function() {");
     bootstrap.push("    require(['dist/main'], function(main) {");
     bootstrap.push("        main.entryPoint();");
     bootstrap.push("    });");

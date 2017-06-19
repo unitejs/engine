@@ -1,6 +1,7 @@
 /**
  * Main engine
  */
+import { IncludeMode } from "../configuration/models/unite/includeMode";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { UniteModuleLoader } from "../configuration/models/unite/uniteModuleLoader";
 import { UniteSourceLanguage } from "../configuration/models/unite/uniteSourceLanguage";
@@ -26,6 +27,7 @@ import { Jasmine } from "../pipelineSteps/jasmine";
 import { Karma } from "../pipelineSteps/karma";
 import { MochaChai } from "../pipelineSteps/mochaChai";
 import { ModuleLoader } from "../pipelineSteps/moduleLoader";
+import { ModulesConfig } from "../pipelineSteps/modulesConfig";
 import { OutputDirectory } from "../pipelineSteps/outputDirectory";
 import { PackageJson } from "../pipelineSteps/packageJson";
 import { TypeScript } from "../pipelineSteps/typeScript";
@@ -102,9 +104,14 @@ export class Engine implements IEngine {
                                packageName: string | undefined | null,
                                version: string | undefined | null,
                                preload: boolean,
+                               includeMode: IncludeMode| undefined | null,
                                outputDirectory: string | undefined | null): Promise<number> {
         outputDirectory = this.cleanupOutputDirectory(outputDirectory);
         const uniteConfiguration = await this.loadConfiguration(outputDirectory!);
+
+        if (includeMode === undefined || includeMode === null || includeMode.length === 0) {
+            includeMode = "both";
+        }
 
         if (!uniteConfiguration) {
             this._display.error("There is no unite.json to configure.");
@@ -116,6 +123,9 @@ export class Engine implements IEngine {
         if (!EngineValidation.checkOneOf<ModuleOperation>(this._display, "operation", operation, [ "add", "remove" ])) {
             return 1;
         }
+        if (!EngineValidation.checkOneOf<IncludeMode>(this._display, "includeMode", includeMode, [ "app", "test", "both" ])) {
+            return 1;
+        }
         if (!EngineValidation.notEmpty(this._display, "packageName", packageName)) {
             return 1;
         }
@@ -123,7 +133,7 @@ export class Engine implements IEngine {
         this._display.log("");
 
         if (operation === "add") {
-            return await this.clientPackageAdd(packageName!, version!, preload, outputDirectory, uniteConfiguration);
+            return await this.clientPackageAdd(packageName!, version!, preload, includeMode, outputDirectory, uniteConfiguration);
         } else if (operation === "remove") {
             return await this.clientPackageRemove(packageName!, outputDirectory, uniteConfiguration);
         }
@@ -160,14 +170,7 @@ export class Engine implements IEngine {
     private async initRun(outputDirectory: string, uniteConfiguration: UniteConfiguration): Promise<number> {
         this._logger.info("Engine::init", { outputDirectory, uniteConfiguration });
 
-        const engineVariables: EngineVariables = new EngineVariables();
-        engineVariables.rootFolder = outputDirectory;
-        engineVariables.requiredDependencies = [];
-        engineVariables.requiredDevDependencies = [];
-        engineVariables.assetsDirectory = this._fileSystem.pathCombine(this._engineScriptLocation, "./node_modules/unitejs-core/dist/assets/");
-        engineVariables.dependenciesFile = "unite-dependencies.json";
-        engineVariables.sourceLanguageExt = uniteConfiguration.sourceLanguage === "JavaScript" ? "js" : "ts";
-        engineVariables.gitIgnore = [];
+        const engineVariables = this.createEngineVariables(outputDirectory, uniteConfiguration);
 
         const pipelineSteps: IEnginePipelineStep[] = [];
         pipelineSteps.push(new OutputDirectory());
@@ -186,16 +189,103 @@ export class Engine implements IEngine {
         pipelineSteps.push(new Babel());
         pipelineSteps.push(new TypeScript());
 
-        pipelineSteps.push(new Karma());
-
         pipelineSteps.push(new MochaChai());
         pipelineSteps.push(new Jasmine());
 
         pipelineSteps.push(new GitIgnore());
+        pipelineSteps.push(new Karma());
+
+        pipelineSteps.push(new ModulesConfig());
         pipelineSteps.push(new PackageJson());
         pipelineSteps.push(new UniteConfigurationDirectories());
         pipelineSteps.push(new UniteConfigurationJson());
 
+        await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
+
+        this._display.banner("You should probably run npm install / yarn install before running any gulp commands.");
+
+        return 0;
+    }
+
+    private async clientPackageAdd(packageName: string, version: string, preload: boolean, includeMode: IncludeMode, outputDirectory: string, uniteConfiguration: UniteConfiguration): Promise<number> {
+        if (uniteConfiguration.clientPackages[packageName]) {
+            this._display.error("Package has already been added.");
+            return 1;
+        }
+
+        const packageInfo = await this._packageManager.info(packageName);
+
+        let fixPackageVersion = false;
+        if (version === null || version === undefined || version.length === 0) {
+            version = packageInfo.version;
+        } else {
+            fixPackageVersion = true;
+        }
+
+        uniteConfiguration.clientPackages[packageName] = {
+            version: fixPackageVersion ? version : "^" + version,
+            preload,
+            main: packageInfo.main,
+            includeMode
+        };
+
+        await this._packageManager.add(outputDirectory, packageName, version, false);
+
+        const engineVariables = this.createEngineVariables(outputDirectory, uniteConfiguration);
+
+        const pipelineSteps: IEnginePipelineStep[] = [];
+        pipelineSteps.push(new Karma());
+        pipelineSteps.push(new ModulesConfig());
+        pipelineSteps.push(new UniteConfigurationJson());
+
+        return await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
+    }
+
+    private async clientPackageRemove(packageName: string, outputDirectory: string, uniteConfiguration: UniteConfiguration): Promise<number> {
+        if (!uniteConfiguration.clientPackages[packageName]) {
+            this._display.error("Package has not been added.");
+            return 1;
+        }
+
+        delete uniteConfiguration.clientPackages[packageName];
+
+        await this._packageManager.remove(outputDirectory, packageName, false);
+
+        const engineVariables = this.createEngineVariables(outputDirectory, uniteConfiguration);
+
+        const pipelineSteps: IEnginePipelineStep[] = [];
+        pipelineSteps.push(new Karma());
+        pipelineSteps.push(new ModulesConfig());
+        pipelineSteps.push(new UniteConfigurationJson());
+
+        return await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
+    }
+
+    private createEngineVariables(outputDirectory: string, uniteConfiguration: UniteConfiguration): EngineVariables {
+        const engineVariables: EngineVariables = new EngineVariables();
+        engineVariables.rootFolder = outputDirectory;
+        engineVariables.sourceFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\src");
+        engineVariables.distFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\dist");
+        engineVariables.gulpBuildFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\build");
+        engineVariables.reportsFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\reports");
+        engineVariables.e2eTestSrcFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\e2e\\src");
+        engineVariables.e2eTestDistFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\e2e\\dist");
+        engineVariables.unitTestFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\unit");
+        engineVariables.unitTestSrcFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\unit\\src");
+        engineVariables.unitTestDistFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\unit\\dist");
+
+        engineVariables.requiredDependencies = [];
+        engineVariables.requiredDevDependencies = [];
+        engineVariables.packageFolder = "node_modules/";
+        engineVariables.assetsDirectory = this._fileSystem.pathCombine(this._engineScriptLocation, "./node_modules/unitejs-core/dist/assets/");
+        engineVariables.dependenciesFile = "unite-dependencies.json";
+        engineVariables.sourceLanguageExt = uniteConfiguration.sourceLanguage === "JavaScript" ? "js" : "ts";
+        engineVariables.gitIgnore = [];
+
+        return engineVariables;
+    }
+
+    private async runPipeline(pipelineSteps: IEnginePipelineStep[], uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         for (const pipelineStep of pipelineSteps) {
             const ret = await pipelineStep.process(this._logger, this._display, this._fileSystem, uniteConfiguration, engineVariables);
             if (ret !== 0) {
@@ -203,48 +293,6 @@ export class Engine implements IEngine {
             }
         }
 
-        this._display.banner("You should probably run npm install / yarn install before running any gulp commands.");
-
         return 0;
-    }
-
-    private async clientPackageAdd(packageName: string, version: string, preload: boolean, outputDirectory: string, uniteConfiguration: UniteConfiguration): Promise<number> {
-        if (uniteConfiguration.clientPackages[packageName]) {
-            this._display.error("Packed has already been added.");
-            return 1;
-        }
-
-        let fixPackageVersion = false;
-        if (version === null || version === undefined || version.length === 0) {
-            version = await this._packageManager.latestVersion(packageName);
-        } else {
-            fixPackageVersion = true;
-        }
-
-        uniteConfiguration.clientPackages[packageName] = {
-            version: fixPackageVersion ? version : "^" + version,
-            preload
-        };
-
-        await this._packageManager.add(packageName, version, false);
-
-        const engineVariables = new EngineVariables();
-        engineVariables.rootFolder = outputDirectory;
-        return await new UniteConfigurationJson().process(this._logger, this._display, this._fileSystem, uniteConfiguration, engineVariables);
-    }
-
-    private async clientPackageRemove(packageName: string, outputDirectory: string, uniteConfiguration: UniteConfiguration): Promise<number> {
-        if (!uniteConfiguration.clientPackages[packageName]) {
-            this._display.error("Packed has not been added.");
-            return 1;
-        }
-
-        delete uniteConfiguration.clientPackages[packageName];
-
-        await this._packageManager.remove(packageName, false);
-
-        const engineVariables = new EngineVariables();
-        engineVariables.rootFolder = outputDirectory;
-        return await new UniteConfigurationJson().process(this._logger, this._display, this._fileSystem, uniteConfiguration, engineVariables);
     }
 }

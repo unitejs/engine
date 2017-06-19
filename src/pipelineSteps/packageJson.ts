@@ -34,7 +34,11 @@ export class PackageJson extends EnginePipelineStepBase {
 
             if (uniteConfiguration.clientPackages) {
                 for (const pkg in uniteConfiguration.clientPackages) {
-                    packageJson.dependencies[pkg] = uniteConfiguration.clientPackages[pkg].version;
+                    if (uniteConfiguration.clientPackages[pkg].includeMode === "app" || uniteConfiguration.clientPackages[pkg].includeMode === "both") {
+                        packageJson.dependencies[pkg] = uniteConfiguration.clientPackages[pkg].version;
+                    } else if (uniteConfiguration.clientPackages[pkg].includeMode === "test") {
+                        packageJson.devDependencies[pkg] = uniteConfiguration.clientPackages[pkg].version;
+                    }
                 }
             }
 

@@ -1,6 +1,7 @@
 /**
  * Model of Unite Configuration (unite.json) file.
  */
+import { IncludeMode } from "./includeMode";
 import { UniteDirectories } from "./uniteDirectories";
 import { UniteModuleLoader } from "./uniteModuleLoader";
 import { UniteSourceLanguage } from "./uniteSourceLanguage";
@@ -17,16 +18,10 @@ export class UniteConfiguration {
 
     public staticClientModules: string[];
 
-    public clientPackages: { [id: string]: { version: string, preload: boolean } };
+    public clientPackages: { [id: string]: { version: string, preload: boolean, main: string, includeMode: IncludeMode } };
 
     public directories: UniteDirectories;
 
     public srcDistReplace: string;
     public srcDistReplaceWith: string;
-
-    public testAppPreprocessors: string[];
-    public testUnitPreprocessors: string[];
-    public testFrameworks: string[];
-    public testPaths: { [id: string]: string };
-    public testIncludes: { pattern: string, included: boolean}[];
 }

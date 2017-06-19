@@ -5,24 +5,27 @@ const os = require('os');
 const gulp = require('gulp');
 const replace = require('gulp-replace');
 const rename = require('gulp-rename');
-const packageJson = require('../../../package.json');
 
-function copyTemplate(templateFile, indexFile, moduleConfigFilename, uniteConfiguration, clientModulesFolder) {
+function copyTemplate(templateFile, indexFile, moduleConfigFilename, uniteConfig, clientModulesFolder) {
     let appName = "";
     let staticIncludes = [];
     let bodyAttributes = "";
     let moduleConfig = "";
     let bootstrap = [];
 
-    appName = uniteConfiguration.title;
+    appName = uniteConfig.title;
 
-    if (uniteConfiguration.staticClientModules) {
-        uniteConfiguration.staticClientModules.forEach(staticClientModule => {
+    if (uniteConfig.staticClientModules) {
+        uniteConfig.staticClientModules.forEach(staticClientModule => {
             staticIncludes.push('<script src="./' + clientModulesFolder + '/' + staticClientModule + '"></script>');
         });
     }
 
-    if (Object.keys(packageJson.dependencies).length > 0) {
+    const appPackageKeys = Object.keys(uniteConfig.clientPackages).filter(function (key) {
+        return uniteConfig.clientPackages[key].includeMode === "app" || uniteConfig.clientPackages[key].includeMode === "both";
+    });
+
+    if (appPackageKeys.length > 0) {
         moduleConfig += '<script src="./dist/vendor-bundle.js"></script>' + os.EOL + '        ';
     }
     moduleConfig += '<script src="./dist/app-bundle.js"></script>';

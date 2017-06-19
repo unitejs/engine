@@ -11,6 +11,7 @@ export class EngineVariables {
     public e2eTestSrcFolder: string;
     public e2eTestDistFolder: string;
     public reportsFolder: string;
+    public packageFolder: string;
 
     public gulpBuildFolder: string;
     public gulpTasksFolder: string;

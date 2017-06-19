@@ -26,7 +26,6 @@ export class GulpTasksUtil extends EnginePipelineStepBase {
             await this.copyFile(logger, display, fileSystem, assetUtils, "display.js", engineVariables.gulpUtilFolder, "display.js");
 
             await this.copyFile(logger, display, fileSystem, assetTasksModuleLoaderUtils, "template.js", engineVariables.gulpUtilFolder, "template.js");
-            await this.copyFile(logger, display, fileSystem, assetTasksModuleLoaderUtils, "modules.js", engineVariables.gulpUtilFolder, "modules.js");
 
             return 0;
         } catch (err) {

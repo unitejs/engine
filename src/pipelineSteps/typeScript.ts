@@ -38,6 +38,16 @@ export class TypeScript extends EnginePipelineStepBase {
                 super.error(logger, display, "Generating tsconfig.json failed", err, { rootFolder: engineVariables.rootFolder });
                 return 1;
             }
+        } else {
+            try {
+                const exists = await fileSystem.fileExists(engineVariables.rootFolder, "tsconfig.json");
+                if (exists) {
+                    await fileSystem.fileDelete(engineVariables.rootFolder, "tsconfig.json");
+                }
+            } catch (err) {
+                super.error(logger, display, "Deleting tsconfig.json failed", err);
+                return 1;
+            }
         }
 
         return 0;

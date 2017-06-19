@@ -23,6 +23,11 @@ export class MochaChai extends EnginePipelineStepBase {
                     engineVariables.requiredDevDependencies.push("@types/chai");
                 }
 
+                engineVariables.requiredDevDependencies.push("mocha");
+                engineVariables.requiredDevDependencies.push("chai");
+
+                uniteConfiguration.clientPackages.chai = { version: "^3.5.0", main: "chai.js", preload: true, includeMode: "test" };
+
                 return 0;
             } catch (err) {
                 super.error(logger, display, "Generating Mocha-Chai Configuration failed", err);

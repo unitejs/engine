@@ -4,7 +4,6 @@
 const display = require('./util/display');
 const uc = require('./util/unite-config');
 const unitTranspile = require('./unit-transpile');
-const unitReport = require('./unit-report');
 const unitRunner = require('./unit-runner');
 const gulp = require('gulp');
 const path = require('path');
@@ -22,7 +21,7 @@ gulp.task('unit-clean', (callback) => {
 });
 
 gulp.task('unit', (cb) => {
-    runSequence('unit-clean', 'unit-transpile', 'unit-run-test', 'unit-report', cb);
+    runSequence('unit-clean', 'unit-transpile', 'unit-run-test', cb);
 });
 
 gulp.task('unit-ui', (cb) => {

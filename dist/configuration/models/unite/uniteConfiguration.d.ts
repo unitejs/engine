@@ -1,6 +1,7 @@
 /**
  * Model of Unite Configuration (unite.json) file.
  */
+import { IncludeMode } from "./includeMode";
 import { UniteDirectories } from "./uniteDirectories";
 import { UniteModuleLoader } from "./uniteModuleLoader";
 import { UniteSourceLanguage } from "./uniteSourceLanguage";
@@ -18,19 +19,11 @@ export declare class UniteConfiguration {
         [id: string]: {
             version: string;
             preload: boolean;
+            main: string;
+            includeMode: IncludeMode;
         };
     };
     directories: UniteDirectories;
     srcDistReplace: string;
     srcDistReplaceWith: string;
-    testAppPreprocessors: string[];
-    testUnitPreprocessors: string[];
-    testFrameworks: string[];
-    testPaths: {
-        [id: string]: string;
-    };
-    testIncludes: {
-        pattern: string;
-        included: boolean;
-    }[];
 }

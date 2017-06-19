@@ -21,6 +21,8 @@ export class Jasmine extends EnginePipelineStepBase {
                     engineVariables.requiredDevDependencies.push("@types/jasmine");
                 }
 
+                engineVariables.requiredDevDependencies.push("jasmine-core");
+
                 return 0;
             } catch (err) {
                 super.error(logger, display, "Generating Jasmine Configuration failed", err);

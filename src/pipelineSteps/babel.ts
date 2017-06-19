@@ -39,6 +39,16 @@ export class Babel extends EnginePipelineStepBase {
                 super.error(logger, display, "Generating .babelrc failed", err, { rootFolder: engineVariables.rootFolder });
                 return 1;
             }
+        } else {
+            try {
+                const exists = await fileSystem.fileExists(engineVariables.rootFolder, ".babelrc");
+                if (exists) {
+                    await fileSystem.fileDelete(engineVariables.rootFolder, ".babelrc");
+                }
+            } catch (err) {
+                super.error(logger, display, "Deleting .babelrc failed", err);
+                return 1;
+            }
         }
 
         return 0;

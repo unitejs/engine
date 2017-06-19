@@ -7,7 +7,6 @@ const path = require('path');
 const webpack = require('webpack');
 const webpackStream = require('webpack-stream');
 const uc = require('./util/unite-config');
-const packageJson = require('../../package.json');
 
 gulp.task('build-bundle', function () {
     display.info('Running', "webpack");
@@ -17,9 +16,12 @@ gulp.task('build-bundle', function () {
     const entry = {};
     const plugins = [];
 
-    const keys = Object.keys(packageJson.dependencies);
-    if (keys.length > 0) {
-        entry.vendor = keys;
+    const appPackageKeys = Object.keys(uniteConfig.clientPackages).filter(function (key) {
+        return uniteConfig.clientPackages[key].includeMode === "app" || uniteConfig.clientPackages[key].includeMode === "both";
+    });
+
+    if (appPackageKeys.length > 0) {
+        entry.vendor = appPackageKeys;
         plugins.push(new webpack.optimize.CommonsChunkPlugin({ name: 'vendor', filename: 'vendor-bundle.js' }));
     }
     entry.app = './' + path.join(uniteConfig.directories.dist, "entryPoint.js");
