@@ -1,3 +1,9 @@
+# v0.0.9
+* Cross platform fixes
+
+# v0.0.8
+* Cross platform fixes
+
 # v0.0.7
 * Fixed casing for asset folders
 * Fixed dist folder not existing for module config

@@ -41,15 +41,15 @@ export class Engine implements IEngine {
     private _logger: ILogger;
     private _display: IDisplay;
     private _fileSystem: IFileSystem;
-    private _engineScriptLocation: string;
+    private _coreRoot: string;
     private _packageManager: IPackageManager;
 
-    constructor(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, packageManager: IPackageManager, engineScriptLocation: string) {
+    constructor(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, packageManager: IPackageManager) {
         this._logger = logger;
         this._display = display;
         this._fileSystem = fileSystem;
         this._packageManager = packageManager;
-        this._engineScriptLocation = engineScriptLocation;
+        this._coreRoot = fileSystem.pathCombine(__dirname, "../../");
     }
 
     public async init(packageName: string | undefined | null,
@@ -279,7 +279,7 @@ export class Engine implements IEngine {
         engineVariables.requiredDependencies = [];
         engineVariables.requiredDevDependencies = [];
         engineVariables.packageFolder = "node_modules/";
-        engineVariables.assetsDirectory = this._fileSystem.pathCombine(this._engineScriptLocation, "./node_modules/unitejs-core/dist/assets/");
+        engineVariables.assetsDirectory = this._fileSystem.pathCombine(this._coreRoot, "/assets/");
         engineVariables.dependenciesFile = "unite-dependencies.json";
         engineVariables.sourceLanguageExt = uniteConfiguration.sourceLanguage === "JavaScript" ? "js" : "ts";
         engineVariables.gitIgnore = [];

@@ -1,6 +1,6 @@
 {
   "name": "unitejs-core",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Core of the UniteJS JavaScript framework management tool.",
   "main": "dist/unitejs-core.js",
   "types": "dist/unitejs-core.d.ts",
@@ -31,6 +31,7 @@
   "homepage": "https://github.com/unitejs/core#readme",
   "devDependencies": {
     "@types/mocha": "^2.2.41",
+    "@types/npm": "^2.0.28",
     "chai": "^3.5.0",
     "del": "^2.2.2",
     "gulp": "^3.9.1",
@@ -42,5 +43,7 @@
     "tslint": "^5.2.0",
     "tslint-microsoft-contrib": "^5.0.0",
     "typescript": "^2.3.4"
+  },
+  "dependencies": {
   }
 }
