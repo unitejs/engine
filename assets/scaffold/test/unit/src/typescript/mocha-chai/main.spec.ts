@@ -2,7 +2,7 @@
  * Tests for Main.
  */
 import * as ChaiModule from "chai";
-const Chai = (<any>ChaiModule).default || ChaiModule;
+const Chai = (ChaiModule as any).default || ChaiModule;
 import { entryPoint } from "../../../src/main";
 
 describe("Main", () => {

@@ -3,6 +3,7 @@
  */
 import { IncludeMode } from "../configuration/models/unite/includeMode";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
+import { UniteLinter } from "../configuration/models/unite/uniteLinter";
 import { UniteModuleLoader } from "../configuration/models/unite/uniteModuleLoader";
 import { UniteSourceLanguage } from "../configuration/models/unite/uniteSourceLanguage";
 import { UniteUnitTestFramework } from "../configuration/models/unite/uniteUnitTestFramework";
@@ -19,11 +20,14 @@ import { E2eTestScaffold } from "../pipelineSteps/e2eTest/e2eTestScaffold";
 import { GitIgnore } from "../pipelineSteps/gitIgnore";
 import { GulpScaffold } from "../pipelineSteps/gulp/gulpScaffold";
 import { GulpTasksBuild } from "../pipelineSteps/gulp/gulpTasksBuild";
+import { GulpTasksServe } from "../pipelineSteps/gulp/gulpTasksServe";
 import { GulpTasksUnit } from "../pipelineSteps/gulp/gulpTasksUnit";
 import { GulpTasksUtil } from "../pipelineSteps/gulp/gulpTasksUtil";
 import { HtmlTemplate } from "../pipelineSteps/htmlTemplate";
 import { Babel } from "../pipelineSteps/language/babel";
 import { TypeScript } from "../pipelineSteps/language/typeScript";
+import { EsLint } from "../pipelineSteps/lint/esLint";
+import { TsLint } from "../pipelineSteps/lint/tsLint";
 import { ModuleLoader } from "../pipelineSteps/moduleLoader";
 import { ModulesConfig } from "../pipelineSteps/modulesConfig";
 import { OutputDirectory } from "../pipelineSteps/outputDirectory";
@@ -58,6 +62,7 @@ export class Engine implements IEngine {
                       moduleLoader: UniteModuleLoader | undefined | null,
                       unitTestRunner: UniteUnitTestRunner | undefined | null,
                       unitTestFramework: UniteUnitTestFramework | undefined | null,
+                      linter: UniteLinter | undefined | null,
                       outputDirectory: string | undefined | null): Promise<number> {
         outputDirectory = this.cleanupOutputDirectory(outputDirectory);
         let uniteConfiguration = await this.loadConfiguration(outputDirectory);
@@ -71,6 +76,7 @@ export class Engine implements IEngine {
         uniteConfiguration.moduleLoader = moduleLoader! || uniteConfiguration.moduleLoader;
         uniteConfiguration.unitTestRunner = unitTestRunner! || uniteConfiguration.unitTestRunner;
         uniteConfiguration.unitTestFramework = unitTestFramework! || uniteConfiguration.unitTestFramework;
+        uniteConfiguration.linter = linter! || uniteConfiguration.linter;
         uniteConfiguration.staticClientModules = [];
         uniteConfiguration.clientPackages = uniteConfiguration.clientPackages || {};
 
@@ -87,6 +93,9 @@ export class Engine implements IEngine {
             return 1;
         }
         if (!EngineValidation.checkOneOf<UniteUnitTestRunner>(this._display, "unitTestRunner", uniteConfiguration.unitTestRunner, [ "None", "Karma" ])) {
+            return 1;
+        }
+        if (!EngineValidation.checkOneOf<UniteLinter>(this._display, "linter", uniteConfiguration.linter, [ "None", "ESLint", "TSLint" ])) {
             return 1;
         }
         if (unitTestRunner !== "None") {
@@ -179,6 +188,7 @@ export class Engine implements IEngine {
         pipelineSteps.push(new GulpScaffold());
         pipelineSteps.push(new GulpTasksBuild());
         pipelineSteps.push(new GulpTasksUtil());
+        pipelineSteps.push(new GulpTasksServe());
 
         pipelineSteps.push(new UnitTestScaffold());
         pipelineSteps.push(new GulpTasksUnit());
@@ -188,6 +198,9 @@ export class Engine implements IEngine {
 
         pipelineSteps.push(new Babel());
         pipelineSteps.push(new TypeScript());
+
+        pipelineSteps.push(new EsLint());
+        pipelineSteps.push(new TsLint());
 
         pipelineSteps.push(new MochaChai());
         pipelineSteps.push(new Jasmine());

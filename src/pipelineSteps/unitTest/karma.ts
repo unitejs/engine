@@ -10,7 +10,6 @@ import { ILogger } from "../../interfaces/ILogger";
 
 export class Karma extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-
         if (uniteConfiguration.unitTestRunner === "Karma") {
             try {
                 super.log(logger, display, "Generating Karma Configuration");

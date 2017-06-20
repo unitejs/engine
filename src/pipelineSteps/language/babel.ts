@@ -11,7 +11,6 @@ import { ILogger } from "../../interfaces/ILogger";
 
 export class Babel extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-
         if (uniteConfiguration.sourceLanguage === "JavaScript") {
             try {
                 super.log(logger, display, "Generating .babelrc", { rootFolder: engineVariables.rootFolder });

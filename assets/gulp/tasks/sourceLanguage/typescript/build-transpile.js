@@ -7,6 +7,7 @@ const gulp = require('gulp');
 const gulpUtil = require('gulp-util');
 const typescript = require('gulp-typescript');
 const sourceMaps = require('gulp-sourcemaps');
+const path = require('path');
 
 gulp.task('build-transpile', () => {
     display.info('Running', "TypeScript");
@@ -15,7 +16,7 @@ gulp.task('build-transpile', () => {
 
     const tsProject = typescript.createProject('tsconfig.json');
 
-    return gulp.src(uniteConfig.directories.src + '**/*.ts')
+    return gulp.src(path.join(uniteConfig.directories.src, '**/*.ts'))
         .pipe(sourceMaps.init())
         .pipe(tsProject())
         .js

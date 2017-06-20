@@ -1,5 +1,5 @@
 /**
- * Pipeline step to generate scaffolding for gulp.
+ * Pipeline step to generate scaffolding for moduleLoader.
  */
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { EnginePipelineStepBase } from "../engine/enginePipelineStepBase";

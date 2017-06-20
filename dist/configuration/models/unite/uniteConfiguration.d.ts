@@ -3,6 +3,7 @@
  */
 import { IncludeMode } from "./includeMode";
 import { UniteDirectories } from "./uniteDirectories";
+import { UniteLinter } from "./uniteLinter";
 import { UniteModuleLoader } from "./uniteModuleLoader";
 import { UniteSourceLanguage } from "./uniteSourceLanguage";
 import { UniteUnitTestFramework } from "./uniteUnitTestFramework";
@@ -12,6 +13,7 @@ export declare class UniteConfiguration {
     title: string;
     sourceLanguage: UniteSourceLanguage;
     moduleLoader: UniteModuleLoader;
+    linter: UniteLinter;
     unitTestRunner: UniteUnitTestRunner;
     unitTestFramework: UniteUnitTestFramework;
     staticClientModules: string[];

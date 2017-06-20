@@ -2,24 +2,13 @@
 
 README.MD
 license
-
-## Static Config
-Webpack
-Browserify
+environment configurations
 
 ## Package Managers
 Remember choice and reuse if not supplied
 
 ## Test Frameworks
 Jest
-
-## Linting
-TSLint
-ESLint
-JSLInt
-
-## Serve
-Browser Sync
 
 ## Unit Testing
 Alternate UI Browsers for testing Firefox/IE/Edge
@@ -50,6 +39,10 @@ Web App
 Electron
 PhoneGap/Cordova
 Windows Universal App
+
+## Static Config
+Webpack
+Browserify
 
 ## IDE Configuration
 vscode

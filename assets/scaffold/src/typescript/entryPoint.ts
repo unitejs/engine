@@ -1,6 +1,6 @@
 /**
  * Main entry point for app.
  */
-import { entryPoint } from './main';
+import { entryPoint } from "./main";
 
 entryPoint();
