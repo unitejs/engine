@@ -3,6 +3,13 @@
 README.MD
 license
 
+## Static Config
+Webpack
+Browserify
+
+## Package Managers
+Remember choice and reuse if not supplied
+
 ## Test Frameworks
 Jest
 
@@ -26,6 +33,9 @@ CSS
 SASS
 LESS
 Postfix
+
+## Build Engine
+npm scripts
 
 ## SPA Frameworks
 Angular 2

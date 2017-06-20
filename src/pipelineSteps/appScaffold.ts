@@ -2,7 +2,6 @@
  * Pipeline step to generate scaffolding for app.
  */
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
-import { StringHelper } from "../core/stringHelper";
 import { EnginePipelineStepBase } from "../engine/enginePipelineStepBase";
 import { EngineVariables } from "../engine/engineVariables";
 import { IDisplay } from "../interfaces/IDisplay";
@@ -19,7 +18,7 @@ export class AppScaffold extends EnginePipelineStepBase {
             return 1;
         }
 
-        const scaffoldFolder = fileSystem.pathCombine(engineVariables.assetsDirectory, "\\scaffold\\src\\" + StringHelper.toCamelCase(uniteConfiguration.sourceLanguage));
+        const scaffoldFolder = fileSystem.pathCombine(engineVariables.assetsDirectory, "\\scaffold\\src\\" + uniteConfiguration.sourceLanguage.toLowerCase());
 
         try {
             super.log(logger, display, "Generating Main in", { appSourceFolder: engineVariables.sourceFolder });

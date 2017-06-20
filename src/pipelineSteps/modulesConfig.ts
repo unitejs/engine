@@ -11,6 +11,14 @@ import { ILogger } from "../interfaces/ILogger";
 export class ModulesConfig extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
+            super.log(logger, display, "Creating Dist Directory", { distFolder: engineVariables.distFolder });
+            await fileSystem.directoryCreate(engineVariables.distFolder);
+        } catch (err) {
+            super.error(logger, display, "Creating Dist failed", err, { distFolder: engineVariables.distFolder });
+            return 1;
+        }
+
+        try {
             super.log(logger, display, "Generating app-modules-config.json in", { distFolder: engineVariables.distFolder });
 
             const lines: string[] = [];

@@ -15,25 +15,25 @@ import { ILogger } from "../interfaces/ILogger";
 import { IPackageManager } from "../interfaces/IPackageManager";
 import { ModuleOperation } from "../interfaces/moduleOperation";
 import { AppScaffold } from "../pipelineSteps/appScaffold";
-import { Babel } from "../pipelineSteps/babel";
-import { E2eTestScaffold } from "../pipelineSteps/e2eTestScaffold";
+import { E2eTestScaffold } from "../pipelineSteps/e2eTest/e2eTestScaffold";
 import { GitIgnore } from "../pipelineSteps/gitIgnore";
-import { GulpScaffold } from "../pipelineSteps/gulpScaffold";
-import { GulpTasksBuild } from "../pipelineSteps/gulpTasksBuild";
-import { GulpTasksUnit } from "../pipelineSteps/gulpTasksUnit";
-import { GulpTasksUtil } from "../pipelineSteps/gulpTasksUtil";
+import { GulpScaffold } from "../pipelineSteps/gulp/gulpScaffold";
+import { GulpTasksBuild } from "../pipelineSteps/gulp/gulpTasksBuild";
+import { GulpTasksUnit } from "../pipelineSteps/gulp/gulpTasksUnit";
+import { GulpTasksUtil } from "../pipelineSteps/gulp/gulpTasksUtil";
 import { HtmlTemplate } from "../pipelineSteps/htmlTemplate";
-import { Jasmine } from "../pipelineSteps/jasmine";
-import { Karma } from "../pipelineSteps/karma";
-import { MochaChai } from "../pipelineSteps/mochaChai";
+import { Babel } from "../pipelineSteps/language/babel";
+import { TypeScript } from "../pipelineSteps/language/typeScript";
 import { ModuleLoader } from "../pipelineSteps/moduleLoader";
 import { ModulesConfig } from "../pipelineSteps/modulesConfig";
 import { OutputDirectory } from "../pipelineSteps/outputDirectory";
 import { PackageJson } from "../pipelineSteps/packageJson";
-import { TypeScript } from "../pipelineSteps/typeScript";
 import { UniteConfigurationDirectories } from "../pipelineSteps/uniteConfigurationDirectories";
 import { UniteConfigurationJson } from "../pipelineSteps/uniteConfigurationJson";
-import { UnitTestScaffold } from "../pipelineSteps/unitTestScaffold";
+import { Jasmine } from "../pipelineSteps/unitTest/jasmine";
+import { Karma } from "../pipelineSteps/unitTest/karma";
+import { MochaChai } from "../pipelineSteps/unitTest/mochaChai";
+import { UnitTestScaffold } from "../pipelineSteps/unitTest/unitTestScaffold";
 import { EngineValidation } from "./engineValidation";
 import { EngineVariables } from "./engineVariables";
 
@@ -200,11 +200,13 @@ export class Engine implements IEngine {
         pipelineSteps.push(new UniteConfigurationDirectories());
         pipelineSteps.push(new UniteConfigurationJson());
 
-        await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
+        const ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
 
-        this._display.banner("You should probably run npm install / yarn install before running any gulp commands.");
+        if (ret === 0) {
+            this._display.banner("You should probably run npm install / yarn install before running any gulp commands.");
+        }
 
-        return 0;
+        return ret;
     }
 
     private async clientPackageAdd(packageName: string, version: string, preload: boolean, includeMode: IncludeMode, outputDirectory: string, uniteConfiguration: UniteConfiguration): Promise<number> {

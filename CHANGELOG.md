@@ -1,3 +1,8 @@
+# v0.0.7
+* Fixed casing for asset folders
+* Fixed dist folder not existing for module config
+* Pipeline steps refactored
+
 # v0.0.6
 * Karma.conf is now static instead of dynamic so it can be run standalone
 * Remap istanbul merged into karma.conf instead of separate gulp task
