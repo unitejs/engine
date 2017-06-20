@@ -1,7 +1,7 @@
 # UniteJS Core
 Core of the UniteJS JavaScript framework management tool.
 
-See UniteJS CLI for usage.
+See [UniteJS CLI](https://github.com/unitejs/cli#readme) for usage.
 
 
 
@@ -34,7 +34,7 @@ and Babel introduces the following code for RequireJS
         };
     }
 
-So the question is where does the fix go? At the moment I am leaning towards TypeScript which needs to introduce a similar interop to Babel. As well as the allowSyntheticDefaultImports which is a compile options only I think that a generateSyntheicDefaultImports might also be needed.
+So the question is where does the fix go? At the moment I am leaning towards TypeScript which needs to introduce a similar interop to Babel. As well as the allowSyntheticDefaultImports which is a compile options only I think that a generateSyntheticDefaultImports might also be needed.
 
 See https://github.com/Microsoft/TypeScript/issues/16093
 and https://github.com/Microsoft/TypeScript/issues/16090

@@ -1,7 +1,6 @@
 .vscode
 node_modules
-test/**/*.js
-*.log
 *.bat
-yarn.lock
-yarn-error.log
+*.lock
+*.log
+

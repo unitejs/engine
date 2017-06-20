@@ -1,6 +1,6 @@
 {
   "name": "unitejs-core",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Core of the UniteJS JavaScript framework management tool.",
   "main": "dist/unitejs-core.js",
   "types": "dist/unitejs-core.d.ts",
