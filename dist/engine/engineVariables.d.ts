@@ -24,5 +24,9 @@ export declare class EngineVariables {
     sourceLanguageExt: string;
     gitIgnore: string[];
     license: ISpdxLicense;
+    html: {
+        head: string[];
+        body: string[];
+    };
     packageManager: IPackageManager;
 }

@@ -31,6 +31,10 @@ export class EngineVariables {
 
     public gitIgnore: string[];
     public license: ISpdxLicense;
+    public html: {
+        head: string[],
+        body: string[]
+    };
 
     public packageManager: IPackageManager;
 }

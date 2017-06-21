@@ -9,4 +9,5 @@ import { IFileSystem } from "../interfaces/IFileSystem";
 import { ILogger } from "../interfaces/ILogger";
 export declare class HtmlTemplate extends EnginePipelineStepBase {
     process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
+    private addLine(indent, lines, content);
 }

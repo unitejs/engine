@@ -20,16 +20,7 @@ gulp.task('build-clean', (callback) => {
     return del(toClean, callback);
 });
 
-gulp.task('build-generate-index', () => {
-    display.info('Generating', "index.html from index.html.template");
-
-    const uniteConfig = uc.getUniteConfig();
-    const moduleConfig = path.join(uniteConfig.directories.dist, "app-module-config.js")
-
-    return template.copyTemplate("index.html.template", "index.html", moduleConfig.replace(/\\/g, '/'), uniteConfig, "node_modules");
-});
-
 gulp.task('build', (cb) => {
-    runSequence('build-clean', 'build-lint', 'build-transpile', 'build-bundle', 'build-generate-index', cb);
+    runSequence('build-clean', 'build-lint', 'build-transpile', 'build-bundle', cb);
 });
 

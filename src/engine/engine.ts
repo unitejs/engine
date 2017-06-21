@@ -284,6 +284,8 @@ export class Engine implements IEngine {
         await engineVariables.packageManager.add(outputDirectory, packageName, version, false);
 
         const pipelineSteps: IEnginePipelineStep[] = [];
+        pipelineSteps.push(new ModuleLoader());
+        pipelineSteps.push(new HtmlTemplate());
         pipelineSteps.push(new Karma());
         pipelineSteps.push(new ModulesConfig());
         pipelineSteps.push(new UniteConfigurationJson());
@@ -304,6 +306,8 @@ export class Engine implements IEngine {
         await engineVariables.packageManager.remove(outputDirectory, packageName, false);
 
         const pipelineSteps: IEnginePipelineStep[] = [];
+        pipelineSteps.push(new ModuleLoader());
+        pipelineSteps.push(new HtmlTemplate());
         pipelineSteps.push(new Karma());
         pipelineSteps.push(new ModulesConfig());
         pipelineSteps.push(new UniteConfigurationJson());
@@ -337,6 +341,11 @@ export class Engine implements IEngine {
         } else if (uniteConfiguration.packageManager === "Yarn") {
             engineVariables.packageManager = new YarnPackageManager(this._logger, this._display, this._fileSystem);
         }
+
+        engineVariables.html = {
+            head: [],
+            body: []
+        };
 
         return engineVariables;
     }

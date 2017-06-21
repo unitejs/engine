@@ -19,6 +19,11 @@ gulp.task('unit-transpile', () => {
     return gulp.src(uniteConfig.directories.unitTestSrc + '**/*.spec.js')
         .pipe(sourceMaps.init())
         .pipe(babel())
+        .on('error', function (err) {
+            console.log('error: ' + err.message + '\n');
+            console.log(err.codeFrame);
+            process.exit(1);
+        })
         .pipe(replace(regEx, uniteConfig.srcDistReplaceWith))
         .pipe(sourceMaps.write({ includeContent: true }))
         .pipe(gulp.dest(uniteConfig.directories.unitTestDist));

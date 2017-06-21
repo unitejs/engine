@@ -21,6 +21,9 @@ gulp.task('unit-transpile', () => {
     return gulp.src(uniteConfig.directories.unitTestSrc + '**/*.spec.ts')
         .pipe(sourceMaps.init())
         .pipe(tsProject())
+        .on("error", function () {
+            process.exit(1);
+        })
         .js
             .pipe(replace(regEx, uniteConfig.srcDistReplaceWith))
             .pipe(sourceMaps.write({ includeContent: true }))

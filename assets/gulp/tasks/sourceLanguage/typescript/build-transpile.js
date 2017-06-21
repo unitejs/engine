@@ -19,6 +19,9 @@ gulp.task('build-transpile', () => {
     return gulp.src(path.join(uniteConfig.directories.src, '**/*.ts'))
         .pipe(sourceMaps.init())
         .pipe(tsProject())
+        .on("error", function () {
+            process.exit(1);
+        })
         .js
             .pipe(sourceMaps.mapSources(function (sourcePath, file) {
                 return './src/' + sourcePath;

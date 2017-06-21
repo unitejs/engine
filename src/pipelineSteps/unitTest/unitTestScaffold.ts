@@ -23,12 +23,12 @@ export class UnitTestScaffold extends EnginePipelineStepBase {
                 super.log(logger, display, "Generating unit test scaffold", { unitTestSrcFolder: engineVariables.unitTestSrcFolder });
 
                 const unitTestsScaffold = fileSystem.pathCombine(engineVariables.assetsDirectory,
-                                                                 "scaffold/test/unit/src/" +
+                                                                 "scaffold/test/unit/src/sourceLanguage/" +
                                                                  uniteConfiguration.sourceLanguage.toLowerCase() + "/" +
                                                                  uniteConfiguration.unitTestFramework.toLowerCase() + "/");
 
                 const unitTestsScaffoldModuleLoader = fileSystem.pathCombine(engineVariables.assetsDirectory,
-                                                                             "scaffold/test/unit/src/" +
+                                                                             "scaffold/test/unit/src/moduleLoader/" +
                                                                              uniteConfiguration.moduleLoader.toLowerCase() + "/");
 
                 await this.copyFile(logger, display, fileSystem, unitTestsScaffold,

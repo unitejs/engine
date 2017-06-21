@@ -20,7 +20,7 @@ const jsTestGlob = testFolder + '**/*.spec.js';
 const tsProject = tsc.createProject(tsConfigFile);
 
 gulp.task('clean-build', function (cb) {
-  return del(distFolder, cb);
+    return del(distFolder, cb);
 });
 
 gulp.task('lint-build', ['clean-build'], function () {
@@ -36,19 +36,22 @@ gulp.task('lint-build', ['clean-build'], function () {
 gulp.task('build', ['lint-build'], function () {
     var tsResult = gulp.src(tsSrcGlob)
         .pipe(sourcemaps.init())
-        .pipe(tsProject());
+        .pipe(tsProject())
+        .on("error", function () {
+            process.exit(1);
+        });
 
     return merge([
         tsResult.dts
             .pipe(gulp.dest(distFolder)),
         tsResult.js
-            .pipe(sourcemaps.write({includeContent: false, sourceRoot: '../src'}))
+            .pipe(sourcemaps.write({ includeContent: false, sourceRoot: '../src' }))
             .pipe(gulp.dest(distFolder))
     ]);
 });
 
 gulp.task('clean-test', function (cb) {
-  return del(cleanTestGlob, cb);
+    return del(cleanTestGlob, cb);
 });
 
 gulp.task('lint-test', ['clean-test'], function () {
@@ -63,12 +66,12 @@ gulp.task('lint-test', ['clean-test'], function () {
 
 gulp.task('test', ['lint-test'], function () {
     var tsResult = gulp.src(tsTestGlob)
-    .pipe(tsProject());
+        .pipe(tsProject());
 
-	return tsResult.js
+    return tsResult.js
         .pipe(gulp.dest(testFolder))
-		.pipe(mocha({
-            reporter: 'spec', 
+        .pipe(mocha({
+            reporter: 'spec',
             timeout: '360000'
         }))
         .once('error', () => {
