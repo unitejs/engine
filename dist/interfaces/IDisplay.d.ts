@@ -3,8 +3,16 @@
  */
 export interface IDisplay {
     banner(message: string): void;
-    log(message: string, args?: string): void;
-    info(message: string): void;
-    error(message: string): void;
-    diagnostics(message: string): void;
+    log(message: string, args?: {
+        [id: string]: any;
+    }): void;
+    info(message: string, args?: {
+        [id: string]: any;
+    }): void;
+    error(message: string, err?: any, args?: {
+        [id: string]: any;
+    }): void;
+    diagnostics(message: string, args?: {
+        [id: string]: any;
+    }): void;
 }

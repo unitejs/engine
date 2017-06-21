@@ -25,7 +25,7 @@ function copyTemplate(templateFile, indexFile, moduleConfigFilename, uniteConfig
 
     bootstrap.push("<script>");
     bootstrap.push('var baseUrl = window.location.origin + window.location.pathname.replace(\'' + indexFile + '\', \'\');');
-    bootstrap.push('var packages = unitModuleConfig.packages;');
+    bootstrap.push('var packages = appModuleConfig.packages;');
     bootstrap.push('packages[\'\'] = { defaultExtension: \'js\' };');
     bootstrap.push('SystemJS.config({');
     bootstrap.push('    baseUrl: baseUrl,');

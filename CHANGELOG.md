@@ -1,3 +1,12 @@
+# v0.1.1
+* Package Manager can be specified for any command and is remembered for future use
+* Added license command line option (https://spdx.org/licenses/) to generate LICENSE
+* Removed uniteDependencies.json and added to package.json peerDependencies
+* Generates README.MD file
+* Fixed bug in SystemJS HTML
+* Added .eslintignore generation
+* Linting keeps changes to configuration files made by user
+
 # v0.1.0
 * Added linting option
 

@@ -1,11 +1,10 @@
 # To Do
 
-README.MD
-license
-environment configurations
+## Environment Configurations
+Dev/Prod/Test etc
 
-## Package Managers
-Remember choice and reuse if not supplied
+## HTML
+Move template generation from tasks to unite
 
 ## Test Frameworks
 Jest
@@ -31,6 +30,8 @@ Angular 2
 Aurelia
 React
 Vue
+Ember
+Backbone
 
 ## Icon Generation
 
@@ -43,8 +44,3 @@ Windows Universal App
 ## Static Config
 Webpack
 Browserify
-
-## IDE Configuration
-vscode
-visual studio
-webstorm

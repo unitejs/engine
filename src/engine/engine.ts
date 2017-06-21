@@ -1,10 +1,13 @@
 /**
  * Main engine
  */
+import { ISpdx } from "../configuration/models/spdx/ISpdx";
+import { ISpdxLicense } from "../configuration/models/spdx/ISpdxLicense";
 import { IncludeMode } from "../configuration/models/unite/includeMode";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { UniteLinter } from "../configuration/models/unite/uniteLinter";
 import { UniteModuleLoader } from "../configuration/models/unite/uniteModuleLoader";
+import { UnitePackageManager } from "../configuration/models/unite/unitePackageManager";
 import { UniteSourceLanguage } from "../configuration/models/unite/uniteSourceLanguage";
 import { UniteUnitTestFramework } from "../configuration/models/unite/uniteUnitTestFramework";
 import { UniteUnitTestRunner } from "../configuration/models/unite/uniteUnitTestRunner";
@@ -13,11 +16,14 @@ import { IEngine } from "../interfaces/IEngine";
 import { IEnginePipelineStep } from "../interfaces/IEnginePipelineStep";
 import { IFileSystem } from "../interfaces/IFileSystem";
 import { ILogger } from "../interfaces/ILogger";
-import { IPackageManager } from "../interfaces/IPackageManager";
 import { ModuleOperation } from "../interfaces/moduleOperation";
+import { NpmPackageManager } from "../packageManagers/npmPackageManager";
+import { YarnPackageManager } from "../packageManagers/yarnPackageManager";
 import { AppScaffold } from "../pipelineSteps/appScaffold";
+import { GitIgnore } from "../pipelineSteps/content/gitIgnore";
+import { License } from "../pipelineSteps/content/license";
+import { ReadMe } from "../pipelineSteps/content/readMe";
 import { E2eTestScaffold } from "../pipelineSteps/e2eTest/e2eTestScaffold";
-import { GitIgnore } from "../pipelineSteps/gitIgnore";
 import { GulpScaffold } from "../pipelineSteps/gulp/gulpScaffold";
 import { GulpTasksBuild } from "../pipelineSteps/gulp/gulpTasksBuild";
 import { GulpTasksServe } from "../pipelineSteps/gulp/gulpTasksServe";
@@ -46,23 +52,25 @@ export class Engine implements IEngine {
     private _display: IDisplay;
     private _fileSystem: IFileSystem;
     private _coreRoot: string;
-    private _packageManager: IPackageManager;
+    private _assetsFolder: string;
 
-    constructor(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, packageManager: IPackageManager) {
+    constructor(logger: ILogger, display: IDisplay, fileSystem: IFileSystem) {
         this._logger = logger;
         this._display = display;
         this._fileSystem = fileSystem;
-        this._packageManager = packageManager;
         this._coreRoot = fileSystem.pathCombine(__dirname, "../../");
+        this._assetsFolder = fileSystem.pathCombine(this._coreRoot, "/assets/");
     }
 
     public async init(packageName: string | undefined | null,
                       title: string | undefined | null,
+                      license: string | undefined | null,
                       sourceLanguage: UniteSourceLanguage | undefined | null,
                       moduleLoader: UniteModuleLoader | undefined | null,
                       unitTestRunner: UniteUnitTestRunner | undefined | null,
                       unitTestFramework: UniteUnitTestFramework | undefined | null,
                       linter: UniteLinter | undefined | null,
+                      packageManager: UnitePackageManager | undefined | null,
                       outputDirectory: string | undefined | null): Promise<number> {
         outputDirectory = this.cleanupOutputDirectory(outputDirectory);
         let uniteConfiguration = await this.loadConfiguration(outputDirectory);
@@ -72,11 +80,13 @@ export class Engine implements IEngine {
 
         uniteConfiguration.packageName = packageName! || uniteConfiguration.packageName;
         uniteConfiguration.title = title! || uniteConfiguration.title;
+        uniteConfiguration.license = license! || uniteConfiguration.license || "MIT";
         uniteConfiguration.sourceLanguage = sourceLanguage! || uniteConfiguration.sourceLanguage;
         uniteConfiguration.moduleLoader = moduleLoader! || uniteConfiguration.moduleLoader;
         uniteConfiguration.unitTestRunner = unitTestRunner! || uniteConfiguration.unitTestRunner;
         uniteConfiguration.unitTestFramework = unitTestFramework! || uniteConfiguration.unitTestFramework;
         uniteConfiguration.linter = linter! || uniteConfiguration.linter;
+        uniteConfiguration.packageManager = packageManager! || uniteConfiguration.packageManager || "Npm";
         uniteConfiguration.staticClientModules = [];
         uniteConfiguration.clientPackages = uniteConfiguration.clientPackages || {};
 
@@ -86,6 +96,20 @@ export class Engine implements IEngine {
         if (!EngineValidation.notEmpty(this._display, "title", uniteConfiguration.title)) {
             return 1;
         }
+
+        let spdxLicense: ISpdxLicense;
+        try {
+            const licenseData = await this._fileSystem.fileReadJson<ISpdx>(this._assetsFolder, "spdx-full.json");
+            if (!EngineValidation.checkLicense(licenseData, this._display, "license", uniteConfiguration.license)) {
+                return 1;
+            } else {
+                spdxLicense = licenseData[uniteConfiguration.license!];
+            }
+        } catch (e) {
+            this._display.error("There was a problem reading the spdx-full.json file", e);
+            return 1;
+        }
+
         if (!EngineValidation.checkOneOf<UniteSourceLanguage>(this._display, "sourceLanguage", uniteConfiguration.sourceLanguage, [ "JavaScript", "TypeScript"])) {
             return 1;
         }
@@ -98,6 +122,9 @@ export class Engine implements IEngine {
         if (!EngineValidation.checkOneOf<UniteLinter>(this._display, "linter", uniteConfiguration.linter, [ "None", "ESLint", "TSLint" ])) {
             return 1;
         }
+        if (!EngineValidation.checkOneOf<UnitePackageManager>(this._display, "packageManager", uniteConfiguration.packageManager, [ "Npm", "Yarn" ])) {
+            return 1;
+        }
         if (unitTestRunner !== "None") {
             if (!EngineValidation.checkOneOf<UniteUnitTestFramework>(this._display, "unitTestFramework", uniteConfiguration.unitTestFramework, [ "Mocha-Chai", "Jasmine" ])) {
                 return 1;
@@ -106,7 +133,7 @@ export class Engine implements IEngine {
 
         this._display.log("");
 
-        return this.initRun(outputDirectory!, uniteConfiguration);
+        return this.initRun(outputDirectory!, uniteConfiguration, spdxLicense);
     }
 
     public async clientPackage(operation: ModuleOperation | undefined | null,
@@ -114,6 +141,7 @@ export class Engine implements IEngine {
                                version: string | undefined | null,
                                preload: boolean,
                                includeMode: IncludeMode| undefined | null,
+                               packageManager: UnitePackageManager | undefined | null,
                                outputDirectory: string | undefined | null): Promise<number> {
         outputDirectory = this.cleanupOutputDirectory(outputDirectory);
         const uniteConfiguration = await this.loadConfiguration(outputDirectory!);
@@ -127,6 +155,7 @@ export class Engine implements IEngine {
             return 1;
         } else {
             uniteConfiguration.clientPackages = uniteConfiguration.clientPackages || {};
+            uniteConfiguration.packageManager = packageManager! || uniteConfiguration.packageManager || "Npm";
         }
 
         if (!EngineValidation.checkOneOf<ModuleOperation>(this._display, "operation", operation, [ "add", "remove" ])) {
@@ -136,6 +165,9 @@ export class Engine implements IEngine {
             return 1;
         }
         if (!EngineValidation.notEmpty(this._display, "packageName", packageName)) {
+            return 1;
+        }
+        if (!EngineValidation.checkOneOf<UnitePackageManager>(this._display, "packageManager", uniteConfiguration.packageManager, [ "Npm", "Yarn" ])) {
             return 1;
         }
 
@@ -176,10 +208,11 @@ export class Engine implements IEngine {
         return uniteConfiguration;
     }
 
-    private async initRun(outputDirectory: string, uniteConfiguration: UniteConfiguration): Promise<number> {
+    private async initRun(outputDirectory: string, uniteConfiguration: UniteConfiguration, license: ISpdxLicense): Promise<number> {
         this._logger.info("Engine::init", { outputDirectory, uniteConfiguration });
 
         const engineVariables = this.createEngineVariables(outputDirectory, uniteConfiguration);
+        engineVariables.license = license;
 
         const pipelineSteps: IEnginePipelineStep[] = [];
         pipelineSteps.push(new OutputDirectory());
@@ -204,9 +237,11 @@ export class Engine implements IEngine {
 
         pipelineSteps.push(new MochaChai());
         pipelineSteps.push(new Jasmine());
-
-        pipelineSteps.push(new GitIgnore());
         pipelineSteps.push(new Karma());
+
+        pipelineSteps.push(new ReadMe());
+        pipelineSteps.push(new GitIgnore());
+        pipelineSteps.push(new License());
 
         pipelineSteps.push(new ModulesConfig());
         pipelineSteps.push(new PackageJson());
@@ -228,7 +263,9 @@ export class Engine implements IEngine {
             return 1;
         }
 
-        const packageInfo = await this._packageManager.info(packageName);
+        const engineVariables = this.createEngineVariables(outputDirectory, uniteConfiguration);
+
+        const packageInfo = await engineVariables.packageManager.info(packageName);
 
         let fixPackageVersion = false;
         if (version === null || version === undefined || version.length === 0) {
@@ -244,9 +281,7 @@ export class Engine implements IEngine {
             includeMode
         };
 
-        await this._packageManager.add(outputDirectory, packageName, version, false);
-
-        const engineVariables = this.createEngineVariables(outputDirectory, uniteConfiguration);
+        await engineVariables.packageManager.add(outputDirectory, packageName, version, false);
 
         const pipelineSteps: IEnginePipelineStep[] = [];
         pipelineSteps.push(new Karma());
@@ -264,9 +299,9 @@ export class Engine implements IEngine {
 
         delete uniteConfiguration.clientPackages[packageName];
 
-        await this._packageManager.remove(outputDirectory, packageName, false);
-
         const engineVariables = this.createEngineVariables(outputDirectory, uniteConfiguration);
+
+        await engineVariables.packageManager.remove(outputDirectory, packageName, false);
 
         const pipelineSteps: IEnginePipelineStep[] = [];
         pipelineSteps.push(new Karma());
@@ -278,6 +313,7 @@ export class Engine implements IEngine {
 
     private createEngineVariables(outputDirectory: string, uniteConfiguration: UniteConfiguration): EngineVariables {
         const engineVariables: EngineVariables = new EngineVariables();
+        engineVariables.coreFolder = this._coreRoot;
         engineVariables.rootFolder = outputDirectory;
         engineVariables.sourceFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\src");
         engineVariables.distFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\dist");
@@ -292,10 +328,15 @@ export class Engine implements IEngine {
         engineVariables.requiredDependencies = [];
         engineVariables.requiredDevDependencies = [];
         engineVariables.packageFolder = "node_modules/";
-        engineVariables.assetsDirectory = this._fileSystem.pathCombine(this._coreRoot, "/assets/");
-        engineVariables.dependenciesFile = "unite-dependencies.json";
+        engineVariables.assetsDirectory = this._assetsFolder;
         engineVariables.sourceLanguageExt = uniteConfiguration.sourceLanguage === "JavaScript" ? "js" : "ts";
         engineVariables.gitIgnore = [];
+
+        if (uniteConfiguration.packageManager === "Npm") {
+            engineVariables.packageManager = new NpmPackageManager(this._logger, this._display, this._fileSystem);
+        } else if (uniteConfiguration.packageManager === "Yarn") {
+            engineVariables.packageManager = new YarnPackageManager(this._logger, this._display, this._fileSystem);
+        }
 
         return engineVariables;
     }

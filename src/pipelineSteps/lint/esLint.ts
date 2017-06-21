@@ -21,12 +21,38 @@ export class EsLint extends EnginePipelineStepBase {
 
                 engineVariables.requiredDevDependencies.push("gulp-eslint");
 
-                const config = this.generateConfig(fileSystem, uniteConfiguration, engineVariables);
+                let existing;
+                try {
+                    const exists = await fileSystem.fileExists(engineVariables.rootFolder, ".eslintrc.json");
+                    if (exists) {
+                        existing = await fileSystem.fileReadJson<EsLintConfiguration>(engineVariables.rootFolder, ".eslintrc.json");
+                    }
+                } catch (err) {
+                    super.error(logger, display, "Reading existing .eslintrc.json failed", err);
+                    return 0;
+                }
+
+                const config = this.generateConfig(fileSystem, uniteConfiguration, engineVariables, existing);
                 await fileSystem.fileWriteJson(engineVariables.rootFolder, ".eslintrc.json", config);
+            } catch (err) {
+                super.error(logger, display, "Generating ESLint Configuration failed", err);
+                return 1;
+            }
+            try {
+                super.log(logger, display, "Generating ESLint Ignore Configuration");
+
+                const lines: string[] = [];
+
+                lines.push("dist/*");
+                lines.push("build/*");
+                lines.push("test/unit/unit-bootstrap.js");
+                lines.push("test/unit/unit-module-config.js");
+
+                await fileSystem.fileWriteLines(engineVariables.rootFolder, ".eslintignore", lines);
 
                 return 0;
             } catch (err) {
-                super.error(logger, display, "Generating ESLint Configuration failed", err);
+                super.error(logger, display, "Generating ESLint Ignore failed", err);
                 return 1;
             }
         } else {
@@ -36,7 +62,16 @@ export class EsLint extends EnginePipelineStepBase {
                     await fileSystem.fileDelete(engineVariables.rootFolder, ".eslintrc.json");
                 }
             } catch (err) {
-                super.error(logger, display, "Deleting ESLint Configuration failed", err);
+                super.error(logger, display, "Deleting eslintrc.jsonn failed", err);
+                return 1;
+            }
+            try {
+                const exists = await fileSystem.fileExists(engineVariables.rootFolder, ".eslintignore");
+                if (exists) {
+                    await fileSystem.fileDelete(engineVariables.rootFolder, ".eslintignore");
+                }
+            } catch (err) {
+                super.error(logger, display, "Deleting .eslintignore failed", err);
                 return 1;
             }
         }
@@ -44,7 +79,7 @@ export class EsLint extends EnginePipelineStepBase {
         return 0;
     }
 
-    private generateConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): EsLintConfiguration {
+    private generateConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, existing: EsLintConfiguration | undefined): EsLintConfiguration {
         const config = new EsLintConfiguration();
 
         config.parserOptions = new EsLintParserOptions();
@@ -52,16 +87,28 @@ export class EsLint extends EnginePipelineStepBase {
         config.parserOptions.sourceType = "module";
         config.extends = "eslint:recommended";
         config.env = {};
-        config.env.browser = true;
-
-        if (uniteConfiguration.unitTestFramework === "Jasmine") {
-            config.env.jasmine = true;
-        } else if (uniteConfiguration.unitTestFramework === "Mocha-Chai") {
-            config.env.mocha = true;
-        }
-
         config.globals = {};
         config.rules = {};
+
+        if (existing) {
+            config.globals = existing.globals || config.globals;
+            config.rules = existing.rules || config.rules;
+            config.env = existing.env || config.env;
+            config.extends = existing.extends || config.extends;
+        }
+
+        config.env.browser = true;
+        if (uniteConfiguration.unitTestFramework === "Jasmine") {
+            config.env.jasmine = true;
+            if (config.env.mocha) {
+                delete config.env.mocha;
+            }
+        } else if (uniteConfiguration.unitTestFramework === "Mocha-Chai") {
+            config.env.mocha = true;
+            if (config.env.jasmine) {
+                delete config.env.jasmine;
+            }
+        }
 
         return config;
     }

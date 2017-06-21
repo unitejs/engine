@@ -8,10 +8,7 @@ export interface ILogger {
     info(message: string, args?: {
         [id: string]: any;
     }): void;
-    error(message: string, args?: {
-        [id: string]: any;
-    }): void;
-    exception(message: string, exception: any, args?: {
+    error(message: string, exception: any, args?: {
         [id: string]: any;
     }): void;
 }

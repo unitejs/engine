@@ -1,7 +1,12 @@
 /**
  * Variables used by the engine.
  */
+import { ISpdxLicense } from "../configuration/models/spdx/ISpdxLicense";
+import { IPackageManager } from "../interfaces/IPackageManager";
+
 export class EngineVariables {
+    public coreFolder: string;
+
     public rootFolder: string;
     public sourceFolder: string;
     public distFolder: string;
@@ -18,7 +23,6 @@ export class EngineVariables {
     public gulpUtilFolder: string;
 
     public assetsDirectory: string;
-    public dependenciesFile: string;
 
     public requiredDependencies: string[];
     public requiredDevDependencies: string[];
@@ -26,4 +30,7 @@ export class EngineVariables {
     public sourceLanguageExt: string;
 
     public gitIgnore: string[];
+    public license: ISpdxLicense;
+
+    public packageManager: IPackageManager;
 }
