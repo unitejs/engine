@@ -10,6 +10,8 @@ export interface IEngine {
          unitTestRunner: string | undefined | null,
          unitTestFramework: string | undefined | null,
          linter: string | undefined | null,
+         cssPre: string | undefined | null,
+         cssPost: string | undefined | null,
          packageManager: string | undefined | null,
          outputDirectory: string | undefined | null): Promise<number>;
 

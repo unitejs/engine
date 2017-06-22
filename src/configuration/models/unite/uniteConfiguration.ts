@@ -2,6 +2,8 @@
  * Model of Unite Configuration (unite.json) file.
  */
 import { IncludeMode } from "./includeMode";
+import { UniteCssPostProcessor } from "./uniteCssPostProcessor";
+import { UniteCssPreProcessor } from "./uniteCssPreProcessor";
 import { UniteDirectories } from "./uniteDirectories";
 import { UniteLinter } from "./uniteLinter";
 import { UniteModuleLoader } from "./uniteModuleLoader";
@@ -20,6 +22,8 @@ export class UniteConfiguration {
     public packageManager: UnitePackageManager;
     public unitTestRunner: UniteUnitTestRunner;
     public unitTestFramework: UniteUnitTestFramework;
+    public cssPre: UniteCssPreProcessor;
+    public cssPost: UniteCssPostProcessor;
 
     public staticClientModules: string[];
 

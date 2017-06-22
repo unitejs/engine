@@ -5,6 +5,8 @@ import { ISpdx } from "../configuration/models/spdx/ISpdx";
 import { ISpdxLicense } from "../configuration/models/spdx/ISpdxLicense";
 import { IncludeMode } from "../configuration/models/unite/includeMode";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
+import { UniteCssPostProcessor } from "../configuration/models/unite/uniteCssPostProcessor";
+import { UniteCssPreProcessor } from "../configuration/models/unite/uniteCssPreProcessor";
 import { UniteLinter } from "../configuration/models/unite/uniteLinter";
 import { UniteModuleLoader } from "../configuration/models/unite/uniteModuleLoader";
 import { UnitePackageManager } from "../configuration/models/unite/unitePackageManager";
@@ -23,6 +25,11 @@ import { AppScaffold } from "../pipelineSteps/appScaffold";
 import { GitIgnore } from "../pipelineSteps/content/gitIgnore";
 import { License } from "../pipelineSteps/content/license";
 import { ReadMe } from "../pipelineSteps/content/readMe";
+import { PostCss } from "../pipelineSteps/cssPostProcessor/postCss";
+import { Css } from "../pipelineSteps/cssPreProcessor/css";
+import { Less } from "../pipelineSteps/cssPreProcessor/less";
+import { Sass } from "../pipelineSteps/cssPreProcessor/sass";
+import { Stylus } from "../pipelineSteps/cssPreProcessor/stylus";
 import { E2eTestScaffold } from "../pipelineSteps/e2eTest/e2eTestScaffold";
 import { GulpScaffold } from "../pipelineSteps/gulp/gulpScaffold";
 import { GulpTasksBuild } from "../pipelineSteps/gulp/gulpTasksBuild";
@@ -70,6 +77,8 @@ export class Engine implements IEngine {
                       unitTestRunner: UniteUnitTestRunner | undefined | null,
                       unitTestFramework: UniteUnitTestFramework | undefined | null,
                       linter: UniteLinter | undefined | null,
+                      cssPre: UniteCssPreProcessor | undefined | null,
+                      cssPost: UniteCssPostProcessor | undefined | null,
                       packageManager: UnitePackageManager | undefined | null,
                       outputDirectory: string | undefined | null): Promise<number> {
         outputDirectory = this.cleanupOutputDirectory(outputDirectory);
@@ -89,6 +98,8 @@ export class Engine implements IEngine {
         uniteConfiguration.packageManager = packageManager! || uniteConfiguration.packageManager || "Npm";
         uniteConfiguration.staticClientModules = [];
         uniteConfiguration.clientPackages = uniteConfiguration.clientPackages || {};
+        uniteConfiguration.cssPre = cssPre! || uniteConfiguration.cssPre;
+        uniteConfiguration.cssPost = cssPost! || uniteConfiguration.cssPost;
 
         if (!EngineValidation.checkPackageName(this._display, "packageName", uniteConfiguration.packageName)) {
             return 1;
@@ -120,6 +131,12 @@ export class Engine implements IEngine {
             return 1;
         }
         if (!EngineValidation.checkOneOf<UniteLinter>(this._display, "linter", uniteConfiguration.linter, [ "None", "ESLint", "TSLint" ])) {
+            return 1;
+        }
+        if (!EngineValidation.checkOneOf<UniteCssPreProcessor>(this._display, "cssPre", uniteConfiguration.cssPre, [ "Css", "Less", "Sass", "Stylus" ])) {
+            return 1;
+        }
+        if (!EngineValidation.checkOneOf<UniteCssPostProcessor>(this._display, "cssPost", uniteConfiguration.cssPost, [ "None", "PostCss" ])) {
             return 1;
         }
         if (!EngineValidation.checkOneOf<UnitePackageManager>(this._display, "packageManager", uniteConfiguration.packageManager, [ "Npm", "Yarn" ])) {
@@ -235,6 +252,13 @@ export class Engine implements IEngine {
         pipelineSteps.push(new EsLint());
         pipelineSteps.push(new TsLint());
 
+        pipelineSteps.push(new Css());
+        pipelineSteps.push(new Less());
+        pipelineSteps.push(new Sass());
+        pipelineSteps.push(new Stylus());
+
+        pipelineSteps.push(new PostCss());
+
         pipelineSteps.push(new MochaChai());
         pipelineSteps.push(new Jasmine());
         pipelineSteps.push(new Karma());
@@ -319,10 +343,11 @@ export class Engine implements IEngine {
         const engineVariables: EngineVariables = new EngineVariables();
         engineVariables.coreFolder = this._coreRoot;
         engineVariables.rootFolder = outputDirectory;
-        engineVariables.sourceFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\src");
+        engineVariables.srcFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\src");
         engineVariables.distFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\dist");
         engineVariables.gulpBuildFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\build");
         engineVariables.reportsFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\reports");
+        engineVariables.cssDistFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\css");
         engineVariables.e2eTestSrcFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\e2e\\src");
         engineVariables.e2eTestDistFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\e2e\\dist");
         engineVariables.unitTestFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\unit");

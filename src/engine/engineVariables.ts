@@ -8,11 +8,13 @@ export class EngineVariables {
     public coreFolder: string;
 
     public rootFolder: string;
-    public sourceFolder: string;
+    public srcFolder: string;
     public distFolder: string;
     public unitTestFolder: string;
     public unitTestSrcFolder: string;
     public unitTestDistFolder: string;
+    public cssSrcFolder: string;
+    public cssDistFolder: string;
     public e2eTestSrcFolder: string;
     public e2eTestDistFolder: string;
     public reportsFolder: string;

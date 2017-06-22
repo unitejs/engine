@@ -12,15 +12,21 @@ export class Karma extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.unitTestRunner === "Karma") {
             try {
-                super.log(logger, display, "Generating Karma Configuration");
+                const hasMarker = await super.fileHasMarker(fileSystem, engineVariables.rootFolder, "karma.conf.js");
 
-                engineVariables.requiredDevDependencies.push("karma");
-                engineVariables.requiredDevDependencies.push("karma-chrome-launcher");
-                engineVariables.requiredDevDependencies.push("karma-phantomjs-launcher");
+                if (hasMarker) {
+                    super.log(logger, display, "Generating Karma Configuration");
 
-                const lines: string[] = [];
-                this.generateConfig(fileSystem, uniteConfiguration, engineVariables, lines);
-                await fileSystem.fileWriteLines(engineVariables.rootFolder, "karma.conf.js", lines);
+                    engineVariables.requiredDevDependencies.push("karma");
+                    engineVariables.requiredDevDependencies.push("karma-chrome-launcher");
+                    engineVariables.requiredDevDependencies.push("karma-phantomjs-launcher");
+
+                    const lines: string[] = [];
+                    this.generateConfig(fileSystem, uniteConfiguration, engineVariables, lines);
+                    await fileSystem.fileWriteLines(engineVariables.rootFolder, "karma.conf.js", lines);
+                } else {
+                    super.log(logger, display, "Skipping karma.conf.js as it has no marker");
+                }
 
                 return 0;
             } catch (err) {
@@ -151,5 +157,6 @@ export class Karma extends EnginePipelineStepBase {
         lines.push("        ]");
         lines.push("    });");
         lines.push("};");
+        lines.push(super.wrapMarker("/* ", " */"));
     }
 }

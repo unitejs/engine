@@ -3,9 +3,6 @@
 ## Environment Configurations
 Dev/Prod/Test etc
 
-## HTML
-Move template generation from tasks to unite
-
 ## Test Frameworks
 Jest
 
@@ -15,12 +12,6 @@ Alternate UI Browsers for testing Firefox/IE/Edge
 ## E2E Tests
 Webdriver
 Protractor
-
-## CSS Frameworks
-CSS
-SASS
-LESS
-Postfix
 
 ## Build Engine
 npm scripts

@@ -7,6 +7,8 @@ export declare class UniteDirectories {
     unitTest: string;
     unitTestSrc: string;
     unitTestDist: string;
+    cssSrc: string;
+    cssDist: string;
     e2eTestSrc: string;
     e2eTestDist: string;
     reports: string;

@@ -7,6 +7,8 @@ export class UniteDirectories {
     public unitTest: string;
     public unitTestSrc: string;
     public unitTestDist: string;
+    public cssSrc: string;
+    public cssDist: string;
     public e2eTestSrc: string;
     public e2eTestDist: string;
     public reports: string;
