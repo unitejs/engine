@@ -10,15 +10,17 @@ import { IFileSystem } from "../../interfaces/IFileSystem";
 import { ILogger } from "../../interfaces/ILogger";
 
 export class Babel extends EnginePipelineStepBase {
+    private static FILENAME: string = ".babelrc";
+
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        engineVariables.toggleDependencies(["babel-core", "babel-preset-es2015"], uniteConfiguration.sourceLanguage === "JavaScript", true);
+
         if (uniteConfiguration.sourceLanguage === "JavaScript") {
             try {
-                super.log(logger, display, "Generating .babelrc", { rootFolder: engineVariables.rootFolder });
+                super.log(logger, display, `Generating ${Babel.FILENAME}`, { rootFolder: engineVariables.rootFolder });
 
                 const babelConfiguration = new BabelConfiguration();
                 babelConfiguration.plugins = [];
-
-                engineVariables.requiredDevDependencies.push("babel-preset-es2015");
 
                 let modules = "";
                 if (uniteConfiguration.moduleLoader === "RequireJS") {
@@ -32,20 +34,20 @@ export class Babel extends EnginePipelineStepBase {
                                                 ["es2015", { modules }]
                                              ];
 
-                await fileSystem.fileWriteJson(engineVariables.rootFolder, ".babelrc", babelConfiguration);
+                await fileSystem.fileWriteJson(engineVariables.rootFolder, Babel.FILENAME, babelConfiguration);
                 return 0;
             } catch (err) {
-                super.error(logger, display, "Generating .babelrc failed", err, { rootFolder: engineVariables.rootFolder });
+                super.error(logger, display, `Generating ${Babel.FILENAME} failed`, err, { rootFolder: engineVariables.rootFolder });
                 return 1;
             }
         } else {
             try {
-                const exists = await fileSystem.fileExists(engineVariables.rootFolder, ".babelrc");
+                const exists = await fileSystem.fileExists(engineVariables.rootFolder, Babel.FILENAME);
                 if (exists) {
-                    await fileSystem.fileDelete(engineVariables.rootFolder, ".babelrc");
+                    await fileSystem.fileDelete(engineVariables.rootFolder, Babel.FILENAME);
                 }
             } catch (err) {
-                super.error(logger, display, "Deleting .babelrc failed", err);
+                super.error(logger, display, `Deleting ${Babel.FILENAME} failed`, err);
                 return 1;
             }
         }

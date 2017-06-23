@@ -21,36 +21,37 @@ import { ILogger } from "../interfaces/ILogger";
 import { ModuleOperation } from "../interfaces/moduleOperation";
 import { NpmPackageManager } from "../packageManagers/npmPackageManager";
 import { YarnPackageManager } from "../packageManagers/yarnPackageManager";
-import { AppScaffold } from "../pipelineSteps/appScaffold";
+import { PlainApp } from "../pipelineSteps/applicationFramework/plainApp";
 import { GitIgnore } from "../pipelineSteps/content/gitIgnore";
+import { HtmlTemplate } from "../pipelineSteps/content/htmlTemplate";
 import { License } from "../pipelineSteps/content/license";
+import { PackageJson } from "../pipelineSteps/content/packageJson";
 import { ReadMe } from "../pipelineSteps/content/readMe";
 import { PostCss } from "../pipelineSteps/cssPostProcessor/postCss";
 import { Css } from "../pipelineSteps/cssPreProcessor/css";
 import { Less } from "../pipelineSteps/cssPreProcessor/less";
 import { Sass } from "../pipelineSteps/cssPreProcessor/sass";
 import { Stylus } from "../pipelineSteps/cssPreProcessor/stylus";
-import { E2eTestScaffold } from "../pipelineSteps/e2eTest/e2eTestScaffold";
-import { GulpScaffold } from "../pipelineSteps/gulp/gulpScaffold";
-import { GulpTasksBuild } from "../pipelineSteps/gulp/gulpTasksBuild";
-import { GulpTasksServe } from "../pipelineSteps/gulp/gulpTasksServe";
-import { GulpTasksUnit } from "../pipelineSteps/gulp/gulpTasksUnit";
-import { GulpTasksUtil } from "../pipelineSteps/gulp/gulpTasksUtil";
-import { HtmlTemplate } from "../pipelineSteps/htmlTemplate";
 import { Babel } from "../pipelineSteps/language/babel";
 import { TypeScript } from "../pipelineSteps/language/typeScript";
 import { EsLint } from "../pipelineSteps/lint/esLint";
 import { TsLint } from "../pipelineSteps/lint/tsLint";
-import { ModuleLoader } from "../pipelineSteps/moduleLoader";
-import { ModulesConfig } from "../pipelineSteps/modulesConfig";
-import { OutputDirectory } from "../pipelineSteps/outputDirectory";
-import { PackageJson } from "../pipelineSteps/packageJson";
-import { UniteConfigurationDirectories } from "../pipelineSteps/uniteConfigurationDirectories";
-import { UniteConfigurationJson } from "../pipelineSteps/uniteConfigurationJson";
-import { Jasmine } from "../pipelineSteps/unitTest/jasmine";
-import { Karma } from "../pipelineSteps/unitTest/karma";
-import { MochaChai } from "../pipelineSteps/unitTest/mochaChai";
-import { UnitTestScaffold } from "../pipelineSteps/unitTest/unitTestScaffold";
+import { Browserify } from "../pipelineSteps/moduleLoader/browserify";
+import { RequireJs } from "../pipelineSteps/moduleLoader/requireJs";
+import { SystemJs } from "../pipelineSteps/moduleLoader/systemJs";
+import { Webpack } from "../pipelineSteps/moduleLoader/webpack";
+import { AppScaffold } from "../pipelineSteps/scaffold/appScaffold";
+import { E2eTestScaffold } from "../pipelineSteps/scaffold/e2eTestScaffold";
+import { ModulesConfig } from "../pipelineSteps/scaffold/modulesConfig";
+import { OutputDirectory } from "../pipelineSteps/scaffold/outputDirectory";
+import { UniteConfigurationDirectories } from "../pipelineSteps/scaffold/uniteConfigurationDirectories";
+import { UniteConfigurationJson } from "../pipelineSteps/scaffold/uniteConfigurationJson";
+import { UnitTestScaffold } from "../pipelineSteps/scaffold/unitTestScaffold";
+import { BrowserSync } from "../pipelineSteps/server/browserSync";
+import { Gulp } from "../pipelineSteps/taskManager/gulp";
+import { Jasmine } from "../pipelineSteps/unitTestFramework/jasmine";
+import { MochaChai } from "../pipelineSteps/unitTestFramework/mochaChai";
+import { Karma } from "../pipelineSteps/unitTestRunner/karma";
 import { EngineValidation } from "./engineValidation";
 import { EngineVariables } from "./engineVariables";
 
@@ -96,6 +97,9 @@ export class Engine implements IEngine {
         uniteConfiguration.unitTestFramework = unitTestFramework! || uniteConfiguration.unitTestFramework;
         uniteConfiguration.linter = linter! || uniteConfiguration.linter;
         uniteConfiguration.packageManager = packageManager! || uniteConfiguration.packageManager || "Npm";
+        uniteConfiguration.taskManager = "Gulp";
+        uniteConfiguration.server = "BrowserSync";
+        uniteConfiguration.applicationFramework = "PlainApp";
         uniteConfiguration.staticClientModules = [];
         uniteConfiguration.clientPackages = uniteConfiguration.clientPackages || {};
         uniteConfiguration.cssPre = cssPre! || uniteConfiguration.cssPre;
@@ -234,16 +238,16 @@ export class Engine implements IEngine {
         const pipelineSteps: IEnginePipelineStep[] = [];
         pipelineSteps.push(new OutputDirectory());
         pipelineSteps.push(new AppScaffold());
-        pipelineSteps.push(new E2eTestScaffold());
-        pipelineSteps.push(new GulpScaffold());
-        pipelineSteps.push(new GulpTasksBuild());
-        pipelineSteps.push(new GulpTasksUtil());
-        pipelineSteps.push(new GulpTasksServe());
-
         pipelineSteps.push(new UnitTestScaffold());
-        pipelineSteps.push(new GulpTasksUnit());
+        pipelineSteps.push(new E2eTestScaffold());
 
-        pipelineSteps.push(new ModuleLoader());
+        pipelineSteps.push(new Gulp());
+
+        pipelineSteps.push(new Browserify());
+        pipelineSteps.push(new RequireJs());
+        pipelineSteps.push(new SystemJs());
+        pipelineSteps.push(new Webpack());
+
         pipelineSteps.push(new HtmlTemplate());
 
         pipelineSteps.push(new Babel());
@@ -262,6 +266,10 @@ export class Engine implements IEngine {
         pipelineSteps.push(new MochaChai());
         pipelineSteps.push(new Jasmine());
         pipelineSteps.push(new Karma());
+
+        pipelineSteps.push(new BrowserSync());
+
+        pipelineSteps.push(new PlainApp());
 
         pipelineSteps.push(new ReadMe());
         pipelineSteps.push(new GitIgnore());
@@ -308,7 +316,10 @@ export class Engine implements IEngine {
         await engineVariables.packageManager.add(outputDirectory, packageName, version, false);
 
         const pipelineSteps: IEnginePipelineStep[] = [];
-        pipelineSteps.push(new ModuleLoader());
+        pipelineSteps.push(new Browserify());
+        pipelineSteps.push(new RequireJs());
+        pipelineSteps.push(new SystemJs());
+        pipelineSteps.push(new Webpack());
         pipelineSteps.push(new HtmlTemplate());
         pipelineSteps.push(new Karma());
         pipelineSteps.push(new ModulesConfig());
@@ -330,7 +341,10 @@ export class Engine implements IEngine {
         await engineVariables.packageManager.remove(outputDirectory, packageName, false);
 
         const pipelineSteps: IEnginePipelineStep[] = [];
-        pipelineSteps.push(new ModuleLoader());
+        pipelineSteps.push(new Browserify());
+        pipelineSteps.push(new RequireJs());
+        pipelineSteps.push(new SystemJs());
+        pipelineSteps.push(new Webpack());
         pipelineSteps.push(new HtmlTemplate());
         pipelineSteps.push(new Karma());
         pipelineSteps.push(new ModulesConfig());
@@ -343,19 +357,17 @@ export class Engine implements IEngine {
         const engineVariables: EngineVariables = new EngineVariables();
         engineVariables.coreFolder = this._coreRoot;
         engineVariables.rootFolder = outputDirectory;
-        engineVariables.srcFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\src");
-        engineVariables.distFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\dist");
-        engineVariables.gulpBuildFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\build");
-        engineVariables.reportsFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\reports");
-        engineVariables.cssDistFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\css");
-        engineVariables.e2eTestSrcFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\e2e\\src");
-        engineVariables.e2eTestDistFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\e2e\\dist");
-        engineVariables.unitTestFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\unit");
-        engineVariables.unitTestSrcFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\unit\\src");
-        engineVariables.unitTestDistFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "\\test\\unit\\dist");
+        engineVariables.srcFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "src");
+        engineVariables.distFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "dist");
+        engineVariables.gulpBuildFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "build");
+        engineVariables.reportsFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "reports");
+        engineVariables.cssDistFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "css");
+        engineVariables.e2eTestSrcFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "test/e2e/src");
+        engineVariables.e2eTestDistFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "test/e2e/dist");
+        engineVariables.unitTestFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "test/unit");
+        engineVariables.unitTestSrcFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "test/unit/src");
+        engineVariables.unitTestDistFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "test/unit/dist");
 
-        engineVariables.requiredDependencies = [];
-        engineVariables.requiredDevDependencies = [];
         engineVariables.packageFolder = "node_modules/";
         engineVariables.assetsDirectory = this._assetsFolder;
         engineVariables.sourceLanguageExt = uniteConfiguration.sourceLanguage === "JavaScript" ? "js" : "ts";

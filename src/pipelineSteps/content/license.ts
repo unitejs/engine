@@ -9,15 +9,17 @@ import { IFileSystem } from "../../interfaces/IFileSystem";
 import { ILogger } from "../../interfaces/ILogger";
 
 export class License extends EnginePipelineStepBase {
+    private static FILENAME: string = "LICENSE";
+
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
-            super.log(logger, display, "Writing LICENSE");
+            super.log(logger, display, `Writing ${License.FILENAME}`);
 
-            await fileSystem.fileWriteLines(engineVariables.rootFolder, "LICENSE", engineVariables.license.licenseText.split("\n"));
+            await fileSystem.fileWriteLines(engineVariables.rootFolder, License.FILENAME, engineVariables.license.licenseText.split("\n"));
 
             return 0;
         } catch (err) {
-            super.error(logger, display, "Writing LICENSE failed", err);
+            super.error(logger, display, `Writing ${License.FILENAME} failed`, err);
             return 1;
         }
     }

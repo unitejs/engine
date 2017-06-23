@@ -2,13 +2,16 @@
  * Model of Unite Configuration (unite.json) file.
  */
 import { IncludeMode } from "./includeMode";
+import { UniteApplicationFramework } from "./uniteApplicationFramework";
 import { UniteCssPostProcessor } from "./uniteCssPostProcessor";
 import { UniteCssPreProcessor } from "./uniteCssPreProcessor";
 import { UniteDirectories } from "./uniteDirectories";
 import { UniteLinter } from "./uniteLinter";
 import { UniteModuleLoader } from "./uniteModuleLoader";
 import { UnitePackageManager } from "./unitePackageManager";
+import { UniteServer } from "./uniteServer";
 import { UniteSourceLanguage } from "./uniteSourceLanguage";
+import { UniteTaskManager } from "./uniteTaskManager";
 import { UniteUnitTestFramework } from "./uniteUnitTestFramework";
 import { UniteUnitTestRunner } from "./uniteUnitTestRunner";
 
@@ -20,8 +23,11 @@ export class UniteConfiguration {
     public moduleLoader: UniteModuleLoader;
     public linter: UniteLinter;
     public packageManager: UnitePackageManager;
+    public taskManager: UniteTaskManager;
     public unitTestRunner: UniteUnitTestRunner;
     public unitTestFramework: UniteUnitTestFramework;
+    public server: UniteServer;
+    public applicationFramework: UniteApplicationFramework;
     public cssPre: UniteCssPreProcessor;
     public cssPost: UniteCssPostProcessor;
 

@@ -10,26 +10,26 @@ import { IFileSystem } from "../../interfaces/IFileSystem";
 import { ILogger } from "../../interfaces/ILogger";
 
 export class PostCss extends EnginePipelineStepBase {
+    private static FILENAME: string = ".postcssrc.json";
+
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        engineVariables.toggleDependencies(["postcss", "postcss-import", "autoprefixer"], uniteConfiguration.cssPost === "PostCss", true);
+
         if (uniteConfiguration.cssPost === "PostCss") {
             try {
-                super.log(logger, display, "Generating .postcssrc.json", { rootFolder: engineVariables.rootFolder });
-
-                engineVariables.requiredDevDependencies.push("gulp-postcss");
-                engineVariables.requiredDevDependencies.push("postcss-import");
-                engineVariables.requiredDevDependencies.push("autoprefixer");
+                super.log(logger, display, `Generating ${PostCss.FILENAME}`, { rootFolder: engineVariables.rootFolder });
 
                 let existing;
 
                 try {
-                    const exists = await fileSystem.fileExists(engineVariables.rootFolder, ".postcssrc.json");
+                    const exists = await fileSystem.fileExists(engineVariables.rootFolder, PostCss.FILENAME);
 
                     if (exists) {
-                        existing = await fileSystem.fileReadJson<PostCssConfiguration>(engineVariables.rootFolder, ".postcssrc.json");
+                        existing = await fileSystem.fileReadJson<PostCssConfiguration>(engineVariables.rootFolder, PostCss.FILENAME);
 
                     }
                 } catch (err) {
-                    super.error(logger, display, "Loading existing .postcssrc.json failed", err, { rootFolder: engineVariables.rootFolder });
+                    super.error(logger, display, `Loading existing ${PostCss.FILENAME} failed`, err, { rootFolder: engineVariables.rootFolder });
                     return 1;
                 }
 
@@ -38,17 +38,17 @@ export class PostCss extends EnginePipelineStepBase {
                 await fileSystem.fileWriteJson(engineVariables.rootFolder, ".postcssrc.json", config);
                 return 0;
             } catch (err) {
-                super.error(logger, display, "Generating .postcssrc.json failed", err, { rootFolder: engineVariables.rootFolder });
+                super.error(logger, display, `Generating ${PostCss.FILENAME} failed`, err, { rootFolder: engineVariables.rootFolder });
                 return 1;
             }
         } else {
             try {
-                const exists = await fileSystem.fileExists(engineVariables.rootFolder, ".postcssrc.json");
+                const exists = await fileSystem.fileExists(engineVariables.rootFolder, PostCss.FILENAME);
                 if (exists) {
-                    await fileSystem.fileDelete(engineVariables.rootFolder, ".postcssrc.json");
+                    await fileSystem.fileDelete(engineVariables.rootFolder, PostCss.FILENAME);
                 }
             } catch (err) {
-                super.error(logger, display, "Deleting .postcssrc.json failed", err);
+                super.error(logger, display, `Deleting ${PostCss.FILENAME} failed`, err);
                 return 1;
             }
         }

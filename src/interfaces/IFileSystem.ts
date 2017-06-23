@@ -12,6 +12,7 @@ export interface IFileSystem {
 
     directoryExists(directoryName: string): Promise<boolean>;
     directoryCreate(directoryName: string): Promise<void>;
+    directoryDelete(directoryName: string): Promise<void>;
 
     fileExists(directoryName: string, fileName: string): Promise<boolean>;
 

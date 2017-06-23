@@ -34,12 +34,14 @@ gulp.task('lint-build', ['clean-build'], () => {
 });
 
 gulp.task('build', ['lint-build'], () => {
+    let errorCount = 0;
+        
     var tsResult = gulp.src(tsSrcGlob)
         .pipe(sourcemaps.init())
         .pipe(tsProject())
         .on("error", (err) => {
-            process.exit(1);
-        });
+            errorCount++;
+        })
 
     return merge([
         tsResult.dts
@@ -47,6 +49,11 @@ gulp.task('build', ['lint-build'], () => {
         tsResult.js
             .pipe(sourcemaps.write({ includeContent: false, sourceRoot: '../src' }))
             .pipe(gulp.dest(distFolder))
+            .on('end', () => {
+                if (errorCount > 0) {
+                    process.exit();
+                }
+            })
     ]);
 });
 

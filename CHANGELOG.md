@@ -1,3 +1,9 @@
+# v0.2.1
+* Added generated marker to gitignore file
+* Refactored pipeline steps 
+* generated package.json retains custom added data
+* init can be called multiple times even if a user has changed files as long as they remove generated markers
+
 # v0.2.0
 * Added css preprocessor support css,less,sass,stylus integration
 * Added css postprocessor support none,postcss

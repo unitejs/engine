@@ -25,23 +25,23 @@ export abstract class EnginePipelineStepBase implements IEnginePipelineStep {
 
     public async copyFile(logger: ILogger, display: IDisplay, fileSystem: IFileSystem,
                           sourceFolder: string, sourceFilename: string, destFolder: string, destFilename: string): Promise<void> {
-        const hasMarker = await this.fileHasMarker(fileSystem, destFolder, destFilename);
+        const hasGeneratedMarker = await this.fileHasGeneratedMarker(fileSystem, destFolder, destFilename);
 
-        if (hasMarker) {
+        if (hasGeneratedMarker) {
             this.log(logger, display, "Copying " + sourceFilename, { from: sourceFolder, to: destFolder });
 
             const lines = await fileSystem.fileReadLines(sourceFolder, sourceFilename);
             await fileSystem.fileWriteLines(destFolder, destFilename, lines);
         } else {
-            this.log(logger, display, "Skipping " + sourceFilename + " as it has no marker", { from: sourceFolder, to: destFolder });
+            this.log(logger, display, "Skipping " + sourceFilename + " as it has no generated marker", { from: sourceFolder, to: destFolder });
         }
     }
 
-    public wrapMarker(before: string, after: string): string {
+    public wrapGeneratedMarker(before: string, after: string): string {
         return before + EnginePipelineStepBase.MARKER + after;
     }
 
-    public async fileHasMarker(fileSystem: IFileSystem, folder: string, filename: string): Promise<boolean> {
+    public async fileHasGeneratedMarker(fileSystem: IFileSystem, folder: string, filename: string): Promise<boolean> {
         let hasMarker = true;
 
         try {

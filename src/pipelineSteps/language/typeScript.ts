@@ -11,11 +11,14 @@ import { IFileSystem } from "../../interfaces/IFileSystem";
 import { ILogger } from "../../interfaces/ILogger";
 
 export class TypeScript extends EnginePipelineStepBase {
+    private static FILENAME: string = "tsconfig.json";
+
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        engineVariables.toggleDependencies(["typescript"], uniteConfiguration.sourceLanguage === "TypeScript", true);
 
         if (uniteConfiguration.sourceLanguage === "TypeScript") {
             try {
-                super.log(logger, display, "Generating tsconfig.json", { rootFolder: engineVariables.rootFolder });
+                super.log(logger, display, `Generating ${TypeScript.FILENAME}`, { rootFolder: engineVariables.rootFolder });
 
                 const typeScriptConfiguration = new TypeScriptConfiguration();
                 typeScriptConfiguration.compilerOptions = new TypeScriptCompilerOptions();
@@ -32,20 +35,20 @@ export class TypeScript extends EnginePipelineStepBase {
                     typeScriptConfiguration.compilerOptions.module = "commonjs";
                 }
 
-                await fileSystem.fileWriteJson(engineVariables.rootFolder, "tsconfig.json", typeScriptConfiguration);
+                await fileSystem.fileWriteJson(engineVariables.rootFolder, TypeScript.FILENAME, typeScriptConfiguration);
                 return 0;
             } catch (err) {
-                super.error(logger, display, "Generating tsconfig.json failed", err, { rootFolder: engineVariables.rootFolder });
+                super.error(logger, display, `Generating ${TypeScript.FILENAME} failed`, err, { rootFolder: engineVariables.rootFolder });
                 return 1;
             }
         } else {
             try {
-                const exists = await fileSystem.fileExists(engineVariables.rootFolder, "tsconfig.json");
+                const exists = await fileSystem.fileExists(engineVariables.rootFolder, TypeScript.FILENAME);
                 if (exists) {
-                    await fileSystem.fileDelete(engineVariables.rootFolder, "tsconfig.json");
+                    await fileSystem.fileDelete(engineVariables.rootFolder, TypeScript.FILENAME);
                 }
             } catch (err) {
-                super.error(logger, display, "Deleting tsconfig.json failed", err);
+                super.error(logger, display, `Deleting ${TypeScript.FILENAME} failed`, err);
                 return 1;
             }
         }

@@ -17,6 +17,6 @@ export declare abstract class EnginePipelineStepBase implements IEnginePipelineS
         [id: string]: any;
     }): void;
     copyFile(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, sourceFolder: string, sourceFilename: string, destFolder: string, destFilename: string): Promise<void>;
-    wrapMarker(before: string, after: string): string;
-    fileHasMarker(fileSystem: IFileSystem, folder: string, filename: string): Promise<boolean>;
+    wrapGeneratedMarker(before: string, after: string): string;
+    fileHasGeneratedMarker(fileSystem: IFileSystem, folder: string, filename: string): Promise<boolean>;
 }

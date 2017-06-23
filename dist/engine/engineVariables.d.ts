@@ -21,9 +21,8 @@ export declare class EngineVariables {
     gulpTasksFolder: string;
     gulpUtilFolder: string;
     assetsDirectory: string;
-    requiredDependencies: string[];
-    requiredDevDependencies: string[];
     sourceLanguageExt: string;
+    styleLanguageExt: string;
     gitIgnore: string[];
     license: ISpdxLicense;
     html: {
@@ -31,4 +30,16 @@ export declare class EngineVariables {
         body: string[];
     };
     packageManager: IPackageManager;
+    private _requiredDevDependencies;
+    private _removedDevDependencies;
+    private _requiredDependencies;
+    private _removedDependencies;
+    constructor();
+    toggleDependencies(dependencies: string[], required: boolean, isDev: boolean): void;
+    optimiseDependencies(): void;
+    buildDependencies(dependencies: {
+        [id: string]: string;
+    }, peerDependencies: {
+        [id: string]: string;
+    }, isDev: boolean): void;
 }

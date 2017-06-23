@@ -5,5 +5,6 @@ import { IDisplay } from "../../interfaces/IDisplay";
 import { IFileSystem } from "../../interfaces/IFileSystem";
 import { ILogger } from "../../interfaces/ILogger";
 export declare class Babel extends EnginePipelineStepBase {
+    private static FILENAME;
     process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
 }

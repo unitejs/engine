@@ -9,14 +9,15 @@ import { IFileSystem } from "../../interfaces/IFileSystem";
 import { ILogger } from "../../interfaces/ILogger";
 
 export class ReadMe extends EnginePipelineStepBase {
+    private static FILENAME: string = "README.md";
+
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
-            super.log(logger, display, "Writing README.md");
+            const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.rootFolder, ReadMe.FILENAME);
 
-            // If the current file has our marker at the end then overwrite, if its been removed then keep content
-            const hasMarker = await super.fileHasMarker(fileSystem, engineVariables.rootFolder, "README.md");
+            if (hasGeneratedMarker) {
+                super.log(logger, display, `Writing ${ReadMe.FILENAME}`);
 
-            if (hasMarker) {
                 const lines: string[] = [];
 
                 lines.push("# " + uniteConfiguration.title);
@@ -48,16 +49,16 @@ export class ReadMe extends EnginePipelineStepBase {
                 lines.push("To view your application execute the following command and enter the displayed url in your browser:");
                 lines.push("");
                 lines.push("---");
-                lines.push(super.wrapMarker("*", "* :zap:"));
+                lines.push(super.wrapGeneratedMarker("*", "* :zap:"));
 
-                await fileSystem.fileWriteLines(engineVariables.rootFolder, "README.md", lines);
+                await fileSystem.fileWriteLines(engineVariables.rootFolder, ReadMe.FILENAME, lines);
             } else {
-                super.log(logger, display, "Skipping README.md as it has no marker");
+                super.log(logger, display, `Skipping ${ReadMe.FILENAME} as it has no generated marker`);
             }
 
             return 0;
         } catch (err) {
-            super.error(logger, display, "Writing README.md failed", err);
+            super.error(logger, display, `Writing ${ReadMe.FILENAME} failed`, err);
             return 1;
         }
     }
