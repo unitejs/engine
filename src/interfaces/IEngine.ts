@@ -9,6 +9,8 @@ export interface IEngine {
          moduleLoader: string | undefined | null,
          unitTestRunner: string | undefined | null,
          unitTestFramework: string | undefined | null,
+         e2eTestRunner: string | undefined | null,
+         e2eTestFramework: string | undefined | null,
          linter: string | undefined | null,
          cssPre: string | undefined | null,
          cssPost: string | undefined | null,

@@ -99,24 +99,55 @@ export class EsLint extends EnginePipelineStepBase {
         config.env = {};
         config.globals = {};
         config.rules = {};
+        config.plugins = [];
 
         if (existing) {
             config.globals = existing.globals || config.globals;
             config.rules = existing.rules || config.rules;
             config.env = existing.env || config.env;
             config.extends = existing.extends || config.extends;
+            config.plugins = existing.plugins || config.plugins;
         }
 
         config.env.browser = true;
-        if (uniteConfiguration.unitTestFramework === "Jasmine") {
+        config.globals.require = true;
+        if (uniteConfiguration.unitTestFramework === "Jasmine" || uniteConfiguration.e2eTestFramework === "Jasmine") {
             config.env.jasmine = true;
+        } else {
+            if (config.env.jasmine) {
+                delete config.env.jasmine;
+            }
+        }
+
+        if (uniteConfiguration.unitTestFramework === "Mocha-Chai" || uniteConfiguration.e2eTestFramework === "Mocha-Chai") {
+            config.env.mocha = true;
+        } else {
             if (config.env.mocha) {
                 delete config.env.mocha;
             }
-        } else if (uniteConfiguration.unitTestFramework === "Mocha-Chai") {
-            config.env.mocha = true;
-            if (config.env.jasmine) {
-                delete config.env.jasmine;
+        }
+
+        if (uniteConfiguration.e2eTestRunner === "Protractor") {
+            config.env.protractor = true;
+        } else {
+            if (config.env.protractor) {
+                delete config.env.protractor;
+            }
+        }
+
+        engineVariables.toggleDependencies(["eslint-plugin-webdriverio"], uniteConfiguration.e2eTestRunner === "WebdriverIO", true);
+        const idx = config.plugins.indexOf("webdriverio");
+        if (uniteConfiguration.e2eTestRunner === "WebdriverIO") {
+            if (idx < 0) {
+                config.plugins.push("webdriverio");
+            }
+            config.env["webdriverio/wdio"] = true;
+        } else {
+            if (idx >= 0) {
+                config.plugins.splice(idx, 1);
+            }
+            if (config.env["webdriverio/wdio"]) {
+                delete config.env["webdriverio/wdio"];
             }
         }
 

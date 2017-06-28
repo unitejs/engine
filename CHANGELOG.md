@@ -1,3 +1,10 @@
+# v0.3.0
+* Added E2E Test Runner with Protractor or Webdriver running Selenium
+* Added E2E Test Framework with Jasmine/Mocha-Chai
+* Changed js based config json to be code syntax (single quotes, properties not quoted)
+* Fixed Jasmine Unit Tests missing jasmine-core
+* Fixed Unit Bootstrap ES6 Syntax
+
 # v0.2.1
 * Added generated marker to gitignore file
 * Refactored pipeline steps 

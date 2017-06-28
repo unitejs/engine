@@ -16,7 +16,7 @@
         "no-eval": true,
         "no-exec-script": true,
         "no-function-constructor-with-string-args": true,
-        "no-http-string": [true, "http://www.example.com/?.*", "http://www.examples.com/?.*"],
+        "no-http-string": false,
         "no-inner-html": true,
         "no-octal-literal": true,
         "no-reserved-keywords": false,
@@ -121,7 +121,7 @@
          * Whitespace related rules. The only recommended whitespace strategy is to pick a single format and
          * be consistent.
          */
-        "align": [true, "parameters", "arguments", "statements"],
+        "align": [true, "parameters", "statements"],
         "curly": true,
         "eofline": false,
         "indent": [true, "spaces"],

@@ -1,6 +1,3 @@
-/**
- * Pipeline step to generate karma configuration.
- */
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";

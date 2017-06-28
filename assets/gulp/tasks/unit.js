@@ -15,7 +15,10 @@ gulp.task('unit-clean', (callback) => {
     const uniteConfig = uc.getUniteConfig();
     const toClean = [
         path.join(uniteConfig.directories.unitTestDist, "**/*.spec.js"),
-        path.join(uniteConfig.directories.reports, "**/*"),
+        path.join(uniteConfig.directories.reports, "unit/**/*"),
+        path.join(uniteConfig.directories.reports, "coverage/**/*"),
+        path.join(uniteConfig.directories.reports, "coverage.json"),
+        path.join(uniteConfig.directories.reports, "coverage-final.json")
     ];
     display.info('Cleaning', toClean);
     return del(toClean, callback);

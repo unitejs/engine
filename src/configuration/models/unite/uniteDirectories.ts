@@ -9,6 +9,7 @@ export class UniteDirectories {
     public unitTestDist: string;
     public cssSrc: string;
     public cssDist: string;
+    public e2eTest: string;
     public e2eTestSrc: string;
     public e2eTestDist: string;
     public reports: string;

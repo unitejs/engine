@@ -10,10 +10,13 @@ import { ILogger } from "../../interfaces/ILogger";
 
 export class MochaChai extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["mocha", "chai"], uniteConfiguration.unitTestFramework === "Mocha-Chai", true);
-        engineVariables.toggleDependencies(["@types/mocha", "@types/chai"], uniteConfiguration.unitTestFramework === "Mocha-Chai" && uniteConfiguration.sourceLanguage === "TypeScript", true);
+        engineVariables.toggleDependencies(["mocha", "chai"], uniteConfiguration.unitTestFramework === "Mocha-Chai" || uniteConfiguration.e2eTestFramework === "Mocha-Chai", true);
+        engineVariables.toggleDependencies(["@types/mocha", "@types/chai"],
+                                           (uniteConfiguration.unitTestFramework === "Mocha-Chai" || uniteConfiguration.e2eTestFramework === "Mocha-Chai")
+                                             && uniteConfiguration.sourceLanguage === "TypeScript",
+                                           true);
 
-        if (uniteConfiguration.unitTestFramework === "Mocha-Chai") {
+        if (uniteConfiguration.unitTestFramework === "Mocha-Chai" || uniteConfiguration.e2eTestFramework === "Mocha-Chai") {
             try {
                 super.log(logger, display, "Generating Mocha-Chai Configuration");
 

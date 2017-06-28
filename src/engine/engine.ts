@@ -7,6 +7,8 @@ import { IncludeMode } from "../configuration/models/unite/includeMode";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { UniteCssPostProcessor } from "../configuration/models/unite/uniteCssPostProcessor";
 import { UniteCssPreProcessor } from "../configuration/models/unite/uniteCssPreProcessor";
+import { UniteE2eTestFramework } from "../configuration/models/unite/uniteE2eTestFramework";
+import { UniteE2eTestRunner } from "../configuration/models/unite/uniteE2eTestRunner";
 import { UniteLinter } from "../configuration/models/unite/uniteLinter";
 import { UniteModuleLoader } from "../configuration/models/unite/uniteModuleLoader";
 import { UnitePackageManager } from "../configuration/models/unite/unitePackageManager";
@@ -32,6 +34,8 @@ import { Css } from "../pipelineSteps/cssPreProcessor/css";
 import { Less } from "../pipelineSteps/cssPreProcessor/less";
 import { Sass } from "../pipelineSteps/cssPreProcessor/sass";
 import { Stylus } from "../pipelineSteps/cssPreProcessor/stylus";
+import { Protractor } from "../pipelineSteps/e2eTestRunner/protractor";
+import { WebdriverIo } from "../pipelineSteps/e2eTestRunner/webdriverIo";
 import { Babel } from "../pipelineSteps/language/babel";
 import { TypeScript } from "../pipelineSteps/language/typeScript";
 import { EsLint } from "../pipelineSteps/lint/esLint";
@@ -49,8 +53,8 @@ import { UniteConfigurationJson } from "../pipelineSteps/scaffold/uniteConfigura
 import { UnitTestScaffold } from "../pipelineSteps/scaffold/unitTestScaffold";
 import { BrowserSync } from "../pipelineSteps/server/browserSync";
 import { Gulp } from "../pipelineSteps/taskManager/gulp";
-import { Jasmine } from "../pipelineSteps/unitTestFramework/jasmine";
-import { MochaChai } from "../pipelineSteps/unitTestFramework/mochaChai";
+import { Jasmine } from "../pipelineSteps/testFramework/jasmine";
+import { MochaChai } from "../pipelineSteps/testFramework/mochaChai";
 import { Karma } from "../pipelineSteps/unitTestRunner/karma";
 import { EngineValidation } from "./engineValidation";
 import { EngineVariables } from "./engineVariables";
@@ -77,6 +81,8 @@ export class Engine implements IEngine {
                       moduleLoader: UniteModuleLoader | undefined | null,
                       unitTestRunner: UniteUnitTestRunner | undefined | null,
                       unitTestFramework: UniteUnitTestFramework | undefined | null,
+                      e2eTestRunner: UniteE2eTestRunner | undefined | null,
+                      e2eTestFramework: UniteE2eTestFramework | undefined | null,
                       linter: UniteLinter | undefined | null,
                       cssPre: UniteCssPreProcessor | undefined | null,
                       cssPost: UniteCssPostProcessor | undefined | null,
@@ -95,6 +101,8 @@ export class Engine implements IEngine {
         uniteConfiguration.moduleLoader = moduleLoader! || uniteConfiguration.moduleLoader;
         uniteConfiguration.unitTestRunner = unitTestRunner! || uniteConfiguration.unitTestRunner;
         uniteConfiguration.unitTestFramework = unitTestFramework! || uniteConfiguration.unitTestFramework;
+        uniteConfiguration.e2eTestRunner = e2eTestRunner! || uniteConfiguration.e2eTestRunner;
+        uniteConfiguration.e2eTestFramework = e2eTestFramework! || uniteConfiguration.e2eTestFramework;
         uniteConfiguration.linter = linter! || uniteConfiguration.linter;
         uniteConfiguration.packageManager = packageManager! || uniteConfiguration.packageManager || "Npm";
         uniteConfiguration.taskManager = "Gulp";
@@ -134,6 +142,19 @@ export class Engine implements IEngine {
         if (!EngineValidation.checkOneOf<UniteUnitTestRunner>(this._display, "unitTestRunner", uniteConfiguration.unitTestRunner, [ "None", "Karma" ])) {
             return 1;
         }
+        if (unitTestRunner !== "None") {
+            if (!EngineValidation.checkOneOf<UniteUnitTestFramework>(this._display, "unitTestFramework", uniteConfiguration.unitTestFramework, [ "Mocha-Chai", "Jasmine" ])) {
+                return 1;
+            }
+        }
+        if (!EngineValidation.checkOneOf<UniteE2eTestRunner>(this._display, "e2eTestRunner", uniteConfiguration.e2eTestRunner, [ "None", "WebdriverIO", "Protractor" ])) {
+            return 1;
+        }
+        if (e2eTestRunner !== "None") {
+            if (!EngineValidation.checkOneOf<UniteE2eTestFramework>(this._display, "e2eTestFramework", uniteConfiguration.e2eTestFramework, [ "Mocha-Chai", "Jasmine" ])) {
+                return 1;
+            }
+        }
         if (!EngineValidation.checkOneOf<UniteLinter>(this._display, "linter", uniteConfiguration.linter, [ "None", "ESLint", "TSLint" ])) {
             return 1;
         }
@@ -145,11 +166,6 @@ export class Engine implements IEngine {
         }
         if (!EngineValidation.checkOneOf<UnitePackageManager>(this._display, "packageManager", uniteConfiguration.packageManager, [ "Npm", "Yarn" ])) {
             return 1;
-        }
-        if (unitTestRunner !== "None") {
-            if (!EngineValidation.checkOneOf<UniteUnitTestFramework>(this._display, "unitTestFramework", uniteConfiguration.unitTestFramework, [ "Mocha-Chai", "Jasmine" ])) {
-                return 1;
-            }
         }
 
         this._display.log("");
@@ -265,7 +281,11 @@ export class Engine implements IEngine {
 
         pipelineSteps.push(new MochaChai());
         pipelineSteps.push(new Jasmine());
+
         pipelineSteps.push(new Karma());
+
+        pipelineSteps.push(new WebdriverIo());
+        pipelineSteps.push(new Protractor());
 
         pipelineSteps.push(new BrowserSync());
 
@@ -362,6 +382,7 @@ export class Engine implements IEngine {
         engineVariables.gulpBuildFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "build");
         engineVariables.reportsFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "reports");
         engineVariables.cssDistFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "css");
+        engineVariables.e2eTestFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "test/e2e");
         engineVariables.e2eTestSrcFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "test/e2e/src");
         engineVariables.e2eTestDistFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "test/e2e/dist");
         engineVariables.unitTestFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "test/unit");

@@ -13,6 +13,7 @@ export declare class EngineVariables {
     unitTestDistFolder: string;
     cssSrcFolder: string;
     cssDistFolder: string;
+    e2eTestFolder: string;
     e2eTestSrcFolder: string;
     e2eTestDistFolder: string;
     reportsFolder: string;

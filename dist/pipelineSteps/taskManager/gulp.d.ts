@@ -12,6 +12,7 @@ export declare class Gulp extends EnginePipelineStepBase {
     process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     generateBuildTasks(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     private generateUnitTasks(logger, display, fileSystem, uniteConfiguration, engineVariables);
+    private generateE2eTasks(logger, display, fileSystem, uniteConfiguration, engineVariables);
     private generateServeTasks(logger, display, fileSystem, uniteConfiguration, engineVariables);
     private generateUtils(logger, display, fileSystem, uniteConfiguration, engineVariables);
 }

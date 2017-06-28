@@ -11,5 +11,6 @@ export declare class PlainApp extends EnginePipelineStepBase {
     process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     private generateApp(logger, display, fileSystem, uniteConfiguration, engineVariables);
     private generateUnitTest(logger, display, fileSystem, uniteConfiguration, engineVariables);
+    private generateE2eTest(logger, display, fileSystem, uniteConfiguration, engineVariables);
     private generateCss(logger, display, fileSystem, uniteConfiguration, engineVariables);
 }

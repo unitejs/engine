@@ -2,6 +2,7 @@
  * Pipeline step to generate module-config.js.
  */
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
+import { JsonHelper } from "../../core/jsonHelper";
 import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 import { IDisplay } from "../../interfaces/IDisplay";
@@ -66,7 +67,7 @@ export class ModulesConfig extends EnginePipelineStepBase {
             }
         }
 
-        lines.push("appModuleConfig = " + JSON.stringify(moduleConfig, undefined, "    ") + ";");
+        lines.push("appModuleConfig = " + JsonHelper.codify(moduleConfig) + ";");
     }
 
     private buildUnitModuleConfig(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, lines: string[]): void {
@@ -83,6 +84,6 @@ export class ModulesConfig extends EnginePipelineStepBase {
             }
         }
 
-        lines.push("unitModuleConfig = " + JSON.stringify(moduleConfig, undefined, "    ") + ";");
+        lines.push("unitModuleConfig = " + JsonHelper.codify(moduleConfig) + ";");
     }
 }

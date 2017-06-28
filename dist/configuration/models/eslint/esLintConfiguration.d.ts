@@ -14,4 +14,5 @@ export declare class EsLintConfiguration {
     rules: {
         [id: string]: any;
     };
+    plugins: string[];
 }

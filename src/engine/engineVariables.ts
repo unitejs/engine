@@ -15,6 +15,7 @@ export class EngineVariables {
     public unitTestDistFolder: string;
     public cssSrcFolder: string;
     public cssDistFolder: string;
+    public e2eTestFolder: string;
     public e2eTestSrcFolder: string;
     public e2eTestDistFolder: string;
     public reportsFolder: string;

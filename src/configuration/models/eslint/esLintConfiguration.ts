@@ -9,4 +9,5 @@ export class EsLintConfiguration {
     public env: { [id: string ]: boolean};
     public globals: { [id: string ]: boolean};
     public rules: { [id: string]: any };
+    public plugins: string[];
 }

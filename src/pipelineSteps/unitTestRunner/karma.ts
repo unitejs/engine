@@ -1,7 +1,9 @@
 /**
  * Pipeline step to generate karma configuration.
  */
+import { KarmaConfiguration } from "../../configuration/models/karma/karmaConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
+import { JsonHelper } from "../../core/jsonHelper";
 import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 import { IDisplay } from "../../interfaces/IDisplay";
@@ -94,10 +96,10 @@ export class Karma extends EnginePipelineStepBase {
         }
 
         if (uniteConfiguration.unitTestFramework === "Mocha-Chai") {
-            testFrameworks.push("'mocha'");
-            testFrameworks.push("'chai'");
+            testFrameworks.push("mocha");
+            testFrameworks.push("chai");
         } else if (uniteConfiguration.unitTestFramework === "Jasmine") {
-            testFrameworks.push("'jasmine'");
+            testFrameworks.push("jasmine");
         }
 
         let srcInclude;
@@ -132,42 +134,43 @@ export class Karma extends EnginePipelineStepBase {
 
         const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, engineVariables.reportsFolder));
 
-        lines.push("module.exports = function(config) {");
-        lines.push("    config.set({");
-        lines.push("        basePath: __dirname,");
-        lines.push("        singleRun: true,");
-        lines.push("        frameworks: [" + testFrameworks.join(", ") + "],");
-        lines.push("        reporters: ['story', 'coverage', 'html', 'karma-remap-istanbul'],");
-        lines.push("        browsers: ['PhantomJS'],");
-        lines.push("        coverageReporter: {");
-        lines.push("            reporters: [");
-        lines.push("                {");
-        lines.push("                    type: 'json',");
-        lines.push("                    dir: '" + reportsFolder + "',");
-        lines.push("                    subdir: '.'");
-        lines.push("                }");
-        lines.push("            ]");
-        lines.push("        },");
-        lines.push("        htmlReporter: {");
-        lines.push("            outputDir: '" + reportsFolder + "',");
-        lines.push("            reportName: 'unit'");
-        lines.push("        },");
-        lines.push("        remapIstanbulReporter: {");
-        lines.push("            reports: {");
-        lines.push("        		'json': '" + reportsFolder + "/coverage.json',");
-        lines.push("        		'html': '" + reportsFolder + "/coverage',");
-        lines.push("                'text-summary': ''");
-        lines.push("        	}");
-        lines.push("        },");
-        lines.push("        preprocessors: {");
-        lines.push("            '" + srcInclude + "': ['sourcemap', 'coverage']");
-        lines.push("        },");
-        lines.push("        files: [");
-        for (let i = 0; i < testIncludes.length; i++) {
-            lines.push("            { pattern: '" + testIncludes[i].pattern + "', included: " + testIncludes[i].included + " }" + (i < testIncludes.length - 1 ? "," : ""));
+        const karmaConfiguration = new KarmaConfiguration();
+        karmaConfiguration.basePath = "__dirname";
+        karmaConfiguration.singleRun = true;
+        karmaConfiguration.frameworks = testFrameworks;
+        karmaConfiguration.reporters = ["story", "coverage", "html", "karma-remap-istanbul"];
+        karmaConfiguration.browsers = ["PhantomJS"];
+        karmaConfiguration.coverageReporter = {
+                reporters: [
+                    {
+                        type: "json",
+                        dir: reportsFolder,
+                        subdir: "."
+                    }
+                ]
+        };
+
+        karmaConfiguration.htmlReporter = {
+            outputDir: reportsFolder,
+            reportName: "unit"
+        };
+
+        karmaConfiguration.remapIstanbulReporter = {
+            reports: {
+                "json": reportsFolder + "/coverage.json",
+                "html": reportsFolder + "/coverage",
+                "text-summary": ""
+            }
+        };
+
+        karmaConfiguration.preprocessors = {};
+        if (srcInclude) {
+            karmaConfiguration.preprocessors[srcInclude] = ["sourcemap", "coverage"];
         }
-        lines.push("        ]");
-        lines.push("    });");
+        karmaConfiguration.files = testIncludes;
+
+        lines.push("module.exports = function(config) {");
+        lines.push("    config.set(" + JsonHelper.codify(karmaConfiguration) + ");");
         lines.push("};");
         lines.push(super.wrapGeneratedMarker("/* ", " */"));
     }

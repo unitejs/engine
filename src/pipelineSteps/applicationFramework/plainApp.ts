@@ -14,10 +14,14 @@ export class PlainApp extends EnginePipelineStepBase {
             let ret = await this.generateApp(logger, display, fileSystem, uniteConfiguration, engineVariables);
 
             if (ret === 0) {
-                ret = await this.generateUnitTest(logger, display, fileSystem, uniteConfiguration, engineVariables);
+                ret = await this.generateE2eTest(logger, display, fileSystem, uniteConfiguration, engineVariables);
 
                 if (ret === 0) {
-                    ret = await this.generateCss(logger, display, fileSystem, uniteConfiguration, engineVariables);
+                    ret = await this.generateUnitTest(logger, display, fileSystem, uniteConfiguration, engineVariables);
+
+                    if (ret === 0) {
+                        ret = await this.generateCss(logger, display, fileSystem, uniteConfiguration, engineVariables);
+                    }
                 }
             }
 
@@ -103,6 +107,45 @@ export class PlainApp extends EnginePipelineStepBase {
                 return 0;
             } catch (err) {
                 super.error(logger, display, "Generating application unit test failed", err, { unitTestSrcFolder: engineVariables.unitTestSrcFolder });
+                return 1;
+            }
+        } else {
+            return 0;
+        }
+    }
+
+    private async generateE2eTest(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        if (uniteConfiguration.e2eTestRunner !== "None") {
+            try {
+                super.log(logger, display, "Generating e2e test scaffold", { unitTestSrcFolder: engineVariables.e2eTestSrcFolder });
+
+                const e2eTestsScaffold = fileSystem.pathCombine(engineVariables.assetsDirectory,
+                                                                "appFramework/" +
+                                                                uniteConfiguration.applicationFramework.toLowerCase() +
+                                                                "/test/e2e/src/e2eTestRunner/" +
+                                                                uniteConfiguration.e2eTestRunner.toLowerCase() + "/" +
+                                                                "/sourceLanguage/" +
+                                                                uniteConfiguration.sourceLanguage.toLowerCase() + "/" +
+                                                                uniteConfiguration.e2eTestFramework.toLowerCase() + "/");
+
+                const e2eTestsScaffoldRunner = fileSystem.pathCombine(engineVariables.assetsDirectory,
+                                                                      "appFramework/" +
+                                                                      uniteConfiguration.applicationFramework.toLowerCase() +
+                                                                      "/test/e2e/e2eTestRunner/" +
+                                                                      uniteConfiguration.e2eTestRunner.toLowerCase());
+
+                await this.copyFile(logger, display, fileSystem, e2eTestsScaffold,
+                                    "app.spec." + engineVariables.sourceLanguageExt,
+                                    engineVariables.e2eTestSrcFolder,
+                                    "app.spec." + engineVariables.sourceLanguageExt);
+
+                await this.copyFile(logger, display, fileSystem, e2eTestsScaffoldRunner,
+                                    "e2e-bootstrap.js",
+                                    engineVariables.e2eTestFolder,
+                                    "e2e-bootstrap.js");
+                return 0;
+            } catch (err) {
+                super.error(logger, display, "Generating application e2e test failed", err, { unitTestSrcFolder: engineVariables.e2eTestSrcFolder });
                 return 1;
             }
         } else {

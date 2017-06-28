@@ -1,5 +1,5 @@
 /**
- * Gulp tasks for unit testing TypeScript.
+ * Gulp tasks for karma unit testing.
  */
 const display = require('./util/display');
 const gulp = require('gulp');

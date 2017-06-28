@@ -6,6 +6,8 @@ import { UniteApplicationFramework } from "./uniteApplicationFramework";
 import { UniteCssPostProcessor } from "./uniteCssPostProcessor";
 import { UniteCssPreProcessor } from "./uniteCssPreProcessor";
 import { UniteDirectories } from "./uniteDirectories";
+import { UniteE2eTestFramework } from "./uniteE2eTestFramework";
+import { UniteE2eTestRunner } from "./uniteE2eTestRunner";
 import { UniteLinter } from "./uniteLinter";
 import { UniteModuleLoader } from "./uniteModuleLoader";
 import { UnitePackageManager } from "./unitePackageManager";
@@ -25,6 +27,8 @@ export declare class UniteConfiguration {
     taskManager: UniteTaskManager;
     unitTestRunner: UniteUnitTestRunner;
     unitTestFramework: UniteUnitTestFramework;
+    e2eTestRunner: UniteE2eTestRunner;
+    e2eTestFramework: UniteE2eTestFramework;
     server: UniteServer;
     applicationFramework: UniteApplicationFramework;
     cssPre: UniteCssPreProcessor;

@@ -87,9 +87,12 @@ export class Gulp extends EnginePipelineStepBase {
         if (ret === 0) {
             ret = await this.generateUnitTasks(logger, display, fileSystem, uniteConfiguration, engineVariables);
             if (ret === 0) {
-                ret = await this.generateServeTasks(logger, display, fileSystem, uniteConfiguration, engineVariables);
+                ret = await this.generateE2eTasks(logger, display, fileSystem, uniteConfiguration, engineVariables);
                 if (ret === 0) {
-                    ret = await this.generateUtils(logger, display, fileSystem, uniteConfiguration, engineVariables);
+                    ret = await this.generateServeTasks(logger, display, fileSystem, uniteConfiguration, engineVariables);
+                    if (ret === 0) {
+                        ret = await this.generateUtils(logger, display, fileSystem, uniteConfiguration, engineVariables);
+                    }
                 }
             }
         }
@@ -174,6 +177,44 @@ export class Gulp extends EnginePipelineStepBase {
         return 0;
     }
 
+    private async generateE2eTasks(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        engineVariables.toggleDependencies(["gulp-webdriver", "browser-sync"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.e2eTestRunner === "WebdriverIO", true);
+        engineVariables.toggleDependencies(["browser-sync"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.e2eTestRunner === "Protractor", true);
+
+        if (uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.e2eTestRunner !== "None") {
+            try {
+                super.log(logger, display, "Generating gulp tasks for e2e in", { gulpTasksFolder: engineVariables.gulpTasksFolder });
+
+                const assetE2eTest = fileSystem.pathCombine(engineVariables.assetsDirectory, "gulp/tasks/");
+
+                const assetUnitTestLanguage = fileSystem.pathCombine(engineVariables.assetsDirectory,
+                                                                     "gulp/tasks/sourceLanguage/" +
+                                                                     uniteConfiguration.sourceLanguage.toLowerCase() + "/");
+
+                const assetLinter = fileSystem.pathCombine(engineVariables.assetsDirectory,
+                                                           "gulp/tasks/linter/" +
+                                                           uniteConfiguration.linter.toLowerCase() + "/");
+
+                const assetE2eTestRunner = fileSystem.pathCombine(engineVariables.assetsDirectory,
+                                                                  "gulp/tasks/e2eTestRunner/" +
+                                                                  uniteConfiguration.e2eTestRunner.toLowerCase() + "/");
+
+                await this.copyFile(logger, display, fileSystem, assetE2eTest, "e2e.js", engineVariables.gulpTasksFolder, "e2e.js");
+                await this.copyFile(logger, display, fileSystem, assetUnitTestLanguage, "e2e-transpile.js", engineVariables.gulpTasksFolder, "e2e-transpile.js");
+                await this.copyFile(logger, display, fileSystem, assetLinter, "e2e-lint.js", engineVariables.gulpTasksFolder, "e2e-lint.js");
+                await this.copyFile(logger, display, fileSystem, assetE2eTestRunner, "e2e-runner.js", engineVariables.gulpTasksFolder, "e2e-runner.js");
+                await this.copyFile(logger, display, fileSystem, assetE2eTestRunner, "e2e-install.js", engineVariables.gulpTasksFolder, "e2e-install.js");
+
+                return 0;
+            } catch (err) {
+                super.error(logger, display, "Generating gulp tasks for e2e failed", err, { gulpTasksFolder: engineVariables.gulpTasksFolder });
+                return 1;
+            }
+        }
+
+        return 0;
+    }
+
     private async generateServeTasks(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.taskManager === "Gulp") {
 
@@ -204,8 +245,8 @@ export class Gulp extends EnginePipelineStepBase {
                 const assetUtils = fileSystem.pathCombine(engineVariables.assetsDirectory, "gulp/tasks/util/");
 
                 await this.copyFile(logger, display, fileSystem, assetUtils, "unite-config.js", engineVariables.gulpUtilFolder, "unite-config.js");
-
                 await this.copyFile(logger, display, fileSystem, assetUtils, "display.js", engineVariables.gulpUtilFolder, "display.js");
+                await this.copyFile(logger, display, fileSystem, assetUtils, "exec.js", engineVariables.gulpUtilFolder, "exec.js");
 
                 return 0;
             } catch (err) {

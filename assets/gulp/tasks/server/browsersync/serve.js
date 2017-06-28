@@ -5,8 +5,9 @@ const gulp = require('gulp');
 const browserSync = require('browser-sync');
 
 gulp.task('serve', (cb) => {
-    browserSync({
-        open: false,
+    const bs = browserSync.create();
+    bs.init({
+        open: true,
 		online: true,
         port: 9000,
         https: false,
@@ -18,8 +19,9 @@ gulp.task('serve', (cb) => {
 });
 
 gulp.task('serve-secure', (cb) => {
-    browserSync({
-        open: false,
+    const bs = browserSync.create();
+    bs.init({
+        open: true,
 		online: true,
         port: 9000,
         https: true,
