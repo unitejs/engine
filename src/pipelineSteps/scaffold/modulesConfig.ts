@@ -24,9 +24,7 @@ export class ModulesConfig extends EnginePipelineStepBase {
 
             const lines: string[] = [];
 
-            if (uniteConfiguration.moduleLoader === "RequireJS" || uniteConfiguration.moduleLoader === "SystemJS") {
-                this.buildAppModuleConfig(uniteConfiguration, engineVariables, lines);
-            }
+            this.buildAppModuleConfig(uniteConfiguration, engineVariables, lines);
 
             await fileSystem.fileWriteLines(engineVariables.distFolder, "app-module-config.js", lines);
 

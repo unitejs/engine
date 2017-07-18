@@ -25,11 +25,13 @@ export class TypeScript extends EnginePipelineStepBase {
 
                 typeScriptConfiguration.compilerOptions.target = "es5";
                 typeScriptConfiguration.compilerOptions.moduleResolution = "node";
-                typeScriptConfiguration.compilerOptions.strict = true;
+                typeScriptConfiguration.compilerOptions.noImplicitAny = true;
+                typeScriptConfiguration.compilerOptions.noImplicitThis = true;
+                typeScriptConfiguration.compilerOptions.noImplicitReturns = true;
 
-                if (uniteConfiguration.moduleLoader === "RequireJS") {
+                if (uniteConfiguration.moduleType === "AMD") {
                     typeScriptConfiguration.compilerOptions.module = "amd";
-                } else if (uniteConfiguration.moduleLoader === "SystemJS") {
+                } else if (uniteConfiguration.moduleType === "SystemJS") {
                     typeScriptConfiguration.compilerOptions.module = "system";
                 } else {
                     typeScriptConfiguration.compilerOptions.module = "commonjs";
@@ -42,17 +44,7 @@ export class TypeScript extends EnginePipelineStepBase {
                 return 1;
             }
         } else {
-            try {
-                const exists = await fileSystem.fileExists(engineVariables.rootFolder, TypeScript.FILENAME);
-                if (exists) {
-                    await fileSystem.fileDelete(engineVariables.rootFolder, TypeScript.FILENAME);
-                }
-            } catch (err) {
-                super.error(logger, display, `Deleting ${TypeScript.FILENAME} failed`, err);
-                return 1;
-            }
+            return await super.deleteFile(logger, display, fileSystem, engineVariables.rootFolder, TypeScript.FILENAME);
         }
-
-        return 0;
     }
 }

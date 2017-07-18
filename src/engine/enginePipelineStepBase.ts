@@ -37,6 +37,29 @@ export abstract class EnginePipelineStepBase implements IEnginePipelineStep {
         }
     }
 
+    public async deleteFile(logger: ILogger, display: IDisplay, fileSystem: IFileSystem,
+                            folder: string, filename: string): Promise<number> {
+        const hasGeneratedMarker = await this.fileHasGeneratedMarker(fileSystem, folder, filename);
+
+        if (hasGeneratedMarker) {
+            this.log(logger, display, "Deleting " + filename, { from: folder });
+
+            try {
+                const exists = await fileSystem.fileExists(filename, folder);
+                if (exists) {
+                    await fileSystem.fileDelete(filename, folder);
+                }
+                return 0;
+            } catch (err) {
+                this.error(logger, display, `Deleting ${filename} failed`, err);
+                return 1;
+            }
+        } else {
+            this.log(logger, display, "Skipping Delete of " + filename + " as it has no generated marker", { from: folder });
+            return 0;
+        }
+    }
+
     public wrapGeneratedMarker(before: string, after: string): string {
         return before + EnginePipelineStepBase.MARKER + after;
     }

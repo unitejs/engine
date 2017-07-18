@@ -3,13 +3,15 @@
  */
 import { IncludeMode } from "./includeMode";
 import { UniteApplicationFramework } from "./uniteApplicationFramework";
+import { UniteBuildConfiguration } from "./uniteBuildConfiguration";
+import { UniteBundler } from "./uniteBundler";
 import { UniteCssPostProcessor } from "./uniteCssPostProcessor";
 import { UniteCssPreProcessor } from "./uniteCssPreProcessor";
 import { UniteDirectories } from "./uniteDirectories";
 import { UniteE2eTestFramework } from "./uniteE2eTestFramework";
 import { UniteE2eTestRunner } from "./uniteE2eTestRunner";
 import { UniteLinter } from "./uniteLinter";
-import { UniteModuleLoader } from "./uniteModuleLoader";
+import { UniteModuleType } from "./uniteModuleType";
 import { UnitePackageManager } from "./unitePackageManager";
 import { UniteServer } from "./uniteServer";
 import { UniteSourceLanguage } from "./uniteSourceLanguage";
@@ -17,11 +19,13 @@ import { UniteTaskManager } from "./uniteTaskManager";
 import { UniteUnitTestFramework } from "./uniteUnitTestFramework";
 import { UniteUnitTestRunner } from "./uniteUnitTestRunner";
 export declare class UniteConfiguration {
+    uniteVersion: string;
     packageName: string;
     title: string;
     license: string;
     sourceLanguage: UniteSourceLanguage;
-    moduleLoader: UniteModuleLoader;
+    moduleType: UniteModuleType;
+    bundler: UniteBundler;
     linter: UniteLinter;
     packageManager: UnitePackageManager;
     taskManager: UniteTaskManager;
@@ -33,7 +37,6 @@ export declare class UniteConfiguration {
     applicationFramework: UniteApplicationFramework;
     cssPre: UniteCssPreProcessor;
     cssPost: UniteCssPostProcessor;
-    staticClientModules: string[];
     clientPackages: {
         [id: string]: {
             version: string;
@@ -45,4 +48,7 @@ export declare class UniteConfiguration {
     directories: UniteDirectories;
     srcDistReplace: string;
     srcDistReplaceWith: string;
+    buildConfigurations: {
+        [id: string]: UniteBuildConfiguration;
+    };
 }

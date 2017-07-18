@@ -1,24 +1,24 @@
 /**
  * Gulp tasks for webdriverio e2e testing.
  */
-const display = require('./util/display');
-const gulp = require('gulp');
-const uc = require('./util/unite-config');
-const path = require('path');
-const webdriver = require('gulp-webdriver');
-const selenium = require('selenium-standalone');
-const browserSync = require('browser-sync');
-const allure = require('allure-commandline');
+const display = require("./util/display");
+const gulp = require("gulp");
+const uc = require("./util/unite-config");
+const path = require("path");
+const webdriver = require("gulp-webdriver");
+const selenium = require("selenium-standalone");
+const browserSync = require("browser-sync");
+const allure = require("allure-commandline");
 
-let seleniumInstance;
-let browserSyncInstance;
+let seleniumInstance = null;
+let browserSyncInstance = null;
 
-gulp.task('e2e-run-test', (done) => {
-    display.info('Running', 'WebdriverIO');
+gulp.task("e2e-run-test", (done) => {
+    display.info("Running", "WebdriverIO");
 
     const uniteConfig = uc.getUniteConfig();
 
-    gulp.src('wdio.conf.js')
+    gulp.src("wdio.conf.js")
         .pipe(webdriver())
         .on("error", () => {
             seleniumInstance.kill();
@@ -29,31 +29,34 @@ gulp.task('e2e-run-test', (done) => {
             seleniumInstance.kill();
             browserSyncInstance.exit();
 
-            display.info('Running', 'Allure Report Generation');
-            const generation = allure(['generate', path.join(uniteConfig.directories.reports, '/e2etemp/'), '-o', path.join(uniteConfig.directories.reports, '/e2e/')]);
+            display.info("Running", "Allure Report Generation");
+            const generation = allure([
+                "generate",
+                path.join(uniteConfig.directories.reports, "/e2etemp/"),
+                "-o",
+                path.join(uniteConfig.directories.reports, "/e2e/")
+            ]);
 
-            generation.on('exit', (exitCode) => {
+            generation.on("exit", () => {
                 done();
-            });            
+            });
         });
 });
 
-gulp.task('e2e-serve', (done) => {
-    display.info('Running', 'BrowserSync');
+gulp.task("e2e-serve", (done) => {
+    display.info("Running", "BrowserSync");
 
     browserSyncInstance = browserSync.create();
     browserSyncInstance.init({
-        open: false,
-        online: true,
-        port: 9000,
-        https: false,
-        server: {
-            baseDir: ['.']
-        },
-        notify: false
+        "https": false,
+        "notify": false,
+        "online": true,
+        "open": false,
+        "port": 9000,
+        "server": {"baseDir": ["."]}
     });
 
-    display.info('Running', 'Selenium');
+    display.info("Running", "Selenium");
     selenium.start((err, child) => {
         if (err) {
             display.error(err);

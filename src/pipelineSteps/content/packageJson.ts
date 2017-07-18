@@ -13,17 +13,6 @@ export class PackageJson extends EnginePipelineStepBase {
     private static FILENAME: string = "package.json";
 
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        let corePackageJson: PackageConfiguration;
-
-        try {
-            super.log(logger, display, "Loading dependencies", { core: engineVariables.coreFolder, dependenciesFile: PackageJson.FILENAME });
-
-            corePackageJson = await fileSystem.fileReadJson<PackageConfiguration>(engineVariables.coreFolder, PackageJson.FILENAME);
-        } catch (err) {
-            super.error(logger, display, "Loading dependencies failed", err, { core: engineVariables.coreFolder, dependenciesFile: PackageJson.FILENAME });
-            return 1;
-        }
-
         try {
             let existingPackageJson: PackageConfiguration | undefined;
             try {
@@ -49,8 +38,8 @@ export class PackageJson extends EnginePipelineStepBase {
             packageJson.dependencies = packageJson.dependencies || {};
 
             engineVariables.optimiseDependencies();
-            engineVariables.buildDependencies(packageJson.devDependencies, corePackageJson.peerDependencies, true);
-            engineVariables.buildDependencies(packageJson.dependencies, corePackageJson.peerDependencies, false);
+            engineVariables.buildDependencies(packageJson.devDependencies, true);
+            engineVariables.buildDependencies(packageJson.dependencies, false);
 
             if (uniteConfiguration.clientPackages) {
                 for (const pkg in uniteConfiguration.clientPackages) {

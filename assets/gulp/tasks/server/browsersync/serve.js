@@ -1,34 +1,28 @@
 /**
  * Gulp tasks for serving site.
  */
-const gulp = require('gulp');
-const browserSync = require('browser-sync');
+const gulp = require("gulp");
+const browserSync = require("browser-sync");
 
-gulp.task('serve', (cb) => {
+gulp.task("serve", (cb) => {
     const bs = browserSync.create();
     bs.init({
-        open: true,
-		online: true,
-        port: 9000,
-        https: false,
-		online: true,
-        server: {
-            baseDir: ['.']
-        }
+        "https": false,
+        "online": true,
+        "open": true,
+        "port": 9000,
+        "server": {"baseDir": ["."]}
     }, cb);
 });
 
-gulp.task('serve-secure', (cb) => {
+gulp.task("serve-secure", (cb) => {
     const bs = browserSync.create();
     bs.init({
-        open: true,
-		online: true,
-        port: 9000,
-        https: true,
-		online: true,
-        server: {
-            baseDir: ['.']
-        }
+        "https": true,
+        "online": true,
+        "open": true,
+        "port": 9000,
+        "server": {"baseDir": ["."]}
     }, cb);
 });
 

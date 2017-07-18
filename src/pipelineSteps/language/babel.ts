@@ -23,9 +23,9 @@ export class Babel extends EnginePipelineStepBase {
                 babelConfiguration.plugins = [];
 
                 let modules = "";
-                if (uniteConfiguration.moduleLoader === "RequireJS") {
+                if (uniteConfiguration.moduleType === "AMD") {
                     modules = "amd";
-                } else if (uniteConfiguration.moduleLoader === "SystemJS") {
+                } else if (uniteConfiguration.moduleType === "SystemJS") {
                     modules = "systemjs";
                 } else {
                     modules = "commonjs";
@@ -41,17 +41,7 @@ export class Babel extends EnginePipelineStepBase {
                 return 1;
             }
         } else {
-            try {
-                const exists = await fileSystem.fileExists(engineVariables.rootFolder, Babel.FILENAME);
-                if (exists) {
-                    await fileSystem.fileDelete(engineVariables.rootFolder, Babel.FILENAME);
-                }
-            } catch (err) {
-                super.error(logger, display, `Deleting ${Babel.FILENAME} failed`, err);
-                return 1;
-            }
+            return await super.deleteFile(logger, display, fileSystem, engineVariables.rootFolder, Babel.FILENAME);
         }
-
-        return 0;
     }
 }

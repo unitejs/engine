@@ -1,23 +1,21 @@
 /**
  * Gulp tasks for linting modules.
  */
-const display = require('./util/display');
-const gulp = require('gulp');
-const tslint = require('gulp-tslint');
-const path = require('path');
-const uc = require('./util/unite-config');
+const display = require("./util/display");
+const gulp = require("gulp");
+const tslint = require("gulp-tslint");
+const path = require("path");
+const uc = require("./util/unite-config");
 
-gulp.task('unit-lint', () => {
-    display.info('Running', "TSLint");
+gulp.task("unit-lint", () => {
+    display.info("Running", "TSLint");
 
     const uniteConfig = uc.getUniteConfig();
 
-    return gulp.src(path.join(uniteConfig.directories.unitTestSrc, '**/*.ts'))
-        .pipe(tslint({
-            formatter: "verbose"
-        }))
+    return gulp.src(path.join(uniteConfig.directories.unitTestSrc, "**/*.ts"))
+        .pipe(tslint({"formatter": "verbose"}))
         .pipe(tslint.report())
-        .on('error', (er) => {
+        .on("error", () => {
             process.exit(1);
         });
 });

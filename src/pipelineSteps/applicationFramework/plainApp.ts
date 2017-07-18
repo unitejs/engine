@@ -83,11 +83,11 @@ export class PlainApp extends EnginePipelineStepBase {
                                                                  uniteConfiguration.sourceLanguage.toLowerCase() + "/" +
                                                                  uniteConfiguration.unitTestFramework.toLowerCase() + "/");
 
-                const unitTestsScaffoldModuleLoader = fileSystem.pathCombine(engineVariables.assetsDirectory,
+                const unitTestsScaffoldModuleType = fileSystem.pathCombine(engineVariables.assetsDirectory,
                                                                              "appFramework/" +
                                                                              uniteConfiguration.applicationFramework.toLowerCase() +
-                                                                             "/test/unit/src/moduleLoader/" +
-                                                                             uniteConfiguration.moduleLoader.toLowerCase() + "/");
+                                                                             "/test/unit/src/moduleType/" +
+                                                                             uniteConfiguration.moduleType.toLowerCase() + "/");
 
                 await this.copyFile(logger, display, fileSystem, unitTestsScaffold,
                                     "main.spec." + engineVariables.sourceLanguageExt,
@@ -99,7 +99,7 @@ export class PlainApp extends EnginePipelineStepBase {
                                     engineVariables.unitTestSrcFolder,
                                     "app.spec." + engineVariables.sourceLanguageExt);
 
-                await this.copyFile(logger, display, fileSystem, unitTestsScaffoldModuleLoader,
+                await this.copyFile(logger, display, fileSystem, unitTestsScaffoldModuleType,
                                     "unit-bootstrap.js",
                                     engineVariables.unitTestFolder,
                                     "unit-bootstrap.js");

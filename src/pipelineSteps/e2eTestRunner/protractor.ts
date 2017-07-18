@@ -42,18 +42,8 @@ export class Protractor extends EnginePipelineStepBase {
                 return 1;
             }
         } else {
-            try {
-                const exists = await fileSystem.fileExists(engineVariables.rootFolder, Protractor.FILENAME);
-                if (exists) {
-                    await fileSystem.fileDelete(engineVariables.rootFolder, Protractor.FILENAME);
-                }
-            } catch (err) {
-                super.error(logger, display, `Deleting ${Protractor.FILENAME} failed`, err);
-                return 1;
-            }
+            return await super.deleteFile(logger, display, fileSystem, engineVariables.rootFolder, Protractor.FILENAME);
         }
-
-        return 0;
     }
 
     private generateConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, lines: string[]): void {

@@ -1,35 +1,37 @@
 /**
  * Gulp tasks for e2e testing JavaScript.
  */
-const display = require('./util/display');
-const uc = require('./util/unite-config');
-const gulp = require('gulp');
-const replace = require('gulp-replace');
-const babel = require('gulp-babel');
-const sourcemaps = require('gulp-sourcemaps');
+const display = require("./util/display");
+const uc = require("./util/unite-config");
+const gulp = require("gulp");
+const babel = require("gulp-babel");
+const sourcemaps = require("gulp-sourcemaps");
 
-gulp.task('e2e-transpile', () => {
-    display.info('Running', "Babel");
+gulp.task("e2e-transpile", () => {
+    display.info("Running", "Babel");
 
     const uniteConfig = uc.getUniteConfig();
     let errorCount = 0;
 
-    return gulp.src(uniteConfig.directories.e2eTestSrc + '**/*.spec.js')
+    return gulp.src(`${uniteConfig.directories.e2eTestSrc}**/*.spec.js`)
         .pipe(sourcemaps.init())
         .pipe(babel({
-            babelrc: false,
-            presets: [
-                ['es2015', { modules: 'commonjs' }]
+            "babelrc": false,
+            "presets": [
+                [
+                    "es2015",
+                    {"modules": "commonjs"}
+                ]
             ]
         }))
-        .on('error', (err) => {
-            display.error('error: ' + err.message + '\n');
+        .on("error", (err) => {
+            display.error(`error: ${err.message}\n`);
             display.error(err.codeFrame);
             errorCount++;
         })
-        .pipe(sourcemaps.write({ includeContent: true }))
+        .pipe(sourcemaps.write({"includeContent": true}))
         .pipe(gulp.dest(uniteConfig.directories.e2eTestDist))
-        .on('end', () => {
+        .on("end", () => {
             if (errorCount > 0) {
                 process.exit();
             }

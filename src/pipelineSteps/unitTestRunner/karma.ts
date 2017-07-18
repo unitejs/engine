@@ -28,11 +28,9 @@ export class Karma extends EnginePipelineStepBase {
                                            uniteConfiguration.unitTestRunner === "Karma",
                                            true);
 
-        engineVariables.toggleDependencies(["requirejs"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.moduleLoader === "RequireJS", true);
-        engineVariables.toggleDependencies(["systemjs"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.moduleLoader === "SystemJS", true);
-        engineVariables.toggleDependencies(["cajon"], uniteConfiguration.unitTestRunner === "Karma" &&
-                                                      (uniteConfiguration.moduleLoader === "Browserify" || uniteConfiguration.moduleLoader === "Webpack"),
-                                           true);
+        engineVariables.toggleDependencies(["requirejs"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.moduleType === "AMD", true);
+        engineVariables.toggleDependencies(["systemjs"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.moduleType === "SystemJS", true);
+        engineVariables.toggleDependencies(["cajon"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.moduleType === "CommonJS", true);
 
         engineVariables.toggleDependencies(["karma-mocha", "karma-chai"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.unitTestFramework === "Mocha-Chai", true);
         engineVariables.toggleDependencies(["karma-jasmine"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.unitTestFramework === "Jasmine", true);
@@ -57,18 +55,8 @@ export class Karma extends EnginePipelineStepBase {
                 return 1;
             }
         } else {
-            try {
-                const exists = await fileSystem.fileExists(engineVariables.rootFolder, Karma.FILENAME);
-                if (exists) {
-                    await fileSystem.fileDelete(engineVariables.rootFolder, Karma.FILENAME);
-                }
-            } catch (err) {
-                super.error(logger, display, `Deleting ${Karma.FILENAME} failed`, err);
-                return 1;
-            }
+            return await super.deleteFile(logger, display, fileSystem, engineVariables.rootFolder, Karma.FILENAME);
         }
-
-        return 0;
     }
 
     private generateConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, lines: string[]): void {
@@ -79,11 +67,11 @@ export class Karma extends EnginePipelineStepBase {
         testIncludes.push({ pattern: "./unite.json", included: false });
         testIncludes.push({ pattern: "./node_modules/bluebird/js/browser/bluebird.js", included: true });
 
-        if (uniteConfiguration.moduleLoader === "RequireJS") {
+        if (uniteConfiguration.moduleType === "AMD") {
             testIncludes.push({ pattern: "./node_modules/requirejs/require.js", included: true });
-        } else if (uniteConfiguration.moduleLoader === "SystemJS") {
+        } else if (uniteConfiguration.moduleType === "SystemJS") {
             testIncludes.push({ pattern: "./node_modules/systemjs/dist/system.js", included: true });
-        } else if (uniteConfiguration.moduleLoader === "Webpack" || uniteConfiguration.moduleLoader === "Browserify") {
+        } else if (uniteConfiguration.moduleType === "CommonJS") {
             testIncludes.push({ pattern: "./node_modules/cajon/cajon.js", included: true });
         }
 
@@ -102,20 +90,11 @@ export class Karma extends EnginePipelineStepBase {
             testFrameworks.push("jasmine");
         }
 
-        let srcInclude;
-        if (uniteConfiguration.moduleLoader === "RequireJS" || uniteConfiguration.moduleLoader === "SystemJS") {
-            srcInclude = "**/*.js";
-        } else if (uniteConfiguration.moduleLoader === "Webpack" || uniteConfiguration.moduleLoader === "Browserify") {
-            srcInclude = "**/!(*-bundle|entryPoint).js";
-        }
-
-        if (srcInclude) {
-            srcInclude = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, fileSystem.pathCombine(engineVariables.distFolder, srcInclude)));
-            testIncludes.push({
-                pattern: srcInclude,
-                included: false
-            });
-        }
+        const srcInclude = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, fileSystem.pathCombine(engineVariables.distFolder, "**/!(*-bundle|entryPoint).js")));
+        testIncludes.push({
+            pattern: srcInclude,
+            included: false
+        });
 
         testIncludes.push({
             pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, fileSystem.pathCombine(engineVariables.unitTestDistFolder, "**/*.spec.js"))),

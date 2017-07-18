@@ -1,17 +1,17 @@
 /**
  * Gulp tasks for building css.
  */
-const display = require('./util/display');
-const gulp = require('gulp');
-const path = require('path');
-const uc = require('./util/unite-config');
+const display = require("./util/display");
+const gulp = require("gulp");
+const path = require("path");
+const uc = require("./util/unite-config");
 
-gulp.task('build-css', () => {
-    display.info('Running', "CSS");
+gulp.task("build-css", () => {
+    display.info("Running", "CSS");
 
     const uniteConfig = uc.getUniteConfig();
 
-    return gulp.src(path.join(uniteConfig.directories.cssSrc, '**/*.css'))
+    return gulp.src(path.join(uniteConfig.directories.cssSrc, "**/*.css"))
         .pipe(gulp.dest(uniteConfig.directories.cssDist));
 });
 

@@ -66,27 +66,13 @@ export class EsLint extends EnginePipelineStepBase {
                 return 1;
             }
         } else {
-            try {
-                const exists = await fileSystem.fileExists(engineVariables.rootFolder, EsLint.FILENAME);
-                if (exists) {
-                    await fileSystem.fileDelete(engineVariables.rootFolder, EsLint.FILENAME);
-                }
-            } catch (err) {
-                super.error(logger, display, `Deleting ${EsLint.FILENAME} failed`, err);
-                return 1;
+            let ret = await super.deleteFile(logger, display, fileSystem, engineVariables.rootFolder, EsLint.FILENAME);
+            if (ret === 0) {
+                ret =  await super.deleteFile(logger, display, fileSystem, engineVariables.rootFolder, EsLint.FILENAME2);
             }
-            try {
-                const exists = await fileSystem.fileExists(engineVariables.rootFolder, EsLint.FILENAME2);
-                if (exists) {
-                    await fileSystem.fileDelete(engineVariables.rootFolder, EsLint.FILENAME2);
-                }
-            } catch (err) {
-                super.error(logger, display, `Deleting ${EsLint.FILENAME2} failed`, err);
-                return 1;
-            }
-        }
 
-        return 0;
+            return ret;
+        }
     }
 
     private generateConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, existing: EsLintConfiguration | undefined): EsLintConfiguration {

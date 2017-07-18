@@ -1,26 +1,28 @@
 /**
  * Gulp tasks for building css.
  */
-const display = require('./util/display');
-const gulp = require('gulp');
-const sourcemaps = require('gulp-sourcemaps');
-const path = require('path');
-const sass = require('gulp-sass');
-const uc = require('./util/unite-config');
+const display = require("./util/display");
+const gulp = require("gulp");
+const sourcemaps = require("gulp-sourcemaps");
+const path = require("path");
+const sass = require("gulp-sass");
+const uc = require("./util/unite-config");
+const gutil = require("gulp-util");
 
-gulp.task('build-css', () => {
-    display.info('Running', "SASS");
+gulp.task("build-css", () => {
+    display.info("Running", "SASS");
 
     const uniteConfig = uc.getUniteConfig();
+    const buildConfiguration = uc.getBuildConfiguration();
 
-    return gulp.src(path.join(uniteConfig.directories.cssSrc, 'main.scss'))
-        .pipe(sourcemaps.init())
+    return gulp.src(path.join(uniteConfig.directories.cssSrc, "main.scss"))
+        .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : gutil.noop())
         .pipe(sass())
-        .on('error', (err) => {
+        .on("error", (err) => {
             display.error(err.message);
             process.exit(1);
         })
-        .pipe(sourcemaps.write())
+        .pipe(buildConfiguration.sourcemaps ? sourcemaps.write() : gutil.noop())
         .pipe(gulp.dest(uniteConfig.directories.cssDist));
 });
 

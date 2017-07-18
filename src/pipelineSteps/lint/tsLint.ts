@@ -42,18 +42,8 @@ export class TsLint extends EnginePipelineStepBase {
                 return 1;
             }
         } else {
-            try {
-                const exists = await fileSystem.fileExists(engineVariables.rootFolder, TsLint.FILENAME);
-                if (exists) {
-                    await fileSystem.fileDelete(engineVariables.rootFolder, TsLint.FILENAME);
-                }
-            } catch (err) {
-                super.error(logger, display, `Deleting ${TsLint.FILENAME} failed`, err);
-                return 1;
-            }
+            return await super.deleteFile(logger, display, fileSystem, engineVariables.rootFolder, TsLint.FILENAME);
         }
-
-        return 0;
     }
 
     private generateConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, existing: TsLintConfiguration | undefined): TsLintConfiguration {

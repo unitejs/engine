@@ -3,13 +3,15 @@
  */
 import { IncludeMode } from "./includeMode";
 import { UniteApplicationFramework } from "./uniteApplicationFramework";
+import { UniteBuildConfiguration } from "./uniteBuildConfiguration";
+import { UniteBundler } from "./uniteBundler";
 import { UniteCssPostProcessor } from "./uniteCssPostProcessor";
 import { UniteCssPreProcessor } from "./uniteCssPreProcessor";
 import { UniteDirectories } from "./uniteDirectories";
 import { UniteE2eTestFramework } from "./uniteE2eTestFramework";
 import { UniteE2eTestRunner } from "./uniteE2eTestRunner";
 import { UniteLinter } from "./uniteLinter";
-import { UniteModuleLoader } from "./uniteModuleLoader";
+import { UniteModuleType } from "./uniteModuleType";
 import { UnitePackageManager } from "./unitePackageManager";
 import { UniteServer } from "./uniteServer";
 import { UniteSourceLanguage } from "./uniteSourceLanguage";
@@ -18,11 +20,13 @@ import { UniteUnitTestFramework } from "./uniteUnitTestFramework";
 import { UniteUnitTestRunner } from "./uniteUnitTestRunner";
 
 export class UniteConfiguration {
+    public uniteVersion: string;
     public packageName: string;
     public title: string;
     public license: string;
     public sourceLanguage: UniteSourceLanguage;
-    public moduleLoader: UniteModuleLoader;
+    public moduleType: UniteModuleType;
+    public bundler: UniteBundler;
     public linter: UniteLinter;
     public packageManager: UnitePackageManager;
     public taskManager: UniteTaskManager;
@@ -35,12 +39,12 @@ export class UniteConfiguration {
     public cssPre: UniteCssPreProcessor;
     public cssPost: UniteCssPostProcessor;
 
-    public staticClientModules: string[];
-
     public clientPackages: { [id: string]: { version: string, preload: boolean, main: string, includeMode: IncludeMode } };
 
     public directories: UniteDirectories;
 
     public srcDistReplace: string;
     public srcDistReplaceWith: string;
+
+    public buildConfigurations: { [id: string]: UniteBuildConfiguration };
 }

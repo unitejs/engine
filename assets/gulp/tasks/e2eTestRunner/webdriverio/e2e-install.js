@@ -1,14 +1,14 @@
 /**
  * Gulp tasks for protractor e2e testing.
  */
-const display = require('./util/display');
-const exec = require('./util/exec');
-const gulp = require('gulp');
+const display = require("./util/display");
+const exec = require("./util/exec");
+const gulp = require("gulp");
 
-gulp.task('e2e-install', (done) => {
-    display.info('Running', 'Selenium Standalone');
+gulp.task("e2e-install", (done) => {
+    display.info("Running", "Selenium Standalone");
 
-    exec.npmRun('selenium-standalone', ['install'], (success) => {
+    exec.npmRun("selenium-standalone", ["install"], (success) => {
         if (success) {
             done();
         } else {

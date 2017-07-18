@@ -1,33 +1,41 @@
 /**
  * Gulp tasks for building JavaScript.
  */
-const display = require('./util/display');
-const uc = require('./util/unite-config');
-const gulp = require('gulp');
-const babel = require('gulp-babel');
-const path = require('path');
-const sourcemaps = require('gulp-sourcemaps');
+const display = require("./util/display");
+const uc = require("./util/unite-config");
+const gulp = require("gulp");
+const babel = require("gulp-babel");
+const path = require("path");
+const sourcemaps = require("gulp-sourcemaps");
+const uglify = require("gulp-uglify");
+const gutil = require("gulp-util");
 
-gulp.task('build-transpile', () => {
-    display.info('Running', "Babel");
+gulp.task("build-transpile", () => {
+    display.info("Running", "Babel");
 
     const uniteConfig = uc.getUniteConfig();
+    const buildConfiguration = uc.getBuildConfiguration(true);
     let errorCount = 0;
 
-    return gulp.src(path.join(uniteConfig.directories.src, '**/*.js'))
-        .pipe(sourcemaps.init())
+    return gulp.src(path.join(uniteConfig.directories.src, "**/*.js"))
+        .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : gutil.noop())
         .pipe(babel())
-        .on('error', (err) => {
-            display.error('error: ' + err.message + '\n');
+        .pipe(buildConfiguration.minify ? uglify()
+            .on("error", (err) => {
+                display.error(err.toString());
+            }) : gutil.noop())
+        .on("error", (err) => {
+            display.error(`error: ${err.message}\n`);
             display.error(err.codeFrame);
             errorCount++;
         })
-        .pipe(sourcemaps.mapSources((sourcePath, file) => {
-            return './src/' + sourcePath;
-        }))
-        .pipe(sourcemaps.write({ includeContent: true, sourceRoot: '' }))
+        .pipe(buildConfiguration.sourcemaps ? sourcemaps.mapSources((sourcePath) => `./src/${sourcePath}`) : gutil.noop())
+        .pipe(buildConfiguration.sourcemaps ? sourcemaps.write({
+            "includeContent": true,
+            "sourceRoot": ""
+        }) : gutil.noop())
         .pipe(gulp.dest(uniteConfig.directories.dist))
-        .on('end', () => {
+        .on("end", () => {
             if (errorCount > 0) {
                 process.exit();
             }

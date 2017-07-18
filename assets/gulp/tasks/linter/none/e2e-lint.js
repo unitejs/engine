@@ -1,9 +1,9 @@
 /**
  * Gulp tasks for linting modules.
  */
-const gulp = require('gulp');
+const gulp = require("gulp");
 
-gulp.task('e2e-lint', (cb) => {
+gulp.task("e2e-lint", (cb) => {
     cb();
 });
 

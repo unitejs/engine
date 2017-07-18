@@ -13,7 +13,7 @@ export class PostCss extends EnginePipelineStepBase {
     private static FILENAME: string = ".postcssrc.json";
 
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["postcss", "postcss-import", "autoprefixer"], uniteConfiguration.cssPost === "PostCss", true);
+        engineVariables.toggleDependencies(["postcss", "postcss-import", "autoprefixer", "cssnano"], uniteConfiguration.cssPost === "PostCss", true);
 
         if (uniteConfiguration.cssPost === "PostCss") {
             try {
@@ -42,18 +42,8 @@ export class PostCss extends EnginePipelineStepBase {
                 return 1;
             }
         } else {
-            try {
-                const exists = await fileSystem.fileExists(engineVariables.rootFolder, PostCss.FILENAME);
-                if (exists) {
-                    await fileSystem.fileDelete(engineVariables.rootFolder, PostCss.FILENAME);
-                }
-            } catch (err) {
-                super.error(logger, display, `Deleting ${PostCss.FILENAME} failed`, err);
-                return 1;
-            }
+            return await super.deleteFile(logger, display, fileSystem, engineVariables.rootFolder, PostCss.FILENAME);
         }
-
-        return 0;
     }
 
     private generateConfig(existing: PostCssConfiguration | undefined): PostCssConfiguration {

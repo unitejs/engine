@@ -1,8 +1,10 @@
 /**
  * Variables used by the engine.
  */
+import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
 import { ISpdxLicense } from "../configuration/models/spdx/ISpdxLicense";
 import { IPackageManager } from "../interfaces/IPackageManager";
+import { EngineVariablesHtml } from "./engineVariablesHtml";
 export declare class EngineVariables {
     coreFolder: string;
     rootFolder: string;
@@ -26,11 +28,10 @@ export declare class EngineVariables {
     styleLanguageExt: string;
     gitIgnore: string[];
     license: ISpdxLicense;
-    html: {
-        head: string[];
-        body: string[];
-    };
+    htmlNoBundle: EngineVariablesHtml;
+    htmlBundle: EngineVariablesHtml;
     packageManager: IPackageManager;
+    corePackageJson: PackageConfiguration;
     private _requiredDevDependencies;
     private _removedDevDependencies;
     private _requiredDependencies;
@@ -40,7 +41,6 @@ export declare class EngineVariables {
     optimiseDependencies(): void;
     buildDependencies(dependencies: {
         [id: string]: string;
-    }, peerDependencies: {
-        [id: string]: string;
     }, isDev: boolean): void;
+    findDependencyVersion(requiredDependency: string): string;
 }

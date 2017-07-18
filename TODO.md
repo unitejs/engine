@@ -1,7 +1,10 @@
 # To Do
 
-## Environment Configurations
-Add Dev/Prod/Test with options for app-config, versioning, minification, strip comments, strip sourcemaps (bundle requirejs/systemjs)
+## Code Style
+Prettier
+
+## Tasks
+Watch
 
 ## App Frameworks
 Add Angular 2
@@ -19,16 +22,29 @@ Add Electron
 Add PhoneGap/Cordova
 Add Windows Universal App
 
+## CSS
+Bundling
+
+## Source Languages
+Coffee Script
+Flow
+
 ## CSS Linting
 Add stylelint
 Add sass-lint
 Add less-hint
 Add stylint
 
+## Reporting
+Lighthouse
+
 ## Build Engine
 Add NPM scripts
 Add Grunt?
 Add Gulp 4
+
+## Documentation
+JSDoc ?
 
 ## Package Managers
 Add bower?
@@ -45,6 +61,7 @@ Change Webpack - Static Config
 Change Browserify - Static Config
 
 ## Unit Testing
+Add Chrome headless instead of phantomjs
 Alternate UI Browsers for testing Firefox/IE/Edge
 
 ## E2E Testing

@@ -1,8 +1,10 @@
 /**
  * Variables used by the engine.
  */
+import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
 import { ISpdxLicense } from "../configuration/models/spdx/ISpdxLicense";
 import { IPackageManager } from "../interfaces/IPackageManager";
+import { EngineVariablesHtml } from "./engineVariablesHtml";
 
 export class EngineVariables {
     public coreFolder: string;
@@ -32,12 +34,12 @@ export class EngineVariables {
 
     public gitIgnore: string[];
     public license: ISpdxLicense;
-    public html: {
-        head: string[],
-        body: string[]
-    };
+    public htmlNoBundle: EngineVariablesHtml;
+    public htmlBundle: EngineVariablesHtml;
 
     public packageManager: IPackageManager;
+
+    public corePackageJson: PackageConfiguration;
 
     private _requiredDevDependencies: string[];
     private _removedDevDependencies: string[];
@@ -76,7 +78,7 @@ export class EngineVariables {
         });
     }
 
-    public buildDependencies(dependencies: { [id: string]: string}, peerDependencies: { [id: string]: string}, isDev: boolean): void {
+    public buildDependencies(dependencies: { [id: string]: string}, isDev: boolean): void {
         const srcRemove = isDev ? this._removedDevDependencies : this._removedDependencies;
         srcRemove.forEach(dependency => {
             if (dependencies[dependency]) {
@@ -84,18 +86,30 @@ export class EngineVariables {
             }
         });
 
-        if (peerDependencies) {
+        if (this.corePackageJson.peerDependencies) {
             const srcRequire = isDev ? this._requiredDevDependencies : this._requiredDependencies;
 
             srcRequire.sort();
 
             srcRequire.forEach(requiredDependency => {
-                if (peerDependencies[requiredDependency]) {
-                    dependencies[requiredDependency] = peerDependencies[requiredDependency];
+                if (this.corePackageJson.peerDependencies[requiredDependency]) {
+                    dependencies[requiredDependency] = this.corePackageJson.peerDependencies[requiredDependency];
                 } else {
                     throw new Error("Missing Dependency '" + requiredDependency + "'");
                 }
             });
+        } else {
+            throw new Error("Dependency Versions missing");
+        }
+    }
+
+    public findDependencyVersion(requiredDependency: string): string {
+        if (this.corePackageJson.peerDependencies) {
+            if (this.corePackageJson.peerDependencies[requiredDependency]) {
+                return this.corePackageJson.peerDependencies[requiredDependency];
+            } else {
+                throw new Error("Missing Dependency '" + requiredDependency + "'");
+            }
         } else {
             throw new Error("Dependency Versions missing");
         }

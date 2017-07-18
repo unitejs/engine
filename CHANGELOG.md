@@ -1,3 +1,11 @@
+# v0.4.0
+* Added buildConfigurations which allows bundling, minification, sourcemaps and build variables
+* Removed unused staticClientModules from unite.json
+* Separated module loader and bundling
+* Separated bundled and not bundled index pages
+* Config files only deleted if they have the creation marker
+* Added bundling support for SystemJS and RequireJS
+
 # v0.3.0
 * Added E2E Test Runner with Protractor or Webdriver running Selenium
 * Added E2E Test Framework with Jasmine/Mocha-Chai
