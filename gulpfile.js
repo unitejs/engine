@@ -5,7 +5,6 @@ const tslint = require("tslint");
 const sourcemaps = require('gulp-sourcemaps');
 const del = require('del');
 const mocha = require('gulp-mocha');
-const path = require('path');
 const merge = require('merge2');
 const runSequence = require('run-sequence');
 
@@ -16,9 +15,6 @@ const testFolder = 'test/';
 const tsSrcGlob = srcFolder + '**/*.ts';
 const cleanTestGlob = testFolder + '/**/*.js';
 const tsTestGlob = testFolder + '**/*.spec.ts';
-const jsTestGlob = testFolder + '**/*.spec.js';
-
-const tsProject = tsc.createProject(tsConfigFile);
 
 gulp.task('build-clean', (cb) => {
     return del(distFolder, cb);
@@ -35,12 +31,14 @@ gulp.task('build-lint', () => {
 });
 
 gulp.task('build-transpile', () => {
+    const tsProject = tsc.createProject(tsConfigFile);
+
     let errorCount = 0;
-        
+
     var tsResult = gulp.src(tsSrcGlob)
         .pipe(sourcemaps.init())
         .pipe(tsProject())
-        .on("error", (err) => {
+        .on("error", () => {
             errorCount++;
         })
 
@@ -77,6 +75,8 @@ gulp.task('test-lint', () => {
 });
 
 gulp.task('test-transpile', () => {
+    const tsProject = tsc.createProject(tsConfigFile);
+
     var tsResult = gulp.src(tsTestGlob)
         .pipe(tsProject());
 
@@ -95,4 +95,4 @@ gulp.task('test', (cb) => {
     runSequence('test-clean', 'test-transpile', 'test-lint', cb);
 });
 
-gulp.task('clean-all', ['clean-build', 'clean-test']);
+gulp.task('clean-all', ['build-clean', 'test-clean']);

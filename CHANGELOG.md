@@ -1,3 +1,6 @@
+# v0.4.1
+* Help improvements and tidy up
+
 # v0.4.0
 * Added buildConfigurations which allows bundling, minification, sourcemaps and build variables
 * Removed unused staticClientModules from unite.json
