@@ -14,7 +14,7 @@ export class TypeScript extends EnginePipelineStepBase {
     private static FILENAME: string = "tsconfig.json";
 
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["typescript"], uniteConfiguration.sourceLanguage === "TypeScript", true);
+        engineVariables.toggleDevDependency(["typescript"], uniteConfiguration.sourceLanguage === "TypeScript");
 
         if (uniteConfiguration.sourceLanguage === "TypeScript") {
             try {
@@ -28,6 +28,8 @@ export class TypeScript extends EnginePipelineStepBase {
                 typeScriptConfiguration.compilerOptions.noImplicitAny = true;
                 typeScriptConfiguration.compilerOptions.noImplicitThis = true;
                 typeScriptConfiguration.compilerOptions.noImplicitReturns = true;
+
+                typeScriptConfiguration.compilerOptions.lib = ["dom", "es2015"];
 
                 if (uniteConfiguration.moduleType === "AMD") {
                     typeScriptConfiguration.compilerOptions.module = "amd";

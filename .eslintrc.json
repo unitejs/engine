@@ -3,15 +3,40 @@
 		"ecmaVersion": 6,
 		"sourceType": "module"
 	},
-	"extends": "eslint:recommended",
+	"extends": "eslint:all",
 	"env": {
+		"browser": true,
+		"node": true,
+		"jasmine": true,
+		"protractor": true
 	},
-	"globals": {
-		"require": true,
-		"process": true,
-		"module": true
-	},
+	"globals": {},
 	"rules": {
+		"padded-blocks": "off",
+		"sort-keys": "off",
+		"object-curly-newline": "off",
+		"array-bracket-newline": "off",
+		"object-property-newline": "off",
+		"dot-location": "off",
+		"func-style": "off",
+		"global-require": "off",
+		"one-var": "off",
+		"multiline-ternary": "off",
+		"no-ternary": "off",
+		"no-process-exit": "off",
+		"no-magic-numbers": "off",
+		"arrow-parens": "off",
+		"guard-for-in": "off",
+		"callback-return": "off",
+		"max-len": [2, {"code": 120, "tabWidth": 4, "ignoreUrls": true}],
+		"max-statements": "off",
+		"no-plusplus": "off",
+		"id-length": "off",
+		"array-element-newline": "off",
+		"no-undefined": "off",
+		"arrow-body-style": "off",
+		"prefer-destructuring": "off",
+		"lines-around-comment": "off"
 	},
 	"plugins": [
 		"node"

@@ -13,7 +13,7 @@ export class TsLint extends EnginePipelineStepBase {
     private static FILENAME: string = "tslint.json";
 
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["tslint"], uniteConfiguration.linter === "TSLint", true);
+        engineVariables.toggleDevDependency(["tslint"], uniteConfiguration.linter === "TSLint");
 
         if (uniteConfiguration.linter === "TSLint") {
             try {
@@ -30,7 +30,7 @@ export class TsLint extends EnginePipelineStepBase {
                     }
                 } catch (err) {
                     super.error(logger, display, `Reading existing ${TsLint.FILENAME} failed`, err);
-                    return 0;
+                    return 1;
                 }
 
                 const config = this.generateConfig(fileSystem, uniteConfiguration, engineVariables, existing);
@@ -57,6 +57,25 @@ export class TsLint extends EnginePipelineStepBase {
             config.extends = existing.extends || config.extends;
             config.rulesDirectory = existing.rulesDirectory || config.rulesDirectory;
             config.rules = existing.rules || config.rules;
+        }
+
+        if (!config.rules["object-literal-sort-keys"]) {
+            config.rules["object-literal-sort-keys"] = false;
+        }
+
+        if (!config.rules["trailing-comma"]) {
+            config.rules["trailing-comma"] = [
+                true,
+                {
+                    multiline: {
+                        objects: "never"
+                    }
+                }
+            ];
+        }
+
+        if (!config.rules["no-reference"]) {
+            config.rules["no-reference"] = false;
         }
 
         return config;

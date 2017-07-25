@@ -5,69 +5,85 @@ const gulp = require("gulp");
 const insert = require("gulp-insert");
 const sourcemaps = require("gulp-sourcemaps");
 const path = require("path");
+const fs = require("fs");
 const gutil = require("gulp-util");
 const uc = require("./util/unite-config");
-const bundle = require("./util/bundle");
+const moduleConfig = require("./util/module-config");
 const display = require("./util/display");
 const Builder = require("systemjs-builder");
+const uglify = require("gulp-uglify");
 
-gulp.task("build-bundle-app", () => {
+function addBootstrap (uniteConfig, buildConfiguration, cb) {
+    let bootstrap = moduleConfig.create(uniteConfig, ["app", "both"], true);
+    bootstrap += "Promise.all(preloadModules.map(function(module) { return SystemJS.import(module); }))";
+    bootstrap += ".then(function() {";
+    bootstrap += "SystemJS.import('dist/entryPoint');";
+    bootstrap += "});";
+
+    const bootstrapFile = path.join(uniteConfig.directories.dist, "app-bundle-bootstrap.js");
+    fs.writeFile(path.join(uniteConfig.directories.dist, "app-bundle-bootstrap.js"), bootstrap, (err) => {
+        if (err) {
+            display.error(err);
+            process.exit(1);
+        } else {
+            gulp.src(bootstrapFile)
+                .pipe(buildConfiguration.minify ? uglify() : gutil.noop())
+                .pipe(gulp.dest(uniteConfig.directories.dist))
+                .on("end", () => {
+                    fs.readFile(bootstrapFile, (err2, bootstrap2) => {
+                        if (err2) {
+                            display.error(err2);
+                            process.exit(1);
+                        } else {
+                            gulp.src(path.join(uniteConfig.directories.dist, "app-bundle.js"))
+                                .pipe(buildConfiguration.sourcemaps
+                                    ? sourcemaps.init({"loadMaps": true}) : gutil.noop())
+                                .pipe(insert.append(bootstrap2))
+                                .pipe(buildConfiguration.sourcemaps
+                                    ? sourcemaps.write({"includeContent": true}) : gutil.noop())
+                                .pipe(gulp.dest(uniteConfig.directories.dist))
+                                .on("end", cb);
+                        }
+                    });
+                });
+        }
+    });
+}
+
+gulp.task("build-bundle-app", (cb) => {
     const uniteConfig = uc.getUniteConfig();
     const buildConfiguration = uc.getBuildConfiguration();
 
     if (buildConfiguration.bundle) {
-        display.info("Running", "Systemjs builder");
+        display.info("Running", "Systemjs builder for App");
 
-        const paths = bundle.createPaths(uniteConfig);
-        const paths2 = {};
-        const packages = bundle.createPackages(uniteConfig);
-        const preload = bundle.createPreload(uniteConfig);
-        const externals = [];
+        const builder = new Builder("./", `${uniteConfig.directories.dist}app-module-config.js`);
 
-        for (const key in paths) {
-            paths[key] = `./${paths[key]}`;
-            paths2[key] = `${uniteConfig.directories.dist}vendor-bundle.js`;
-            externals.push(key);
-        }
+        const dist = uniteConfig.directories.dist;
 
-        packages[""] = {"defaultExtension": "js"};
+        const packageFiles = [
+            `${dist}**/*.js`,
+            ` + ${dist}**/*.html!text`,
+            ` + ${dist}**/*.css!text`,
+            ` - ${dist}vendor-bundle.js`,
+            ` - ${dist}vendor-bundle-init.js`,
+            ` - ${dist}app-module-config.js`
+        ];
 
-        const builder = new Builder();
-
-        builder.bundle("entryPoint.js", path.join(uniteConfig.directories.dist, "app-bundle.js"), {
-            "config": {
-                "baseURL": uniteConfig.directories.dist,
-                packages,
-                paths
-            },
-            externals,
-            "minify": buildConfiguration.minify,
-            "sourceMaps": buildConfiguration.sourcemaps ? "inline" : false
-        })
+        builder.bundle(packageFiles.join(""), path.join(uniteConfig.directories.dist, "app-bundle.js"),
+            {
+                "minify": buildConfiguration.minify,
+                "sourceMaps": buildConfiguration.sourcemaps ? "inline" : false
+            })
             .then(() => {
-                let bootstrap = "SystemJS.config({";
-                bootstrap += `paths: ${JSON.stringify(paths2)},`;
-                bootstrap += `packages: ${JSON.stringify(packages)}`;
-                bootstrap += "});";
-                if (preload.length > 0) {
-                    bootstrap += `Promise.all(${JSON.stringify(preload)}.map(function(module) { return SystemJS.import(module); }))`;
-                    bootstrap += ".then(function() {";
-                }
-                bootstrap += "SystemJS.import('entryPoint');";
-                if (preload.length > 0) {
-                    bootstrap += "});";
-                }
-
-                return gulp.src(path.join(uniteConfig.directories.dist, "app-bundle.js"))
-                    .pipe(buildConfiguration.sourcemaps ? sourcemaps.init({"loadMaps": true}) : gutil.noop())
-                    .pipe(insert.append(bootstrap))
-                    .pipe(buildConfiguration.sourcemaps ? sourcemaps.write({"includeContent": true}) : gutil.noop())
-                    .pipe(gulp.dest(uniteConfig.directories.dist));
+                addBootstrap(uniteConfig, buildConfiguration, cb);
             })
             .catch((err) => {
                 display.error(err);
                 process.exit(1);
             });
+    } else {
+        cb();
     }
 });
 

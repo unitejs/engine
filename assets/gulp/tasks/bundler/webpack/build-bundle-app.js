@@ -8,27 +8,32 @@ const webpack = require("webpack");
 const webpackStream = require("webpack-stream");
 const uc = require("./util/unite-config");
 const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
-const bundle = require("./util/bundle");
+const clientPackages = require("./util/client-packages");
 
 gulp.task("build-bundle-app", () => {
     const uniteConfig = uc.getUniteConfig();
     const buildConfiguration = uc.getBuildConfiguration();
 
     if (buildConfiguration.bundle) {
-        display.info("Running", "Webpack");
+        display.info("Running", "Webpack for App");
 
         const entry = {};
         const plugins = [];
 
-        const keys = bundle.getPathKeys(uniteConfig);
+        const keys = clientPackages.getKeys(uniteConfig);
+
+        const idx = keys.indexOf("systemjs");
+        if (idx >= 0) {
+            keys.splice(idx, 1);
+        }
 
         if (keys.length > 0) {
             entry.vendor = keys;
-            plugins.push(new webpack.optimize.CommonsChunkPlugin({
-                "filename": "vendor-bundle.js",
-                "name": "vendor"
-            }));
         }
+        plugins.push(new webpack.optimize.CommonsChunkPlugin({
+            "filename": "vendor-bundle.js",
+            "name": "vendor"
+        }));
 
         if (buildConfiguration.minify) {
             plugins.push(new UglifyJSPlugin());

@@ -1,10 +1,10 @@
 /**
  * Model of Unite Configuration (unite.json) file.
  */
-import { IncludeMode } from "./includeMode";
 import { UniteApplicationFramework } from "./uniteApplicationFramework";
 import { UniteBuildConfiguration } from "./uniteBuildConfiguration";
 import { UniteBundler } from "./uniteBundler";
+import { UniteClientPackage } from "./uniteClientPackage";
 import { UniteCssPostProcessor } from "./uniteCssPostProcessor";
 import { UniteCssPreProcessor } from "./uniteCssPreProcessor";
 import { UniteDirectories } from "./uniteDirectories";
@@ -38,12 +38,7 @@ export declare class UniteConfiguration {
     cssPre: UniteCssPreProcessor;
     cssPost: UniteCssPostProcessor;
     clientPackages: {
-        [id: string]: {
-            version: string;
-            preload: boolean;
-            main: string;
-            includeMode: IncludeMode;
-        };
+        [id: string]: UniteClientPackage;
     };
     directories: UniteDirectories;
     srcDistReplace: string;

@@ -13,7 +13,7 @@ export class PostCss extends EnginePipelineStepBase {
     private static FILENAME: string = ".postcssrc.json";
 
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["postcss", "postcss-import", "autoprefixer", "cssnano"], uniteConfiguration.cssPost === "PostCss", true);
+        engineVariables.toggleDevDependency(["postcss", "postcss-import", "autoprefixer", "cssnano"], uniteConfiguration.cssPost === "PostCss");
 
         if (uniteConfiguration.cssPost === "PostCss") {
             try {

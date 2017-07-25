@@ -1,4 +1,5 @@
 import { IncludeMode } from "../configuration/models/unite/includeMode";
+import { UniteApplicationFramework } from "../configuration/models/unite/uniteApplicationFramework";
 import { UniteBundler } from "../configuration/models/unite/uniteBundler";
 import { UniteCssPostProcessor } from "../configuration/models/unite/uniteCssPostProcessor";
 import { UniteCssPreProcessor } from "../configuration/models/unite/uniteCssPreProcessor";
@@ -23,7 +24,7 @@ export declare class Engine implements IEngine {
     private _coreRoot;
     private _assetsFolder;
     constructor(logger: ILogger, display: IDisplay, fileSystem: IFileSystem);
-    init(packageName: string | undefined | null, title: string | undefined | null, license: string | undefined | null, sourceLanguage: UniteSourceLanguage | undefined | null, moduleType: UniteModuleType | undefined | null, bundler: UniteBundler | undefined | null, unitTestRunner: UniteUnitTestRunner | undefined | null, unitTestFramework: UniteUnitTestFramework | undefined | null, e2eTestRunner: UniteE2eTestRunner | undefined | null, e2eTestFramework: UniteE2eTestFramework | undefined | null, linter: UniteLinter | undefined | null, cssPre: UniteCssPreProcessor | undefined | null, cssPost: UniteCssPostProcessor | undefined | null, packageManager: UnitePackageManager | undefined | null, outputDirectory: string | undefined | null): Promise<number>;
+    init(packageName: string | undefined | null, title: string | undefined | null, license: string | undefined | null, sourceLanguage: UniteSourceLanguage | undefined | null, moduleType: UniteModuleType | undefined | null, bundler: UniteBundler | undefined | null, unitTestRunner: UniteUnitTestRunner | undefined | null, unitTestFramework: UniteUnitTestFramework | undefined | null, e2eTestRunner: UniteE2eTestRunner | undefined | null, e2eTestFramework: UniteE2eTestFramework | undefined | null, linter: UniteLinter | undefined | null, cssPre: UniteCssPreProcessor | undefined | null, cssPost: UniteCssPostProcessor | undefined | null, packageManager: UnitePackageManager | undefined | null, applicationFramework: UniteApplicationFramework | undefined | null, outputDirectory: string | undefined | null): Promise<number>;
     clientPackage(operation: ModuleOperation | undefined | null, packageName: string | undefined | null, version: string | undefined | null, preload: boolean, includeMode: IncludeMode | undefined | null, packageManager: UnitePackageManager | undefined | null, outputDirectory: string | undefined | null): Promise<number>;
     buildConfiguration(operation: BuildConfigurationOperation | undefined | null, configurationName: string | undefined | null, bundle: boolean, minify: boolean, sourcemaps: boolean, outputDirectory: string | undefined | null): Promise<number>;
     private cleanupOutputDirectory(outputDirectory);

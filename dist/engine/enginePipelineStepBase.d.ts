@@ -13,7 +13,7 @@ export declare abstract class EnginePipelineStepBase implements IEnginePipelineS
     log(logger: ILogger, display: IDisplay, message: string, args?: {
         [id: string]: any;
     }): void;
-    error(logger: ILogger, display: IDisplay, message: string, err: any, args?: {
+    error(logger: ILogger, display: IDisplay, message: string, err?: any, args?: {
         [id: string]: any;
     }): void;
     copyFile(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, sourceFolder: string, sourceFilename: string, destFolder: string, destFilename: string): Promise<void>;

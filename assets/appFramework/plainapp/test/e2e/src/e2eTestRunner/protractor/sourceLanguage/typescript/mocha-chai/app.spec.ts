@@ -22,7 +22,7 @@ describe("App", () => {
             .then(() => {
                 browser.element(by.css("body")).getText()
                     .then((bodyContent) => {
-                        expect(bodyContent).to.equal("Hello TypeScript UniteJS World!");
+                        expect(bodyContent).to.equal("Hello UniteJS World!");
                         done();
                     });
             });

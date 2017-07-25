@@ -10,7 +10,7 @@ import { ILogger } from "../../interfaces/ILogger";
 
 export class PostCssNone extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["cssnano", "gulp-cssnano"], uniteConfiguration.cssPost === "None", true);
+        engineVariables.toggleDevDependency(["cssnano", "gulp-cssnano"], uniteConfiguration.cssPost === "None");
 
         return 0;
     }

@@ -30,7 +30,8 @@ gulp.task("build-transpile", () => {
             .on("error", (err) => {
                 display.error(err.toString());
             }) : gutil.noop())
-        .pipe(buildConfiguration.sourcemaps ? sourcemaps.mapSources((sourcePath) => `./src/${sourcePath}`) : gutil.noop())
+        .pipe(buildConfiguration.sourcemaps
+            ? sourcemaps.mapSources((sourcePath) => `./src/${sourcePath}`) : gutil.noop())
         .pipe(buildConfiguration.sourcemaps ? sourcemaps.write({
             "includeContent": true,
             "sourceRoot": ""

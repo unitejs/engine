@@ -7,7 +7,7 @@ const browserify = require("browserify");
 const source = require("vinyl-source-stream");
 const buffer = require("vinyl-buffer");
 const uc = require("./util/unite-config");
-const bundle = require("./util/bundle");
+const clientPackages = require("./util/client-packages");
 const gutil = require("gulp-util");
 const uglify = require("gulp-uglify");
 
@@ -16,11 +16,16 @@ gulp.task("build-bundle-vendor", () => {
     const buildConfiguration = uc.getBuildConfiguration();
 
     if (buildConfiguration.bundle) {
-        display.info("Running", "Browserify");
+        display.info("Running", "Browserify for Vendor");
 
         const bVendor = browserify({"debug": buildConfiguration.sourcemaps});
 
-        const keys = bundle.getPathKeys(uniteConfig);
+        const keys = clientPackages.getKeys(uniteConfig);
+
+        const idx = keys.indexOf("systemjs");
+        if (idx >= 0) {
+            keys.splice(idx, 1);
+        }
 
         keys.forEach((key) => {
             bVendor.require(key);

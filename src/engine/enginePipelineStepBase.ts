@@ -18,7 +18,7 @@ export abstract class EnginePipelineStepBase implements IEnginePipelineStep {
         logger.log(message, args);
     }
 
-    public error(logger: ILogger, display: IDisplay, message: string, err: any, args?: { [id: string]: any}): void {
+    public error(logger: ILogger, display: IDisplay, message: string, err?: any, args?: { [id: string]: any}): void {
         display.error(message, err, args);
         logger.error(message, args);
     }
@@ -29,6 +29,13 @@ export abstract class EnginePipelineStepBase implements IEnginePipelineStep {
 
         if (hasGeneratedMarker) {
             this.log(logger, display, "Copying " + sourceFilename, { from: sourceFolder, to: destFolder });
+
+            const folderWithFile = fileSystem.pathCombine(destFolder, destFilename);
+            const folderOnly = fileSystem.pathGetDirectory(folderWithFile);
+            const dirExists = await fileSystem.directoryExists(folderOnly);
+            if (!dirExists) {
+                await fileSystem.directoryCreate(folderOnly);
+            }
 
             const lines = await fileSystem.fileReadLines(sourceFolder, sourceFilename);
             await fileSystem.fileWriteLines(destFolder, destFilename, lines);

@@ -12,7 +12,7 @@ export class Gulp extends EnginePipelineStepBase {
     private static FILENAME: string = "gulpfile.js";
 
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["gulp", "require-dir", "gulp-rename", "gulp-replace", "minimist", "gulp-uglify", "uglify-js"], uniteConfiguration.taskManager === "Gulp", true);
+        engineVariables.toggleDevDependency(["gulp", "require-dir", "gulp-rename", "gulp-replace", "minimist", "gulp-uglify", "uglify-js"], uniteConfiguration.taskManager === "Gulp");
 
         if (uniteConfiguration.taskManager === "Gulp") {
             try {
@@ -95,18 +95,19 @@ export class Gulp extends EnginePipelineStepBase {
     }
 
     public async generateBuildTasks(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["del", "run-sequence", "gulp-sourcemaps", "gulp-concat", "gulp-insert"], uniteConfiguration.taskManager === "Gulp", true);
-        engineVariables.toggleDependencies(["gulp-babel"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.sourceLanguage === "JavaScript", true);
-        engineVariables.toggleDependencies(["gulp-typescript"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.sourceLanguage === "TypeScript", true);
-        engineVariables.toggleDependencies(["gulp-eslint"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.linter === "ESLint", true);
-        engineVariables.toggleDependencies(["gulp-tslint"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.linter === "TSLint", true);
-        engineVariables.toggleDependencies(["webpack-stream"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.bundler === "Webpack", true);
-        engineVariables.toggleDependencies(["vinyl-source-stream", "vinyl-buffer"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.bundler === "Browserify", true);
-        engineVariables.toggleDependencies(["gulp-less"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPre === "Less", true);
-        engineVariables.toggleDependencies(["gulp-sass"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPre === "Sass", true);
-        engineVariables.toggleDependencies(["gulp-stylus"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPre === "Stylus", true);
-        engineVariables.toggleDependencies(["gulp-postcss"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPost === "PostCss", true);
-        engineVariables.toggleDependencies(["merge2"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPost === "None", true);
+        engineVariables.toggleDevDependency(["del", "delete-empty", "run-sequence", "gulp-sourcemaps", "gulp-concat", "gulp-insert", "gulp-htmlmin", "html-minifier", "node-glob"],
+            uniteConfiguration.taskManager === "Gulp");
+        engineVariables.toggleDevDependency(["gulp-babel"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.sourceLanguage === "JavaScript");
+        engineVariables.toggleDevDependency(["gulp-typescript"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.sourceLanguage === "TypeScript");
+        engineVariables.toggleDevDependency(["gulp-eslint"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.linter === "ESLint");
+        engineVariables.toggleDevDependency(["gulp-tslint"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.linter === "TSLint");
+        engineVariables.toggleDevDependency(["webpack-stream"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.bundler === "Webpack");
+        engineVariables.toggleDevDependency(["vinyl-source-stream", "vinyl-buffer"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.bundler === "Browserify");
+        engineVariables.toggleDevDependency(["gulp-less"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPre === "Less");
+        engineVariables.toggleDevDependency(["gulp-sass"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPre === "Sass");
+        engineVariables.toggleDevDependency(["gulp-stylus"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPre === "Stylus");
+        engineVariables.toggleDevDependency(["gulp-postcss"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPost === "PostCss");
+        engineVariables.toggleDevDependency(["merge2"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPost === "None");
 
         if (uniteConfiguration.taskManager === "Gulp") {
             try {
@@ -123,8 +124,10 @@ export class Gulp extends EnginePipelineStepBase {
                 await this.copyFile(logger, display, fileSystem, assetTasksBundler, "build-bundle-app.js", engineVariables.gulpTasksFolder, "build-bundle-app.js");
                 await this.copyFile(logger, display, fileSystem, assetTasksBundler, "build-bundle-vendor.js", engineVariables.gulpTasksFolder, "build-bundle-vendor.js");
                 await this.copyFile(logger, display, fileSystem, assetTasksLinter, "build-lint.js", engineVariables.gulpTasksFolder, "build-lint.js");
-                await this.copyFile(logger, display, fileSystem, assetTasksCssPre, "build-css.js", engineVariables.gulpTasksFolder, "build-css.js");
-                await this.copyFile(logger, display, fileSystem, assetTasksCssPost, "build-css-post.js", engineVariables.gulpTasksFolder, "build-css-post.js");
+                await this.copyFile(logger, display, fileSystem, assetTasksCssPre, "build-css-app.js", engineVariables.gulpTasksFolder, "build-css-app.js");
+                await this.copyFile(logger, display, fileSystem, assetTasksCssPre, "build-css-components.js", engineVariables.gulpTasksFolder, "build-css-components.js");
+                await this.copyFile(logger, display, fileSystem, assetTasksCssPost, "build-css-post-app.js", engineVariables.gulpTasksFolder, "build-css-post-app.js");
+                await this.copyFile(logger, display, fileSystem, assetTasksCssPost, "build-css-post-components.js", engineVariables.gulpTasksFolder, "build-css-post-components.js");
 
                 await this.copyFile(logger, display, fileSystem, assetTasks, "build.js", engineVariables.gulpTasksFolder, "build.js");
 
@@ -139,7 +142,7 @@ export class Gulp extends EnginePipelineStepBase {
     }
 
     private async generateUnitTasks(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["gulp-karma-runner"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.unitTestRunner === "Karma", true);
+        engineVariables.toggleDevDependency(["gulp-karma-runner"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.unitTestRunner === "Karma");
 
         if (uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.unitTestRunner !== "None") {
             try {
@@ -148,16 +151,16 @@ export class Gulp extends EnginePipelineStepBase {
                 const assetUnitTest = fileSystem.pathCombine(engineVariables.assetsDirectory, "gulp/tasks/");
 
                 const assetUnitTestLanguage = fileSystem.pathCombine(engineVariables.assetsDirectory,
-                                                                     "gulp/tasks/sourceLanguage/" +
-                                                                     uniteConfiguration.sourceLanguage.toLowerCase() + "/");
+                    "gulp/tasks/sourceLanguage/" +
+                    uniteConfiguration.sourceLanguage.toLowerCase() + "/");
 
                 const assetLinter = fileSystem.pathCombine(engineVariables.assetsDirectory,
-                                                           "gulp/tasks/linter/" +
-                                                           uniteConfiguration.linter.toLowerCase() + "/");
+                    "gulp/tasks/linter/" +
+                    uniteConfiguration.linter.toLowerCase() + "/");
 
                 const assetUnitTestRunner = fileSystem.pathCombine(engineVariables.assetsDirectory,
-                                                                   "gulp/tasks/unitTestRunner/" +
-                                                                   uniteConfiguration.unitTestRunner.toLowerCase() + "/");
+                    "gulp/tasks/unitTestRunner/" +
+                    uniteConfiguration.unitTestRunner.toLowerCase() + "/");
 
                 await this.copyFile(logger, display, fileSystem, assetUnitTest, "unit.js", engineVariables.gulpTasksFolder, "unit.js");
                 await this.copyFile(logger, display, fileSystem, assetUnitTestLanguage, "unit-transpile.js", engineVariables.gulpTasksFolder, "unit-transpile.js");
@@ -175,8 +178,8 @@ export class Gulp extends EnginePipelineStepBase {
     }
 
     private async generateE2eTasks(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["gulp-webdriver", "browser-sync"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.e2eTestRunner === "WebdriverIO", true);
-        engineVariables.toggleDependencies(["browser-sync"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.e2eTestRunner === "Protractor", true);
+        engineVariables.toggleDevDependency(["gulp-webdriver", "browser-sync"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.e2eTestRunner === "WebdriverIO");
+        engineVariables.toggleDevDependency(["browser-sync"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.e2eTestRunner === "Protractor");
 
         if (uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.e2eTestRunner !== "None") {
             try {
@@ -185,16 +188,16 @@ export class Gulp extends EnginePipelineStepBase {
                 const assetE2eTest = fileSystem.pathCombine(engineVariables.assetsDirectory, "gulp/tasks/");
 
                 const assetUnitTestLanguage = fileSystem.pathCombine(engineVariables.assetsDirectory,
-                                                                     "gulp/tasks/sourceLanguage/" +
-                                                                     uniteConfiguration.sourceLanguage.toLowerCase() + "/");
+                    "gulp/tasks/sourceLanguage/" +
+                    uniteConfiguration.sourceLanguage.toLowerCase() + "/");
 
                 const assetLinter = fileSystem.pathCombine(engineVariables.assetsDirectory,
-                                                           "gulp/tasks/linter/" +
-                                                           uniteConfiguration.linter.toLowerCase() + "/");
+                    "gulp/tasks/linter/" +
+                    uniteConfiguration.linter.toLowerCase() + "/");
 
                 const assetE2eTestRunner = fileSystem.pathCombine(engineVariables.assetsDirectory,
-                                                                  "gulp/tasks/e2eTestRunner/" +
-                                                                  uniteConfiguration.e2eTestRunner.toLowerCase() + "/");
+                    "gulp/tasks/e2eTestRunner/" +
+                    uniteConfiguration.e2eTestRunner.toLowerCase() + "/");
 
                 await this.copyFile(logger, display, fileSystem, assetE2eTest, "e2e.js", engineVariables.gulpTasksFolder, "e2e.js");
                 await this.copyFile(logger, display, fileSystem, assetUnitTestLanguage, "e2e-transpile.js", engineVariables.gulpTasksFolder, "e2e-transpile.js");
@@ -233,18 +236,22 @@ export class Gulp extends EnginePipelineStepBase {
     }
 
     private async generateUtils(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["gulp-util", "gulp-rename"], uniteConfiguration.taskManager === "Gulp", true);
+        engineVariables.toggleDevDependency(["gulp-util", "gulp-rename"], uniteConfiguration.taskManager === "Gulp");
 
         if (uniteConfiguration.taskManager === "Gulp") {
             try {
                 super.log(logger, display, "Generating gulp tasks utils in", { gulpUtilFolder: engineVariables.gulpUtilFolder });
 
                 const assetUtils = fileSystem.pathCombine(engineVariables.assetsDirectory, "gulp/tasks/util/");
+                const assetUtilModuleType = fileSystem.pathCombine(engineVariables.assetsDirectory, "gulp/tasks/moduleType/" + uniteConfiguration.moduleType.toLowerCase() + "/util/");
 
                 await this.copyFile(logger, display, fileSystem, assetUtils, "bundle.js", engineVariables.gulpUtilFolder, "bundle.js");
+                await this.copyFile(logger, display, fileSystem, assetUtils, "client-packages.js", engineVariables.gulpUtilFolder, "client-packages.js");
                 await this.copyFile(logger, display, fileSystem, assetUtils, "display.js", engineVariables.gulpUtilFolder, "display.js");
                 await this.copyFile(logger, display, fileSystem, assetUtils, "exec.js", engineVariables.gulpUtilFolder, "exec.js");
                 await this.copyFile(logger, display, fileSystem, assetUtils, "unite-config.js", engineVariables.gulpUtilFolder, "unite-config.js");
+
+                await this.copyFile(logger, display, fileSystem, assetUtilModuleType, "module-config.js", engineVariables.gulpUtilFolder, "module-config.js");
 
                 return 0;
             } catch (err) {

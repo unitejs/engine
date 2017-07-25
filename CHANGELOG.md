@@ -1,3 +1,10 @@
+# v0.5.0
+* Added Application Framework support
+* Added Aurelia Framework with RequireJS,SystemJS Bundling support
+* HTML Minification for bundling
+* Bundling improvements for html, css
+* Removed cajon usage and use systemjs for unbundled and unit testing to load cjs modules
+
 # v0.4.1
 * Help improvements and tidy up
 

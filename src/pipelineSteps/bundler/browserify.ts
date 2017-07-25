@@ -10,7 +10,7 @@ import { ILogger } from "../../interfaces/ILogger";
 
 export class Browserify extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["browserify"], uniteConfiguration.bundler === "Browserify", true);
+        engineVariables.toggleDevDependency(["browserify"], uniteConfiguration.bundler === "Browserify");
 
         if (uniteConfiguration.bundler === "Browserify") {
              try {

@@ -32,4 +32,16 @@ export declare class WebdriverIoConfiguration {
     mochaOpts: {};
     jasmineNodeOpts: {};
     cucumberOpts: {};
+    beforeSession: (config: WebdriverIoConfiguration, capabilities: WebdriverIoCapabilities[], specs: string[]) => void;
+    afterSession: (config: WebdriverIoConfiguration, capabilities: WebdriverIoCapabilities[], specs: string[]) => void;
+    before: (capabilities: WebdriverIoCapabilities[], specs: string[]) => void;
+    after: (result: number, capabilities: WebdriverIoCapabilities[], specs: string[]) => void;
+    beforeSuite: (suite: any) => void;
+    afterSuite: (suite: any) => void;
+    beforeHook: () => void;
+    afterHook: () => void;
+    beforeTest: (test: any) => void;
+    afterTest: (test: any) => void;
+    beforeCommand: (commandName: string, args: any[]) => void;
+    afterCommand: (commandName: string, args: any[], result: number, error: any) => void;
 }

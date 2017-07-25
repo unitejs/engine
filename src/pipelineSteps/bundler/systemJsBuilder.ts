@@ -10,7 +10,7 @@ import { ILogger } from "../../interfaces/ILogger";
 
 export class SystemJsBuilder extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["systemjs-builder"], uniteConfiguration.bundler === "SystemJSBuilder", true);
+        engineVariables.toggleDevDependency(["systemjs-builder"], uniteConfiguration.bundler === "SystemJSBuilder");
 
         if (uniteConfiguration.bundler === "SystemJSBuilder") {
             try {

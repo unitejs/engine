@@ -15,7 +15,7 @@ export class EsLint extends EnginePipelineStepBase {
     private static FILENAME2: string = ".eslintignore";
 
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["eslint"], uniteConfiguration.linter === "ESLint", true);
+        engineVariables.toggleDevDependency(["eslint"], uniteConfiguration.linter === "ESLint");
 
         if (uniteConfiguration.linter === "ESLint") {
             try {
@@ -32,7 +32,7 @@ export class EsLint extends EnginePipelineStepBase {
                     }
                 } catch (err) {
                     super.error(logger, display, `Reading existing ${EsLint.FILENAME} failed`, err);
-                    return 0;
+                    return 1;
                 }
 
                 const config = this.generateConfig(fileSystem, uniteConfiguration, engineVariables, existing);
@@ -121,7 +121,7 @@ export class EsLint extends EnginePipelineStepBase {
             }
         }
 
-        engineVariables.toggleDependencies(["eslint-plugin-webdriverio"], uniteConfiguration.e2eTestRunner === "WebdriverIO", true);
+        engineVariables.toggleDevDependency(["eslint-plugin-webdriverio"], uniteConfiguration.e2eTestRunner === "WebdriverIO");
         const idx = config.plugins.indexOf("webdriverio");
         if (uniteConfiguration.e2eTestRunner === "WebdriverIO") {
             if (idx < 0) {

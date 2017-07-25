@@ -3,6 +3,9 @@
  */
 import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
 import { ISpdxLicense } from "../configuration/models/spdx/ISpdxLicense";
+import { IncludeMode } from "../configuration/models/unite/includeMode";
+import { UniteClientPackage } from "../configuration/models/unite/uniteClientPackage";
+import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { IPackageManager } from "../interfaces/IPackageManager";
 import { EngineVariablesHtml } from "./engineVariablesHtml";
 
@@ -41,59 +44,98 @@ export class EngineVariables {
 
     public corePackageJson: PackageConfiguration;
 
+    public protractorPlugins: string[];
+
     private _requiredDevDependencies: string[];
     private _removedDevDependencies: string[];
-    private _requiredDependencies: string[];
-    private _removedDependencies: string[];
+    private _requiredClientPackages: { [id: string]: UniteClientPackage };
+    private _removedClientPackages: { [id: string]: UniteClientPackage };
 
     constructor() {
         this._requiredDevDependencies = [];
         this._removedDevDependencies = [];
-        this._requiredDependencies = [];
-        this._removedDependencies = [];
+        this._requiredClientPackages = {};
+        this._removedClientPackages = {};
     }
 
-    public toggleDependencies(dependencies: string[], required: boolean, isDev: boolean): void {
-        if (isDev) {
-            if (required) {
-                this._requiredDevDependencies = this._requiredDevDependencies.concat(dependencies);
-            } else {
-                this._removedDevDependencies = this._removedDevDependencies.concat(dependencies);
-            }
+    public toggleClientPackage(name: string,
+                               location: string,
+                               main: string,
+                               preload: boolean,
+                               includeMode: IncludeMode,
+                               isPackage: boolean,
+                               required: boolean): void {
+        const clientPackage = new UniteClientPackage();
+        clientPackage.includeMode = includeMode;
+        clientPackage.preload = preload;
+        clientPackage.location = location;
+        clientPackage.main = main;
+        clientPackage.isPackage = isPackage;
+        clientPackage.version = this.findDependencyVersion(name);
+
+        let opArr: { [id: string]: UniteClientPackage };
+        if (required) {
+            opArr = this._requiredClientPackages;
         } else {
-            if (required) {
-                this._requiredDependencies = this._requiredDependencies.concat(dependencies);
-            } else {
-                this._removedDependencies = this._removedDependencies.concat(dependencies);
-            }
+            opArr = this._removedClientPackages;
         }
+
+        opArr[name] = clientPackage;
     }
 
-    public optimiseDependencies(): void {
-        this._requiredDependencies.forEach(requiredDependency => {
-            const idx = this._requiredDevDependencies.indexOf(requiredDependency);
-            if (idx > 0) {
-                this._requiredDevDependencies.splice(idx, 1);
+    public toggleDevDependency(dependencies: string[], required: boolean): void {
+        let opArr: string[];
+        if (required) {
+            opArr = this._requiredDevDependencies;
+        } else {
+            opArr = this._removedDevDependencies;
+        }
+
+        dependencies.forEach(dep => {
+            if (opArr.indexOf(dep) < 0) {
+                opArr.push(dep);
             }
         });
     }
 
-    public buildDependencies(dependencies: { [id: string]: string}, isDev: boolean): void {
-        const srcRemove = isDev ? this._removedDevDependencies : this._removedDependencies;
-        srcRemove.forEach(dependency => {
-            if (dependencies[dependency]) {
-                delete dependencies[dependency];
+    public buildDependencies(uniteConfiguration: UniteConfiguration, packageJsonDependencies: { [id: string]: string }): void {
+        for (const key in this._removedClientPackages) {
+            if (packageJsonDependencies[key]) {
+                delete packageJsonDependencies[key];
+            }
+        }
+
+        const addedTestDependencies = [];
+        const removedTestDependencies = [];
+        for (const pkg in this._requiredClientPackages) {
+            if (this._requiredClientPackages[pkg].includeMode === "app" || this._requiredClientPackages[pkg].includeMode === "both") {
+                packageJsonDependencies[pkg] = this._requiredClientPackages[pkg].version;
+                uniteConfiguration.clientPackages[pkg] = this._requiredClientPackages[pkg];
+
+                const idx = this._requiredDevDependencies.indexOf(pkg);
+                if (idx >= 0) {
+                    this._requiredDevDependencies.splice(idx, 1);
+                    removedTestDependencies.push(pkg);
+                }
+            } else if (this._requiredClientPackages[pkg].includeMode === "test") {
+                addedTestDependencies.push(pkg);
+            }
+        }
+        this.toggleDevDependency(addedTestDependencies, true);
+        this.toggleDevDependency(removedTestDependencies, false);
+    }
+
+    public buildDevDependencies(packageJsonDevDependencies: { [id: string]: string }): void {
+        this._removedDevDependencies.forEach(dependency => {
+            if (packageJsonDevDependencies[dependency]) {
+                delete packageJsonDevDependencies[dependency];
             }
         });
 
         if (this.corePackageJson.peerDependencies) {
-            const srcRequire = isDev ? this._requiredDevDependencies : this._requiredDependencies;
-
-            srcRequire.sort();
-
-            srcRequire.forEach(requiredDependency => {
+            this._requiredDevDependencies.forEach(requiredDependency => {
                 if (this.corePackageJson.peerDependencies[requiredDependency]) {
-                    dependencies[requiredDependency] = this.corePackageJson.peerDependencies[requiredDependency];
+                    packageJsonDevDependencies[requiredDependency] = this.corePackageJson.peerDependencies[requiredDependency];
                 } else {
                     throw new Error("Missing Dependency '" + requiredDependency + "'");
                 }

@@ -10,7 +10,7 @@ import { ILogger } from "../../interfaces/ILogger";
 
 export class RequireJs extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["requirejs"], uniteConfiguration.bundler === "RequireJS", true);
+        engineVariables.toggleDevDependency(["requirejs"], uniteConfiguration.bundler === "RequireJS");
 
         if (uniteConfiguration.bundler === "RequireJS") {
             try {

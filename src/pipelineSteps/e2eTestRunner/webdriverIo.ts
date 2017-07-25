@@ -14,18 +14,17 @@ export class WebdriverIo extends EnginePipelineStepBase {
     private static FILENAME: string = "wdio.conf.js";
 
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["webdriverio",
+        engineVariables.toggleDevDependency(["webdriverio",
                                             "wdio-spec-reporter",
                                             "wdio-allure-reporter",
                                             "browser-sync",
                                             "selenium-standalone",
                                             "allure-commandline"],
-                                           uniteConfiguration.e2eTestRunner === "WebdriverIO",
-                                           true);
+                                           uniteConfiguration.e2eTestRunner === "WebdriverIO");
 
-        engineVariables.toggleDependencies(["wdio-jasmine-framework"], uniteConfiguration.e2eTestRunner === "WebdriverIO" && uniteConfiguration.e2eTestFramework === "Jasmine", true);
-        engineVariables.toggleDependencies(["wdio-mocha-framework"], uniteConfiguration.e2eTestRunner === "WebdriverIO" && uniteConfiguration.e2eTestFramework === "Mocha-Chai", true);
-        engineVariables.toggleDependencies(["@types/webdriverio"], uniteConfiguration.e2eTestRunner === "WebdriverIO" && uniteConfiguration.sourceLanguage === "TypeScript", true);
+        engineVariables.toggleDevDependency(["wdio-jasmine-framework"], uniteConfiguration.e2eTestRunner === "WebdriverIO" && uniteConfiguration.e2eTestFramework === "Jasmine");
+        engineVariables.toggleDevDependency(["wdio-mocha-framework"], uniteConfiguration.e2eTestRunner === "WebdriverIO" && uniteConfiguration.e2eTestFramework === "Mocha-Chai");
+        engineVariables.toggleDevDependency(["@types/webdriverio"], uniteConfiguration.e2eTestRunner === "WebdriverIO" && uniteConfiguration.sourceLanguage === "TypeScript");
 
         if (uniteConfiguration.e2eTestRunner === "WebdriverIO") {
             try {
@@ -64,7 +63,7 @@ export class WebdriverIo extends EnginePipelineStepBase {
                 browserName: "chrome"
             }
         ];
-        webdriverConfiguration.sync = true;
+        webdriverConfiguration.sync = false;
 
         if (uniteConfiguration.e2eTestFramework === "Jasmine") {
             webdriverConfiguration.framework = "jasmine";
@@ -78,7 +77,10 @@ export class WebdriverIo extends EnginePipelineStepBase {
             }
         };
 
+        const e2eBootstrap = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, fileSystem.pathCombine(engineVariables.e2eTestFolder, "e2e-bootstrap.js")));
+
         lines.push("exports.config = " + JsonHelper.codify(webdriverConfiguration));
+        lines.push("exports.config.before = require('" + e2eBootstrap + "');");
         lines.push(super.wrapGeneratedMarker("/* ", " */"));
     }
 }

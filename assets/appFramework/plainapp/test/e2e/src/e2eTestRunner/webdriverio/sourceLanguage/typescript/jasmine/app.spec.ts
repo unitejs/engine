@@ -4,15 +4,22 @@
 describe("App", () => {
     it("the title is set", () => {
         const uniteJson = require("../../../unite.json");
-        browser.url("/");
-        const title = browser.getTitle();
-        expect(title).toEqual(uniteJson.title);
+        return browser
+            .url("/")
+            .getTitle()
+            .then((title) => {
+                expect(title).to.equal(uniteJson.title);
+            });
     });
 
     it("the body text is set", () => {
-        browser.url("/");
-        const bodyContent = browser.element("body").getText();
-        expect(bodyContent).toEqual("Hello TypeScript UniteJS World!");
+        return browser
+            .url("/")
+            .element("body")
+            .getText()
+            .then((bodyContent) => {
+                expect(bodyContent).toEqual("Hello UniteJS World!");
+            });
     });
 });
 

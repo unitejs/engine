@@ -10,7 +10,7 @@ import { ILogger } from "../../interfaces/ILogger";
 
 export class Less extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["less"], uniteConfiguration.cssPre === "Less", true);
+        engineVariables.toggleDevDependency(["less"], uniteConfiguration.cssPre === "Less");
 
         if (uniteConfiguration.cssPre === "Less") {
             try {

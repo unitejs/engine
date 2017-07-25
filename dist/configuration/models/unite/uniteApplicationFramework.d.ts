@@ -1,4 +1,4 @@
 /**
  * Type for Unite Configuration application framework.
  */
-export declare type UniteApplicationFramework = "PlainApp";
+export declare type UniteApplicationFramework = "PlainApp" | "Aurelia";

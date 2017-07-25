@@ -10,7 +10,7 @@ import { ILogger } from "../../interfaces/ILogger";
 
 export class Sass extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["node-sass"], uniteConfiguration.cssPre === "Sass", true);
+        engineVariables.toggleDevDependency(["node-sass"], uniteConfiguration.cssPre === "Sass");
 
         if (uniteConfiguration.cssPre === "Sass") {
             try {

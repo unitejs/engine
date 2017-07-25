@@ -37,19 +37,8 @@ export class PackageJson extends EnginePipelineStepBase {
             packageJson.devDependencies = packageJson.devDependencies || {};
             packageJson.dependencies = packageJson.dependencies || {};
 
-            engineVariables.optimiseDependencies();
-            engineVariables.buildDependencies(packageJson.devDependencies, true);
-            engineVariables.buildDependencies(packageJson.dependencies, false);
-
-            if (uniteConfiguration.clientPackages) {
-                for (const pkg in uniteConfiguration.clientPackages) {
-                    if (uniteConfiguration.clientPackages[pkg].includeMode === "app" || uniteConfiguration.clientPackages[pkg].includeMode === "both") {
-                        packageJson.dependencies[pkg] = uniteConfiguration.clientPackages[pkg].version;
-                    } else if (uniteConfiguration.clientPackages[pkg].includeMode === "test") {
-                        packageJson.devDependencies[pkg] = uniteConfiguration.clientPackages[pkg].version;
-                    }
-                }
-            }
+            engineVariables.buildDependencies(uniteConfiguration, packageJson.dependencies);
+            engineVariables.buildDevDependencies(packageJson.devDependencies);
 
             packageJson.dependencies = this.sortDependencies(packageJson.dependencies);
             packageJson.devDependencies = this.sortDependencies(packageJson.devDependencies);

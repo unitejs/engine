@@ -3,6 +3,8 @@
  */
 import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
 import { ISpdxLicense } from "../configuration/models/spdx/ISpdxLicense";
+import { IncludeMode } from "../configuration/models/unite/includeMode";
+import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { IPackageManager } from "../interfaces/IPackageManager";
 import { EngineVariablesHtml } from "./engineVariablesHtml";
 export declare class EngineVariables {
@@ -32,15 +34,19 @@ export declare class EngineVariables {
     htmlBundle: EngineVariablesHtml;
     packageManager: IPackageManager;
     corePackageJson: PackageConfiguration;
+    protractorPlugins: string[];
     private _requiredDevDependencies;
     private _removedDevDependencies;
-    private _requiredDependencies;
-    private _removedDependencies;
+    private _requiredClientPackages;
+    private _removedClientPackages;
     constructor();
-    toggleDependencies(dependencies: string[], required: boolean, isDev: boolean): void;
-    optimiseDependencies(): void;
-    buildDependencies(dependencies: {
+    toggleClientPackage(name: string, location: string, main: string, preload: boolean, includeMode: IncludeMode, isPackage: boolean, required: boolean): void;
+    toggleDevDependency(dependencies: string[], required: boolean): void;
+    buildDependencies(uniteConfiguration: UniteConfiguration, packageJsonDependencies: {
         [id: string]: string;
-    }, isDev: boolean): void;
+    }): void;
+    buildDevDependencies(packageJsonDevDependencies: {
+        [id: string]: string;
+    }): void;
     findDependencyVersion(requiredDependency: string): string;
 }

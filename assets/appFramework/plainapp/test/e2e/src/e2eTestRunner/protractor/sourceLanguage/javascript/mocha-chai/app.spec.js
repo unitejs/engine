@@ -1,7 +1,7 @@
 /**
  * Tests for App.
  */
-import { expect } from 'chai';
+import {expect} from "chai";
 
 describe("App", () => {
     it("the title is set", (done) => {
@@ -21,7 +21,7 @@ describe("App", () => {
             .then(() => {
                 browser.element(by.css("body")).getText()
                     .then((bodyContent) => {
-                        expect(bodyContent).to.equal('Hello JavaScript UniteJS World!');
+                        expect(bodyContent).to.equal("Hello UniteJS World!");
                         done();
                     });
             });

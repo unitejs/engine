@@ -27,7 +27,7 @@ export class WebdriverIoConfiguration {
     public screenshotPath: string;
     public baseUrl: string;
     public waitforTimeout: number;
-    public plugins: { [id: string]: any};
+    public plugins: { [id: string]: any };
     public framework: string;
     public reporters: string[];
     public reporterOptions: {};
@@ -35,4 +35,22 @@ export class WebdriverIoConfiguration {
     public mochaOpts: {};
     public jasmineNodeOpts: {};
     public cucumberOpts: {};
+
+    public beforeSession: (config: WebdriverIoConfiguration, capabilities: WebdriverIoCapabilities[], specs: string[]) => void;
+    public afterSession: (config: WebdriverIoConfiguration, capabilities: WebdriverIoCapabilities[], specs: string[]) => void;
+
+    public before: (capabilities: WebdriverIoCapabilities[], specs: string[]) => void;
+    public after: (result: number, capabilities: WebdriverIoCapabilities[], specs: string[]) => void;
+
+    public beforeSuite: (suite: any) => void;
+    public afterSuite: (suite: any) => void;
+
+    public beforeHook: () => void;
+    public afterHook: () => void;
+
+    public beforeTest: (test: any) => void;
+    public afterTest: (test: any) => void;
+
+    public beforeCommand: (commandName: string, args: any[]) => void;
+    public afterCommand: (commandName: string, args: any[], result: number, error: any) => void;
 }

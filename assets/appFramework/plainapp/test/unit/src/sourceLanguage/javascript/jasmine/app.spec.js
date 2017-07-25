@@ -1,7 +1,7 @@
 /**
  * Tests for App.
  */
-import { App } from "../../../src/app";
+import {App} from "../../../src/app";
 
 describe("App", () => {
     it("can be created", (done) => {

@@ -14,26 +14,26 @@ export class Karma extends EnginePipelineStepBase {
     private static FILENAME: string = "karma.conf.js";
 
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["karma",
-                                            "karma-chrome-launcher",
-                                            "karma-phantomjs-launcher",
-                                            "karma-story-reporter",
-                                            "karma-html-reporter",
-                                            "karma-coverage",
-                                            "karma-sourcemap-loader",
-                                            "karma-remap-istanbul",
-                                            "remap-istanbul",
-                                            "bluebird"
-                                            ],
-                                           uniteConfiguration.unitTestRunner === "Karma",
-                                           true);
+        engineVariables.toggleDevDependency(["karma",
+            "karma-chrome-launcher",
+            "karma-phantomjs-launcher",
+            "karma-story-reporter",
+            "karma-html-reporter",
+            "karma-coverage",
+            "karma-sourcemap-loader",
+            "karma-remap-istanbul",
+            "remap-istanbul",
+            "bluebird"
+        ],
+            uniteConfiguration.unitTestRunner === "Karma");
 
-        engineVariables.toggleDependencies(["requirejs"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.moduleType === "AMD", true);
-        engineVariables.toggleDependencies(["systemjs"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.moduleType === "SystemJS", true);
-        engineVariables.toggleDependencies(["cajon"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.moduleType === "CommonJS", true);
+        engineVariables.toggleDevDependency(["requirejs"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.moduleType === "AMD");
+        /* We use SystemJS for testing CommonJS modules so we don't need to webpack the tests */
+        engineVariables.toggleDevDependency(["systemjs"], uniteConfiguration.unitTestRunner === "Karma" &&
+                                            (uniteConfiguration.moduleType === "SystemJS" || uniteConfiguration.moduleType === "CommonJS"));
 
-        engineVariables.toggleDependencies(["karma-mocha", "karma-chai"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.unitTestFramework === "Mocha-Chai", true);
-        engineVariables.toggleDependencies(["karma-jasmine"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.unitTestFramework === "Jasmine", true);
+        engineVariables.toggleDevDependency(["karma-mocha", "karma-chai"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.unitTestFramework === "Mocha-Chai");
+        engineVariables.toggleDevDependency(["karma-jasmine"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.unitTestFramework === "Jasmine");
 
         if (uniteConfiguration.unitTestRunner === "Karma") {
             try {
@@ -62,17 +62,16 @@ export class Karma extends EnginePipelineStepBase {
     private generateConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, lines: string[]): void {
         const testFrameworks: string[] = [];
 
-        const testIncludes: { pattern: string, included: boolean}[] = [];
+        const testIncludes: { pattern: string, included: boolean }[] = [];
 
         testIncludes.push({ pattern: "./unite.json", included: false });
         testIncludes.push({ pattern: "./node_modules/bluebird/js/browser/bluebird.js", included: true });
 
         if (uniteConfiguration.moduleType === "AMD") {
             testIncludes.push({ pattern: "./node_modules/requirejs/require.js", included: true });
-        } else if (uniteConfiguration.moduleType === "SystemJS") {
+        } else if (uniteConfiguration.moduleType === "SystemJS" || uniteConfiguration.moduleType === "CommonJS") {
+            /* We use SystemJS for testing CommonJS modules so we don't need to webpack the tests */
             testIncludes.push({ pattern: "./node_modules/systemjs/dist/system.js", included: true });
-        } else if (uniteConfiguration.moduleType === "CommonJS") {
-            testIncludes.push({ pattern: "./node_modules/cajon/cajon.js", included: true });
         }
 
         const packageKeys = Object.keys(uniteConfiguration.clientPackages);
@@ -120,13 +119,13 @@ export class Karma extends EnginePipelineStepBase {
         karmaConfiguration.reporters = ["story", "coverage", "html", "karma-remap-istanbul"];
         karmaConfiguration.browsers = ["PhantomJS"];
         karmaConfiguration.coverageReporter = {
-                reporters: [
-                    {
-                        type: "json",
-                        dir: reportsFolder,
-                        subdir: "."
-                    }
-                ]
+            reporters: [
+                {
+                    type: "json",
+                    dir: reportsFolder,
+                    subdir: "."
+                }
+            ]
         };
 
         karmaConfiguration.htmlReporter = {

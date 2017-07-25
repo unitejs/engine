@@ -1,0 +1,12 @@
+import { IncludeMode } from "./includeMode";
+/**
+ * Model of Unite Configuration (unite.json) file.
+ */
+export class UniteClientPackage {
+    public version: string;
+    public preload: boolean;
+    public location: string;
+    public main: string;
+    public includeMode: IncludeMode;
+    public isPackage: boolean;
+}

@@ -10,7 +10,7 @@ import { ILogger } from "../../interfaces/ILogger";
 
 export class BrowserSync extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["browser-sync"], uniteConfiguration.server === "BrowserSync", true);
+        engineVariables.toggleDevDependency(["browser-sync"], uniteConfiguration.server === "BrowserSync");
 
         if (uniteConfiguration.server === "BrowserSync") {
             try {

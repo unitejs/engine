@@ -5,8 +5,10 @@ import { PackageConfiguration } from "../configuration/models/packages/packageCo
 import { ISpdx } from "../configuration/models/spdx/ISpdx";
 import { ISpdxLicense } from "../configuration/models/spdx/ISpdxLicense";
 import { IncludeMode } from "../configuration/models/unite/includeMode";
+import { UniteApplicationFramework } from "../configuration/models/unite/uniteApplicationFramework";
 import { UniteBuildConfiguration } from "../configuration/models/unite/uniteBuildConfiguration";
 import { UniteBundler } from "../configuration/models/unite/uniteBundler";
+import { UniteClientPackage } from "../configuration/models/unite/uniteClientPackage";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { UniteCssPostProcessor } from "../configuration/models/unite/uniteCssPostProcessor";
 import { UniteCssPreProcessor } from "../configuration/models/unite/uniteCssPreProcessor";
@@ -27,6 +29,7 @@ import { ILogger } from "../interfaces/ILogger";
 import { ModuleOperation } from "../interfaces/moduleOperation";
 import { NpmPackageManager } from "../packageManagers/npmPackageManager";
 import { YarnPackageManager } from "../packageManagers/yarnPackageManager";
+import { Aurelia } from "../pipelineSteps/applicationFramework/aurelia";
 import { PlainApp } from "../pipelineSteps/applicationFramework/plainApp";
 import { Browserify } from "../pipelineSteps/bundler/browserify";
 import { RequireJs } from "../pipelineSteps/bundler/requireJs";
@@ -54,7 +57,6 @@ import { CommonJs } from "../pipelineSteps/moduleType/commonJs";
 import { SystemJs } from "../pipelineSteps/moduleType/systemJs";
 import { AppScaffold } from "../pipelineSteps/scaffold/appScaffold";
 import { E2eTestScaffold } from "../pipelineSteps/scaffold/e2eTestScaffold";
-import { ModulesConfig } from "../pipelineSteps/scaffold/modulesConfig";
 import { OutputDirectory } from "../pipelineSteps/scaffold/outputDirectory";
 import { UniteConfigurationDirectories } from "../pipelineSteps/scaffold/uniteConfigurationDirectories";
 import { UniteConfigurationJson } from "../pipelineSteps/scaffold/uniteConfigurationJson";
@@ -96,6 +98,7 @@ export class Engine implements IEngine {
                       cssPre: UniteCssPreProcessor | undefined | null,
                       cssPost: UniteCssPostProcessor | undefined | null,
                       packageManager: UnitePackageManager | undefined | null,
+                      applicationFramework: UniteApplicationFramework | undefined | null,
                       outputDirectory: string | undefined | null): Promise<number> {
         outputDirectory = this.cleanupOutputDirectory(outputDirectory);
         let uniteConfiguration = await this.loadConfiguration(outputDirectory);
@@ -117,7 +120,7 @@ export class Engine implements IEngine {
         uniteConfiguration.packageManager = packageManager! || uniteConfiguration.packageManager || "Npm";
         uniteConfiguration.taskManager = "Gulp";
         uniteConfiguration.server = "BrowserSync";
-        uniteConfiguration.applicationFramework = "PlainApp";
+        uniteConfiguration.applicationFramework = applicationFramework! || uniteConfiguration.applicationFramework;
         uniteConfiguration.clientPackages = uniteConfiguration.clientPackages || {};
         uniteConfiguration.cssPre = cssPre! || uniteConfiguration.cssPre;
         uniteConfiguration.cssPost = cssPost! || uniteConfiguration.cssPost;
@@ -178,6 +181,9 @@ export class Engine implements IEngine {
             return 1;
         }
         if (!EngineValidation.checkOneOf<UnitePackageManager>(this._display, "packageManager", uniteConfiguration.packageManager, ["Npm", "Yarn"])) {
+            return 1;
+        }
+        if (!EngineValidation.checkOneOf<UniteApplicationFramework>(this._display, "applicationFramework", uniteConfiguration.applicationFramework, ["PlainApp", "Aurelia"])) {
             return 1;
         }
 
@@ -336,6 +342,9 @@ export class Engine implements IEngine {
             pipelineSteps.push(new MochaChai());
             pipelineSteps.push(new Jasmine());
 
+            pipelineSteps.push(new PlainApp());
+            pipelineSteps.push(new Aurelia());
+
             pipelineSteps.push(new Karma());
 
             pipelineSteps.push(new WebdriverIo());
@@ -343,13 +352,10 @@ export class Engine implements IEngine {
 
             pipelineSteps.push(new BrowserSync());
 
-            pipelineSteps.push(new PlainApp());
-
             pipelineSteps.push(new ReadMe());
             pipelineSteps.push(new GitIgnore());
             pipelineSteps.push(new License());
 
-            pipelineSteps.push(new ModulesConfig());
             pipelineSteps.push(new PackageJson());
             pipelineSteps.push(new UniteConfigurationDirectories());
             pipelineSteps.push(new UniteConfigurationJson());
@@ -382,12 +388,15 @@ export class Engine implements IEngine {
                 fixPackageVersion = true;
             }
 
-            uniteConfiguration.clientPackages[packageName] = {
-                version: fixPackageVersion ? version : "^" + version,
-                preload,
-                main: packageInfo.main,
-                includeMode
-            };
+            const clientPackage = new UniteClientPackage();
+            clientPackage.version = fixPackageVersion ? version : "^" + version;
+            clientPackage.preload = preload;
+            clientPackage.location = "";
+            clientPackage.main = packageInfo.main;
+            clientPackage.includeMode = includeMode;
+            clientPackage.isPackage = false;
+
+            uniteConfiguration.clientPackages[packageName] = clientPackage;
 
             await engineVariables.packageManager.add(outputDirectory, packageName, version, false);
 
@@ -404,7 +413,6 @@ export class Engine implements IEngine {
             pipelineSteps.push(new HtmlTemplate());
 
             pipelineSteps.push(new Karma());
-            pipelineSteps.push(new ModulesConfig());
             pipelineSteps.push(new UniteConfigurationJson());
 
             ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
@@ -439,7 +447,6 @@ export class Engine implements IEngine {
             pipelineSteps.push(new HtmlTemplate());
 
             pipelineSteps.push(new Karma());
-            pipelineSteps.push(new ModulesConfig());
             pipelineSteps.push(new UniteConfigurationJson());
 
             ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
@@ -537,6 +544,8 @@ export class Engine implements IEngine {
             separateCss: true,
             scriptIncludes: []
         };
+
+        engineVariables.protractorPlugins = [];
 
         try {
             this._logger.log("Loading dependencies", { core: engineVariables.coreFolder, dependenciesFile: "package.json" });

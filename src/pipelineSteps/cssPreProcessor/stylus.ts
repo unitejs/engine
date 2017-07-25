@@ -10,7 +10,7 @@ import { ILogger } from "../../interfaces/ILogger";
 
 export class Stylus extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["stylus"], uniteConfiguration.cssPre === "Stylus", true);
+        engineVariables.toggleDevDependency(["stylus"], uniteConfiguration.cssPre === "Stylus");
 
         if (uniteConfiguration.cssPre === "Stylus") {
             try {

@@ -14,13 +14,12 @@ export class Protractor extends EnginePipelineStepBase {
     private static FILENAME: string = "protractor.conf.js";
 
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["protractor", "browser-sync"], uniteConfiguration.e2eTestRunner === "Protractor", true);
-        engineVariables.toggleDependencies(["protractor-jasmine2-html-reporter", "jasmine-spec-reporter"],
-            uniteConfiguration.e2eTestRunner === "Protractor" && uniteConfiguration.e2eTestFramework === "Jasmine",
-            true);
-        engineVariables.toggleDependencies(["mochawesome-screenshots"], uniteConfiguration.e2eTestRunner === "Protractor" && uniteConfiguration.e2eTestFramework === "Mocha-Chai", true);
+        engineVariables.toggleDevDependency(["protractor", "browser-sync"], uniteConfiguration.e2eTestRunner === "Protractor");
+        engineVariables.toggleDevDependency(["protractor-jasmine2-html-reporter", "jasmine-spec-reporter"],
+            uniteConfiguration.e2eTestRunner === "Protractor" && uniteConfiguration.e2eTestFramework === "Jasmine");
+        engineVariables.toggleDevDependency(["mochawesome-screenshots"], uniteConfiguration.e2eTestRunner === "Protractor" && uniteConfiguration.e2eTestFramework === "Mocha-Chai");
 
-        engineVariables.toggleDependencies(["@types/protractor"], uniteConfiguration.e2eTestRunner === "Protractor" && uniteConfiguration.sourceLanguage === "TypeScript", true);
+        engineVariables.toggleDevDependency(["@types/protractor"], uniteConfiguration.e2eTestRunner === "Protractor" && uniteConfiguration.sourceLanguage === "TypeScript");
 
         if (uniteConfiguration.e2eTestRunner === "Protractor") {
             try {
@@ -57,9 +56,16 @@ export class Protractor extends EnginePipelineStepBase {
         protractorConfiguration.capabilities = {
             browserName: "chrome"
         };
+
         protractorConfiguration.plugins = [{
             path: "test/e2e/e2e-bootstrap.js"
         }];
+
+        protractorConfiguration.plugins = protractorConfiguration.plugins.concat(engineVariables.protractorPlugins.map(protractorPlugin => {
+            return {
+                path: "node_modules/" + protractorPlugin
+            };
+        }));
 
         if (uniteConfiguration.e2eTestFramework === "Jasmine") {
             lines.push("const Jasmine2HtmlReporter = require('protractor-jasmine2-html-reporter');");

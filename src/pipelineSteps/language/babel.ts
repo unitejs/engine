@@ -13,7 +13,7 @@ export class Babel extends EnginePipelineStepBase {
     private static FILENAME: string = ".babelrc";
 
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDependencies(["babel-core", "babel-preset-es2015"], uniteConfiguration.sourceLanguage === "JavaScript", true);
+        engineVariables.toggleDevDependency(["babel-core", "babel-preset-es2015"], uniteConfiguration.sourceLanguage === "JavaScript");
 
         if (uniteConfiguration.sourceLanguage === "JavaScript") {
             try {

@@ -3,7 +3,7 @@
  */
 export class App {
     public run(): void {
-        document.body.innerHTML = "Hello TypeScript UniteJS World!";
+        document.body.innerHTML = "Hello UniteJS World!";
     }
 }
 

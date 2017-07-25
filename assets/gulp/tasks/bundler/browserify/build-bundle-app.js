@@ -9,7 +9,7 @@ const source = require("vinyl-source-stream");
 const buffer = require("vinyl-buffer");
 const sourcemaps = require("gulp-sourcemaps");
 const uc = require("./util/unite-config");
-const bundle = require("./util/bundle");
+const clientPackages = require("./util/client-packages");
 const gutil = require("gulp-util");
 const uglify = require("gulp-uglify");
 
@@ -18,14 +18,14 @@ gulp.task("build-bundle-app", () => {
     const buildConfiguration = uc.getBuildConfiguration();
 
     if (buildConfiguration.bundle) {
-        display.info("Running", "Browserify");
+        display.info("Running", "Browserify for App");
 
         const bApp = browserify({
             "debug": buildConfiguration.sourcemaps,
             "entries": `./${path.join(uniteConfig.directories.dist, "entryPoint.js")}`
         });
 
-        const keys = bundle.getPathKeys(uniteConfig);
+        const keys = clientPackages.getKeys(uniteConfig);
 
         keys.forEach((key) => {
             bApp.exclude(key);
