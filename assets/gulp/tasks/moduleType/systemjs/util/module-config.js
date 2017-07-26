@@ -5,7 +5,7 @@ const os = require("os");
 const clientPackages = require("./client-packages");
 
 function create (uniteConfig, includeModes, isBundle) {
-    const moduleConfig = clientPackages.buildModuleConfig(uniteConfig, includeModes);
+    const moduleConfig = clientPackages.buildModuleConfig(uniteConfig, includeModes, false);
 
     if (isBundle && moduleConfig.paths.systemjs) {
         moduleConfig.paths.systemjs = `${moduleConfig.paths.systemjs}-production`;

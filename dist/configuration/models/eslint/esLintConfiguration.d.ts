@@ -4,7 +4,7 @@
 import { EsLintParserOptions } from "./esLintParserOptions";
 export declare class EsLintConfiguration {
     parserOptions: EsLintParserOptions;
-    extends: string;
+    extends: string[];
     env: {
         [id: string]: boolean;
     };

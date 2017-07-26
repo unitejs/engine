@@ -17,7 +17,7 @@ gulp.task("build-transpile", () => {
     const buildConfiguration = uc.getBuildConfiguration(true);
     let errorCount = 0;
 
-    return gulp.src(path.join(uniteConfig.directories.src, "**/*.js"))
+    return gulp.src(path.join(uniteConfig.directories.src, "**/*.{js,jsx}"))
         .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : gutil.noop())
         .pipe(babel())
         .pipe(buildConfiguration.minify ? uglify()

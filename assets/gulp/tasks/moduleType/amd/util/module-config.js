@@ -5,7 +5,7 @@ const os = require("os");
 const clientPackages = require("./client-packages");
 
 function create (uniteConfig, includeModes, isBundle) {
-    const moduleConfig = clientPackages.buildModuleConfig(uniteConfig, includeModes);
+    const moduleConfig = clientPackages.buildModuleConfig(uniteConfig, includeModes, false);
 
     const configMap = {};
     if (moduleConfig.paths.text) {

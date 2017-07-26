@@ -44,7 +44,17 @@ export class EngineVariables {
 
     public corePackageJson: PackageConfiguration;
 
-    public protractorPlugins: string[];
+    public protractorPlugins: { [id: string]: boolean };
+
+    public lintFeatures: { [id: string]: { required: boolean, object: any } };
+    public lintExtends: { [id: string]: boolean };
+    public lintPlugins: { [id: string]: boolean };
+    public lintEnv: { [id: string]: boolean };
+    public lintGlobals: { [id: string]: boolean };
+
+    public transpileProperties: { [id: string]: { required: boolean, object: any } };
+
+    public transpilePresets: { [id: string]: boolean };
 
     private _requiredDevDependencies: string[];
     private _removedDevDependencies: string[];
@@ -61,6 +71,7 @@ export class EngineVariables {
     public toggleClientPackage(name: string,
                                location: string,
                                main: string,
+                               mainMinified: string,
                                preload: boolean,
                                includeMode: IncludeMode,
                                isPackage: boolean,
@@ -70,6 +81,7 @@ export class EngineVariables {
         clientPackage.preload = preload;
         clientPackage.location = location;
         clientPackage.main = main;
+        clientPackage.mainMinified = mainMinified;
         clientPackage.isPackage = isPackage;
         clientPackage.version = this.findDependencyVersion(name);
 
@@ -81,6 +93,10 @@ export class EngineVariables {
         }
 
         opArr[name] = clientPackage;
+    }
+
+    public getTestClientPackages(): string[] {
+        return Object.keys(this._requiredClientPackages).filter(key => this._requiredClientPackages[key].includeMode === "test" || this._requiredClientPackages[key].includeMode === "both");
     }
 
     public toggleDevDependency(dependencies: string[], required: boolean): void {
@@ -108,9 +124,9 @@ export class EngineVariables {
         const addedTestDependencies = [];
         const removedTestDependencies = [];
         for (const pkg in this._requiredClientPackages) {
+            uniteConfiguration.clientPackages[pkg] = this._requiredClientPackages[pkg];
             if (this._requiredClientPackages[pkg].includeMode === "app" || this._requiredClientPackages[pkg].includeMode === "both") {
                 packageJsonDependencies[pkg] = this._requiredClientPackages[pkg].version;
-                uniteConfiguration.clientPackages[pkg] = this._requiredClientPackages[pkg];
 
                 const idx = this._requiredDevDependencies.indexOf(pkg);
                 if (idx >= 0) {

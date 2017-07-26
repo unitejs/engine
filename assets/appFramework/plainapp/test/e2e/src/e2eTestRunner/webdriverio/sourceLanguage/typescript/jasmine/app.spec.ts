@@ -8,17 +8,17 @@ describe("App", () => {
             .url("/")
             .getTitle()
             .then((title) => {
-                expect(title).to.equal(uniteJson.title);
+                expect(title).toEqual(uniteJson.title);
             });
     });
 
-    it("the body text is set", () => {
+    it("the root text is set", () => {
         return browser
             .url("/")
-            .element("body")
+            .element("#root")
             .getText()
-            .then((bodyContent) => {
-                expect(bodyContent).toEqual("Hello UniteJS World!");
+            .then((rootContent) => {
+                expect(rootContent).toEqual("Hello UniteJS World!");
             });
     });
 });

@@ -2,7 +2,7 @@
  * Tests for App.
  */
 import { expect } from "chai";
-import { browser, by } from "protractor";
+import { $, browser, by } from "protractor";
 
 describe("App", () => {
     it("the title is set", (done) => {
@@ -20,7 +20,7 @@ describe("App", () => {
     it("the router text is set", (done) => {
         browser.loadAndWaitForAureliaPage("/")
             .then(() => {
-                browser.element(by.tagName("router-view")).getText()
+                $("router-view").getText()
                     .then((routerContent) => {
                         expect(routerContent).to.equal("Hello UniteJS World!");
                         done();

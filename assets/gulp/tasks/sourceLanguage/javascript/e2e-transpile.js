@@ -13,7 +13,7 @@ gulp.task("e2e-transpile", () => {
     const uniteConfig = uc.getUniteConfig();
     let errorCount = 0;
 
-    return gulp.src(`${uniteConfig.directories.e2eTestSrc}**/*.spec.js`)
+    return gulp.src(`${uniteConfig.directories.e2eTestSrc}**/*.spec.{js,jsx}`)
         .pipe(sourcemaps.init())
         .pipe(babel({
             "babelrc": false,

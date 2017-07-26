@@ -12,7 +12,7 @@ gulp.task("unit-lint", () => {
 
     const uniteConfig = uc.getUniteConfig();
 
-    return gulp.src(path.join(uniteConfig.directories.unitTestSrc, "**/*.js"))
+    return gulp.src(path.join(uniteConfig.directories.unitTestSrc, "**/*.{js,jsx}"))
         .pipe(eslint())
         .pipe(eslint.format())
         .pipe(eslint.failAfterError())

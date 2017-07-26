@@ -21,6 +21,8 @@ export class Protractor extends EnginePipelineStepBase {
 
         engineVariables.toggleDevDependency(["@types/protractor"], uniteConfiguration.e2eTestRunner === "Protractor" && uniteConfiguration.sourceLanguage === "TypeScript");
 
+        engineVariables.lintEnv.protractor = uniteConfiguration.e2eTestRunner === "Protractor" && uniteConfiguration.linter === "ESLint";
+
         if (uniteConfiguration.e2eTestRunner === "Protractor") {
             try {
                 const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.rootFolder, Protractor.FILENAME);
@@ -61,11 +63,26 @@ export class Protractor extends EnginePipelineStepBase {
             path: "test/e2e/e2e-bootstrap.js"
         }];
 
-        protractorConfiguration.plugins = protractorConfiguration.plugins.concat(engineVariables.protractorPlugins.map(protractorPlugin => {
-            return {
-                path: "node_modules/" + protractorPlugin
-            };
-        }));
+        for (const key in engineVariables.protractorPlugins) {
+            const pluginPath = "node_modules/" + key;
+            if (engineVariables.protractorPlugins[key]) {
+                let exists = false;
+                protractorConfiguration.plugins.forEach(plugin => {
+                    if (plugin.path === pluginPath) {
+                        exists = true;
+                    }
+                });
+                if (!exists) {
+                    protractorConfiguration.plugins.push({ path: pluginPath });
+                }
+            } else {
+                protractorConfiguration.plugins.forEach((plugin, index) => {
+                    if (plugin.path === pluginPath) {
+                        protractorConfiguration.plugins.splice(index, 1);
+                    }
+                });
+            }
+        }
 
         if (uniteConfiguration.e2eTestFramework === "Jasmine") {
             lines.push("const Jasmine2HtmlReporter = require('protractor-jasmine2-html-reporter');");

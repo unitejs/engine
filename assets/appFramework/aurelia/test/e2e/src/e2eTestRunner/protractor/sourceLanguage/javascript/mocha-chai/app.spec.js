@@ -19,7 +19,7 @@ describe("App", () => {
     it("the router text is set", (done) => {
         browser.loadAndWaitForAureliaPage("/")
             .then(() => {
-                browser.element(by.tagName("router-view")).getText()
+                $("router-view").getText()
                     .then((routerContent) => {
                         expect(routerContent).to.equal("Hello UniteJS World!");
                         done();

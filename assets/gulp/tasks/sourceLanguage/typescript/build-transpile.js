@@ -19,7 +19,7 @@ gulp.task("build-transpile", () => {
     const tsProject = typescript.createProject("tsconfig.json");
     let errorCount = 0;
 
-    return gulp.src(path.join(uniteConfig.directories.src, "**/*.ts"))
+    return gulp.src(path.join(uniteConfig.directories.src, "**/*.{ts,tsx}"))
         .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : gutil.noop())
         .pipe(tsProject())
         .on("error", () => {

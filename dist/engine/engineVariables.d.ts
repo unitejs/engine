@@ -34,13 +34,43 @@ export declare class EngineVariables {
     htmlBundle: EngineVariablesHtml;
     packageManager: IPackageManager;
     corePackageJson: PackageConfiguration;
-    protractorPlugins: string[];
+    protractorPlugins: {
+        [id: string]: boolean;
+    };
+    lintFeatures: {
+        [id: string]: {
+            required: boolean;
+            object: any;
+        };
+    };
+    lintExtends: {
+        [id: string]: boolean;
+    };
+    lintPlugins: {
+        [id: string]: boolean;
+    };
+    lintEnv: {
+        [id: string]: boolean;
+    };
+    lintGlobals: {
+        [id: string]: boolean;
+    };
+    transpileProperties: {
+        [id: string]: {
+            required: boolean;
+            object: any;
+        };
+    };
+    transpilePresets: {
+        [id: string]: boolean;
+    };
     private _requiredDevDependencies;
     private _removedDevDependencies;
     private _requiredClientPackages;
     private _removedClientPackages;
     constructor();
-    toggleClientPackage(name: string, location: string, main: string, preload: boolean, includeMode: IncludeMode, isPackage: boolean, required: boolean): void;
+    toggleClientPackage(name: string, location: string, main: string, mainMinified: string, preload: boolean, includeMode: IncludeMode, isPackage: boolean, required: boolean): void;
+    getTestClientPackages(): string[];
     toggleDevDependency(dependencies: string[], required: boolean): void;
     buildDependencies(uniteConfiguration: UniteConfiguration, packageJsonDependencies: {
         [id: string]: string;

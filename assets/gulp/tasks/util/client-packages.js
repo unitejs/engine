@@ -18,7 +18,7 @@ function getKeys (uniteConfig) {
     return pathKeys;
 }
 
-function buildModuleConfig (uniteConfig, includeModes) {
+function buildModuleConfig (uniteConfig, includeModes, isMinified) {
     const moduleConfig = {
         "paths": {},
         "packages": [],
@@ -30,7 +30,12 @@ function buildModuleConfig (uniteConfig, includeModes) {
         const pkg = uniteConfig.clientPackages[keys[i]];
         if (includeModes.indexOf(pkg.includeMode) >= 0) {
             const location = pkg.location ? pkg.location.replace(/\.\//, "") : "";
-            const main = pkg.main ? pkg.main.replace(/(\.js)$/, "") : "";
+            let main = pkg.main;
+            if (isMinified && pkg.mainMinified) {
+                main = pkg.mainMinified;
+            }
+
+            main = main ? main.replace(/(\.js)$/, "") : "";
 
             if (pkg.isPackage) {
                 moduleConfig.packages.push({
@@ -52,7 +57,7 @@ function buildModuleConfig (uniteConfig, includeModes) {
 }
 
 function buildModuleConfigFile (uniteConfig, includeModes, filename, configName, cb) {
-    const moduleConfig = buildModuleConfig(uniteConfig, includeModes);
+    const moduleConfig = buildModuleConfig(uniteConfig, includeModes, false);
     const json = JSON.stringify(moduleConfig, undefined, "\t");
 
     fs.writeFile(filename, `${configName} = ${json};`, (err) => {

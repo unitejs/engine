@@ -21,10 +21,13 @@ export class MochaChai extends EnginePipelineStepBase {
             "chai",
             "",
             "chai.js",
+            "",
             true,
             "test",
             false,
             uniteConfiguration.unitTestFramework === "Mocha-Chai" || uniteConfiguration.e2eTestFramework === "Mocha-Chai");
+
+        engineVariables.lintEnv.mocha = uniteConfiguration.linter === "ESLint" && (uniteConfiguration.unitTestFramework === "Mocha-Chai" || uniteConfiguration.e2eTestFramework === "Mocha-Chai");
 
         return 0;
     }

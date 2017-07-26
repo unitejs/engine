@@ -74,12 +74,9 @@ export class Karma extends EnginePipelineStepBase {
             testIncludes.push({ pattern: "./node_modules/systemjs/dist/system.js", included: true });
         }
 
-        const packageKeys = Object.keys(uniteConfiguration.clientPackages);
+        const packageKeys = engineVariables.getTestClientPackages();
         for (let i = 0; i < packageKeys.length; i++) {
-            const pkg = uniteConfiguration.clientPackages[packageKeys[i]];
-            if (pkg.includeMode === "test" || pkg.includeMode === "both") {
-                testIncludes.push({ pattern: "./node_modules/" + packageKeys[i] + "/**/*", included: false });
-            }
+            testIncludes.push({ pattern: "./node_modules/" + packageKeys[i] + "/**/*", included: false });
         }
 
         if (uniteConfiguration.unitTestFramework === "Mocha-Chai") {

@@ -3,7 +3,7 @@
  */
 export class App {
     public run(): void {
-        document.body.innerHTML = "Hello UniteJS World!";
+        document.getElementById("root").innerHTML = "Hello UniteJS World!";
     }
 }
 

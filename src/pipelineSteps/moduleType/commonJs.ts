@@ -14,6 +14,7 @@ export class CommonJs extends EnginePipelineStepBase {
         engineVariables.toggleClientPackage(
             "systemjs",
             "dist/",
+            "system.src.js",
             "system.js",
             false,
             "app",

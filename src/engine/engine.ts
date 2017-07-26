@@ -31,6 +31,7 @@ import { NpmPackageManager } from "../packageManagers/npmPackageManager";
 import { YarnPackageManager } from "../packageManagers/yarnPackageManager";
 import { Aurelia } from "../pipelineSteps/applicationFramework/aurelia";
 import { PlainApp } from "../pipelineSteps/applicationFramework/plainApp";
+import { React } from "../pipelineSteps/applicationFramework/react";
 import { Browserify } from "../pipelineSteps/bundler/browserify";
 import { RequireJs } from "../pipelineSteps/bundler/requireJs";
 import { SystemJsBuilder } from "../pipelineSteps/bundler/systemJsBuilder";
@@ -183,7 +184,7 @@ export class Engine implements IEngine {
         if (!EngineValidation.checkOneOf<UnitePackageManager>(this._display, "packageManager", uniteConfiguration.packageManager, ["Npm", "Yarn"])) {
             return 1;
         }
-        if (!EngineValidation.checkOneOf<UniteApplicationFramework>(this._display, "applicationFramework", uniteConfiguration.applicationFramework, ["PlainApp", "Aurelia"])) {
+        if (!EngineValidation.checkOneOf<UniteApplicationFramework>(this._display, "applicationFramework", uniteConfiguration.applicationFramework, ["PlainApp", "Aurelia", "React"])) {
             return 1;
         }
 
@@ -325,12 +326,6 @@ export class Engine implements IEngine {
 
             pipelineSteps.push(new HtmlTemplate());
 
-            pipelineSteps.push(new Babel());
-            pipelineSteps.push(new TypeScript());
-
-            pipelineSteps.push(new EsLint());
-            pipelineSteps.push(new TsLint());
-
             pipelineSteps.push(new Css());
             pipelineSteps.push(new Less());
             pipelineSteps.push(new Sass());
@@ -344,11 +339,17 @@ export class Engine implements IEngine {
 
             pipelineSteps.push(new PlainApp());
             pipelineSteps.push(new Aurelia());
+            pipelineSteps.push(new React());
 
-            pipelineSteps.push(new Karma());
+            pipelineSteps.push(new Babel());
+            pipelineSteps.push(new TypeScript());
 
             pipelineSteps.push(new WebdriverIo());
             pipelineSteps.push(new Protractor());
+
+            pipelineSteps.push(new EsLint());
+            pipelineSteps.push(new TsLint());
+            pipelineSteps.push(new Karma());
 
             pipelineSteps.push(new BrowserSync());
 
@@ -545,7 +546,17 @@ export class Engine implements IEngine {
             scriptIncludes: []
         };
 
-        engineVariables.protractorPlugins = [];
+        engineVariables.protractorPlugins = {};
+
+        engineVariables.transpilePresets = {};
+
+        engineVariables.lintFeatures = {};
+        engineVariables.lintExtends = {};
+        engineVariables.lintPlugins = {};
+        engineVariables.lintEnv = {};
+        engineVariables.lintGlobals = {};
+
+        engineVariables.transpileProperties = {};
 
         try {
             this._logger.log("Loading dependencies", { core: engineVariables.coreFolder, dependenciesFile: "package.json" });

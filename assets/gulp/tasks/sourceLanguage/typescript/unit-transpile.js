@@ -18,7 +18,7 @@ gulp.task("unit-transpile", () => {
     const tsProject = typescript.createProject("tsconfig.json");
     let errorCount = 0;
 
-    return gulp.src(`${uniteConfig.directories.unitTestSrc}**/*.spec.ts`)
+    return gulp.src(`${uniteConfig.directories.unitTestSrc}**/*.spec.{ts,tsx}`)
         .pipe(sourcemaps.init())
         .pipe(tsProject())
         .on("error", () => {

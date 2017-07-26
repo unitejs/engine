@@ -19,22 +19,20 @@ export class Babel extends EnginePipelineStepBase {
             try {
                 super.log(logger, display, `Generating ${Babel.FILENAME}`, { rootFolder: engineVariables.rootFolder });
 
-                const babelConfiguration = new BabelConfiguration();
-                babelConfiguration.plugins = [];
-
-                let modules = "";
-                if (uniteConfiguration.moduleType === "AMD") {
-                    modules = "amd";
-                } else if (uniteConfiguration.moduleType === "SystemJS") {
-                    modules = "systemjs";
-                } else {
-                    modules = "commonjs";
+                let existing;
+                try {
+                    const exists = await fileSystem.fileExists(engineVariables.rootFolder, Babel.FILENAME);
+                    if (exists) {
+                        existing = await fileSystem.fileReadJson<BabelConfiguration>(engineVariables.rootFolder, Babel.FILENAME);
+                    }
+                } catch (err) {
+                    super.error(logger, display, `Reading existing ${Babel.FILENAME} failed`, err);
+                    return 1;
                 }
-                babelConfiguration.presets = [
-                                                ["es2015", { modules }]
-                                             ];
 
-                await fileSystem.fileWriteJson(engineVariables.rootFolder, Babel.FILENAME, babelConfiguration);
+                const config = this.generateConfig(fileSystem, uniteConfiguration, engineVariables, existing);
+                await fileSystem.fileWriteJson(engineVariables.rootFolder, Babel.FILENAME, config);
+
                 return 0;
             } catch (err) {
                 super.error(logger, display, `Generating ${Babel.FILENAME} failed`, err, { rootFolder: engineVariables.rootFolder });
@@ -43,5 +41,51 @@ export class Babel extends EnginePipelineStepBase {
         } else {
             return await super.deleteFile(logger, display, fileSystem, engineVariables.rootFolder, Babel.FILENAME);
         }
+    }
+
+    private generateConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, existing: BabelConfiguration | undefined): BabelConfiguration {
+        const config = new BabelConfiguration();
+        config.presets = [];
+
+        if (existing) {
+            Object.assign(config, existing);
+        }
+
+        let modules = "";
+        if (uniteConfiguration.moduleType === "AMD") {
+            modules = "amd";
+        } else if (uniteConfiguration.moduleType === "SystemJS") {
+            modules = "systemjs";
+        } else {
+            modules = "commonjs";
+        }
+
+        let foundDefault = false;
+        config.presets.forEach(preset => {
+            if (Array.isArray(preset) && preset.length > 0) {
+                if (preset[0] === "es2015") {
+                    foundDefault = true;
+                }
+            }
+        });
+
+        if (!foundDefault) {
+            config.presets.push(["es2015", { modules }]);
+        }
+
+        for (const key in engineVariables.transpilePresets) {
+            const idx = config.presets.indexOf(key);
+            if (engineVariables.transpilePresets[key]) {
+                if (idx < 0) {
+                    config.presets.push(key);
+                }
+            } else {
+                if (idx >= 0) {
+                    config.presets.splice(idx, 1);
+                }
+            }
+        }
+
+        return config;
     }
 }

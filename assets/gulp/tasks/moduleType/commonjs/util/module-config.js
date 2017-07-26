@@ -7,7 +7,7 @@ const clientPackages = require("./client-packages");
 function create (uniteConfig, includeModes, isBundle) {
     /* We use the SystemJS loader for CommonJS modules when testing and unbundled, 
     we need to specify the module format as cjs for it to work */
-    const moduleConfig = clientPackages.buildModuleConfig(uniteConfig, includeModes);
+    const moduleConfig = clientPackages.buildModuleConfig(uniteConfig, includeModes, false);
 
     if (isBundle && moduleConfig.paths.systemjs) {
         moduleConfig.paths.systemjs = `${moduleConfig.paths.systemjs}-production`;

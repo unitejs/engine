@@ -13,6 +13,7 @@ export class SystemJs extends EnginePipelineStepBase {
         engineVariables.toggleClientPackage(
             "systemjs",
             "dist/",
+            "system.src.js",
             "system.js",
             false,
             "app",
@@ -23,6 +24,7 @@ export class SystemJs extends EnginePipelineStepBase {
             "systemjs-plugin-text",
             "",
             "text.js",
+            "",
             false,
             "app",
             false,

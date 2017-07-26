@@ -7,4 +7,5 @@ import { ILogger } from "../../interfaces/ILogger";
 export declare class Babel extends EnginePipelineStepBase {
     private static FILENAME;
     process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
+    private generateConfig(fileSystem, uniteConfiguration, engineVariables, existing);
 }

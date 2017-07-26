@@ -7,6 +7,7 @@ export declare class UniteClientPackage {
     preload: boolean;
     location: string;
     main: string;
+    mainMinified: string;
     includeMode: IncludeMode;
     isPackage: boolean;
 }

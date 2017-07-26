@@ -11,6 +11,7 @@ import { SharedAppFramework } from "./sharedAppFramework";
 export class Aurelia extends SharedAppFramework {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["aurelia-protractor-plugin"], uniteConfiguration.applicationFramework === "Aurelia" && uniteConfiguration.e2eTestRunner === "Protractor");
+        engineVariables.protractorPlugins["aurelia-protractor-plugin"] = uniteConfiguration.applicationFramework === "Aurelia" && uniteConfiguration.e2eTestRunner === "Protractor";
 
         this.toggleAllPackages(uniteConfiguration, engineVariables);
 
@@ -20,11 +21,7 @@ export class Aurelia extends SharedAppFramework {
                 return 1;
             }
 
-            if (uniteConfiguration.e2eTestRunner === "Protractor") {
-                engineVariables.protractorPlugins.push("aurelia-protractor-plugin");
-            }
-
-            let ret = await this.generateAppSource(logger, display, fileSystem, uniteConfiguration, engineVariables, ["app", "entryPoint", "child/child"]);
+            let ret = await this.generateAppSource(logger, display, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper", "entryPoint", "child/child"]);
 
             if (ret === 0) {
                 ret = await super.generateAppHtml(logger, display, fileSystem, uniteConfiguration, engineVariables, ["app", "child/child"]);
@@ -36,7 +33,7 @@ export class Aurelia extends SharedAppFramework {
                         ret = await super.generateE2eTest(logger, display, fileSystem, uniteConfiguration, engineVariables, ["app"]);
 
                         if (ret === 0) {
-                            ret = await this.generateUnitTest(logger, display, fileSystem, uniteConfiguration, engineVariables, ["app"]);
+                            ret = await this.generateUnitTest(logger, display, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper"]);
 
                             if (ret === 0) {
                                 ret = await super.generateCss(logger, display, fileSystem, uniteConfiguration, engineVariables);
@@ -97,6 +94,7 @@ export class Aurelia extends SharedAppFramework {
             "whatwg-fetch",
             "",
             "fetch.js",
+            "",
             false,
             "both",
             false,
@@ -113,6 +111,7 @@ export class Aurelia extends SharedAppFramework {
                 clientPackage.name,
                 location + (clientPackage.main ? "" : "/"),
                 (clientPackage.main ? clientPackage.main : clientPackage.name) + ".js",
+                "",
                 false,
                 "both",
                 clientPackage.main ? true : false,

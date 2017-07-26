@@ -15,6 +15,8 @@ export class Jasmine extends EnginePipelineStepBase {
                                            (uniteConfiguration.unitTestFramework === "Jasmine" || uniteConfiguration.e2eTestFramework === "Jasmine")
                                             && uniteConfiguration.sourceLanguage === "TypeScript");
 
+        engineVariables.lintEnv.jasmine = uniteConfiguration.linter === "ESLint" && (uniteConfiguration.unitTestFramework === "Jasmine" || uniteConfiguration.e2eTestFramework === "Jasmine");
+
         if (uniteConfiguration.unitTestFramework === "Jasmine" || uniteConfiguration.e2eTestFramework === "Jasmine") {
             try {
                 super.log(logger, display, "Generating Jasmine Configuration");

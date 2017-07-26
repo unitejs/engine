@@ -2,7 +2,7 @@
  * Tests for App.
  */
 import { expect } from "chai";
-import { browser, by } from "protractor";
+import { $, browser, by } from "protractor";
 
 describe("App", () => {
     it("the title is set", (done) => {
@@ -17,12 +17,12 @@ describe("App", () => {
             });
     });
 
-    it("the body text is set", (done) => {
+    it("the root text is set", (done) => {
         browser.get("/")
             .then(() => {
-                browser.element(by.css("body")).getText()
-                    .then((bodyContent) => {
-                        expect(bodyContent).to.equal("Hello UniteJS World!");
+                $("#root").getText()
+                    .then((rootContent) => {
+                        expect(rootContent).to.equal("Hello UniteJS World!");
                         done();
                     });
             });

@@ -39,7 +39,16 @@ export class TypeScript extends EnginePipelineStepBase {
                     typeScriptConfiguration.compilerOptions.module = "commonjs";
                 }
 
+                const additional: { [id: string]: any} = {};
+                for (const key in engineVariables.transpileProperties) {
+                    if (engineVariables.transpileProperties[key].required) {
+                        additional[key] = engineVariables.transpileProperties[key].object;
+                    }
+                }
+                Object.assign(typeScriptConfiguration.compilerOptions, additional);
+
                 await fileSystem.fileWriteJson(engineVariables.rootFolder, TypeScript.FILENAME, typeScriptConfiguration);
+
                 return 0;
             } catch (err) {
                 super.error(logger, display, `Generating ${TypeScript.FILENAME} failed`, err, { rootFolder: engineVariables.rootFolder });

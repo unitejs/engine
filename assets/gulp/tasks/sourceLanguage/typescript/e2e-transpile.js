@@ -15,7 +15,7 @@ gulp.task("e2e-transpile", () => {
     const tsProject = typescript.createProject("tsconfig.json", {"module": "commonjs"});
     let errorCount = 0;
 
-    return gulp.src(`${uniteConfig.directories.e2eTestSrc}**/*.spec.ts`)
+    return gulp.src(`${uniteConfig.directories.e2eTestSrc}**/*.spec.{ts,tsx}`)
         .pipe(sourcemaps.init())
         .pipe(tsProject())
         .on("error", () => {

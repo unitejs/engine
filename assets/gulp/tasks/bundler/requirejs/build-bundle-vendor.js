@@ -16,7 +16,7 @@ gulp.task("build-bundle-vendor", (cb) => {
     if (buildConfiguration.bundle) {
         display.info("Running", "Require js optimizer for Vendor");
 
-        const modulesConfig = clientPackages.buildModuleConfig(uniteConfig, ["app", "both"]);
+        const modulesConfig = clientPackages.buildModuleConfig(uniteConfig, ["app", "both"], buildConfiguration.minify);
         const keys = [];
 
         if (modulesConfig.paths.requirejs) {

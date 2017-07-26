@@ -20,7 +20,7 @@ gulp.task("build-bundle-app", (cb) => {
     if (buildConfiguration.bundle) {
         display.info("Running", "Require js optimizer for App");
 
-        const modulesConfig = clientPackages.buildModuleConfig(uniteConfig, ["app", "both"]);
+        const modulesConfig = clientPackages.buildModuleConfig(uniteConfig, ["app", "both"], buildConfiguration.minify);
         const paths2 = {};
 
         bundle.findAppFiles(uniteConfig, true, "text!", "text!", (files) => {

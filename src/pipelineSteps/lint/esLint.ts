@@ -68,7 +68,7 @@ export class EsLint extends EnginePipelineStepBase {
         } else {
             let ret = await super.deleteFile(logger, display, fileSystem, engineVariables.rootFolder, EsLint.FILENAME);
             if (ret === 0) {
-                ret =  await super.deleteFile(logger, display, fileSystem, engineVariables.rootFolder, EsLint.FILENAME2);
+                ret = await super.deleteFile(logger, display, fileSystem, engineVariables.rootFolder, EsLint.FILENAME2);
             }
 
             return ret;
@@ -78,62 +78,79 @@ export class EsLint extends EnginePipelineStepBase {
     private generateConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, existing: EsLintConfiguration | undefined): EsLintConfiguration {
         const config = new EsLintConfiguration();
 
+        engineVariables.lintExtends["eslint:recommended"] = true;
+        engineVariables.lintEnv.browser = true;
+        engineVariables.lintGlobals.require = true;
+
         config.parserOptions = new EsLintParserOptions();
-        config.parserOptions.ecmaVersion = 6;
-        config.parserOptions.sourceType = "module";
-        config.extends = "eslint:recommended";
+
+        config.extends = [];
         config.env = {};
         config.globals = {};
         config.rules = {};
         config.plugins = [];
 
         if (existing) {
-            config.globals = existing.globals || config.globals;
-            config.rules = existing.rules || config.rules;
-            config.env = existing.env || config.env;
-            config.extends = existing.extends || config.extends;
-            config.plugins = existing.plugins || config.plugins;
+            Object.assign(config, existing);
         }
 
-        config.env.browser = true;
-        config.globals.require = true;
-        if (uniteConfiguration.unitTestFramework === "Jasmine" || uniteConfiguration.e2eTestFramework === "Jasmine") {
-            config.env.jasmine = true;
-        } else {
-            if (config.env.jasmine) {
-                delete config.env.jasmine;
-            }
-        }
+        config.parserOptions.ecmaVersion = 6;
+        config.parserOptions.sourceType = "module";
+        config.parserOptions.ecmaFeatures = {};
 
-        if (uniteConfiguration.unitTestFramework === "Mocha-Chai" || uniteConfiguration.e2eTestFramework === "Mocha-Chai") {
-            config.env.mocha = true;
-        } else {
-            if (config.env.mocha) {
-                delete config.env.mocha;
+        for (const key in engineVariables.lintFeatures) {
+            if (engineVariables.lintFeatures[key].required) {
+                config.parserOptions.ecmaFeatures[key] = engineVariables.lintFeatures[key].object;
+            } else {
+                if (config.parserOptions.ecmaFeatures[key]) {
+                    delete config.parserOptions.ecmaFeatures[key];
+                }
             }
         }
 
-        if (uniteConfiguration.e2eTestRunner === "Protractor") {
-            config.env.protractor = true;
-        } else {
-            if (config.env.protractor) {
-                delete config.env.protractor;
+        for (const key in engineVariables.lintPlugins) {
+            const idx = config.plugins.indexOf(key);
+            if (engineVariables.lintPlugins[key]) {
+                if (idx < 0) {
+                    config.plugins.push(key);
+                }
+            } else {
+                if (idx >= 0) {
+                    config.plugins.splice(idx, 1);
+                }
             }
         }
 
-        engineVariables.toggleDevDependency(["eslint-plugin-webdriverio"], uniteConfiguration.e2eTestRunner === "WebdriverIO");
-        const idx = config.plugins.indexOf("webdriverio");
-        if (uniteConfiguration.e2eTestRunner === "WebdriverIO") {
-            if (idx < 0) {
-                config.plugins.push("webdriverio");
+        for (const key in engineVariables.lintExtends) {
+            const idx = config.extends.indexOf(key);
+            if (engineVariables.lintExtends[key]) {
+                if (idx < 0) {
+                    config.extends.push(key);
+                }
+            } else {
+                if (idx >= 0) {
+                    config.extends.splice(idx, 1);
+                }
             }
-            config.env["webdriverio/wdio"] = true;
-        } else {
-            if (idx >= 0) {
-                config.plugins.splice(idx, 1);
+        }
+
+        for (const key in engineVariables.lintEnv) {
+            if (engineVariables.lintEnv[key]) {
+                config.env[key] = true;
+            } else {
+                if (config.env[key]) {
+                    delete config.env[key];
+                }
             }
-            if (config.env["webdriverio/wdio"]) {
-                delete config.env["webdriverio/wdio"];
+        }
+
+        for (const key in engineVariables.lintGlobals) {
+            if (engineVariables.lintGlobals[key]) {
+                config.globals[key] = true;
+            } else {
+                if (config.globals[key]) {
+                    delete config.globals[key];
+                }
             }
         }
 

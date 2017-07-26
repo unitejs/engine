@@ -17,7 +17,7 @@ gulp.task("build-bundle-vendor", (cb) => {
     if (buildConfiguration.bundle) {
         display.info("Running", "Systemjs builder for Vendor");
 
-        const modulesConfig = clientPackages.buildModuleConfig(uniteConfig, ["app", "both"]);
+        const modulesConfig = clientPackages.buildModuleConfig(uniteConfig, ["app", "both"], buildConfiguration.minify);
         let keys = [];
         let systemJsLoaderFile = "";
 

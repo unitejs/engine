@@ -23,12 +23,17 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
         try {
             super.log(logger, display, "Generating App Source in", { appSourceFolder: engineVariables.srcFolder });
 
-            for (const file of files) {
+            for (let file of files) {
+                if (file.indexOf("!") >= 0) {
+                    file = file.replace("!", ".");
+                } else {
+                    file += "." + engineVariables.sourceLanguageExt;
+                }
                 await this.copyFile(logger, display, fileSystem,
                                     scaffoldFolder,
-                                    file + "." + engineVariables.sourceLanguageExt,
+                                    file,
                                     engineVariables.srcFolder,
-                                    file + "." + engineVariables.sourceLanguageExt);
+                                    file);
             }
 
             return 0;
@@ -106,7 +111,7 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
 
                 const unitTestsScaffold = fileSystem.pathCombine(engineVariables.assetsDirectory,
                                                                  "appFramework/" +
-                                                                 uniteConfiguration.applicationFramework.toLowerCase() +
+                                                                 "shared" +
                                                                  "/test/unit/src/sourceLanguage/" +
                                                                  uniteConfiguration.sourceLanguage.toLowerCase() + "/" +
                                                                  uniteConfiguration.unitTestFramework.toLowerCase() + "/");

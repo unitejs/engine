@@ -12,7 +12,7 @@ gulp.task("e2e-lint", () => {
 
     const uniteConfig = uc.getUniteConfig();
 
-    return gulp.src(path.join(uniteConfig.directories.e2eTestSrc, "**/*.js"))
+    return gulp.src(path.join(uniteConfig.directories.e2eTestSrc, "**/*.{js,jsx}"))
         .pipe(eslint())
         .pipe(eslint.format())
         .pipe(eslint.failAfterError())

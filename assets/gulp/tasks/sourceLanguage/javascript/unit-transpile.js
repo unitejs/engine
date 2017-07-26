@@ -16,7 +16,7 @@ gulp.task("unit-transpile", () => {
 
     const regEx = new RegExp(uniteConfig.srcDistReplace, "g");
 
-    return gulp.src(`${uniteConfig.directories.unitTestSrc}**/*.spec.js`)
+    return gulp.src(`${uniteConfig.directories.unitTestSrc}**/*.spec.{js,jsx}`)
         .pipe(sourcemaps.init())
         .pipe(babel())
         .on("error", (err) => {
