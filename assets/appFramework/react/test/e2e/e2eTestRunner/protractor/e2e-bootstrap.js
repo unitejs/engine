@@ -1,4 +1,4 @@
-function loadAndWaitForReactPage (url) {
+function loadAndWaitForReactPage (url, timeout) {
     return browser.get(url).then(() => {
         return browser.wait(protractor.ExpectedConditions.and(protractor.ExpectedConditions.presenceOf($("#root")),
             () => {
@@ -6,7 +6,7 @@ function loadAndWaitForReactPage (url) {
                     .then((text) => {
                         return text && text.length > 0;
                     });
-            }), 5000);
+            }), timeout ? timeout : 5000);
     });
 }
 

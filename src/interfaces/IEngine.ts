@@ -24,6 +24,10 @@ export interface IEngine {
                   version: string | undefined | null,
                   preload: boolean,
                   includeMode: string | undefined | null,
+                  main: string | undefined | null,
+                  mainMinified: string | undefined | null,
+                  isPackage: boolean,
+                  wrapAssets: string | undefined | null,
                   packageManager: string | undefined | null,
                   outputDirectory: string | undefined | null): Promise<number>;
 

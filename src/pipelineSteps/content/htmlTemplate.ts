@@ -63,10 +63,10 @@ export class HtmlTemplate extends EnginePipelineStepBase {
                 this.addLine(indent, lines, "</head>");
                 this.addLine(indent, lines, "<body>");
                 indent++;
+                this.addLine(indent, lines, "<div id=\"root\"></div>");
                 engineVariablesHtml.body.forEach(body => {
                     this.addLine(indent, lines, body);
                 });
-                this.addLine(indent, lines, "<div id=\"root\"></div>");
                 indent--;
                 this.addLine(indent, lines, "</body>");
                 indent--;

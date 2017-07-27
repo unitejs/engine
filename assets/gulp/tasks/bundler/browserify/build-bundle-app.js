@@ -31,6 +31,10 @@ gulp.task("build-bundle-app", () => {
             bApp.exclude(key);
         });
 
+        if (buildConfiguration.minify) {
+            process.env.NODE_ENV = "production";
+        }
+
         return bApp.bundle()
             .pipe(source("app-bundle.js"))
             .pipe(buffer())

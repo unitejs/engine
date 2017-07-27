@@ -3,9 +3,13 @@
  */
 import * as React from "react";
 
+const childStyle = {
+    fontSize: "20px"
+};
+
 export class Child extends React.Component {
     public render(): JSX.Element {
-        return (<span>Hello UniteJS World!</span>);
+        return (<span style={childStyle}>Hello UniteJS World!</span>);
     }
 }
 

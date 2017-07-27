@@ -100,7 +100,8 @@ export class Protractor extends EnginePipelineStepBase {
                     reportDir: reportsFolder + "/e2e/",
                     reportName: "index",
                     takePassedScreenshot: true
-                }
+                },
+                timeout: 10000
             };
         }
 

@@ -198,6 +198,10 @@ export class Engine implements IEngine {
                                version: string | undefined | null,
                                preload: boolean,
                                includeMode: IncludeMode | undefined | null,
+                               main: string | undefined | null,
+                               mainMinified: string | undefined | null,
+                               isPackage: boolean,
+                               wrapAssets: string | undefined | null,
                                packageManager: UnitePackageManager | undefined | null,
                                outputDirectory: string | undefined | null): Promise<number> {
         outputDirectory = this.cleanupOutputDirectory(outputDirectory);
@@ -218,9 +222,6 @@ export class Engine implements IEngine {
         if (!EngineValidation.checkOneOf<ModuleOperation>(this._display, "operation", operation, ["add", "remove"])) {
             return 1;
         }
-        if (!EngineValidation.checkOneOf<IncludeMode>(this._display, "includeMode", includeMode, ["app", "test", "both"])) {
-            return 1;
-        }
         if (!EngineValidation.notEmpty(this._display, "packageName", packageName)) {
             return 1;
         }
@@ -231,7 +232,7 @@ export class Engine implements IEngine {
         this._display.log("");
 
         if (operation === "add") {
-            return await this.clientPackageAdd(packageName!, version!, preload, includeMode, outputDirectory, uniteConfiguration);
+            return await this.clientPackageAdd(packageName!, version!, preload, includeMode, main, mainMinified, isPackage, wrapAssets, outputDirectory, uniteConfiguration);
         } else if (operation === "remove") {
             return await this.clientPackageRemove(packageName!, outputDirectory, uniteConfiguration);
         }
@@ -371,7 +372,20 @@ export class Engine implements IEngine {
         return ret;
     }
 
-    private async clientPackageAdd(packageName: string, version: string, preload: boolean, includeMode: IncludeMode, outputDirectory: string, uniteConfiguration: UniteConfiguration): Promise<number> {
+    private async clientPackageAdd(packageName: string,
+                                   version: string,
+                                   preload: boolean,
+                                   includeMode: IncludeMode,
+                                   main: string | undefined | null,
+                                   mainMinified: string | undefined | null,
+                                   isPackage: boolean,
+                                   wrapAssets: string | undefined | null,
+                                   outputDirectory: string,
+                                   uniteConfiguration: UniteConfiguration): Promise<number> {
+        if (!EngineValidation.checkOneOf<IncludeMode>(this._display, "includeMode", includeMode, ["app", "test", "both"])) {
+            return 1;
+        }
+
         if (uniteConfiguration.clientPackages[packageName]) {
             this._display.error("Package has already been added.");
             return 1;
@@ -389,13 +403,26 @@ export class Engine implements IEngine {
                 fixPackageVersion = true;
             }
 
+            let finalMain = main ? main : packageInfo.main;
+            let finalMainMinified = mainMinified ? mainMinified : undefined;
+
+            if (finalMain) {
+                finalMain = finalMain.replace(/\\/g, "/");
+                finalMain = finalMain.replace(/\.\//, "/");
+            }
+            if (finalMainMinified) {
+                finalMainMinified = finalMainMinified.replace(/\\/g, "/");
+                finalMainMinified = finalMainMinified.replace(/\.\//, "/");
+            }
+
             const clientPackage = new UniteClientPackage();
             clientPackage.version = fixPackageVersion ? version : "^" + version;
             clientPackage.preload = preload;
-            clientPackage.location = "";
-            clientPackage.main = packageInfo.main;
+            clientPackage.main = finalMain;
+            clientPackage.mainMinified = finalMainMinified;
+            clientPackage.isPackage = isPackage;
             clientPackage.includeMode = includeMode;
-            clientPackage.isPackage = false;
+            clientPackage.wrapAssets = wrapAssets;
 
             uniteConfiguration.clientPackages[packageName] = clientPackage;
 

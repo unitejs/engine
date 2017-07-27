@@ -1,6 +1,7 @@
 /**
  * Tests for App.
  */
+/// <reference path="../e2e-bootstrap.d.ts" />
 import { expect } from "chai";
 
 describe("App", () => {
@@ -16,7 +17,7 @@ describe("App", () => {
 
     it("the root text is set", () => {
         return browser
-            .url("/")
+            .loadAndWaitForPage("/")
             .element("#root")
             .getText()
             .then((rootContent) => {

@@ -1,6 +1,7 @@
 /**
  * Tests for App.
  */
+/// <reference path="../e2e-bootstrap.d.ts" />
 import { $, browser, by } from "protractor";
 
 describe("App", () => {

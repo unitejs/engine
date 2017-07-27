@@ -12,7 +12,6 @@ export class Amd extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleClientPackage(
             "requirejs",
-            "",
             "require.js",
             "",
             false,
@@ -22,7 +21,6 @@ export class Amd extends EnginePipelineStepBase {
 
         engineVariables.toggleClientPackage(
             "text",
-            "",
             "text.js",
             "",
             false,

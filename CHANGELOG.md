@@ -7,6 +7,9 @@
 * Fixed missing test dependencies for client packages e.g. chai
 * Fixed missing test client packages in karma runner
 * Added support for production build versions of vendor libraries
+* Added isPackage, main and mainMinified options to clientPackage add operation
+* Fixed clientPackages sections in help
+* Improved async performance of PlainApp e2e tests
 
 # v0.5.0
 * Added Application Framework support

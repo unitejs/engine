@@ -13,9 +13,8 @@ export class CommonJs extends EnginePipelineStepBase {
         /* We use SystemJS to load cjs modules for the unbundled version of the project and unit testing */
         engineVariables.toggleClientPackage(
             "systemjs",
-            "dist/",
-            "system.src.js",
-            "system.js",
+            "dist/system.src.js",
+            "dist/system.js",
             false,
             "app",
             false,

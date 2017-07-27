@@ -18,7 +18,6 @@ export class React extends SharedAppFramework {
 
         engineVariables.toggleClientPackage(
             "react",
-            "",
             "dist/react.js",
             "dist/react.min.js",
             false,
@@ -28,7 +27,6 @@ export class React extends SharedAppFramework {
 
         engineVariables.toggleClientPackage(
             "react-dom",
-            "",
             "dist/react-dom.js",
             "dist/react-dom.min.js",
             false,
@@ -38,7 +36,6 @@ export class React extends SharedAppFramework {
 
         engineVariables.toggleClientPackage(
             "react-router-dom",
-            "",
             "umd/react-router-dom.js",
             "umd/react-router-dom.min.js",
             false,

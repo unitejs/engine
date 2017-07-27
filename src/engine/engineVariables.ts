@@ -69,7 +69,6 @@ export class EngineVariables {
     }
 
     public toggleClientPackage(name: string,
-                               location: string,
                                main: string,
                                mainMinified: string,
                                preload: boolean,
@@ -79,7 +78,6 @@ export class EngineVariables {
         const clientPackage = new UniteClientPackage();
         clientPackage.includeMode = includeMode;
         clientPackage.preload = preload;
-        clientPackage.location = location;
         clientPackage.main = main;
         clientPackage.mainMinified = mainMinified;
         clientPackage.isPackage = isPackage;

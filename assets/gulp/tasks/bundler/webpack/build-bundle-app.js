@@ -37,6 +37,7 @@ gulp.task("build-bundle-app", () => {
 
         if (buildConfiguration.minify) {
             plugins.push(new UglifyJSPlugin());
+            process.env.NODE_ENV = "production";
         }
 
         entry.app = `./${path.join(uniteConfig.directories.dist, "entryPoint.js")}`;

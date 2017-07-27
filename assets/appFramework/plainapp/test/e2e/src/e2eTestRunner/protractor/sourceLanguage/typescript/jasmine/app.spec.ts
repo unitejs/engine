@@ -1,6 +1,7 @@
 /**
  * Tests for App.
  */
+/// <reference path="../e2e-bootstrap.d.ts" />
 import { $, browser, by } from "protractor";
 
 describe("App", () => {
@@ -17,7 +18,7 @@ describe("App", () => {
     });
 
     it("the root text is set", (done) => {
-        browser.get("/")
+        browser.loadAndWaitForPage("/")
             .then(() => {
                 $("#root").getText()
                     .then((rootContent) => {

@@ -29,13 +29,9 @@ function buildModuleConfig (uniteConfig, includeModes, isMinified) {
     for (let i = 0; i < keys.length; i++) {
         const pkg = uniteConfig.clientPackages[keys[i]];
         if (includeModes.indexOf(pkg.includeMode) >= 0) {
-            const location = pkg.location ? pkg.location.replace(/\.\//, "") : "";
-            let main = pkg.main;
-            if (isMinified && pkg.mainMinified) {
-                main = pkg.mainMinified;
-            }
-
-            main = main ? main.replace(/(\.js)$/, "") : "";
+            const mainSplit = isMinified && pkg.mainMinified ? pkg.mainMinified.split("/") : pkg.main.split("/");
+            const main = mainSplit.pop().replace(/(\.js)$/, "");
+            let location = mainSplit.join("/");
 
             if (pkg.isPackage) {
                 moduleConfig.packages.push({
@@ -44,6 +40,7 @@ function buildModuleConfig (uniteConfig, includeModes, isMinified) {
                     main
                 });
             } else {
+                location += location.length > 0 ? "/" : "";
                 moduleConfig.paths[keys[i]] = `node_modules/${keys[i]}/${location}${main}`;
             }
 

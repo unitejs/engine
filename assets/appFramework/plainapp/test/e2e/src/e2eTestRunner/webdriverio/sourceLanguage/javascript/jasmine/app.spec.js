@@ -14,7 +14,7 @@ describe("App", () => {
 
     it("the root text is set", () => {
         return browser
-            .url("/")
+            .loadAndWaitForPage("/")
             .element("#root")
             .getText()
             .then((rootContent) => {

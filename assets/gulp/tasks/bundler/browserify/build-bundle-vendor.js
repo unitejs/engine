@@ -31,6 +31,10 @@ gulp.task("build-bundle-vendor", () => {
             bVendor.require(key);
         });
 
+        if (buildConfiguration.minify) {
+            process.env.NODE_ENV = "production";
+        }
+
         return bVendor.bundle()
             .pipe(source("vendor-bundle.js"))
             .pipe(buffer())

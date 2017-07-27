@@ -69,7 +69,7 @@ export declare class EngineVariables {
     private _requiredClientPackages;
     private _removedClientPackages;
     constructor();
-    toggleClientPackage(name: string, location: string, main: string, mainMinified: string, preload: boolean, includeMode: IncludeMode, isPackage: boolean, required: boolean): void;
+    toggleClientPackage(name: string, main: string, mainMinified: string, preload: boolean, includeMode: IncludeMode, isPackage: boolean, required: boolean): void;
     getTestClientPackages(): string[];
     toggleDevDependency(dependencies: string[], required: boolean): void;
     buildDependencies(uniteConfiguration: UniteConfiguration, packageJsonDependencies: {

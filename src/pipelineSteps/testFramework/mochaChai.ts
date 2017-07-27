@@ -19,9 +19,8 @@ export class MochaChai extends EnginePipelineStepBase {
 
         engineVariables.toggleClientPackage(
             "chai",
-            "",
             "chai.js",
-            "",
+            undefined,
             true,
             "test",
             false,

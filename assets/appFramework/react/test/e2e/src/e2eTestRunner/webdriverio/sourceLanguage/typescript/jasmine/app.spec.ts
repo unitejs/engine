@@ -1,6 +1,7 @@
 /**
  * Tests for App.
  */
+/// <reference path="../e2e-bootstrap.d.ts" />
 describe("App", () => {
     it("the title is set", () => {
         const uniteJson = require("../../../unite.json");
@@ -8,13 +9,13 @@ describe("App", () => {
             .url("/")
             .getTitle()
             .then((title) => {
-                expect(title).to.equal(uniteJson.title);
+                expect(title).toEqual(uniteJson.title);
             });
     });
 
     it("the root text is set", () => {
         return browser
-            .url("/")
+            .loadAndWaitForReactPage("/")
             .element("#root")
             .getText()
             .then((rootContent) => {

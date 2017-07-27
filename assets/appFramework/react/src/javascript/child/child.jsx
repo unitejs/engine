@@ -1,11 +1,15 @@
 /**
  * Child class.
  */
-import React, { Component } from "react";
+import React from "react";
 
-export class Child extends Component {
+const childStyle = {
+    fontSize: "20px"
+};
+
+export class Child extends React.Component {
     render() {
-        return (<span>Hello UniteJS World!</span>);
+        return (<span style={childStyle}>Hello UniteJS World!</span>);
     }
 }
 

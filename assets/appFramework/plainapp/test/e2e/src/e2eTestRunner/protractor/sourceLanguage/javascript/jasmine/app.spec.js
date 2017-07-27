@@ -15,7 +15,7 @@ describe("App", () => {
     });
 
     it("the root text is set", (done) => {
-        browser.get("/")
+        browser.loadAndWaitForPage("/")
             .then(() => {
                 $("#root").getText()
                     .then((rootContent) => {

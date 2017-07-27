@@ -52,11 +52,11 @@ export class Aurelia extends SharedAppFramework {
         let location = "dist/";
 
         if (uniteConfiguration.moduleType === "AMD") {
-            location += "amd";
+            location += "amd/";
         } else if (uniteConfiguration.moduleType === "CommonJS") {
-            location += "commonjs";
+            location += "commonjs/";
         } else if (uniteConfiguration.moduleType === "SystemJS") {
-            location += "system";
+            location += "system/";
         }
 
         this.toggleClientPackages(uniteConfiguration, engineVariables, location, [
@@ -84,17 +84,16 @@ export class Aurelia extends SharedAppFramework {
             { name: "aurelia-task-queue" },
             { name: "aurelia-templating" },
             { name: "aurelia-templating-binding" },
-            { name: "aurelia-dialog", main: "aurelia-dialog" },
-            { name: "aurelia-templating-resources", main: "aurelia-templating-resources" },
-            { name: "aurelia-templating-router", main: "aurelia-templating-router" },
-            { name: "aurelia-validation", main: "aurelia-validation" }
+            { name: "aurelia-dialog", isPackage: true },
+            { name: "aurelia-templating-resources", isPackage: true },
+            { name: "aurelia-templating-router", isPackage: true },
+            { name: "aurelia-validation", isPackage: true }
         ]);
 
         engineVariables.toggleClientPackage(
             "whatwg-fetch",
-            "",
             "fetch.js",
-            "",
+            undefined,
             false,
             "both",
             false,
@@ -104,17 +103,16 @@ export class Aurelia extends SharedAppFramework {
     private toggleClientPackages(uniteConfiguration: UniteConfiguration,
                                  engineVariables: EngineVariables,
                                  location: string,
-                                 clientPackages: { name: string, main?: string }[]): void {
+                                 clientPackages: { name: string, isPackage?: boolean }[]): void {
 
         clientPackages.forEach(clientPackage => {
             engineVariables.toggleClientPackage(
                 clientPackage.name,
-                location + (clientPackage.main ? "" : "/"),
-                (clientPackage.main ? clientPackage.main : clientPackage.name) + ".js",
-                "",
+                location + clientPackage.name + ".js",
+                undefined,
                 false,
                 "both",
-                clientPackage.main ? true : false,
+                clientPackage.isPackage ? true : false,
                 uniteConfiguration.applicationFramework === "Aurelia");
         });
     }

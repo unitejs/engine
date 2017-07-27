@@ -5,9 +5,9 @@ import { IncludeMode } from "./includeMode";
 export class UniteClientPackage {
     public version: string;
     public preload: boolean;
-    public location: string;
     public main: string;
     public mainMinified: string;
     public includeMode: IncludeMode;
     public isPackage: boolean;
+    public wrapAssets: string;
 }

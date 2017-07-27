@@ -12,9 +12,8 @@ export class SystemJs extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleClientPackage(
             "systemjs",
-            "dist/",
-            "system.src.js",
-            "system.js",
+            "dist/system.src.js",
+            "dist/system.js",
             false,
             "app",
             false,
@@ -22,11 +21,10 @@ export class SystemJs extends EnginePipelineStepBase {
 
         engineVariables.toggleClientPackage(
             "systemjs-plugin-text",
-            "",
             "text.js",
-            "",
+            undefined,
             false,
-            "app",
+            "both",
             false,
             uniteConfiguration.moduleType === "SystemJS");
 
