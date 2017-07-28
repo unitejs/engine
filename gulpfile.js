@@ -9,23 +9,29 @@ const merge = require("merge2");
 const runSequence = require("run-sequence");
 
 const tsConfigFile = "./tsconfig.json";
+
 const srcFolder = "./src/";
 const distFolder = "./dist/";
-const testFolder = "test/";
-const tsSrcGlob = `${srcFolder}**/*.ts`;
-const cleanTestGlob = `${testFolder}/**/*.js`;
-const tsTestGlob = `${testFolder}**/*.spec.ts`;
+const srcGlob = `${srcFolder}**/*.ts`;
+const distGlob = `${distFolder}**/*`;
+
+const unitFolder = "test/unit/";
+const unitSrcFolder = `${unitFolder}src/`;
+const unitDistFolder = `${unitFolder}dist/`;
+const unitSrcGlob = `${unitSrcFolder}**/*.spec.ts`;
+const unitDistGlob = `${unitDistFolder}/**/*.spec.js`;
 
 gulp.task("build-clean", (cb) => {
-    return del(distFolder, cb);
+    return del(distGlob, cb);
 });
 
 gulp.task("build-lint", () => {
     const program = tslint.Linter.createProgram(tsConfigFile);
 
-    return gulp.src(tsSrcGlob)
+    return gulp.src(srcGlob)
         .pipe(gulpTslint({
-            program
+            "formatter": "verbose",
+            "program": program
         }))
         .pipe(gulpTslint.report())
         .on("error", () => {
@@ -38,41 +44,47 @@ gulp.task("build-transpile", () => {
 
     let errorCount = 0;
 
-    const tsResult = gulp.src(tsSrcGlob)
+    const tsResult = gulp.src(srcGlob)
         .pipe(sourcemaps.init())
         .pipe(tsProject())
         .on("error", () => {
             errorCount++;
         });
 
-    return merge([
-        tsResult.dts
-            .pipe(gulp.dest(distFolder)),
-        tsResult.js
-            .pipe(sourcemaps.write({"includeContent": false, "sourceRoot": "../src"}))
-            .pipe(gulp.dest(distFolder))
-            .on("end", () => {
-                if (errorCount > 0) {
-                    process.exit();
-                }
-            })
-    ]);
+    const streams = [];
+
+    streams.push(tsResult.js
+        .pipe(sourcemaps.write({ "includeContent": false, "sourceRoot": "../src" }))
+        .pipe(gulp.dest(distFolder))
+        .on("end", () => {
+            if (errorCount > 0) {
+                process.exit();
+            }
+        }));
+
+    if (tsProject.config.compilerOptions.declaration) {
+        streams.push(tsResult.dts
+            .pipe(gulp.dest(distFolder)));
+    }
+
+    return merge(streams);
 });
 
 gulp.task("build", (cb) => {
     runSequence("build-clean", "build-transpile", "build-lint", cb);
 });
 
-gulp.task("test-clean", (cb) => {
-    return del(cleanTestGlob, cb);
+gulp.task("unit-clean", (cb) => {
+    return del(unitDistGlob, cb);
 });
 
-gulp.task("test-lint", () => {
+gulp.task("unit-lint", () => {
     const program = tslint.Linter.createProgram(tsConfigFile);
 
-    return gulp.src(tsTestGlob)
+    return gulp.src(unitSrcGlob)
         .pipe(gulpTslint({
-            program
+            "formatter": "verbose",
+            "program": program
         }))
         .pipe(gulpTslint.report())
         .on("error", () => {
@@ -80,25 +92,38 @@ gulp.task("test-lint", () => {
         });
 });
 
-gulp.task("test-transpile", () => {
+gulp.task("unit-transpile", () => {
     const tsProject = tsc.createProject(tsConfigFile);
 
-    const tsResult = gulp.src(tsTestGlob)
-        .pipe(tsProject());
+    let errorCount = 0;
+
+    const tsResult = gulp.src(unitSrcGlob)
+        .pipe(sourcemaps.init())
+        .pipe(tsProject())
+        .on("error", () => {
+            errorCount++;
+        });
 
     return tsResult.js
-        .pipe(gulp.dest(testFolder))
+        .pipe(sourcemaps.write({ "includeContent": false, "sourceRoot": "../src" }))
+        .pipe(gulp.dest(unitDistFolder))
+        .on("end", () => {
+            if (errorCount > 0) {
+                process.exit();
+            }
+        })
+});
+
+gulp.task("unit-runner", () => {
+    return gulp.src(unitDistGlob)
         .pipe(mocha({
             "reporter": "spec",
             "timeout": "360000"
-        }))
-        .once("error", () => {
-            process.exit(1);
-        });
+        }));
 });
 
-gulp.task("test", (cb) => {
-    runSequence("test-clean", "test-transpile", "test-lint", cb);
+gulp.task("unit", (cb) => {
+    runSequence("unit-clean", "unit-transpile", "unit-lint", "unit-runner", cb);
 });
 
-gulp.task("clean-all", ["build-clean", "test-clean"]);
+gulp.task("clean-all", ["build-clean", "unit-clean"]);

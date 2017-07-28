@@ -46,13 +46,13 @@ export class EngineVariables {
 
     public protractorPlugins: { [id: string]: boolean };
 
-    public lintFeatures: { [id: string]: { required: boolean, object: any } };
+    public lintFeatures: { [id: string]: { required: boolean; object: any } };
     public lintExtends: { [id: string]: boolean };
     public lintPlugins: { [id: string]: boolean };
     public lintEnv: { [id: string]: boolean };
     public lintGlobals: { [id: string]: boolean };
 
-    public transpileProperties: { [id: string]: { required: boolean, object: any } };
+    public transpileProperties: { [id: string]: { required: boolean; object: any } };
 
     public transpilePresets: { [id: string]: boolean };
 
@@ -151,7 +151,7 @@ export class EngineVariables {
                 if (this.corePackageJson.peerDependencies[requiredDependency]) {
                     packageJsonDevDependencies[requiredDependency] = this.corePackageJson.peerDependencies[requiredDependency];
                 } else {
-                    throw new Error("Missing Dependency '" + requiredDependency + "'");
+                    throw new Error(`Missing Dependency '${requiredDependency}'`);
                 }
             });
         } else {
@@ -164,7 +164,7 @@ export class EngineVariables {
             if (this.corePackageJson.peerDependencies[requiredDependency]) {
                 return this.corePackageJson.peerDependencies[requiredDependency];
             } else {
-                throw new Error("Missing Dependency '" + requiredDependency + "'");
+                throw new Error(`Missing Dependency '${requiredDependency}'`);
             }
         } else {
             throw new Error("Dependency Versions missing");

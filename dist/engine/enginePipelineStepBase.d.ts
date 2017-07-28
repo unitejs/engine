@@ -1,11 +1,11 @@
 /**
  * Base implementation of engine pipeline step.
  */
+import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
+import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
+import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
-import { IDisplay } from "../interfaces/IDisplay";
 import { IEnginePipelineStep } from "../interfaces/IEnginePipelineStep";
-import { IFileSystem } from "../interfaces/IFileSystem";
-import { ILogger } from "../interfaces/ILogger";
 import { EngineVariables } from "./engineVariables";
 export declare abstract class EnginePipelineStepBase implements IEnginePipelineStep {
     static MARKER: string;

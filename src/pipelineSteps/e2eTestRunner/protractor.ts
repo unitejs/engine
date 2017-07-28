@@ -1,14 +1,14 @@
 /**
  * Pipeline step to generate Protractor configuration.
  */
+import { JsonHelper } from "unitejs-framework/dist/helpers/jsonHelper";
+import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
+import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
+import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
-import { JsonHelper } from "../../core/jsonHelper";
 import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
-import { IDisplay } from "../../interfaces/IDisplay";
-import { IFileSystem } from "../../interfaces/IFileSystem";
-import { ILogger } from "../../interfaces/ILogger";
 
 export class Protractor extends EnginePipelineStepBase {
     private static FILENAME: string = "protractor.conf.js";
@@ -16,7 +16,7 @@ export class Protractor extends EnginePipelineStepBase {
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["protractor", "browser-sync"], uniteConfiguration.e2eTestRunner === "Protractor");
         engineVariables.toggleDevDependency(["protractor-jasmine2-html-reporter", "jasmine-spec-reporter"],
-            uniteConfiguration.e2eTestRunner === "Protractor" && uniteConfiguration.e2eTestFramework === "Jasmine");
+                                            uniteConfiguration.e2eTestRunner === "Protractor" && uniteConfiguration.e2eTestFramework === "Jasmine");
         engineVariables.toggleDevDependency(["mochawesome-screenshots"], uniteConfiguration.e2eTestRunner === "Protractor" && uniteConfiguration.e2eTestFramework === "Mocha-Chai");
 
         engineVariables.toggleDevDependency(["@types/protractor"], uniteConfiguration.e2eTestRunner === "Protractor" && uniteConfiguration.sourceLanguage === "TypeScript");
@@ -64,7 +64,7 @@ export class Protractor extends EnginePipelineStepBase {
         }];
 
         for (const key in engineVariables.protractorPlugins) {
-            const pluginPath = "node_modules/" + key;
+            const pluginPath = `node_modules/${key}`;
             if (engineVariables.protractorPlugins[key]) {
                 let exists = false;
                 protractorConfiguration.plugins.forEach(plugin => {
@@ -97,7 +97,7 @@ export class Protractor extends EnginePipelineStepBase {
             protractorConfiguration.mochaOpts = {
                 reporter: "mochawesome-screenshots",
                 reporterOptions: {
-                    reportDir: reportsFolder + "/e2e/",
+                    reportDir: `${reportsFolder}/e2e/`,
                     reportName: "index",
                     takePassedScreenshot: true
                 },
@@ -105,14 +105,14 @@ export class Protractor extends EnginePipelineStepBase {
             };
         }
 
-        lines.push("exports.config = " + JsonHelper.codify(protractorConfiguration) + ";");
+        lines.push(`exports.config = ${JsonHelper.codify(protractorConfiguration)};`);
 
         if (uniteConfiguration.e2eTestFramework === "Jasmine") {
             lines.push("exports.config.onPrepare = () => {");
             lines.push("    jasmine.getEnv().clearReporters();");
             lines.push("    jasmine.getEnv().addReporter(");
             lines.push("        new Jasmine2HtmlReporter({");
-            lines.push("            savePath: '" + reportsFolder + "/e2e/',");
+            lines.push(`            savePath: '${reportsFolder}/e2e/',`);
             lines.push("            fileName: 'index'");
             lines.push("        })");
             lines.push("    );");

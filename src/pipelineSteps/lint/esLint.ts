@@ -1,14 +1,14 @@
 /**
  * Pipeline step to generate eslint configuration.
  */
+import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
+import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
+import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { EsLintConfiguration } from "../../configuration/models/eslint/esLintConfiguration";
 import { EsLintParserOptions } from "../../configuration/models/eslint/esLintParserOptions";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
-import { IDisplay } from "../../interfaces/IDisplay";
-import { IFileSystem } from "../../interfaces/IFileSystem";
-import { ILogger } from "../../interfaces/ILogger";
 
 export class EsLint extends EnginePipelineStepBase {
     private static FILENAME: string = ".eslintrc.json";

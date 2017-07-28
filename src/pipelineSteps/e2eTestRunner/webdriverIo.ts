@@ -1,26 +1,26 @@
 /**
  * Pipeline step to generate WebdriverIO configuration.
  */
+import { JsonHelper } from "unitejs-framework/dist/helpers/jsonHelper";
+import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
+import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
+import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { WebdriverIoConfiguration } from "../../configuration/models/webdriverIo/webdriverIoConfiguration";
-import { JsonHelper } from "../../core/jsonHelper";
 import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
-import { IDisplay } from "../../interfaces/IDisplay";
-import { IFileSystem } from "../../interfaces/IFileSystem";
-import { ILogger } from "../../interfaces/ILogger";
 
 export class WebdriverIo extends EnginePipelineStepBase {
     private static FILENAME: string = "wdio.conf.js";
 
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["webdriverio",
-                                            "wdio-spec-reporter",
-                                            "wdio-allure-reporter",
-                                            "browser-sync",
-                                            "selenium-standalone",
-                                            "allure-commandline"],
-                                           uniteConfiguration.e2eTestRunner === "WebdriverIO");
+                                             "wdio-spec-reporter",
+                                             "wdio-allure-reporter",
+                                             "browser-sync",
+                                             "selenium-standalone",
+                                             "allure-commandline"],
+                                            uniteConfiguration.e2eTestRunner === "WebdriverIO");
 
         engineVariables.toggleDevDependency(["wdio-jasmine-framework"], uniteConfiguration.e2eTestRunner === "WebdriverIO" && uniteConfiguration.e2eTestFramework === "Jasmine");
         engineVariables.toggleDevDependency(["wdio-mocha-framework"], uniteConfiguration.e2eTestRunner === "WebdriverIO" && uniteConfiguration.e2eTestFramework === "Mocha-Chai");
@@ -78,14 +78,14 @@ export class WebdriverIo extends EnginePipelineStepBase {
         webdriverConfiguration.reporters = ["spec", "allure"];
         webdriverConfiguration.reporterOptions = {
             allure: {
-                outputDir: reportsFolder + "/e2etemp/"
+                outputDir: `${reportsFolder}/e2etemp/"`
             }
         };
 
         const e2eBootstrap = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, fileSystem.pathCombine(engineVariables.e2eTestFolder, "e2e-bootstrap.js")));
 
-        lines.push("exports.config = " + JsonHelper.codify(webdriverConfiguration));
-        lines.push("exports.config.before = require('" + e2eBootstrap + "');");
+        lines.push(`exports.config = ${JsonHelper.codify(webdriverConfiguration)}`);
+        lines.push(`exports.config.before = require('${e2eBootstrap}');`);
         lines.push(super.wrapGeneratedMarker("/* ", " */"));
     }
 }

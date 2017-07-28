@@ -2,10 +2,10 @@
  * NPM Package Manager class.
  */
 import * as npm from "npm";
+import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
+import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
+import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
-import { IDisplay } from "../interfaces/IDisplay";
-import { IFileSystem } from "../interfaces/IFileSystem";
-import { ILogger } from "../interfaces/ILogger";
 import { IPackageManager } from "../interfaces/IPackageManager";
 
 export class NpmPackageManager implements IPackageManager {
@@ -57,7 +57,7 @@ export class NpmPackageManager implements IPackageManager {
                 if (err) {
                     reject(err);
                 } else {
-                    npm.commands.install([packageName + "@" + version], (err2, result2, result3, result4, result5) => {
+                    npm.commands.install([`${packageName}@${version}`], (err2, result2, result3, result4, result5) => {
                         if (err2) {
                             reject(err2);
                         } else {

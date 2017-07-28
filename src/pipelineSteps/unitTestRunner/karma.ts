@@ -1,34 +1,34 @@
 /**
  * Pipeline step to generate karma configuration.
  */
+import { JsonHelper } from "unitejs-framework/dist/helpers/jsonHelper";
+import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
+import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
+import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { KarmaConfiguration } from "../../configuration/models/karma/karmaConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
-import { JsonHelper } from "../../core/jsonHelper";
 import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
-import { IDisplay } from "../../interfaces/IDisplay";
-import { IFileSystem } from "../../interfaces/IFileSystem";
-import { ILogger } from "../../interfaces/ILogger";
 
 export class Karma extends EnginePipelineStepBase {
     private static FILENAME: string = "karma.conf.js";
 
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["karma",
-            "karma-chrome-launcher",
-            "karma-phantomjs-launcher",
-            "karma-story-reporter",
-            "karma-html-reporter",
-            "karma-coverage",
-            "karma-sourcemap-loader",
-            "karma-remap-istanbul",
-            "remap-istanbul",
-            "bluebird"
-        ],
-            uniteConfiguration.unitTestRunner === "Karma");
+                                             "karma-chrome-launcher",
+                                             "karma-phantomjs-launcher",
+                                             "karma-story-reporter",
+                                             "karma-html-reporter",
+                                             "karma-coverage",
+                                             "karma-sourcemap-loader",
+                                             "karma-remap-istanbul",
+                                             "remap-istanbul",
+                                             "bluebird"
+                                            ],
+                                            uniteConfiguration.unitTestRunner === "Karma");
 
         engineVariables.toggleDevDependency(["requirejs"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.moduleType === "AMD");
-        /* We use SystemJS for testing CommonJS modules so we don't need to webpack the tests */
+        // We use SystemJS for testing CommonJS modules so we don't need to webpack the tests
         engineVariables.toggleDevDependency(["systemjs"], uniteConfiguration.unitTestRunner === "Karma" &&
                                             (uniteConfiguration.moduleType === "SystemJS" || uniteConfiguration.moduleType === "CommonJS"));
 
@@ -62,7 +62,7 @@ export class Karma extends EnginePipelineStepBase {
     private generateConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, lines: string[]): void {
         const testFrameworks: string[] = [];
 
-        const testIncludes: { pattern: string, included: boolean }[] = [];
+        const testIncludes: { pattern: string; included: boolean }[] = [];
 
         testIncludes.push({ pattern: "./unite.json", included: false });
         testIncludes.push({ pattern: "./node_modules/bluebird/js/browser/bluebird.js", included: true });
@@ -70,14 +70,14 @@ export class Karma extends EnginePipelineStepBase {
         if (uniteConfiguration.moduleType === "AMD") {
             testIncludes.push({ pattern: "./node_modules/requirejs/require.js", included: true });
         } else if (uniteConfiguration.moduleType === "SystemJS" || uniteConfiguration.moduleType === "CommonJS") {
-            /* We use SystemJS for testing CommonJS modules so we don't need to webpack the tests */
+            // We use SystemJS for testing CommonJS modules so we don't need to webpack the tests
             testIncludes.push({ pattern: "./node_modules/systemjs/dist/system.js", included: true });
         }
 
         const packageKeys = engineVariables.getTestClientPackages();
-        for (let i = 0; i < packageKeys.length; i++) {
-            testIncludes.push({ pattern: "./node_modules/" + packageKeys[i] + "/**/*", included: false });
-        }
+        packageKeys.forEach(key => {
+            testIncludes.push({ pattern: `./node_modules/${key}/**/*`, included: false });
+        });
 
         if (uniteConfiguration.unitTestFramework === "Mocha-Chai") {
             testFrameworks.push("mocha");
@@ -132,8 +132,8 @@ export class Karma extends EnginePipelineStepBase {
 
         karmaConfiguration.remapIstanbulReporter = {
             reports: {
-                "json": reportsFolder + "/coverage.json",
-                "html": reportsFolder + "/coverage",
+                json: `${reportsFolder}/coverage.json`,
+                html: `${reportsFolder}/coverage`,
                 "text-summary": ""
             }
         };
@@ -145,7 +145,7 @@ export class Karma extends EnginePipelineStepBase {
         karmaConfiguration.files = testIncludes;
 
         lines.push("module.exports = function(config) {");
-        lines.push("    config.set(" + JsonHelper.codify(karmaConfiguration) + ");");
+        lines.push(`    config.set(${JsonHelper.codify(karmaConfiguration)});`);
         lines.push("};");
         lines.push(super.wrapGeneratedMarker("/* ", " */"));
     }

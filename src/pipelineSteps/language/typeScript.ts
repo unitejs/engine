@@ -1,14 +1,14 @@
 /**
  * Pipeline step to generate TypeScript configuration.
  */
+import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
+import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
+import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { TypeScriptCompilerOptions } from "../../configuration/models/typeScript/typeScriptCompilerOptions";
 import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
-import { IDisplay } from "../../interfaces/IDisplay";
-import { IFileSystem } from "../../interfaces/IFileSystem";
-import { ILogger } from "../../interfaces/ILogger";
 
 export class TypeScript extends EnginePipelineStepBase {
     private static FILENAME: string = "tsconfig.json";

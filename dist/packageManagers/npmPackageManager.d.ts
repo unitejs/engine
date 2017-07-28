@@ -1,7 +1,7 @@
+import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
+import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
+import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
-import { IDisplay } from "../interfaces/IDisplay";
-import { IFileSystem } from "../interfaces/IFileSystem";
-import { ILogger } from "../interfaces/ILogger";
 import { IPackageManager } from "../interfaces/IPackageManager";
 export declare class NpmPackageManager implements IPackageManager {
     private _logger;

@@ -1,8 +1,8 @@
 /**
  * Engine validation.
  */
+import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
 import { ISpdx } from "../configuration/models/spdx/ISpdx";
-import { IDisplay } from "../interfaces/IDisplay";
 export declare class EngineValidation {
     static checkPackageName(display: IDisplay, name: string, value: string | undefined | null): boolean;
     static checkPattern(display: IDisplay, name: string, value: string | undefined | null, pattern: RegExp, patternExplain: string): boolean;

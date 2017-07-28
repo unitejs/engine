@@ -1,13 +1,13 @@
 /**
  * Pipeline step to generate html template.
  */
+import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
+import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
+import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 import { EngineVariablesHtml } from "../../engine/engineVariablesHtml";
-import { IDisplay } from "../../interfaces/IDisplay";
-import { IFileSystem } from "../../interfaces/IFileSystem";
-import { ILogger } from "../../interfaces/ILogger";
 
 export class HtmlTemplate extends EnginePipelineStepBase {
     private static FILENAME_NO_BUNDLE: string = "index-no-bundle.html";
@@ -44,14 +44,14 @@ export class HtmlTemplate extends EnginePipelineStepBase {
                 this.addLine(indent, lines, "<head>");
                 indent++;
                 this.addLine(indent, lines, "<meta charset=\"utf-8\"/>");
-                this.addLine(indent, lines, "<title>" + uniteConfiguration.title + "</title>");
+                this.addLine(indent, lines, `<title>${uniteConfiguration.title}</title>`);
                 if (engineVariablesHtml.separateCss) {
                     this.addLine(indent, lines, "<link rel=\"stylesheet\" href=\"./css/style.css{CACHEBUST}\">");
                 }
 
                 if (engineVariablesHtml.scriptIncludes) {
                     engineVariablesHtml.scriptIncludes.forEach(scriptInclude => {
-                        this.addLine(indent, lines, "<script src=\"./" + engineVariables.packageFolder + scriptInclude + "\"></script>");
+                        this.addLine(indent, lines, `<script src="./${engineVariables.packageFolder}${scriptInclude}"></script>`);
                     });
                 }
 

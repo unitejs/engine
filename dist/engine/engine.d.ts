@@ -1,3 +1,9 @@
+/**
+ * Main engine
+ */
+import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
+import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
+import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { IncludeMode } from "../configuration/models/unite/includeMode";
 import { UniteApplicationFramework } from "../configuration/models/unite/uniteApplicationFramework";
 import { UniteBundler } from "../configuration/models/unite/uniteBundler";
@@ -12,10 +18,7 @@ import { UniteSourceLanguage } from "../configuration/models/unite/uniteSourceLa
 import { UniteUnitTestFramework } from "../configuration/models/unite/uniteUnitTestFramework";
 import { UniteUnitTestRunner } from "../configuration/models/unite/uniteUnitTestRunner";
 import { BuildConfigurationOperation } from "../interfaces/buildConfigurationOperation";
-import { IDisplay } from "../interfaces/IDisplay";
 import { IEngine } from "../interfaces/IEngine";
-import { IFileSystem } from "../interfaces/IFileSystem";
-import { ILogger } from "../interfaces/ILogger";
 import { ModuleOperation } from "../interfaces/moduleOperation";
 export declare class Engine implements IEngine {
     private _logger;

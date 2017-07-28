@@ -1,14 +1,15 @@
 /**
  * Engine validation.
  */
+import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
 import { ISpdx } from "../configuration/models/spdx/ISpdx";
-import { IDisplay } from "../interfaces/IDisplay";
 
 export class EngineValidation {
    public static checkPackageName(display: IDisplay, name: string, value: string | undefined | null): boolean {
        // Rules from here https://docs.npmjs.com/files/package.json
        // here https://github.com/npm/validate-npm-package-name
-       // and here https://github.com/npm/npm-registry-couchapp/blob/b31793881ff95c5bca5966a0a8bf8e5f7a801247/registry/modules.js#L93
+       // and here https://github.com/npm/npm-registry-couchapp/
+       // blob/b31793881ff95c5bca5966a0a8bf8e5f7a801247/registry/modules.js#L93
         if (value === undefined || value === null || value.length === 0) {
             display.error(name, "parameter is missing.");
             return false;
@@ -44,14 +45,14 @@ export class EngineValidation {
         return true;
     }
 
-    public static checkPattern(display: IDisplay, name: string, value: string | undefined | null, pattern: RegExp, patternExplain: string): boolean {
+   public static checkPattern(display: IDisplay, name: string, value: string | undefined | null, pattern: RegExp, patternExplain: string): boolean {
         if (value === undefined || value === null || value.length === 0) {
             display.error(name, "parameter is missing.");
             return false;
         }
 
         if (!pattern.test(value)) {
-            display.error(name, "does not match pattern " + patternExplain + ".");
+            display.error(name, `does not match pattern ${patternExplain}.`);
             return false;
         }
 
@@ -60,14 +61,14 @@ export class EngineValidation {
         return true;
     }
 
-    public static checkOneOf<T extends string>(display: IDisplay, name: string, value: T | undefined | null, values: T[]): boolean {
+   public static checkOneOf<T extends string>(display: IDisplay, name: string, value: T | undefined | null, values: T[]): boolean {
         if (value === undefined || value === null || value.length === 0) {
             display.error(name, "parameter is missing.");
             return false;
         }
 
         if (values.indexOf(value) === -1) {
-            display.error(name, "does not match any of the possible values. [" + values.join(",") + "]");
+            display.error(name, `does not match any of the possible values. [${values.join(",")}]`);
             return false;
         }
 
@@ -76,7 +77,7 @@ export class EngineValidation {
         return true;
     }
 
-    public static notEmpty(display: IDisplay, name: string, value: string | undefined | null): boolean {
+   public static notEmpty(display: IDisplay, name: string, value: string | undefined | null): boolean {
         if (value === undefined || value === null || value.length === 0) {
             display.error(name, "parameter is missing.");
             return false;
@@ -87,14 +88,14 @@ export class EngineValidation {
         return true;
     }
 
-    public static async checkLicense(licenseData: ISpdx, display: IDisplay, name: string, value: string | undefined | null): Promise<boolean> {
+   public static async checkLicense(licenseData: ISpdx, display: IDisplay, name: string, value: string | undefined | null): Promise<boolean> {
         if (value === undefined || value === null || value.length === 0) {
             display.error(name, "parameter is missing.");
             return false;
         }
 
         const keys = Object.keys(licenseData);
-        if (keys.indexOf(value!) < 0) {
+        if (keys.indexOf(value) < 0) {
             display.error(name, "does not match any of the possible SPDX license values (see https://spdx.org/licenses/).");
             return false;
         }

@@ -1,6 +1,9 @@
 /**
  * Main engine
  */
+import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
+import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
+import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
 import { ISpdx } from "../configuration/models/spdx/ISpdx";
 import { ISpdxLicense } from "../configuration/models/spdx/ISpdxLicense";
@@ -21,11 +24,8 @@ import { UniteSourceLanguage } from "../configuration/models/unite/uniteSourceLa
 import { UniteUnitTestFramework } from "../configuration/models/unite/uniteUnitTestFramework";
 import { UniteUnitTestRunner } from "../configuration/models/unite/uniteUnitTestRunner";
 import { BuildConfigurationOperation } from "../interfaces/buildConfigurationOperation";
-import { IDisplay } from "../interfaces/IDisplay";
 import { IEngine } from "../interfaces/IEngine";
 import { IEnginePipelineStep } from "../interfaces/IEnginePipelineStep";
-import { IFileSystem } from "../interfaces/IFileSystem";
-import { ILogger } from "../interfaces/ILogger";
 import { ModuleOperation } from "../interfaces/moduleOperation";
 import { NpmPackageManager } from "../packageManagers/npmPackageManager";
 import { YarnPackageManager } from "../packageManagers/yarnPackageManager";
@@ -107,24 +107,24 @@ export class Engine implements IEngine {
             uniteConfiguration = new UniteConfiguration();
         }
 
-        uniteConfiguration.packageName = packageName! || uniteConfiguration.packageName;
-        uniteConfiguration.title = title! || uniteConfiguration.title;
-        uniteConfiguration.license = license! || uniteConfiguration.license || "MIT";
-        uniteConfiguration.sourceLanguage = sourceLanguage! || uniteConfiguration.sourceLanguage;
-        uniteConfiguration.moduleType = moduleType! || uniteConfiguration.moduleType;
-        uniteConfiguration.bundler = bundler! || uniteConfiguration.bundler;
-        uniteConfiguration.unitTestRunner = unitTestRunner! || uniteConfiguration.unitTestRunner;
-        uniteConfiguration.unitTestFramework = unitTestFramework! || uniteConfiguration.unitTestFramework;
-        uniteConfiguration.e2eTestRunner = e2eTestRunner! || uniteConfiguration.e2eTestRunner;
-        uniteConfiguration.e2eTestFramework = e2eTestFramework! || uniteConfiguration.e2eTestFramework;
-        uniteConfiguration.linter = linter! || uniteConfiguration.linter;
-        uniteConfiguration.packageManager = packageManager! || uniteConfiguration.packageManager || "Npm";
+        uniteConfiguration.packageName = packageName || uniteConfiguration.packageName;
+        uniteConfiguration.title = title || uniteConfiguration.title;
+        uniteConfiguration.license = license || uniteConfiguration.license || "MIT";
+        uniteConfiguration.sourceLanguage = sourceLanguage || uniteConfiguration.sourceLanguage;
+        uniteConfiguration.moduleType = moduleType || uniteConfiguration.moduleType;
+        uniteConfiguration.bundler = bundler || uniteConfiguration.bundler;
+        uniteConfiguration.unitTestRunner = unitTestRunner || uniteConfiguration.unitTestRunner;
+        uniteConfiguration.unitTestFramework = unitTestFramework || uniteConfiguration.unitTestFramework;
+        uniteConfiguration.e2eTestRunner = e2eTestRunner || uniteConfiguration.e2eTestRunner;
+        uniteConfiguration.e2eTestFramework = e2eTestFramework || uniteConfiguration.e2eTestFramework;
+        uniteConfiguration.linter = linter || uniteConfiguration.linter;
+        uniteConfiguration.packageManager = packageManager || uniteConfiguration.packageManager || "Npm";
         uniteConfiguration.taskManager = "Gulp";
         uniteConfiguration.server = "BrowserSync";
-        uniteConfiguration.applicationFramework = applicationFramework! || uniteConfiguration.applicationFramework;
+        uniteConfiguration.applicationFramework = applicationFramework || uniteConfiguration.applicationFramework;
         uniteConfiguration.clientPackages = uniteConfiguration.clientPackages || {};
-        uniteConfiguration.cssPre = cssPre! || uniteConfiguration.cssPre;
-        uniteConfiguration.cssPost = cssPost! || uniteConfiguration.cssPost;
+        uniteConfiguration.cssPre = cssPre || uniteConfiguration.cssPre;
+        uniteConfiguration.cssPost = cssPost || uniteConfiguration.cssPost;
         uniteConfiguration.buildConfigurations = uniteConfiguration.buildConfigurations || {};
 
         if (!EngineValidation.checkPackageName(this._display, "packageName", uniteConfiguration.packageName)) {
@@ -140,7 +140,7 @@ export class Engine implements IEngine {
             if (!EngineValidation.checkLicense(licenseData, this._display, "license", uniteConfiguration.license)) {
                 return 1;
             } else {
-                spdxLicense = licenseData[uniteConfiguration.license!];
+                spdxLicense = licenseData[uniteConfiguration.license];
             }
         } catch (e) {
             this._display.error("There was a problem reading the spdx-full.json file", e);
@@ -190,7 +190,7 @@ export class Engine implements IEngine {
 
         this._display.log("");
 
-        return this.initRun(outputDirectory!, uniteConfiguration, spdxLicense);
+        return this.initRun(outputDirectory, uniteConfiguration, spdxLicense);
     }
 
     public async clientPackage(operation: ModuleOperation | undefined | null,
@@ -205,7 +205,7 @@ export class Engine implements IEngine {
                                packageManager: UnitePackageManager | undefined | null,
                                outputDirectory: string | undefined | null): Promise<number> {
         outputDirectory = this.cleanupOutputDirectory(outputDirectory);
-        const uniteConfiguration = await this.loadConfiguration(outputDirectory!);
+        const uniteConfiguration = await this.loadConfiguration(outputDirectory);
 
         if (includeMode === undefined || includeMode === null || includeMode.length === 0) {
             includeMode = "both";
@@ -216,7 +216,7 @@ export class Engine implements IEngine {
             return 1;
         } else {
             uniteConfiguration.clientPackages = uniteConfiguration.clientPackages || {};
-            uniteConfiguration.packageManager = packageManager! || uniteConfiguration.packageManager || "Npm";
+            uniteConfiguration.packageManager = packageManager || uniteConfiguration.packageManager || "Npm";
         }
 
         if (!EngineValidation.checkOneOf<ModuleOperation>(this._display, "operation", operation, ["add", "remove"])) {
@@ -232,9 +232,9 @@ export class Engine implements IEngine {
         this._display.log("");
 
         if (operation === "add") {
-            return await this.clientPackageAdd(packageName!, version!, preload, includeMode, main, mainMinified, isPackage, wrapAssets, outputDirectory, uniteConfiguration);
+            return await this.clientPackageAdd(packageName, version, preload, includeMode, main, mainMinified, isPackage, wrapAssets, outputDirectory, uniteConfiguration);
         } else if (operation === "remove") {
-            return await this.clientPackageRemove(packageName!, outputDirectory, uniteConfiguration);
+            return await this.clientPackageRemove(packageName, outputDirectory, uniteConfiguration);
         }
 
         return 0;
@@ -247,7 +247,7 @@ export class Engine implements IEngine {
                                     sourcemaps: boolean,
                                     outputDirectory: string | undefined | null): Promise<number> {
         outputDirectory = this.cleanupOutputDirectory(outputDirectory);
-        const uniteConfiguration = await this.loadConfiguration(outputDirectory!);
+        const uniteConfiguration = await this.loadConfiguration(outputDirectory);
 
         if (!uniteConfiguration) {
             this._display.error("There is no unite.json to configure.");
@@ -266,9 +266,9 @@ export class Engine implements IEngine {
         this._display.log("");
 
         if (operation === "add") {
-            return await this.buildConfigurationAdd(configurationName!, bundle, minify, sourcemaps, outputDirectory, uniteConfiguration);
+            return await this.buildConfigurationAdd(configurationName, bundle, minify, sourcemaps, outputDirectory, uniteConfiguration);
         } else if (operation === "remove") {
-            return await this.buildConfigurationRemove(configurationName!, outputDirectory, uniteConfiguration);
+            return await this.buildConfigurationRemove(configurationName, outputDirectory, uniteConfiguration);
         }
 
         return 0;
@@ -276,10 +276,10 @@ export class Engine implements IEngine {
 
     private cleanupOutputDirectory(outputDirectory: string | null | undefined): string {
         if (outputDirectory === undefined || outputDirectory === null || outputDirectory.length === 0) {
-            /* no output directory specified so use current */
+            // no output directory specified so use current
             outputDirectory = "./";
         } else {
-            outputDirectory = this._fileSystem.pathFormat(outputDirectory!);
+            outputDirectory = this._fileSystem.pathFormat(outputDirectory);
         }
         return outputDirectory;
     }
@@ -287,14 +287,14 @@ export class Engine implements IEngine {
     private async loadConfiguration(outputDirectory: string): Promise<UniteConfiguration | undefined> {
         let uniteConfiguration: UniteConfiguration | undefined;
 
-        /* check if there is a unite.json we can load for default options */
+        // check if there is a unite.json we can load for default options
         try {
             const exists = await this._fileSystem.fileExists(outputDirectory, "unite.json");
             if (exists) {
                 uniteConfiguration = await this._fileSystem.fileReadJson<UniteConfiguration>(outputDirectory, "unite.json");
             }
         } catch (e) {
-            /* we can ignore any failures here */
+            // we can ignore any failures here
         }
 
         return uniteConfiguration;
@@ -416,7 +416,7 @@ export class Engine implements IEngine {
             }
 
             const clientPackage = new UniteClientPackage();
-            clientPackage.version = fixPackageVersion ? version : "^" + version;
+            clientPackage.version = fixPackageVersion ? version : `^${version}`;
             clientPackage.preload = preload;
             clientPackage.main = finalMain;
             clientPackage.mainMinified = finalMainMinified;

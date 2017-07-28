@@ -1,11 +1,11 @@
 /**
  * Pipeline step to generate scaffolding for Aurelia application.
  */
+import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
+import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
+import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { IDisplay } from "../../interfaces/IDisplay";
-import { IFileSystem } from "../../interfaces/IFileSystem";
-import { ILogger } from "../../interfaces/ILogger";
 import { SharedAppFramework } from "./sharedAppFramework";
 
 export class Aurelia extends SharedAppFramework {
@@ -17,7 +17,7 @@ export class Aurelia extends SharedAppFramework {
 
         if (uniteConfiguration.applicationFramework === "Aurelia") {
             if (uniteConfiguration.bundler === "Browserify" || uniteConfiguration.bundler === "Webpack") {
-                super.error(logger, display, "Aurelia does not currently support bundling with " + uniteConfiguration.bundler);
+                super.error(logger, display, `Aurelia does not currently support bundling with ${uniteConfiguration.bundler}`);
                 return 1;
             }
 
@@ -103,12 +103,12 @@ export class Aurelia extends SharedAppFramework {
     private toggleClientPackages(uniteConfiguration: UniteConfiguration,
                                  engineVariables: EngineVariables,
                                  location: string,
-                                 clientPackages: { name: string, isPackage?: boolean }[]): void {
+                                 clientPackages: { name: string; isPackage?: boolean }[]): void {
 
         clientPackages.forEach(clientPackage => {
             engineVariables.toggleClientPackage(
                 clientPackage.name,
-                location + clientPackage.name + ".js",
+                `${location}${clientPackage.name}.js`,
                 undefined,
                 false,
                 "both",

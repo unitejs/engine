@@ -3,10 +3,10 @@
  */
 import * as child from "child_process";
 import * as npm from "npm";
+import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
+import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
+import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
-import { IDisplay } from "../interfaces/IDisplay";
-import { IFileSystem } from "../interfaces/IFileSystem";
-import { ILogger } from "../interfaces/ILogger";
 import { IPackageManager } from "../interfaces/IPackageManager";
 
 export class YarnPackageManager implements IPackageManager {
@@ -21,7 +21,7 @@ export class YarnPackageManager implements IPackageManager {
     }
 
     public async info(packageName: string): Promise<PackageConfiguration> {
-        /* We still use NPM for this as yarn doesn't have this facility yet */
+        // We still use NPM for this as yarn doesn't have this facility yet
         this._display.info("Looking up package info...");
         return new Promise<PackageConfiguration>((resolve, reject) => {
             npm.load({json: true}, (err, result) => {
@@ -48,7 +48,7 @@ export class YarnPackageManager implements IPackageManager {
     public async add(workingDirectory: string, packageName: string, version: string, isDev: boolean): Promise<void> {
         this._display.info("Adding package...");
 
-        const args = ["add", packageName + "@" + version];
+        const args = ["add", `${packageName}@${version}`];
         if (isDev) {
             args.push("--dev");
         }
@@ -71,7 +71,7 @@ export class YarnPackageManager implements IPackageManager {
         const isWin = /^win/.test(process.platform);
 
         return new Promise<void>((resolve, reject) => {
-            const spawnProcess = child.spawn("yarn" + (isWin ? ".cmd" : ""), args, { cwd: this._fileSystem.pathFormat(workingDirectory) });
+            const spawnProcess = child.spawn(`yarn${isWin ? ".cmd" : ""}`, args, { cwd: this._fileSystem.pathFormat(workingDirectory) });
 
             spawnProcess.stdout.on("data", (data) => {
                 this._display.log((data ? data.toString() : "").replace(/\n/g, ""));

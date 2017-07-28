@@ -1,11 +1,11 @@
 /**
  * Pipeline step to generate scaffolding for React application.
  */
+import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
+import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
+import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { IDisplay } from "../../interfaces/IDisplay";
-import { IFileSystem } from "../../interfaces/IFileSystem";
-import { ILogger } from "../../interfaces/ILogger";
 import { SharedAppFramework } from "./sharedAppFramework";
 
 export class React extends SharedAppFramework {
@@ -14,7 +14,7 @@ export class React extends SharedAppFramework {
         engineVariables.toggleDevDependency(["eslint-plugin-react"], uniteConfiguration.applicationFramework === "React" && uniteConfiguration.linter === "ESLint");
 
         engineVariables.toggleDevDependency(["@types/react", "@types/react-dom", "@types/react-router-dom"],
-                                                uniteConfiguration.applicationFramework === "React" && uniteConfiguration.sourceLanguage === "TypeScript");
+                                            uniteConfiguration.applicationFramework === "React" && uniteConfiguration.sourceLanguage === "TypeScript");
 
         engineVariables.toggleClientPackage(
             "react",
@@ -53,8 +53,8 @@ export class React extends SharedAppFramework {
         if (uniteConfiguration.applicationFramework === "React") {
             const codeExtension = uniteConfiguration.sourceLanguage === "JavaScript" ? "!jsx" : "!tsx";
             let ret = await this.generateAppSource(logger, display, fileSystem, uniteConfiguration, engineVariables, [
-                "app" + codeExtension,
-                "child/child" + codeExtension,
+                `app${codeExtension}`,
+                `child/child${codeExtension}`,
                 "bootstrapper",
                 "entryPoint"]);
 
