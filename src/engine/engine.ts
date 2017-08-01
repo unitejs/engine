@@ -1,6 +1,7 @@
 /**
  * Main engine
  */
+import { ParameterValidation } from "unitejs-framework/dist/helpers/parameterValidation";
 import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
@@ -67,7 +68,6 @@ import { Gulp } from "../pipelineSteps/taskManager/gulp";
 import { Jasmine } from "../pipelineSteps/testFramework/jasmine";
 import { MochaChai } from "../pipelineSteps/testFramework/mochaChai";
 import { Karma } from "../pipelineSteps/unitTestRunner/karma";
-import { EngineValidation } from "./engineValidation";
 import { EngineVariables } from "./engineVariables";
 
 export class Engine implements IEngine {
@@ -127,17 +127,21 @@ export class Engine implements IEngine {
         uniteConfiguration.cssPost = cssPost || uniteConfiguration.cssPost;
         uniteConfiguration.buildConfigurations = uniteConfiguration.buildConfigurations || {};
 
-        if (!EngineValidation.checkPackageName(this._display, "packageName", uniteConfiguration.packageName)) {
+        if (!ParameterValidation.checkPackageName(this._display, "packageName", uniteConfiguration.packageName)) {
             return 1;
         }
-        if (!EngineValidation.notEmpty(this._display, "title", uniteConfiguration.title)) {
+        if (!ParameterValidation.notEmpty(this._display, "title", uniteConfiguration.title)) {
             return 1;
         }
 
         let spdxLicense: ISpdxLicense;
         try {
             const licenseData = await this._fileSystem.fileReadJson<ISpdx>(this._assetsFolder, "spdx-full.json");
-            if (!EngineValidation.checkLicense(licenseData, this._display, "license", uniteConfiguration.license)) {
+            if (!ParameterValidation.contains(this._display,
+                                              "license",
+                                              Object.keys(licenseData),
+                                              uniteConfiguration.license,
+                                              "does not match any of the possible SPDX license values (see https://spdx.org/licenses/).")) {
                 return 1;
             } else {
                 spdxLicense = licenseData[uniteConfiguration.license];
@@ -147,44 +151,44 @@ export class Engine implements IEngine {
             return 1;
         }
 
-        if (!EngineValidation.checkOneOf<UniteSourceLanguage>(this._display, "sourceLanguage", uniteConfiguration.sourceLanguage, ["JavaScript", "TypeScript"])) {
+        if (!ParameterValidation.checkOneOf<UniteSourceLanguage>(this._display, "sourceLanguage", uniteConfiguration.sourceLanguage, ["JavaScript", "TypeScript"])) {
             return 1;
         }
-        if (!EngineValidation.checkOneOf<UniteModuleType>(this._display, "moduleType", uniteConfiguration.moduleType, ["AMD", "CommonJS", "SystemJS"])) {
+        if (!ParameterValidation.checkOneOf<UniteModuleType>(this._display, "moduleType", uniteConfiguration.moduleType, ["AMD", "CommonJS", "SystemJS"])) {
             return 1;
         }
-        if (!EngineValidation.checkOneOf<UniteBundler>(this._display, "bundler", uniteConfiguration.bundler, ["Browserify", "RequireJS", "SystemJSBuilder", "Webpack"])) {
+        if (!ParameterValidation.checkOneOf<UniteBundler>(this._display, "bundler", uniteConfiguration.bundler, ["Browserify", "RequireJS", "SystemJSBuilder", "Webpack"])) {
             return 1;
         }
-        if (!EngineValidation.checkOneOf<UniteUnitTestRunner>(this._display, "unitTestRunner", uniteConfiguration.unitTestRunner, ["None", "Karma"])) {
+        if (!ParameterValidation.checkOneOf<UniteUnitTestRunner>(this._display, "unitTestRunner", uniteConfiguration.unitTestRunner, ["None", "Karma"])) {
             return 1;
         }
         if (unitTestRunner !== "None") {
-            if (!EngineValidation.checkOneOf<UniteUnitTestFramework>(this._display, "unitTestFramework", uniteConfiguration.unitTestFramework, ["Mocha-Chai", "Jasmine"])) {
+            if (!ParameterValidation.checkOneOf<UniteUnitTestFramework>(this._display, "unitTestFramework", uniteConfiguration.unitTestFramework, ["Mocha-Chai", "Jasmine"])) {
                 return 1;
             }
         }
-        if (!EngineValidation.checkOneOf<UniteE2eTestRunner>(this._display, "e2eTestRunner", uniteConfiguration.e2eTestRunner, ["None", "WebdriverIO", "Protractor"])) {
+        if (!ParameterValidation.checkOneOf<UniteE2eTestRunner>(this._display, "e2eTestRunner", uniteConfiguration.e2eTestRunner, ["None", "WebdriverIO", "Protractor"])) {
             return 1;
         }
         if (e2eTestRunner !== "None") {
-            if (!EngineValidation.checkOneOf<UniteE2eTestFramework>(this._display, "e2eTestFramework", uniteConfiguration.e2eTestFramework, ["Mocha-Chai", "Jasmine"])) {
+            if (!ParameterValidation.checkOneOf<UniteE2eTestFramework>(this._display, "e2eTestFramework", uniteConfiguration.e2eTestFramework, ["Mocha-Chai", "Jasmine"])) {
                 return 1;
             }
         }
-        if (!EngineValidation.checkOneOf<UniteLinter>(this._display, "linter", uniteConfiguration.linter, ["None", "ESLint", "TSLint"])) {
+        if (!ParameterValidation.checkOneOf<UniteLinter>(this._display, "linter", uniteConfiguration.linter, ["None", "ESLint", "TSLint"])) {
             return 1;
         }
-        if (!EngineValidation.checkOneOf<UniteCssPreProcessor>(this._display, "cssPre", uniteConfiguration.cssPre, ["Css", "Less", "Sass", "Stylus"])) {
+        if (!ParameterValidation.checkOneOf<UniteCssPreProcessor>(this._display, "cssPre", uniteConfiguration.cssPre, ["Css", "Less", "Sass", "Stylus"])) {
             return 1;
         }
-        if (!EngineValidation.checkOneOf<UniteCssPostProcessor>(this._display, "cssPost", uniteConfiguration.cssPost, ["None", "PostCss"])) {
+        if (!ParameterValidation.checkOneOf<UniteCssPostProcessor>(this._display, "cssPost", uniteConfiguration.cssPost, ["None", "PostCss"])) {
             return 1;
         }
-        if (!EngineValidation.checkOneOf<UnitePackageManager>(this._display, "packageManager", uniteConfiguration.packageManager, ["Npm", "Yarn"])) {
+        if (!ParameterValidation.checkOneOf<UnitePackageManager>(this._display, "packageManager", uniteConfiguration.packageManager, ["Npm", "Yarn"])) {
             return 1;
         }
-        if (!EngineValidation.checkOneOf<UniteApplicationFramework>(this._display, "applicationFramework", uniteConfiguration.applicationFramework, ["PlainApp", "Aurelia", "React"])) {
+        if (!ParameterValidation.checkOneOf<UniteApplicationFramework>(this._display, "applicationFramework", uniteConfiguration.applicationFramework, ["PlainApp", "Aurelia", "React"])) {
             return 1;
         }
 
@@ -219,13 +223,13 @@ export class Engine implements IEngine {
             uniteConfiguration.packageManager = packageManager || uniteConfiguration.packageManager || "Npm";
         }
 
-        if (!EngineValidation.checkOneOf<ModuleOperation>(this._display, "operation", operation, ["add", "remove"])) {
+        if (!ParameterValidation.checkOneOf<ModuleOperation>(this._display, "operation", operation, ["add", "remove"])) {
             return 1;
         }
-        if (!EngineValidation.notEmpty(this._display, "packageName", packageName)) {
+        if (!ParameterValidation.notEmpty(this._display, "packageName", packageName)) {
             return 1;
         }
-        if (!EngineValidation.checkOneOf<UnitePackageManager>(this._display, "packageManager", uniteConfiguration.packageManager, ["Npm", "Yarn"])) {
+        if (!ParameterValidation.checkOneOf<UnitePackageManager>(this._display, "packageManager", uniteConfiguration.packageManager, ["Npm", "Yarn"])) {
             return 1;
         }
 
@@ -256,10 +260,10 @@ export class Engine implements IEngine {
             uniteConfiguration.buildConfigurations = uniteConfiguration.buildConfigurations || {};
         }
 
-        if (!EngineValidation.checkOneOf<BuildConfigurationOperation>(this._display, "operation", operation, ["add", "remove"])) {
+        if (!ParameterValidation.checkOneOf<BuildConfigurationOperation>(this._display, "operation", operation, ["add", "remove"])) {
             return 1;
         }
-        if (!EngineValidation.notEmpty(this._display, "configurationName", configurationName)) {
+        if (!ParameterValidation.notEmpty(this._display, "configurationName", configurationName)) {
             return 1;
         }
 
@@ -382,7 +386,7 @@ export class Engine implements IEngine {
                                    wrapAssets: string | undefined | null,
                                    outputDirectory: string,
                                    uniteConfiguration: UniteConfiguration): Promise<number> {
-        if (!EngineValidation.checkOneOf<IncludeMode>(this._display, "includeMode", includeMode, ["app", "test", "both"])) {
+        if (!ParameterValidation.checkOneOf<IncludeMode>(this._display, "includeMode", includeMode, ["app", "test", "both"])) {
             return 1;
         }
 
