@@ -15,7 +15,7 @@ gulp.task("e2e-install", (done) => {
         "--edge",
         "--ie64",
         "--ie"
-    ])., (success) => {
+    ], (success) => {
         if (success) {
             done();
         } else {
