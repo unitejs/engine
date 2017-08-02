@@ -78,7 +78,7 @@ export class WebdriverIo extends EnginePipelineStepBase {
         webdriverConfiguration.reporters = ["spec", "allure"];
         webdriverConfiguration.reporterOptions = {
             allure: {
-                outputDir: `${reportsFolder}/e2etemp/"`
+                outputDir: `${reportsFolder}/e2etemp/`
             }
         };
 
