@@ -5,7 +5,7 @@ export declare class UniteThemeConfiguration {
     metaAuthor: string;
     metaDescription: string;
     metaKeywords: string[];
-    metaHeaders: string[];
+    customHeaders: string[];
     themeHeaders: string[];
     backgroundColor: string;
     themeColor: string;
