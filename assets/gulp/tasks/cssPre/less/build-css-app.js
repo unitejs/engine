@@ -13,7 +13,7 @@ gulp.task("build-css-app", () => {
     display.info("Running", "LESS for App");
 
     const uniteConfig = uc.getUniteConfig();
-    const buildConfiguration = uc.getBuildConfiguration();
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     return gulp.src(path.join(uniteConfig.directories.cssSrc, "main.less"))
         .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : gutil.noop())

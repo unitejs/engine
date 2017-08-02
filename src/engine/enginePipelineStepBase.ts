@@ -37,7 +37,7 @@ export abstract class EnginePipelineStepBase implements IEnginePipelineStep {
         const hasGeneratedMarker = await this.fileHasGeneratedMarker(fileSystem, destFolder, destFilename);
 
         if (hasGeneratedMarker) {
-            this.log(logger, display, `Copying${sourceFilename}`, { from: sourceFolder, to: destFolder });
+            this.log(logger, display, `Copying ${sourceFilename}`, { from: sourceFolder, to: destFolder });
 
             const folderWithFile = fileSystem.pathCombine(destFolder, destFilename);
             const folderOnly = fileSystem.pathGetDirectory(folderWithFile);

@@ -26,11 +26,14 @@ export class EngineVariables {
     public reportsFolder: string;
     public packageFolder: string;
 
+    public assetsFolder: string;
+    public assetsSourceFolder: string;
+
     public gulpBuildFolder: string;
     public gulpTasksFolder: string;
     public gulpUtilFolder: string;
 
-    public assetsDirectory: string;
+    public packageAssetsDirectory: string;
 
     public sourceLanguageExt: string;
     public styleLanguageExt: string;

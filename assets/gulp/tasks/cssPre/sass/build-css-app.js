@@ -13,7 +13,7 @@ gulp.task("build-css-app", () => {
     display.info("Running", "SASS for App");
 
     const uniteConfig = uc.getUniteConfig();
-    const buildConfiguration = uc.getBuildConfiguration();
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     return gulp.src(path.join(uniteConfig.directories.cssSrc, "main.scss"))
         .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : gutil.noop())

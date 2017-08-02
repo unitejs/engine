@@ -28,7 +28,7 @@ gulp.task("unit-clean", (callback) => {
 
 gulp.task("unit-module-config", (cb) => {
     const uniteConfig = uc.getUniteConfig();
-    const buildConfiguration = uc.getBuildConfiguration();
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     const config = moduleConfig.create(uniteConfig, ["test", "both"], buildConfiguration.bundle);
 

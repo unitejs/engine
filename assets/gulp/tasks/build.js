@@ -4,12 +4,11 @@
 const display = require("./util/display");
 const uc = require("./util/unite-config");
 const moduleConfig = require("./util/module-config");
+const themeUtils = require("./util/theme-utils");
 const gulp = require("gulp");
 const path = require("path");
 const fs = require("fs");
 const del = require("del");
-const rename = require("gulp-rename");
-const replace = require("gulp-replace");
 const runSequence = require("run-sequence");
 const packageJson = require("../../package.json");
 const htmlMin = require("gulp-htmlmin");
@@ -35,27 +34,18 @@ gulp.task("build-clean", (callback) => {
 });
 
 gulp.task("build-copy-index", () => {
+    display.info("Building Index Page");
+
     const uniteConfig = uc.getUniteConfig();
-    const buildConfiguration = uc.getBuildConfiguration();
+    const uniteThemeConfig = uc.getUniteThemeConfig();
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
-    const cacheBust = buildConfiguration.bundle ? `?v=${new Date().getTime()}` : "";
-    const uniteJs = {
-        "config": buildConfiguration.variables,
-        "packageVersion": packageJson.version,
-        "uniteVersion": uniteConfig.uniteVersion
-    };
-    const config = `window.unite = ${JSON.stringify(uniteJs)};`;
-
-    return gulp.src(buildConfiguration.bundle ? "./index-bundle.html" : "./index-no-bundle.html")
-        .pipe(replace("{CACHEBUST}", cacheBust))
-        .pipe(replace("{UNITECONFIG}", config))
-        .pipe(rename("index.html"))
-        .pipe(gulp.dest("./"));
+    return themeUtils.buildIndex(uniteConfig, uniteThemeConfig, buildConfiguration, packageJson);
 });
 
 gulp.task("build-post-clean", (cb) => {
     const uniteConfig = uc.getUniteConfig();
-    const buildConfiguration = uc.getBuildConfiguration();
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     const toClean = [];
 
@@ -76,7 +66,8 @@ gulp.task("build-post-clean", (cb) => {
 });
 
 gulp.task("build-index-min", () => {
-    const buildConfiguration = uc.getBuildConfiguration();
+    const uniteConfig = uc.getUniteConfig();
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     if (buildConfiguration.minify) {
         return gulp.src("./index.html")
@@ -87,7 +78,7 @@ gulp.task("build-index-min", () => {
 
 gulp.task("build-html-min", () => {
     const uniteConfig = uc.getUniteConfig();
-    const buildConfiguration = uc.getBuildConfiguration();
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     if (buildConfiguration.minify) {
         return gulp.src(path.join(uniteConfig.directories.dist, "**/*.html"))
@@ -105,7 +96,7 @@ gulp.task("build-copy-components", () => {
 
 gulp.task("build-module-config", (cb) => {
     const uniteConfig = uc.getUniteConfig();
-    const buildConfiguration = uc.getBuildConfiguration();
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     const config = moduleConfig.create(uniteConfig, ["app", "both"], buildConfiguration.bundle);
 

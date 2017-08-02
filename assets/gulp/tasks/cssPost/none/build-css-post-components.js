@@ -13,7 +13,7 @@ gulp.task("build-css-post-components", () => {
     display.info("Running", "CSS None for Components");
 
     const uniteConfig = uc.getUniteConfig();
-    const buildConfiguration = uc.getBuildConfiguration();
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     const streams = [];
 

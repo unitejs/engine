@@ -11,7 +11,7 @@ const requireJs = require("requirejs");
 
 gulp.task("build-bundle-vendor", (cb) => {
     const uniteConfig = uc.getUniteConfig();
-    const buildConfiguration = uc.getBuildConfiguration();
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     if (buildConfiguration.bundle) {
         display.info("Running", "Require js optimizer for Vendor");

@@ -37,6 +37,7 @@ import { Browserify } from "../pipelineSteps/bundler/browserify";
 import { RequireJs } from "../pipelineSteps/bundler/requireJs";
 import { SystemJsBuilder } from "../pipelineSteps/bundler/systemJsBuilder";
 import { Webpack } from "../pipelineSteps/bundler/webpack";
+import { AssetsSource } from "../pipelineSteps/content/assetsSource";
 import { GitIgnore } from "../pipelineSteps/content/gitIgnore";
 import { HtmlTemplate } from "../pipelineSteps/content/htmlTemplate";
 import { License } from "../pipelineSteps/content/license";
@@ -62,6 +63,7 @@ import { E2eTestScaffold } from "../pipelineSteps/scaffold/e2eTestScaffold";
 import { OutputDirectory } from "../pipelineSteps/scaffold/outputDirectory";
 import { UniteConfigurationDirectories } from "../pipelineSteps/scaffold/uniteConfigurationDirectories";
 import { UniteConfigurationJson } from "../pipelineSteps/scaffold/uniteConfigurationJson";
+import { UniteThemeConfigurationJson } from "../pipelineSteps/scaffold/uniteThemeConfigurationJson";
 import { UnitTestScaffold } from "../pipelineSteps/scaffold/unitTestScaffold";
 import { BrowserSync } from "../pipelineSteps/server/browserSync";
 import { Gulp } from "../pipelineSteps/taskManager/gulp";
@@ -362,8 +364,10 @@ export class Engine implements IEngine {
             pipelineSteps.push(new GitIgnore());
             pipelineSteps.push(new License());
 
+            pipelineSteps.push(new AssetsSource());
             pipelineSteps.push(new PackageJson());
             pipelineSteps.push(new UniteConfigurationDirectories());
+            pipelineSteps.push(new UniteThemeConfigurationJson());
             pipelineSteps.push(new UniteConfigurationJson());
 
             ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
@@ -544,8 +548,11 @@ export class Engine implements IEngine {
         engineVariables.unitTestSrcFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "test/unit/src");
         engineVariables.unitTestDistFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "test/unit/dist");
 
+        engineVariables.assetsFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "assets");
+        engineVariables.assetsSourceFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "assetsSource");
+
         engineVariables.packageFolder = "node_modules/";
-        engineVariables.assetsDirectory = this._assetsFolder;
+        engineVariables.packageAssetsDirectory = this._assetsFolder;
         engineVariables.sourceLanguageExt = uniteConfiguration.sourceLanguage === "JavaScript" ? "js" : "ts";
         engineVariables.gitIgnore = [];
 

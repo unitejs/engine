@@ -12,7 +12,7 @@ const Builder = require("systemjs-builder");
 
 gulp.task("build-bundle-vendor", (cb) => {
     const uniteConfig = uc.getUniteConfig();
-    const buildConfiguration = uc.getBuildConfiguration();
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     if (buildConfiguration.bundle) {
         display.info("Running", "Systemjs builder for Vendor");

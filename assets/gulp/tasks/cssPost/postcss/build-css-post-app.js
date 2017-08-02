@@ -15,7 +15,7 @@ gulp.task("build-css-post-app", () => {
     display.info("Running", "PostCss for App");
 
     const uniteConfig = uc.getUniteConfig();
-    const buildConfiguration = uc.getBuildConfiguration();
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     return gulp.src(path.join(uniteConfig.directories.cssDist, "main.css"))
         .pipe(rename("style.css"))

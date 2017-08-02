@@ -14,7 +14,7 @@ gulp.task("build-transpile", () => {
     display.info("Running", "Babel");
 
     const uniteConfig = uc.getUniteConfig();
-    const buildConfiguration = uc.getBuildConfiguration(true);
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig, true);
     let errorCount = 0;
 
     return gulp.src(path.join(uniteConfig.directories.src, "**/*.{js,jsx}"))

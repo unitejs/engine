@@ -14,7 +14,7 @@ gulp.task("build-transpile", () => {
     display.info("Running", "TypeScript");
 
     const uniteConfig = uc.getUniteConfig();
-    const buildConfiguration = uc.getBuildConfiguration(true);
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig, true);
 
     const tsProject = typescript.createProject("tsconfig.json");
     let errorCount = 0;

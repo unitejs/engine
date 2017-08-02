@@ -15,7 +15,7 @@ const uglify = require("gulp-uglify");
 
 gulp.task("build-bundle-app", () => {
     const uniteConfig = uc.getUniteConfig();
-    const buildConfiguration = uc.getBuildConfiguration();
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     if (buildConfiguration.bundle) {
         display.info("Running", "Browserify for App");

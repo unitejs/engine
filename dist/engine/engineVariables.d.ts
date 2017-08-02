@@ -22,10 +22,12 @@ export declare class EngineVariables {
     e2eTestDistFolder: string;
     reportsFolder: string;
     packageFolder: string;
+    assetsFolder: string;
+    assetsSourceFolder: string;
     gulpBuildFolder: string;
     gulpTasksFolder: string;
     gulpUtilFolder: string;
-    assetsDirectory: string;
+    packageAssetsDirectory: string;
     sourceLanguageExt: string;
     styleLanguageExt: string;
     gitIgnore: string[];

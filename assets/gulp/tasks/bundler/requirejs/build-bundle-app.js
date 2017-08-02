@@ -15,7 +15,7 @@ const sourcemaps = require("gulp-sourcemaps");
 
 gulp.task("build-bundle-app", (cb) => {
     const uniteConfig = uc.getUniteConfig();
-    const buildConfiguration = uc.getBuildConfiguration();
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     if (buildConfiguration.bundle) {
         display.info("Running", "Require js optimizer for App");

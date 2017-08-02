@@ -1,6 +1,6 @@
 {
   "name": "unitejs-core",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Core of the UniteJS JavaScript framework management tool.",
   "repository": {
     "type": "git",
@@ -63,7 +63,7 @@
     "typescript": "^2.4.1"
   },
   "dependencies": {
-    "unitejs-framework": "^0.6.0",
+    "unitejs-framework": "^0.6.1",
     "npm": "^5.0.3",
     "yarn": "^0.27.5"
   },
@@ -160,6 +160,7 @@
     "minimist": "^1.2.0",
     "mocha": "^3.4.2",
     "mochawesome-screenshots": "^1.5.2",
+    "mkdirp": "^0.5.1",
     "node-glob": "^1.2.0",
     "node-sass": "^4.2.0",
     "postcss": "^6.0.0",
@@ -185,6 +186,7 @@
     "typescript": "^2.3.2",
     "uglify-js": "^3.0.20",
     "uglifyjs-webpack-plugin": "^0.4.6",
+    "unitejs-image-cli": "^0.1.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "wdio-allure-reporter": "^0.1.2",

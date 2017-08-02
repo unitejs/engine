@@ -14,5 +14,6 @@ export declare class Gulp extends EnginePipelineStepBase {
     private generateUnitTasks(logger, display, fileSystem, uniteConfiguration, engineVariables);
     private generateE2eTasks(logger, display, fileSystem, uniteConfiguration, engineVariables);
     private generateServeTasks(logger, display, fileSystem, uniteConfiguration, engineVariables);
+    private generateThemeTasks(logger, display, fileSystem, uniteConfiguration, engineVariables);
     private generateUtils(logger, display, fileSystem, uniteConfiguration, engineVariables);
 }

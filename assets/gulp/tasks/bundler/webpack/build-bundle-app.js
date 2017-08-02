@@ -12,7 +12,7 @@ const clientPackages = require("./util/client-packages");
 
 gulp.task("build-bundle-app", () => {
     const uniteConfig = uc.getUniteConfig();
-    const buildConfiguration = uc.getBuildConfiguration();
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     if (buildConfiguration.bundle) {
         display.info("Running", "Webpack for App");

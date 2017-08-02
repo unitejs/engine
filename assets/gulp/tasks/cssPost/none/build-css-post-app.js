@@ -14,7 +14,7 @@ gulp.task("build-css-post-app", () => {
     display.info("Running", "CSS None for App");
 
     const uniteConfig = uc.getUniteConfig();
-    const buildConfiguration = uc.getBuildConfiguration();
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     const streams = [];
 

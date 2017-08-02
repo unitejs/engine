@@ -36,7 +36,9 @@
 		"no-undefined": "off",
 		"arrow-body-style": "off",
 		"prefer-destructuring": "off",
-		"lines-around-comment": "off"
+		"lines-around-comment": "off",
+		"max-lines": "off",
+		"no-sync": "off"
 	},
 	"plugins": [
 		"node"

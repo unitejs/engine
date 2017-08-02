@@ -48,6 +48,7 @@ export class HtmlTemplate extends EnginePipelineStepBase {
                 if (engineVariablesHtml.separateCss) {
                     this.addLine(indent, lines, "<link rel=\"stylesheet\" href=\"./css/style.css{CACHEBUST}\">");
                 }
+                lines.push("{THEME}");
 
                 if (engineVariablesHtml.scriptIncludes) {
                     engineVariablesHtml.scriptIncludes.forEach(scriptInclude => {
