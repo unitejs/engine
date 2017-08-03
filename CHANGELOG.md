@@ -1,3 +1,6 @@
+# v0.6.3
+* Promisified gulp tasks
+
 # v0.6.2
 * Bugfix
 

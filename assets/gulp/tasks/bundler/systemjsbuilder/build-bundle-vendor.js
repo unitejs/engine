@@ -4,20 +4,26 @@
 const gulp = require("gulp");
 const path = require("path");
 const fs = require("fs");
+const util = require("util");
 const insert = require("gulp-insert");
 const uc = require("./util/unite-config");
 const clientPackages = require("./util/client-packages");
+const asyncUtil = require("./util/async-util");
 const display = require("./util/display");
 const Builder = require("systemjs-builder");
 
-gulp.task("build-bundle-vendor", (cb) => {
-    const uniteConfig = uc.getUniteConfig();
+gulp.task("build-bundle-vendor", async () => {
+    const uniteConfig = await uc.getUniteConfig();
+
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     if (buildConfiguration.bundle) {
         display.info("Running", "Systemjs builder for Vendor");
 
-        const modulesConfig = clientPackages.buildModuleConfig(uniteConfig, ["app", "both"], buildConfiguration.minify);
+        const modulesConfig = clientPackages.buildModuleConfig(
+            uniteConfig,
+            ["app", "both"],
+            buildConfiguration.minify);
         let keys = [];
         let systemJsLoaderFile = "";
 
@@ -30,41 +36,42 @@ gulp.task("build-bundle-vendor", (cb) => {
         }
         keys = keys.concat(modulesConfig.packages.map(pkg => pkg.name));
 
-        fs.readFile(systemJsLoaderFile, (err, systemJsScript) => {
-            if (err) {
-                display.error(err);
-                process.exit(1);
-            } else {
-                fs.writeFile(path.join(uniteConfig.directories.dist, "vendor-bundle-init.js"),
-                    `System.register(${JSON.stringify(keys)}, function () {});`,
-                    (err2) => {
-                        if (err2) {
-                            display.error(err2);
-                            process.exit(1);
-                        }
+        let systemJsScript = null;
+        try {
+            systemJsScript = await util.promisify(fs.readFile)(systemJsLoaderFile);
+        } catch (err) {
+            display.error(`Reading ${systemJsLoaderFile}`, err);
+            process.exit(1);
+        }
 
-                        const builder = new Builder("./", `${uniteConfig.directories.dist}app-module-config.js`);
+        try {
+            await util.promisify(fs.writeFile)(
+                path.join(uniteConfig.directories.dist, "vendor-bundle-init.js"),
+                `System.register(${JSON.stringify(keys)}, function () {});`);
+        } catch (err) {
+            display.error("Writing vendor-bundle-init.js", err);
+            process.exit(1);
+        }
 
-                        builder.bundle(path.join(uniteConfig.directories.dist, "vendor-bundle-init.js"),
-                            path.join(uniteConfig.directories.dist, "vendor-bundle.js"),
-                            {
-                                "minify": buildConfiguration.minify
-                            })
-                            .then(() => {
-                                return gulp.src(path.join(uniteConfig.directories.dist, "vendor-bundle.js"))
-                                    .pipe(insert.prepend(systemJsScript))
-                                    .pipe(gulp.dest(uniteConfig.directories.dist))
-                                    .on("end", cb);
-                            })
-                            .catch((err3) => {
-                                display.error(err3);
-                                process.exit(1);
-                            });
-                    });
-            }
-        });
-    } else {
-        cb();
+        try {
+            const builder = new Builder(
+                "./",
+                `${uniteConfig.directories.dist}app-module-config.js`);
+
+            await builder.bundle(path.join(uniteConfig.directories.dist, "vendor-bundle-init.js"),
+                path.join(uniteConfig.directories.dist, "vendor-bundle.js"),
+                {
+                    "minify": buildConfiguration.minify
+                });
+        } catch (err) {
+            display.error("Running bundler", err);
+            process.exit(1);
+        }
+
+        return asyncUtil.stream(gulp.src(
+            path.join(uniteConfig.directories.dist, "vendor-bundle.js"))
+            .pipe(insert.prepend(systemJsScript))
+            .pipe(gulp.dest(uniteConfig.directories.dist)));
     }
 });
 

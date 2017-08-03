@@ -15,8 +15,11 @@ function info (caption, text) {
     }
 }
 
-function error (text) {
+function error (text, err) {
     gutil.log(gutil.colors.red(`[ERROR] ${text}`));
+    if (err) {
+        gutil.log(gutil.colors.red(`${err}`));
+    }
 }
 
 function warning (text) {

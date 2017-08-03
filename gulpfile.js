@@ -31,7 +31,7 @@ gulp.task("build-lint", () => {
     return gulp.src(srcGlob)
         .pipe(gulpTslint({
             "formatter": "verbose",
-            "program": program
+            program
         }))
         .pipe(gulpTslint.report())
         .on("error", () => {
@@ -54,7 +54,7 @@ gulp.task("build-transpile", () => {
     const streams = [];
 
     streams.push(tsResult.js
-        .pipe(sourcemaps.write({ "includeContent": false, "sourceRoot": "../src" }))
+        .pipe(sourcemaps.write({"includeContent": false, "sourceRoot": "../src"}))
         .pipe(gulp.dest(distFolder))
         .on("end", () => {
             if (errorCount > 0) {
@@ -84,7 +84,7 @@ gulp.task("unit-lint", () => {
     return gulp.src(unitSrcGlob)
         .pipe(gulpTslint({
             "formatter": "verbose",
-            "program": program
+            program
         }))
         .pipe(gulpTslint.report())
         .on("error", () => {
@@ -105,13 +105,13 @@ gulp.task("unit-transpile", () => {
         });
 
     return tsResult.js
-        .pipe(sourcemaps.write({ "includeContent": false, "sourceRoot": "../src" }))
+        .pipe(sourcemaps.write({"includeContent": false, "sourceRoot": "../src"}))
         .pipe(gulp.dest(unitDistFolder))
         .on("end", () => {
             if (errorCount > 0) {
                 process.exit();
             }
-        })
+        });
 });
 
 gulp.task("unit-runner", () => {

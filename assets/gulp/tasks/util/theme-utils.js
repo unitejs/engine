@@ -6,36 +6,34 @@ const display = require("./display");
 const rename = require("gulp-rename");
 const replace = require("gulp-replace");
 const fs = require("fs");
+const util = require("util");
 const path = require("path");
 const os = require("os");
 const exec = require("./exec");
+const asyncUtil = require("./async-util");
 const mkdirp = require("mkdirp");
 
-function fileExists (filename, callback) {
-    fs.stat(filename, (err, stat) => {
-        if (err) {
-            if (err.code === "ENOENT") {
-                callback(false);
-            } else {
-                display.error(`Error accessing '${filename}`, err);
-                process.exit(1);
-            }
-        } else if (stat.isFile()) {
-            callback(true);
-        } else {
-            callback(false);
+async function fileExists (filename) {
+    try {
+        const stat = await util.promisify(fs.stat)(filename);
+        return stat.isFile();
+    } catch (err) {
+        if (err.code !== "ENOENT") {
+            display.error(`Error accessing '${filename}`, err);
+            process.exit(1);
         }
-    });
+        return false;
+    }
 }
 
 function writeIndex (templateName, cacheBust, config, headers) {
     const formattedHeaders = headers.filter(header => header.trim().length > 0).join("\r\n        ");
-    return gulp.src(templateName)
+    return asyncUtil.stream(gulp.src(templateName)
         .pipe(replace("{THEME}", `        ${formattedHeaders}`))
         .pipe(replace("{CACHEBUST}", cacheBust))
         .pipe(replace("{UNITECONFIG}", config))
         .pipe(rename("index.html"))
-        .pipe(gulp.dest("./"));
+        .pipe(gulp.dest("./")));
 }
 
 function buildIndex (uniteConfig, uniteThemeConfig, buildConfiguration, packageJson) {
@@ -71,46 +69,46 @@ function buildIndex (uniteConfig, uniteThemeConfig, buildConfiguration, packageJ
         headers = headers.concat(uniteThemeConfig.customHeaders);
     }
 
-    return writeIndex(buildConfiguration.bundle ? "./index-bundle.html" : "./index-no-bundle.html", cacheBust, config, headers);
+    return writeIndex(buildConfiguration.bundle ? "./index-bundle.html" : "./index-no-bundle.html",
+        cacheBust,
+        config,
+        headers);
 }
 
-function buildBrowserConfig (uniteConfig, uniteThemeConfig, callback) {
+async function buildBrowserConfig (uniteConfig, uniteThemeConfig) {
     const tileFilename = path.join(uniteConfig.directories.assets, "favicon/", "mstile-150x150.png");
 
-    fileExists(tileFilename, (tileExists) => {
-        if (tileExists) {
-            const bcFilename = path.join(uniteConfig.directories.assets, "favicon/", "browserconfig.xml");
-            const browserConfig = [
-                "<?xml version=\"1.0\" encoding=\"utf-8\"?>",
-                "<browserconfig>",
-                "    <msapplication>",
-                "        <tile>",
-                "            <square150x150logo src=\"./assets/favicon/mstile-150x150.png\"/>"
-            ];
+    const tileExists = await fileExists(tileFilename);
 
-            if (uniteThemeConfig.backgroundColor) {
-                browserConfig.push(`            <TileColor>${uniteThemeConfig.backgroundColor}</TileColor>`);
-            }
-            browserConfig.push("        </tile>");
-            browserConfig.push("    </msapplication>");
-            browserConfig.push("</browserconfig>");
+    if (tileExists) {
+        const bcFilename = path.join(uniteConfig.directories.assets, "favicon/", "browserconfig.xml");
+        const browserConfig = [
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+            "<browserconfig>",
+            "    <msapplication>",
+            "        <tile>",
+            "            <square150x150logo src=\"./assets/favicon/mstile-150x150.png\"/>"
+        ];
 
-            fs.writeFile(bcFilename, browserConfig.join(os.EOL), (err2) => {
-                if (err2) {
-                    display.error(`Failed to write '${bcFilename}`, err2);
-                    callback(false);
-                } else {
-                    callback(true);
-                }
-            });
-        } else {
-            display.info("Skipping Create as tile does not exist", tileFilename);
-            callback(true);
+        if (uniteThemeConfig.backgroundColor) {
+            browserConfig.push(`            <TileColor>${uniteThemeConfig.backgroundColor}</TileColor>`);
         }
-    });
+        browserConfig.push("        </tile>");
+        browserConfig.push("    </msapplication>");
+        browserConfig.push("</browserconfig>");
+
+        try {
+            await util.promisify(fs.writeFile)(bcFilename, browserConfig.join(os.EOL));
+        } catch (err) {
+            display.error(`Writing ${bcFilename}`, err);
+            process.exit(1);
+        }
+    } else {
+        display.info("Skipping Create as tile does not exist", tileFilename);
+    }
 }
 
-function buildManifestJson (uniteConfig, uniteThemeConfig, callback) {
+async function buildManifestJson (uniteConfig, uniteThemeConfig) {
     const manifest = {
         "name": uniteConfig.title,
         "icons": [],
@@ -119,43 +117,35 @@ function buildManifestJson (uniteConfig, uniteThemeConfig, callback) {
         "display": "standalone"
     };
 
-    const size = [192, 512];
-    let imageCounter = 0;
+    const sizes = [192, 512];
 
-    const doNext = () => {
+    for (let i = 0; i < sizes.length; i++) {
         const fname = path.join(uniteConfig.directories.assets,
             "favicon/",
-            `android-chrome-${size[imageCounter]}x${size[imageCounter]}.png`);
-        fileExists(fname, (imageExists) => {
-            if (imageExists) {
-                manifest.icons.push({
-                    "src": `./${fname.replace(/\\/g, "/")}`,
-                    "sizes": `${size[imageCounter]}x${size[imageCounter]}`,
-                    "type": "image/png"
-                });
-            }
-            imageCounter++;
-            if (imageCounter === size.length) {
-                const manifestFilename = path.join(uniteConfig.directories.assets, "favicon/", "manifest.json");
+            `android-chrome-${sizes[i]}x${sizes[i]}.png`);
 
-                fs.writeFile(manifestFilename, JSON.stringify(manifest, undefined, "\t"), (err2) => {
-                    if (err2) {
-                        display.error(`Failed to write '${manifestFilename}`, err2);
-                        callback(false);
-                    } else {
-                        callback(true);
-                    }
-                });
-            } else {
-                doNext();
-            }
-        });
-    };
+        const imageExists = await fileExists(fname);
+        if (imageExists) {
+            manifest.icons.push({
+                "src": `./${fname.replace(/\\/g, "/")}`,
+                "sizes": `${sizes[i]}x${sizes[i]}`,
+                "type": "image/png"
+            });
+        }
+    }
 
-    doNext();
+    const manifestFilename = path.join(uniteConfig.directories.assets, "favicon/", "manifest.json");
+
+    try {
+        await util.promisify(fs.writeFile)(manifestFilename, JSON.stringify(manifest, undefined, "\t"));
+    } catch (err) {
+        display.error(`Failed to write '${manifestFilename}`, err);
+        process.exit(1);
+    }
 }
 
-function buildThemeHeaders (uniteConfig, uniteThemeConfig, callback) {
+
+async function buildThemeHeaders (uniteConfig, uniteThemeConfig) {
     uniteThemeConfig.themeHeaders = [];
 
     const headers = [
@@ -165,11 +155,13 @@ function buildThemeHeaders (uniteConfig, uniteThemeConfig, callback) {
         },
         {
             "file": path.join(uniteConfig.directories.assets, "favicon/", "favicon-32x32.png"),
-            "header": "<link rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"./assets/favicon/favicon-32x32.png\">"
+            "header": "<link rel=\"icon\" type=\"image/png\" sizes=\"32x32\" " +
+            "href=\"./assets/favicon/favicon-32x32.png\">"
         },
         {
             "file": path.join(uniteConfig.directories.assets, "favicon/", "favicon-16x16.png"),
-            "header": "<link rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"./assets/favicon/favicon-16x16.png\">"
+            "header": "<link rel=\"icon\" type=\"image/png\" sizes=\"16x16\" " +
+            "href=\"./assets/favicon/favicon-16x16.png\">"
         },
         {
             "file": path.join(uniteConfig.directories.assets, "favicon/", "manifest.json"),
@@ -177,7 +169,8 @@ function buildThemeHeaders (uniteConfig, uniteThemeConfig, callback) {
         },
         {
             "file": path.join(uniteConfig.directories.assets, "favicon/", "safari-pinned-tab.svg"),
-            "header": `<link rel="mask-icon" href="./assets/favicon/safari-pinned-tab.svg" color="${uniteConfig.themeColor}">`
+            "header": "<link rel=\"mask-icon\" href=\"./assets/favicon/safari-pinned-tab.svg\" " +
+            `color="${uniteConfig.themeColor}">`
         },
         {
             "file": path.join(uniteConfig.directories.assets, "favicon/", "favicon.ico"),
@@ -189,29 +182,19 @@ function buildThemeHeaders (uniteConfig, uniteThemeConfig, callback) {
         }
     ];
 
-    let counter = 0;
+    if (uniteThemeConfig.themeColor) {
+        uniteThemeConfig.themeHeaders.push(`<meta name="theme-color" content="${uniteThemeConfig.themeColor}">`);
+    }
 
-    const doNext = () => {
-        fileExists(headers[counter].file, (headerFileExists) => {
-            if (headerFileExists) {
-                uniteThemeConfig.themeHeaders.push(headers[counter].header);
-            }
-            counter++;
-            if (counter === headers.length) {
-                if (uniteThemeConfig.themeColor) {
-                    uniteThemeConfig.themeHeaders.push(`<meta name="theme-color" content="${uniteThemeConfig.themeColor}">`);
-                }
-                callback(true);
-            } else {
-                doNext();
-            }
-        });
-    };
-
-    doNext();
+    for (let i = 0; i < headers.length; i++) {
+        const headerFileExists = await fileExists(headers[i].file);
+        if (headerFileExists) {
+            uniteThemeConfig.themeHeaders.push(headers[i].header);
+        }
+    }
 }
 
-function callUniteImage (config, cb) {
+async function callUniteImage (config) {
     const params = [];
 
     params.push(config.command);
@@ -220,12 +203,15 @@ function callUniteImage (config, cb) {
         params.push(`--${key}=${config[key]}`);
     }
 
-    exec.npmRun("unite-image", params, (success) => {
-        cb(success);
-    });
+    try {
+        await exec.npmRun("unite-image", params);
+    } catch (err) {
+        display.error("Executing unite-image", err);
+        process.exit(1);
+    }
 }
 
-function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory, cb) {
+async function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory) {
     const images = [
         {
             "command": "svgToPng",
@@ -336,31 +322,16 @@ function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory, cb) 
         }
     ];
 
-    mkdirp(favIconDirectory, (err) => {
-        if (err) {
-            display.error(err);
-            process.exit(1);
-        } else {
-            let imageCounter = 0;
+    try {
+        await util.promisify(mkdirp)(favIconDirectory);
+    } catch (err) {
+        display.error(`Creating ${favIconDirectory}`, err);
+        process.exit(1);
+    }
 
-            const doNext = () => {
-                callUniteImage(images[imageCounter], (success) => {
-                    if (success) {
-                        imageCounter++;
-                        if (imageCounter === images.length) {
-                            cb(true);
-                        } else {
-                            doNext();
-                        }
-                    } else {
-                        cb(false);
-                    }
-                });
-            };
-
-            doNext();
-        }
-    });
+    for (let i = 0; i < images.length; i++) {
+        await callUniteImage(images[i]);
+    }
 }
 
 module.exports = {

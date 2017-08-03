@@ -5,13 +5,14 @@ const display = require("./util/display");
 const gulp = require("gulp");
 const karma = require("karma");
 
-gulp.task("unit-run-test", (done) => {
+gulp.task("unit-run-test", () => {
     display.info("Running", "Karma");
 
-    const server = new karma.Server({"configFile": "../../../karma.conf.js"}, (exitCode) => {
-        if (exitCode === 0) {
-            done();
-        } else {
+    const server = new karma.Server({
+        "configFile": "../../../karma.conf.js"
+    }, (exitCode) => {
+        if (exitCode !== 0) {
+            display.error(`Karma exited with code ${exitCode}`);
             process.exit(exitCode);
         }
     });
@@ -19,7 +20,7 @@ gulp.task("unit-run-test", (done) => {
     server.start();
 });
 
-gulp.task("unit-run-test-ui", (done) => {
+gulp.task("unit-run-test-ui", () => {
     display.info("Running", "Karma");
 
     const server = new karma.Server({
@@ -27,9 +28,8 @@ gulp.task("unit-run-test-ui", (done) => {
         "configFile": "../../../karma.conf.js",
         "singleRun": false
     }, (exitCode) => {
-        if (exitCode === 0) {
-            done();
-        } else {
+        if (exitCode !== 0) {
+            display.error(`Karma exited with code ${exitCode}`);
             process.exit(exitCode);
         }
     });

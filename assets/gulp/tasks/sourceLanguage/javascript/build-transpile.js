@@ -10,14 +10,15 @@ const sourcemaps = require("gulp-sourcemaps");
 const uglify = require("gulp-uglify");
 const gutil = require("gulp-util");
 
-gulp.task("build-transpile", () => {
+gulp.task("build-transpile", async () => {
     display.info("Running", "Babel");
 
-    const uniteConfig = uc.getUniteConfig();
+    const uniteConfig = await uc.getUniteConfig();
+
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig, true);
     let errorCount = 0;
 
-    return gulp.src(path.join(uniteConfig.directories.src, "**/*.{js,jsx}"))
+    gulp.src(path.join(uniteConfig.directories.src, "**/*.{js,jsx}"))
         .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : gutil.noop())
         .pipe(babel())
         .pipe(buildConfiguration.minify ? uglify()
@@ -29,7 +30,8 @@ gulp.task("build-transpile", () => {
             display.error(err.codeFrame);
             errorCount++;
         })
-        .pipe(buildConfiguration.sourcemaps ? sourcemaps.mapSources((sourcePath) => `./src/${sourcePath}`) : gutil.noop())
+        .pipe(buildConfiguration.sourcemaps
+            ? sourcemaps.mapSources((sourcePath) => `./src/${sourcePath}`) : gutil.noop())
         .pipe(buildConfiguration.sourcemaps ? sourcemaps.write({
             "includeContent": true,
             "sourceRoot": ""

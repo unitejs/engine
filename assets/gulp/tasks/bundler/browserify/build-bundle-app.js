@@ -13,8 +13,8 @@ const clientPackages = require("./util/client-packages");
 const gutil = require("gulp-util");
 const uglify = require("gulp-uglify");
 
-gulp.task("build-bundle-app", () => {
-    const uniteConfig = uc.getUniteConfig();
+gulp.task("build-bundle-app", async () => {
+    const uniteConfig = await uc.getUniteConfig();
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     if (buildConfiguration.bundle) {
@@ -43,7 +43,8 @@ gulp.task("build-bundle-app", () => {
                     display.error(err.toString());
                 }) : gutil.noop())
             .pipe(buildConfiguration.sourcemaps ? sourcemaps.init({"loadMaps": true}) : gutil.noop())
-            .pipe(buildConfiguration.sourcemaps ? sourcemaps.mapSources((sourcePath) => sourcePath.replace(/dist\//, "./")) : gutil.noop())
+            .pipe(buildConfiguration.sourcemaps
+                ? sourcemaps.mapSources((sourcePath) => sourcePath.replace(/dist\//, "./")) : gutil.noop())
             .pipe(buildConfiguration.sourcemaps ? sourcemaps.write({"includeContent": true}) : gutil.noop())
             .pipe(gulp.dest(uniteConfig.directories.dist));
     }

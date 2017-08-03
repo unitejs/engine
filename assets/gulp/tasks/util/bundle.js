@@ -4,51 +4,45 @@
 const glob = require("glob");
 const display = require("./display");
 const path = require("path");
+const util = require("util");
 
-function findAppFiles (uniteConfig, stripJsExtension, htmlPrefixPostfix, cssPrefixPostfix, cb) {
-    glob(path.join(uniteConfig.directories.dist,
-        "**/!(app-bundle|vendor-bundle|app-bundle-init|vendor-bundle-init|app-module-config).js"),
-    (err, jsFiles) => {
-        if (err) {
-            display.error(err);
-            process.exit(1);
-        }
+async function findAppFiles (uniteConfig, stripJsExtension, htmlPrefixPostfix, cssPrefixPostfix) {
+    const globAsync = util.promisify(glob);
+    let files = null;
 
-        glob(path.join(uniteConfig.directories.dist, "**/!(app-bundle|vendor-bundle).html"), (err2, htmlFiles) => {
-            if (err2) {
-                display.error(err2);
-                process.exit(1);
+    try {
+        const jsFiles = await globAsync(path.join(uniteConfig.directories.dist,
+            "**/!(app-bundle|vendor-bundle|app-bundle-init|vendor-bundle-init|app-module-config).js"));
+
+        const htmlFiles = await globAsync(path.join(uniteConfig.directories.dist,
+            "**/!(app-bundle|vendor-bundle).html"));
+        const cssFiles = await globAsync(path.join(uniteConfig.directories.dist, "**/*.css"));
+
+        files = stripJsExtension ? jsFiles.map(file => file.replace(/(\.js)$/, "")) : jsFiles;
+        if (htmlPrefixPostfix && htmlPrefixPostfix.length > 0) {
+            if (htmlPrefixPostfix[0] === "!") {
+                files = files.concat(htmlFiles.map(file => `${file}${htmlPrefixPostfix}`));
+            } else {
+                files = files.concat(htmlFiles.map(file => `${htmlPrefixPostfix}${file}`));
             }
+        } else {
+            files = files.concat(htmlFiles.map(file => `${file}`));
+        }
+        if (cssPrefixPostfix && cssPrefixPostfix.length > 0) {
+            if (cssPrefixPostfix[0] === "!") {
+                files = files.concat(cssFiles.map(file => `${file}${cssPrefixPostfix}`));
+            } else {
+                files = files.concat(cssFiles.map(file => `${cssPrefixPostfix}${file}`));
+            }
+        } else {
+            files = files.concat(cssFiles.map(file => `${file}`));
+        }
+    } catch (err) {
+        display.error("Finding app files", err);
+        process.exit(1);
+    }
 
-            glob(path.join(uniteConfig.directories.dist, "**/*.css"), (err3, cssFiles) => {
-                if (err3) {
-                    display.error(err3);
-                    process.exit(1);
-                }
-
-                let files = stripJsExtension ? jsFiles.map(file => file.replace(/(\.js)$/, "")) : jsFiles;
-                if (htmlPrefixPostfix && htmlPrefixPostfix.length > 0) {
-                    if (htmlPrefixPostfix[0] === "!") {
-                        files = files.concat(htmlFiles.map(file => `${file}${htmlPrefixPostfix}`));
-                    } else {
-                        files = files.concat(htmlFiles.map(file => `${htmlPrefixPostfix}${file}`));
-                    }
-                } else {
-                    files = files.concat(htmlFiles.map(file => `${file}`));
-                }
-                if (cssPrefixPostfix && cssPrefixPostfix.length > 0) {
-                    if (cssPrefixPostfix[0] === "!") {
-                        files = files.concat(cssFiles.map(file => `${file}${cssPrefixPostfix}`));
-                    } else {
-                        files = files.concat(cssFiles.map(file => `${cssPrefixPostfix}${file}`));
-                    }
-                } else {
-                    files = files.concat(cssFiles.map(file => `${file}`));
-                }
-                cb(files);
-            });
-        });
-    });
+    return files;
 }
 
 module.exports = {

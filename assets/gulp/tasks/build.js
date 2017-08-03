@@ -5,9 +5,11 @@ const display = require("./util/display");
 const uc = require("./util/unite-config");
 const moduleConfig = require("./util/module-config");
 const themeUtils = require("./util/theme-utils");
+const asyncUtil = require("./util/async-util");
 const gulp = require("gulp");
 const path = require("path");
 const fs = require("fs");
+const util = require("util");
 const del = require("del");
 const runSequence = require("run-sequence");
 const packageJson = require("../../package.json");
@@ -22,29 +24,29 @@ require("./build-css-components");
 require("./build-css-post-app");
 require("./build-css-post-components");
 
-gulp.task("build-clean", (callback) => {
-    const uniteConfig = uc.getUniteConfig();
+gulp.task("build-clean", async () => {
+    const uniteConfig = await uc.getUniteConfig();
     const toClean = [
         path.join(uniteConfig.directories.dist, "**/*"),
         path.join(uniteConfig.directories.cssDist, "**/*"),
         "./index.html"
     ];
     display.info("Cleaning", toClean);
-    return del(toClean, callback);
+    return del(toClean);
 });
 
-gulp.task("build-copy-index", () => {
+gulp.task("build-copy-index", async () => {
     display.info("Building Index Page");
 
-    const uniteConfig = uc.getUniteConfig();
-    const uniteThemeConfig = uc.getUniteThemeConfig();
+    const uniteConfig = await uc.getUniteConfig();
+    const uniteThemeConfig = await uc.getUniteThemeConfig();
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     return themeUtils.buildIndex(uniteConfig, uniteThemeConfig, buildConfiguration, packageJson);
 });
 
-gulp.task("build-post-clean", (cb) => {
-    const uniteConfig = uc.getUniteConfig();
+gulp.task("build-post-clean", async () => {
+    const uniteConfig = await uc.getUniteConfig();
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     const toClean = [];
@@ -58,74 +60,78 @@ gulp.task("build-post-clean", (cb) => {
         toClean.push(path.join(uniteConfig.directories.dist, "**/!(app-bundle|vendor-bundle).*"));
     }
     display.info("Cleaning", toClean);
-    del(toClean).then(() => {
-        deleteEmpty(uniteConfig.directories.dist, {"verbose": false}, () => {
-            cb();
-        });
-    });
-});
-
-gulp.task("build-index-min", () => {
-    const uniteConfig = uc.getUniteConfig();
-    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
-
-    if (buildConfiguration.minify) {
-        return gulp.src("./index.html")
-            .pipe(htmlMin({"collapseWhitespace": true, "removeComments": true}))
-            .pipe(gulp.dest("./"));
+    try {
+        await del(toClean);
+        await util.promisify(deleteEmpty)(uniteConfig.directories.dist, {"verbose": false});
+    } catch (err) {
+        display.error(err);
+        process.exit(1);
     }
 });
 
-gulp.task("build-html-min", () => {
-    const uniteConfig = uc.getUniteConfig();
+gulp.task("build-index-min", async () => {
+    const uniteConfig = await uc.getUniteConfig();
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     if (buildConfiguration.minify) {
-        return gulp.src(path.join(uniteConfig.directories.dist, "**/*.html"))
+        return asyncUtil.stream(gulp.src("./index.html")
             .pipe(htmlMin({"collapseWhitespace": true, "removeComments": true}))
-            .pipe(gulp.dest(uniteConfig.directories.dist));
+            .pipe(gulp.dest("./")));
     }
 });
 
-gulp.task("build-copy-components", () => {
-    const uniteConfig = uc.getUniteConfig();
-
-    return gulp.src([path.join(uniteConfig.directories.src, "**/*.html")])
-        .pipe(gulp.dest(uniteConfig.directories.dist));
-});
-
-gulp.task("build-module-config", (cb) => {
-    const uniteConfig = uc.getUniteConfig();
+gulp.task("build-html-min", async () => {
+    const uniteConfig = await uc.getUniteConfig();
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
+    if (buildConfiguration.minify) {
+        return asyncUtil.stream(gulp.src(path.join(uniteConfig.directories.dist, "**/*.html"))
+            .pipe(htmlMin({"collapseWhitespace": true, "removeComments": true}))
+            .pipe(gulp.dest(uniteConfig.directories.dist)));
+    }
+});
+
+gulp.task("build-copy-components", async () => {
+    const uniteConfig = await uc.getUniteConfig();
+
+    return asyncUtil.stream(gulp.src([path.join(uniteConfig.directories.src, "**/*.html")])
+        .pipe(gulp.dest(uniteConfig.directories.dist)));
+});
+
+gulp.task("build-module-config", async () => {
+    const uniteConfig = await uc.getUniteConfig();
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
     const config = moduleConfig.create(uniteConfig, ["app", "both"], buildConfiguration.bundle);
 
-    fs.writeFile(path.join(uniteConfig.directories.dist, "app-module-config.js"), config, (err) => {
-        if (err) {
-            display.error(err);
-            process.exit(1);
-        } else {
-            cb();
-        }
-    });
+    try {
+        await util.promisify(fs.writeFile)(path.join(uniteConfig.directories.dist, "app-module-config.js"), config);
+    } catch (err) {
+        display.error("Writing app-module-config.js", err);
+        process.exit(1);
+    }
 });
 
-gulp.task("build", (cb) => {
-    runSequence("build-clean",
-        "build-transpile",
-        "build-lint",
-        "build-css-app",
-        "build-css-post-app",
-        "build-css-components",
-        "build-css-post-components",
-        "build-copy-components",
-        "build-module-config",
-        "build-html-min",
-        "build-bundle-vendor",
-        "build-bundle-app",
-        "build-copy-index",
-        "build-index-min",
-        "build-post-clean", cb);
+gulp.task("build", async () => {
+    try {
+        await util.promisify(runSequence)("build-clean",
+            "build-transpile",
+            "build-lint",
+            "build-css-app",
+            "build-css-post-app",
+            "build-css-components",
+            "build-css-post-components",
+            "build-copy-components",
+            "build-module-config",
+            "build-html-min",
+            "build-bundle-vendor",
+            "build-bundle-app",
+            "build-copy-index",
+            "build-index-min",
+            "build-post-clean");
+    } catch (err) {
+        display.error("Unhandled error during task", err);
+        process.exit(1);
+    }
 });
 
 /* Generated by UniteJS */

@@ -4,35 +4,37 @@
 const display = require("./display");
 const minimist = require("minimist");
 const fs = require("fs");
+const util = require("util");
 
-function getUniteConfig () {
+async function getUniteConfig () {
     try {
-        return JSON.parse(fs.readFileSync("./unite.json").toString());
-    } catch (e) {
-        display.error("Reading unite.json");
+        const data = await util.promisify(fs.readFile)("./unite.json");
+        return JSON.parse(data.toString());
+    } catch (err) {
+        display.error("Reading unite.json", err);
         process.exit(1);
         return undefined;
     }
 }
 
-function getUniteThemeConfig () {
+async function getUniteThemeConfig () {
     try {
-        return JSON.parse(fs.readFileSync("./assetsSource/theme/unite-theme.json").toString());
-    } catch (e) {
-        display.error("Reading unite-theme.json");
+        const data = await util.promisify(fs.readFile)("./assetsSource/theme/unite-theme.json");
+        return JSON.parse(data.toString());
+    } catch (err) {
+        display.error("Reading unite-theme.json", err);
         process.exit(1);
         return undefined;
     }
 }
 
-function setUniteThemeConfig (uniteThemeConfig) {
+async function setUniteThemeConfig (uniteThemeConfig) {
     try {
-        return fs.writeFileSync("./assetsSource/theme/unite-theme.json",
+        await util.promisify(fs.writeFile)("./assetsSource/theme/unite-theme.json",
             JSON.stringify(uniteThemeConfig, undefined, "\t"));
-    } catch (e) {
-        display.error("Writing unite-theme.json");
+    } catch (err) {
+        display.error("Writing unite-theme.json", err);
         process.exit(1);
-        return undefined;
     }
 }
 

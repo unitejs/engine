@@ -12,7 +12,16 @@ export class Gulp extends EnginePipelineStepBase {
     private static FILENAME: string = "gulpfile.js";
 
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["gulp", "require-dir", "gulp-rename", "gulp-replace", "minimist", "gulp-uglify", "uglify-js", "mkdirp"], uniteConfiguration.taskManager === "Gulp");
+        engineVariables.toggleDevDependency(["gulp",
+                                            "bluebird",
+                                            "require-dir",
+                                            "gulp-rename",
+                                            "gulp-replace",
+                                            "minimist",
+                                            "gulp-uglify",
+                                            "uglify-js",
+                                            "mkdirp"],
+                                            uniteConfiguration.taskManager === "Gulp");
 
         if (uniteConfiguration.taskManager === "Gulp") {
             try {
@@ -262,6 +271,7 @@ export class Gulp extends EnginePipelineStepBase {
                 const assetUtils = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, "gulp/tasks/util/");
                 const assetUtilModuleType = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, `gulp/tasks/moduleType/${uniteConfiguration.moduleType.toLowerCase()}/util/`);
 
+                await this.copyFile(logger, display, fileSystem, assetUtils, "async-util.js", engineVariables.gulpUtilFolder, "async-util.js");
                 await this.copyFile(logger, display, fileSystem, assetUtils, "bundle.js", engineVariables.gulpUtilFolder, "bundle.js");
                 await this.copyFile(logger, display, fileSystem, assetUtils, "client-packages.js", engineVariables.gulpUtilFolder, "client-packages.js");
                 await this.copyFile(logger, display, fileSystem, assetUtils, "display.js", engineVariables.gulpUtilFolder, "display.js");

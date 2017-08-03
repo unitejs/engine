@@ -1,14 +1,18 @@
 {
 	"parserOptions": {
-		"ecmaVersion": 6,
+		"ecmaVersion": 8,
 		"sourceType": "module"
 	},
-	"extends": "eslint:all",
+	"extends": [
+		"eslint:all",
+		"plugin:promise/recommended"
+	],
 	"env": {
 		"browser": true,
 		"node": true,
 		"jasmine": true,
-		"protractor": true
+		"protractor": true,
+		"es6": true
 	},
 	"globals": {},
 	"rules": {
@@ -37,10 +41,18 @@
 		"arrow-body-style": "off",
 		"prefer-destructuring": "off",
 		"lines-around-comment": "off",
+		"no-else-return": "off",
+		"max-params": "off",
+		"require-jsdoc": "off",
 		"max-lines": "off",
-		"no-sync": "off"
+		"no-await-in-loop": "off",
+		"no-process-env": "off",
+		"no-empty-function": "off",
+		"consistent-return": "off",
+		"promise/avoid-new": "off"
 	},
 	"plugins": [
-		"node"
+		"node",
+		"promise"
 	]
 }

@@ -4,25 +4,31 @@
 const child = require("child_process");
 const path = require("path");
 
-function npmRun (packageName, args, callback) {
-    const winExt = (/^win/).test(process.platform) ? ".cmd" : "";
+function npmRun (packageName, args) {
+    return new Promise((resolve, reject) => {
+        const winExt = (/^win/).test(process.platform) ? ".cmd" : "";
 
-    const spawnProcess = child.spawn(path.join("node_modules", ".bin", packageName) + winExt, args);
+        const spawnProcess = child.spawn(path.join("node_modules", ".bin", packageName) + winExt, args);
 
-    spawnProcess.stdout.on("data", (data) => {
-        process.stdout.write(data);
-    });
+        spawnProcess.stdout.on("data", (data) => {
+            process.stdout.write(data);
+        });
 
-    spawnProcess.stderr.on("data", (data) => {
-        process.stderr.write(data);
-    });
+        spawnProcess.stderr.on("data", (data) => {
+            process.stderr.write(data);
+        });
 
-    spawnProcess.on("error", () => {
-        callback(false);
-    });
+        spawnProcess.on("error", (err) => {
+            reject(err);
+        });
 
-    spawnProcess.on("close", (exitCode) => {
-        callback(exitCode === 0);
+        spawnProcess.on("close", (exitCode) => {
+            if (exitCode === 0) {
+                resolve();
+            } else {
+                reject(new Error(`Exited with code ${exitCode}`));
+            }
+        });
     });
 }
 

@@ -4,92 +4,108 @@
 const gulp = require("gulp");
 const path = require("path");
 const fs = require("fs");
+const util = require("util");
 const uc = require("./util/unite-config");
 const display = require("./util/display");
 const clientPackages = require("./util/client-packages");
 const bundle = require("./util/bundle");
+const asyncUtil = require("./util/async-util");
 const gutil = require("gulp-util");
 const requireJs = require("requirejs");
 const insert = require("gulp-insert");
 const sourcemaps = require("gulp-sourcemaps");
 
-gulp.task("build-bundle-app", (cb) => {
-    const uniteConfig = uc.getUniteConfig();
+function performAppOptimize (uniteConfig, buildConfiguration, modulesConfig, paths) {
+    return new Promise((resolve, reject) => {
+        try {
+            requireJs.optimize({
+                "baseUrl": "./",
+                "generateSourceMaps": buildConfiguration.sourcemaps,
+                "logLevel": 2,
+                "name": `${uniteConfig.directories.dist.replace(/\.\//, "")}app-bundle-init`,
+                "optimize": buildConfiguration.minify ? "uglify" : "none",
+                "out": path.join(uniteConfig.directories.dist, "app-bundle.js"),
+                "paths": modulesConfig.paths,
+                "exclude": ["text"]
+            }, async (result) => {
+                display.log(result);
+
+                let bootstrap = "require.config({";
+                bootstrap += `paths: ${JSON.stringify(paths)}`;
+                bootstrap += "});";
+                if (modulesConfig.preload.length > 0) {
+                    bootstrap += `require(${JSON.stringify(modulesConfig.preload)}, function() {`;
+                }
+                bootstrap += `require(['${uniteConfig.directories.dist.replace(/\.\//, "")}entryPoint']);`;
+                if (modulesConfig.preload.length > 0) {
+                    bootstrap += "});";
+                }
+
+                await asyncUtil.stream(
+                    gulp.src(path.join(uniteConfig.directories.dist, "app-bundle.js"))
+                        .pipe(buildConfiguration.sourcemaps
+                            ? sourcemaps.init({"loadMaps": true}) : gutil.noop())
+                        .pipe(insert.append(bootstrap))
+                        .pipe(buildConfiguration.sourcemaps
+                            ? sourcemaps.write({"includeContent": true}) : gutil.noop())
+                        .pipe(gulp.dest(uniteConfig.directories.dist)));
+
+                resolve();
+            }, (err) => {
+                reject(err);
+            });
+        } catch (err) {
+            reject(err);
+        }
+    });
+}
+
+gulp.task("build-bundle-app", async () => {
+    const uniteConfig = await uc.getUniteConfig();
+
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     if (buildConfiguration.bundle) {
         display.info("Running", "Require js optimizer for App");
 
-        const modulesConfig = clientPackages.buildModuleConfig(uniteConfig, ["app", "both"], buildConfiguration.minify);
-        const paths2 = {};
+        const files = await bundle.findAppFiles(uniteConfig, true, "text!", "text!");
 
-        bundle.findAppFiles(uniteConfig, true, "text!", "text!", (files) => {
-            fs.writeFile(path.join(uniteConfig.directories.dist, "app-bundle-init.js"),
-                `define(${JSON.stringify(files)}, function () {});`,
-                (err3) => {
-                    if (err3) {
-                        display.error(err3);
-                        process.exit(1);
-                    }
+        try {
+            await util.promisify(fs.writeFile)(
+                path.join(uniteConfig.directories.dist, "app-bundle-init.js"),
+                `define(${JSON.stringify(files)}, function () {});`);
+        } catch (err) {
+            display.error("Writing app-bundle-init.js", err);
+            process.exit(1);
+        }
 
-                    for (const key in modulesConfig.paths) {
-                        if (key === "text") {
-                            modulesConfig.paths[key] = modulesConfig.paths[key].replace(/(\.js)$/, "");
-                        } else {
-                            modulesConfig.paths[key] = "empty:";
-                            paths2[key] = `${uniteConfig.directories.dist}vendor-bundle`;
-                        }
-                    }
+        const modulesConfig = clientPackages.buildModuleConfig(
+            uniteConfig,
+            ["app", "both"],
+            buildConfiguration.minify
+        );
 
-                    modulesConfig.packages.forEach(pkg => {
-                        modulesConfig.paths[pkg.name] = "empty:";
-                        paths2[pkg.name] = `${uniteConfig.directories.dist}vendor-bundle`;
-                    });
+        const paths = {};
+        for (const key in modulesConfig.paths) {
+            if (key === "text") {
+                modulesConfig.paths[key] = modulesConfig.paths[key].replace(/(\.js)$/, "");
+            } else {
+                modulesConfig.paths[key] = "empty:";
+                paths[key] = `${uniteConfig.directories.dist}vendor-bundle`;
+            }
+        }
 
-                    try {
-                        requireJs.optimize({
-                            "baseUrl": "./",
-                            "generateSourceMaps": buildConfiguration.sourcemaps,
-                            "logLevel": 2,
-                            "name": `${uniteConfig.directories.dist.replace(/\.\//, "")}app-bundle-init`,
-                            "optimize": buildConfiguration.minify ? "uglify" : "none",
-                            "out": path.join(uniteConfig.directories.dist, "app-bundle.js"),
-                            "paths": modulesConfig.paths,
-                            "exclude": ["text"]
-                        }, (result) => {
-                            display.log(result);
-
-                            let bootstrap = "require.config({";
-                            bootstrap += `paths: ${JSON.stringify(paths2)}`;
-                            bootstrap += "});";
-                            if (modulesConfig.preload.length > 0) {
-                                bootstrap += `require(${JSON.stringify(modulesConfig.preload)}, function() {`;
-                            }
-                            bootstrap += `require(['${uniteConfig.directories.dist.replace(/\.\//, "")}entryPoint']);`;
-                            if (modulesConfig.preload.length > 0) {
-                                bootstrap += "});";
-                            }
-
-                            return gulp.src(path.join(uniteConfig.directories.dist, "app-bundle.js"))
-                                .pipe(buildConfiguration.sourcemaps
-                                    ? sourcemaps.init({"loadMaps": true}) : gutil.noop())
-                                .pipe(insert.append(bootstrap))
-                                .pipe(buildConfiguration.sourcemaps
-                                    ? sourcemaps.write({"includeContent": true}) : gutil.noop())
-                                .pipe(gulp.dest(uniteConfig.directories.dist))
-                                .on("end", cb);
-                        }, (err) => {
-                            display.error(err);
-                            process.exit(1);
-                        });
-                    } catch (err) {
-                        display.error(err);
-                        process.exit(1);
-                    }
-                });
+        modulesConfig.packages.forEach(pkg => {
+            modulesConfig.paths[pkg.name] = "empty:";
+            paths[pkg.name] = `${uniteConfig.directories.dist}vendor-bundle`;
         });
-    } else {
-        cb();
+
+        try {
+            await performAppOptimize(uniteConfig, buildConfiguration, modulesConfig, paths);
+        } catch (err) {
+            display.error("Performing Optimize", err);
+            process.exit(1);
+        }
     }
 });
 

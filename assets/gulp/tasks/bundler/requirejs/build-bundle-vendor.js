@@ -4,19 +4,49 @@
 const gulp = require("gulp");
 const path = require("path");
 const fs = require("fs");
+const util = require("util");
 const uc = require("./util/unite-config");
 const display = require("./util/display");
 const clientPackages = require("./util/client-packages");
 const requireJs = require("requirejs");
 
-gulp.task("build-bundle-vendor", (cb) => {
-    const uniteConfig = uc.getUniteConfig();
+function performVendorOptimize (uniteConfig, buildConfiguration, modulesConfig) {
+    return new Promise((resolve, reject) => {
+        try {
+            requireJs.optimize({
+                "baseUrl": uniteConfig.directories.dist,
+                "generateSourceMaps": buildConfiguration.sourcemaps,
+                "logLevel": 2,
+                "name": "vendor-bundle-init",
+                "optimize": buildConfiguration.minify ? "uglify" : "none",
+                "out": path.join(uniteConfig.directories.dist, "vendor-bundle.js"),
+                "paths": modulesConfig.paths,
+                "packages": modulesConfig.packages
+            }, (result) => {
+                display.log(result);
+                resolve();
+            }, (err) => {
+                reject(err);
+            });
+        } catch (err) {
+            reject(err);
+        }
+    });
+}
+
+gulp.task("build-bundle-vendor", async () => {
+    const uniteConfig = await uc.getUniteConfig();
+
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     if (buildConfiguration.bundle) {
         display.info("Running", "Require js optimizer for Vendor");
 
-        const modulesConfig = clientPackages.buildModuleConfig(uniteConfig, ["app", "both"], buildConfiguration.minify);
+        const modulesConfig = clientPackages.buildModuleConfig(
+            uniteConfig,
+            ["app", "both"],
+            buildConfiguration.minify
+        );
         const keys = [];
 
         if (modulesConfig.paths.requirejs) {
@@ -32,38 +62,15 @@ gulp.task("build-bundle-vendor", (cb) => {
             keys.push(pkg.name);
         });
 
-        fs.writeFile(path.join(uniteConfig.directories.dist, "vendor-bundle-init.js"),
-            `define(${JSON.stringify(keys)}, function () {});`,
-            (err) => {
-                if (err) {
-                    display.error(err);
-                    process.exit(1);
-                }
+        try {
+            await util.promisify(fs.writeFile)(path.join(uniteConfig.directories.dist, "vendor-bundle-init.js"),
+                `define(${JSON.stringify(keys)}, function () {});`);
 
-                try {
-                    requireJs.optimize({
-                        "baseUrl": uniteConfig.directories.dist,
-                        "generateSourceMaps": buildConfiguration.sourcemaps,
-                        "logLevel": 2,
-                        "name": "vendor-bundle-init",
-                        "optimize": buildConfiguration.minify ? "uglify" : "none",
-                        "out": path.join(uniteConfig.directories.dist, "vendor-bundle.js"),
-                        "paths": modulesConfig.paths,
-                        "packages": modulesConfig.packages
-                    }, (result) => {
-                        display.log(result);
-                        cb();
-                    }, (err2) => {
-                        display.error(err2);
-                        process.exit(1);
-                    });
-                } catch (err3) {
-                    display.error(err3);
-                    process.exit(1);
-                }
-            });
-    } else {
-        cb();
+            await performVendorOptimize(uniteConfig, buildConfiguration, modulesConfig);
+        } catch (err) {
+            display.error("Creating vendor bundle", err);
+            process.exit(1);
+        }
     }
 });
 

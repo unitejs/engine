@@ -1,8 +1,6 @@
 /**
  * Gulp utils for client packages.
  */
-const fs = require("fs");
-const display = require("./display");
 
 function getKeys (uniteConfig) {
     const pathKeys = [];
@@ -53,23 +51,8 @@ function buildModuleConfig (uniteConfig, includeModes, isMinified) {
     return moduleConfig;
 }
 
-function buildModuleConfigFile (uniteConfig, includeModes, filename, configName, cb) {
-    const moduleConfig = buildModuleConfig(uniteConfig, includeModes, false);
-    const json = JSON.stringify(moduleConfig, undefined, "\t");
-
-    fs.writeFile(filename, `${configName} = ${json};`, (err) => {
-        if (err) {
-            display.error(err);
-            process.exit(1);
-        } else {
-            cb();
-        }
-    });
-}
-
 module.exports = {
     buildModuleConfig,
-    buildModuleConfigFile,
     getKeys
 };
 

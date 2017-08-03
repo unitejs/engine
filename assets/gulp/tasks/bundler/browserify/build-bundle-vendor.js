@@ -11,8 +11,9 @@ const clientPackages = require("./util/client-packages");
 const gutil = require("gulp-util");
 const uglify = require("gulp-uglify");
 
-gulp.task("build-bundle-vendor", () => {
-    const uniteConfig = uc.getUniteConfig();
+gulp.task("build-bundle-vendor", async () => {
+    const uniteConfig = await uc.getUniteConfig();
+
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     if (buildConfiguration.bundle) {
