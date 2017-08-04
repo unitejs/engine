@@ -25,21 +25,21 @@ export class Gulp extends EnginePipelineStepBase {
 
         if (uniteConfiguration.taskManager === "Gulp") {
             try {
-                const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.rootFolder, Gulp.FILENAME);
+                const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwFolder, Gulp.FILENAME);
 
                 if (hasGeneratedMarker) {
-                    super.log(logger, display, `Generating ${Gulp.FILENAME} in`, { rootFolder: engineVariables.rootFolder });
+                    super.log(logger, display, `Generating ${Gulp.FILENAME} in`, { wwwFolder: engineVariables.wwwFolder });
 
                     const lines: string[] = [];
                     lines.push("require('require-dir')('build/tasks');");
                     lines.push(super.wrapGeneratedMarker("/* ", " */"));
 
-                    await fileSystem.fileWriteLines(engineVariables.rootFolder, Gulp.FILENAME, lines);
+                    await fileSystem.fileWriteLines(engineVariables.wwwFolder, Gulp.FILENAME, lines);
                 } else {
                     super.log(logger, display, `Skipping ${Gulp.FILENAME} at it has no generated marker`);
                 }
             } catch (err) {
-                super.error(logger, display, `Generating ${Gulp.FILENAME} failed`, err, { rootFolder: engineVariables.rootFolder });
+                super.error(logger, display, `Generating ${Gulp.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwFolder });
                 return 1;
             }
 
@@ -72,7 +72,7 @@ export class Gulp extends EnginePipelineStepBase {
             try {
                 super.log(logger, display, "Deleting Gulp Build Directory", { gulpBuildFolder: engineVariables.gulpBuildFolder });
 
-                const exists = await fileSystem.directoryExists(engineVariables.rootFolder);
+                const exists = await fileSystem.directoryExists(engineVariables.wwwFolder);
                 if (exists) {
                     await fileSystem.directoryDelete(engineVariables.gulpBuildFolder);
                 }
@@ -81,7 +81,7 @@ export class Gulp extends EnginePipelineStepBase {
                 return 1;
             }
 
-            const ret2 = await super.deleteFile(logger, display, fileSystem, engineVariables.rootFolder, Gulp.FILENAME);
+            const ret2 = await super.deleteFile(logger, display, fileSystem, engineVariables.wwwFolder, Gulp.FILENAME);
             if (ret2 !== 0) {
                 return ret2;
             }
@@ -119,7 +119,6 @@ export class Gulp extends EnginePipelineStepBase {
         engineVariables.toggleDevDependency(["gulp-sass"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPre === "Sass");
         engineVariables.toggleDevDependency(["gulp-stylus"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPre === "Stylus");
         engineVariables.toggleDevDependency(["gulp-postcss"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPost === "PostCss");
-        engineVariables.toggleDevDependency(["merge2"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPost === "None");
 
         if (uniteConfiguration.taskManager === "Gulp") {
             try {

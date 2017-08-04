@@ -18,7 +18,7 @@ export class TypeScript extends EnginePipelineStepBase {
 
         if (uniteConfiguration.sourceLanguage === "TypeScript") {
             try {
-                super.log(logger, display, `Generating ${TypeScript.FILENAME}`, { rootFolder: engineVariables.rootFolder });
+                super.log(logger, display, `Generating ${TypeScript.FILENAME}`, { wwwFolder: engineVariables.wwwFolder });
 
                 const typeScriptConfiguration = new TypeScriptConfiguration();
                 typeScriptConfiguration.compilerOptions = new TypeScriptCompilerOptions();
@@ -47,15 +47,15 @@ export class TypeScript extends EnginePipelineStepBase {
                 }
                 Object.assign(typeScriptConfiguration.compilerOptions, additional);
 
-                await fileSystem.fileWriteJson(engineVariables.rootFolder, TypeScript.FILENAME, typeScriptConfiguration);
+                await fileSystem.fileWriteJson(engineVariables.wwwFolder, TypeScript.FILENAME, typeScriptConfiguration);
 
                 return 0;
             } catch (err) {
-                super.error(logger, display, `Generating ${TypeScript.FILENAME} failed`, err, { rootFolder: engineVariables.rootFolder });
+                super.error(logger, display, `Generating ${TypeScript.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwFolder });
                 return 1;
             }
         } else {
-            return await super.deleteFile(logger, display, fileSystem, engineVariables.rootFolder, TypeScript.FILENAME);
+            return await super.deleteFile(logger, display, fileSystem, engineVariables.wwwFolder, TypeScript.FILENAME);
         }
     }
 }

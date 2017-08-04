@@ -13,12 +13,12 @@ export class UniteConfigurationJson extends EnginePipelineStepBase {
 
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
-            super.log(logger, display, `Generating ${UniteConfigurationJson.FILENAME} in`, { rootFolder: engineVariables.rootFolder });
+            super.log(logger, display, `Generating ${UniteConfigurationJson.FILENAME} in`, { wwwFolder: engineVariables.wwwFolder });
 
-            await fileSystem.fileWriteJson(engineVariables.rootFolder, UniteConfigurationJson.FILENAME, uniteConfiguration);
+            await fileSystem.fileWriteJson(engineVariables.wwwFolder, UniteConfigurationJson.FILENAME, uniteConfiguration);
             return 0;
         } catch (err) {
-            super.error(logger, display, `Generating ${UniteConfigurationJson.FILENAME} failed`, err, { rootFolder: engineVariables.rootFolder });
+            super.error(logger, display, `Generating ${UniteConfigurationJson.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwFolder });
             return 1;
         }
     }

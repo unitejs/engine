@@ -16,19 +16,19 @@ export class PackageJson extends EnginePipelineStepBase {
         try {
             let existingPackageJson: PackageConfiguration | undefined;
             try {
-                const exists = await fileSystem.fileExists(engineVariables.rootFolder, PackageJson.FILENAME);
+                const exists = await fileSystem.fileExists(engineVariables.wwwFolder, PackageJson.FILENAME);
 
                 if (exists) {
-                    super.log(logger, display, `Loading existing ${PackageJson.FILENAME}`, { core: engineVariables.rootFolder, dependenciesFile: PackageJson.FILENAME });
+                    super.log(logger, display, `Loading existing ${PackageJson.FILENAME}`, { core: engineVariables.wwwFolder, dependenciesFile: PackageJson.FILENAME });
 
-                    existingPackageJson = await fileSystem.fileReadJson<PackageConfiguration>(engineVariables.rootFolder, PackageJson.FILENAME);
+                    existingPackageJson = await fileSystem.fileReadJson<PackageConfiguration>(engineVariables.wwwFolder, PackageJson.FILENAME);
                 }
             } catch (err) {
-                super.error(logger, display, `Loading existing ${PackageJson.FILENAME} failed`, err, { core: engineVariables.rootFolder, dependenciesFile: PackageJson.FILENAME });
+                super.error(logger, display, `Loading existing ${PackageJson.FILENAME} failed`, err, { core: engineVariables.wwwFolder, dependenciesFile: PackageJson.FILENAME });
                 return 1;
             }
 
-            super.log(logger, display, `Generating ${PackageJson.FILENAME} in`, { rootFolder: engineVariables.rootFolder });
+            super.log(logger, display, `Generating ${PackageJson.FILENAME} in`, { wwwFolder: engineVariables.wwwFolder });
 
             const packageJson = existingPackageJson || new PackageConfiguration();
             packageJson.name = uniteConfiguration.packageName;
@@ -36,6 +36,7 @@ export class PackageJson extends EnginePipelineStepBase {
             packageJson.license = uniteConfiguration.license;
             packageJson.devDependencies = packageJson.devDependencies || {};
             packageJson.dependencies = packageJson.dependencies || {};
+            packageJson.engines = { node: ">=8.0.0" };
 
             engineVariables.buildDependencies(uniteConfiguration, packageJson.dependencies);
             engineVariables.buildDevDependencies(packageJson.devDependencies);
@@ -43,10 +44,10 @@ export class PackageJson extends EnginePipelineStepBase {
             packageJson.dependencies = this.sortDependencies(packageJson.dependencies);
             packageJson.devDependencies = this.sortDependencies(packageJson.devDependencies);
 
-            await fileSystem.fileWriteJson(engineVariables.rootFolder, PackageJson.FILENAME, packageJson);
+            await fileSystem.fileWriteJson(engineVariables.wwwFolder, PackageJson.FILENAME, packageJson);
             return 0;
         } catch (err) {
-            super.error(logger, display, `Generating ${PackageJson.FILENAME} failed`, err, { rootFolder: engineVariables.rootFolder });
+            super.error(logger, display, `Generating ${PackageJson.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwFolder });
             return 1;
         }
     }

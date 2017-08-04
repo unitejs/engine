@@ -13,6 +13,7 @@ export class EngineVariables {
     public coreFolder: string;
 
     public rootFolder: string;
+    public wwwFolder: string;
     public srcFolder: string;
     public distFolder: string;
     public unitTestFolder: string;

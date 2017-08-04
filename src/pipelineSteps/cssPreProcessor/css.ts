@@ -14,7 +14,7 @@ export class Css extends EnginePipelineStepBase {
             try {
                 super.log(logger, display, "Creating cssSrc folder", { cssSrcFolder: engineVariables.cssSrcFolder });
 
-                engineVariables.cssSrcFolder = fileSystem.pathCombine(engineVariables.rootFolder, "cssSrc");
+                engineVariables.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwFolder, "cssSrc");
                 engineVariables.styleLanguageExt = "css";
 
                 await fileSystem.directoryCreate(engineVariables.cssSrcFolder);

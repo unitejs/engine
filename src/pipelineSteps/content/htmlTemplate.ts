@@ -31,10 +31,10 @@ export class HtmlTemplate extends EnginePipelineStepBase {
                                 filename: string,
                                 engineVariablesHtml: EngineVariablesHtml): Promise<number> {
         try {
-            const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.rootFolder, filename);
+            const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwFolder, filename);
 
             if (hasGeneratedMarker) {
-                super.log(logger, display, `Generating ${filename}`, { rootFolder: engineVariables.rootFolder });
+                super.log(logger, display, `Generating ${filename}`, { wwwFolder: engineVariables.wwwFolder });
 
                 const lines: string[] = [];
                 let indent = 0;
@@ -74,14 +74,14 @@ export class HtmlTemplate extends EnginePipelineStepBase {
                 this.addLine(indent, lines, "</html>");
                 this.addLine(indent, lines, super.wrapGeneratedMarker("<!-- ", " -->"));
 
-                await fileSystem.fileWriteLines(engineVariables.rootFolder, filename, lines);
+                await fileSystem.fileWriteLines(engineVariables.wwwFolder, filename, lines);
             } else {
-                super.log(logger, display, `Skipping ${filename} as it has no generated marker`, { rootFolder: engineVariables.rootFolder });
+                super.log(logger, display, `Skipping ${filename} as it has no generated marker`, { wwwFolder: engineVariables.wwwFolder });
             }
 
             return 0;
         } catch (err) {
-            super.error(logger, display, `Generating ${filename} failed`, err, { rootFolder: engineVariables.rootFolder });
+            super.error(logger, display, `Generating ${filename} failed`, err, { wwwFolder: engineVariables.wwwFolder });
             return 1;
         }
     }

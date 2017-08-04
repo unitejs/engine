@@ -16,7 +16,7 @@ export class Less extends EnginePipelineStepBase {
             try {
                 super.log(logger, display, "Creating Less folder", { cssSrcFolder: engineVariables.cssSrcFolder });
 
-                engineVariables.cssSrcFolder = fileSystem.pathCombine(engineVariables.rootFolder, "less");
+                engineVariables.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwFolder, "less");
                 engineVariables.styleLanguageExt = "less";
 
                 await fileSystem.directoryCreate(engineVariables.cssSrcFolder);

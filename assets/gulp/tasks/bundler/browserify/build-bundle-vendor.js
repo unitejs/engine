@@ -7,6 +7,7 @@ const browserify = require("browserify");
 const source = require("vinyl-source-stream");
 const buffer = require("vinyl-buffer");
 const uc = require("./util/unite-config");
+const asyncUtil = require("./util/async-util");
 const clientPackages = require("./util/client-packages");
 const gutil = require("gulp-util");
 const uglify = require("gulp-uglify");
@@ -36,14 +37,14 @@ gulp.task("build-bundle-vendor", async () => {
             process.env.NODE_ENV = "production";
         }
 
-        return bVendor.bundle()
+        return asyncUtil.stream(bVendor.bundle()
             .pipe(source("vendor-bundle.js"))
             .pipe(buffer())
             .pipe(buildConfiguration.minify ? uglify()
                 .on("error", (err) => {
                     display.error(err.toString());
                 }) : gutil.noop())
-            .pipe(gulp.dest(uniteConfig.directories.dist));
+            .pipe(gulp.dest(uniteConfig.directories.dist)));
     }
 });
 

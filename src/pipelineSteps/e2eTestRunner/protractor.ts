@@ -25,14 +25,14 @@ export class Protractor extends EnginePipelineStepBase {
 
         if (uniteConfiguration.e2eTestRunner === "Protractor") {
             try {
-                const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.rootFolder, Protractor.FILENAME);
+                const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwFolder, Protractor.FILENAME);
 
                 if (hasGeneratedMarker) {
                     super.log(logger, display, `Generating ${Protractor.FILENAME}`);
 
                     const lines: string[] = [];
                     this.generateConfig(fileSystem, uniteConfiguration, engineVariables, lines);
-                    await fileSystem.fileWriteLines(engineVariables.rootFolder, Protractor.FILENAME, lines);
+                    await fileSystem.fileWriteLines(engineVariables.wwwFolder, Protractor.FILENAME, lines);
                 } else {
                     super.log(logger, display, `Skipping ${Protractor.FILENAME} as it has no generated marker`);
                 }
@@ -43,17 +43,17 @@ export class Protractor extends EnginePipelineStepBase {
                 return 1;
             }
         } else {
-            return await super.deleteFile(logger, display, fileSystem, engineVariables.rootFolder, Protractor.FILENAME);
+            return await super.deleteFile(logger, display, fileSystem, engineVariables.wwwFolder, Protractor.FILENAME);
         }
     }
 
     private generateConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, lines: string[]): void {
-        const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, engineVariables.reportsFolder));
+        const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwFolder, engineVariables.reportsFolder));
 
         const protractorConfiguration = new ProtractorConfiguration();
         protractorConfiguration.baseUrl = "http://localhost:9000";
         protractorConfiguration.specs = [
-            fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, fileSystem.pathCombine(engineVariables.e2eTestDistFolder, "**/*.spec.js")))
+            fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwFolder, fileSystem.pathCombine(engineVariables.e2eTestDistFolder, "**/*.spec.js")))
         ];
         protractorConfiguration.capabilities = {
             browserName: "chrome"

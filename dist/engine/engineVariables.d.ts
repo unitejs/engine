@@ -10,6 +10,7 @@ import { EngineVariablesHtml } from "./engineVariablesHtml";
 export declare class EngineVariables {
     coreFolder: string;
     rootFolder: string;
+    wwwFolder: string;
     srcFolder: string;
     distFolder: string;
     unitTestFolder: string;

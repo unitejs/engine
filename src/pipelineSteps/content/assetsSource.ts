@@ -16,7 +16,7 @@ export class AssetsSource extends EnginePipelineStepBase {
         engineVariables.toggleDevDependency(["unitejs-image-cli"], true);
 
         try {
-            super.log(logger, display, "Creating Directory", { rootFolder: engineVariables.assetsSourceFolder });
+            super.log(logger, display, "Creating Directory", { assetsSourceFolder: engineVariables.assetsSourceFolder });
 
             await fileSystem.directoryCreate(engineVariables.assetsSourceFolder);
         } catch (err) {
@@ -25,7 +25,7 @@ export class AssetsSource extends EnginePipelineStepBase {
         }
 
         try {
-            super.log(logger, display, "Creating Directory", { rootFolder: engineVariables.assetsFolder });
+            super.log(logger, display, "Creating Directory", { assetsFolder: engineVariables.assetsFolder });
 
             await fileSystem.directoryCreate(engineVariables.assetsFolder);
 

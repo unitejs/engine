@@ -37,14 +37,14 @@ export class Karma extends EnginePipelineStepBase {
 
         if (uniteConfiguration.unitTestRunner === "Karma") {
             try {
-                const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.rootFolder, Karma.FILENAME);
+                const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwFolder, Karma.FILENAME);
 
                 if (hasGeneratedMarker) {
                     super.log(logger, display, `Generating ${Karma.FILENAME}`);
 
                     const lines: string[] = [];
                     this.generateConfig(fileSystem, uniteConfiguration, engineVariables, lines);
-                    await fileSystem.fileWriteLines(engineVariables.rootFolder, Karma.FILENAME, lines);
+                    await fileSystem.fileWriteLines(engineVariables.wwwFolder, Karma.FILENAME, lines);
                 } else {
                     super.log(logger, display, `Skipping ${Karma.FILENAME} as it has no generated marker`);
                 }
@@ -55,7 +55,7 @@ export class Karma extends EnginePipelineStepBase {
                 return 1;
             }
         } else {
-            return await super.deleteFile(logger, display, fileSystem, engineVariables.rootFolder, Karma.FILENAME);
+            return await super.deleteFile(logger, display, fileSystem, engineVariables.wwwFolder, Karma.FILENAME);
         }
     }
 
@@ -86,28 +86,28 @@ export class Karma extends EnginePipelineStepBase {
             testFrameworks.push("jasmine");
         }
 
-        const srcInclude = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, fileSystem.pathCombine(engineVariables.distFolder, "**/!(*-bundle|entryPoint).js")));
+        const srcInclude = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwFolder, fileSystem.pathCombine(engineVariables.distFolder, "**/!(*-bundle|entryPoint).js")));
         testIncludes.push({
             pattern: srcInclude,
             included: false
         });
 
         testIncludes.push({
-            pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, fileSystem.pathCombine(engineVariables.unitTestDistFolder, "**/*.spec.js"))),
+            pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwFolder, fileSystem.pathCombine(engineVariables.unitTestDistFolder, "**/*.spec.js"))),
             included: false
         });
 
         testIncludes.push({
-            pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, fileSystem.pathCombine(engineVariables.unitTestDistFolder, "../unit-module-config.js"))),
+            pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwFolder, fileSystem.pathCombine(engineVariables.unitTestDistFolder, "../unit-module-config.js"))),
             included: true
         });
 
         testIncludes.push({
-            pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, fileSystem.pathCombine(engineVariables.unitTestDistFolder, "../unit-bootstrap.js"))),
+            pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwFolder, fileSystem.pathCombine(engineVariables.unitTestDistFolder, "../unit-bootstrap.js"))),
             included: true
         });
 
-        const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, engineVariables.reportsFolder));
+        const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwFolder, engineVariables.reportsFolder));
 
         const karmaConfiguration = new KarmaConfiguration();
         karmaConfiguration.basePath = "__dirname";

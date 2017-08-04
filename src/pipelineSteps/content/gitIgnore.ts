@@ -13,7 +13,7 @@ export class GitIgnore extends EnginePipelineStepBase {
 
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
-            const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.rootFolder, GitIgnore.FILENAME);
+            const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwFolder, GitIgnore.FILENAME);
 
             if (hasGeneratedMarker) {
                 super.log(logger, display, `Writing ${GitIgnore.FILENAME}`);
@@ -21,7 +21,7 @@ export class GitIgnore extends EnginePipelineStepBase {
                 engineVariables.gitIgnore.push("node_modules");
                 engineVariables.gitIgnore.push(super.wrapGeneratedMarker("# ", ""));
 
-                await fileSystem.fileWriteLines(engineVariables.rootFolder, GitIgnore.FILENAME, engineVariables.gitIgnore);
+                await fileSystem.fileWriteLines(engineVariables.wwwFolder, GitIgnore.FILENAME, engineVariables.gitIgnore);
             } else {
                 super.log(logger, display, `Skipping ${GitIgnore.FILENAME} as it has no generated marker`);
             }

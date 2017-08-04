@@ -8,6 +8,7 @@ import { UniteConfiguration } from "../../configuration/models/unite/uniteConfig
 import { EngineVariables } from "../../engine/engineVariables";
 import { SharedAppFramework } from "./sharedAppFramework";
 export declare class Aurelia extends SharedAppFramework {
+    prerequisites(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     private toggleAllPackages(uniteConfiguration, engineVariables);
     private toggleClientPackages(uniteConfiguration, engineVariables, location, clientPackages);

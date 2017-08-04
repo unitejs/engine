@@ -9,21 +9,23 @@ import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 
 export class RequireJs extends EnginePipelineStepBase {
-    public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["requirejs"], uniteConfiguration.bundler === "RequireJS");
-
+    public async prerequisites(logger: ILogger,
+                               display: IDisplay,
+                               fileSystem: IFileSystem,
+                               uniteConfiguration: UniteConfiguration,
+                               engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.bundler === "RequireJS") {
-            try {
-                if (uniteConfiguration.moduleType !== "AMD") {
-                    throw new Error("You can only use AMD modules with Require js optimizer");
-                }
-
-                return 0;
-            } catch (err) {
-                super.error(logger, display, "Generating Module Loader Scaffold failed", err);
+            if (uniteConfiguration.moduleType !== "AMD") {
+                super.error(logger, display, "You can only use AMD modules with RequireJS");
                 return 1;
             }
         }
+        return 0;
+    }
+
+    public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        engineVariables.toggleDevDependency(["requirejs"], uniteConfiguration.bundler === "RequireJS");
+
         return 0;
     }
 }

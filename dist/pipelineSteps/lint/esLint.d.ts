@@ -10,6 +10,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 export declare class EsLint extends EnginePipelineStepBase {
     private static FILENAME;
     private static FILENAME2;
+    prerequisites(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     private generateConfig(fileSystem, uniteConfiguration, engineVariables, existing);
 }

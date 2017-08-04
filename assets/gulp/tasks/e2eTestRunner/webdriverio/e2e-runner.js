@@ -28,12 +28,22 @@ gulp.task("e2e-run-test", async () => {
     } catch (err) {
         hasError = true;
         display.error("Executing WebdriverIO", err);
-        process.exit(1);
     }
-    seleniumInstance.kill();
-    browserSyncInstance.exit();
 
-    if (!hasError) {
+    try {
+        seleniumInstance.kill();
+    } catch (err) {
+        // Ignore
+    }
+    try {
+        browserSyncInstance.exit();
+    } catch (err) {
+        // Ignore
+    }
+
+    if (hasError) {
+        process.exit(1);
+    } else {
         display.info("Running", "Allure Report Generation");
 
         try {
@@ -47,7 +57,6 @@ gulp.task("e2e-run-test", async () => {
             display.error("Executing Allure", err);
             process.exit(1);
         }
-
     }
 });
 
@@ -67,9 +76,8 @@ gulp.task("e2e-serve", async () => {
     });
 
     display.info("Running", "Selenium");
-    const startAsync = util.promisify(selenium.start);
     try {
-        seleniumInstance = await startAsync.start();
+        seleniumInstance = await util.promisify(selenium.start)();
     } catch (err) {
         display.error("Starting selenium", err);
         process.exit(1);

@@ -15,7 +15,7 @@ export class License extends EnginePipelineStepBase {
         try {
             super.log(logger, display, `Writing ${License.FILENAME}`);
 
-            await fileSystem.fileWriteLines(engineVariables.rootFolder, License.FILENAME, engineVariables.license.licenseText.split("\n"));
+            await fileSystem.fileWriteLines(engineVariables.wwwFolder, License.FILENAME, engineVariables.license.licenseText.split("\n"));
 
             return 0;
         } catch (err) {

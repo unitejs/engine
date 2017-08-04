@@ -17,32 +17,32 @@ export class PostCss extends EnginePipelineStepBase {
 
         if (uniteConfiguration.cssPost === "PostCss") {
             try {
-                super.log(logger, display, `Generating ${PostCss.FILENAME}`, { rootFolder: engineVariables.rootFolder });
+                super.log(logger, display, `Generating ${PostCss.FILENAME}`, { wwwFolder: engineVariables.wwwFolder });
 
                 let existing;
 
                 try {
-                    const exists = await fileSystem.fileExists(engineVariables.rootFolder, PostCss.FILENAME);
+                    const exists = await fileSystem.fileExists(engineVariables.wwwFolder, PostCss.FILENAME);
 
                     if (exists) {
-                        existing = await fileSystem.fileReadJson<PostCssConfiguration>(engineVariables.rootFolder, PostCss.FILENAME);
+                        existing = await fileSystem.fileReadJson<PostCssConfiguration>(engineVariables.wwwFolder, PostCss.FILENAME);
 
                     }
                 } catch (err) {
-                    super.error(logger, display, `Loading existing ${PostCss.FILENAME} failed`, err, { rootFolder: engineVariables.rootFolder });
+                    super.error(logger, display, `Loading existing ${PostCss.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwFolder });
                     return 1;
                 }
 
                 const config = this.generateConfig(existing);
 
-                await fileSystem.fileWriteJson(engineVariables.rootFolder, ".postcssrc.json", config);
+                await fileSystem.fileWriteJson(engineVariables.wwwFolder, ".postcssrc.json", config);
                 return 0;
             } catch (err) {
-                super.error(logger, display, `Generating ${PostCss.FILENAME} failed`, err, { rootFolder: engineVariables.rootFolder });
+                super.error(logger, display, `Generating ${PostCss.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwFolder });
                 return 1;
             }
         } else {
-            return await super.deleteFile(logger, display, fileSystem, engineVariables.rootFolder, PostCss.FILENAME);
+            return await super.deleteFile(logger, display, fileSystem, engineVariables.wwwFolder, PostCss.FILENAME);
         }
     }
 

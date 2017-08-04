@@ -8,5 +8,6 @@ import { UniteConfiguration } from "../../configuration/models/unite/uniteConfig
 import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 export declare class RequireJs extends EnginePipelineStepBase {
+    prerequisites(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
 }

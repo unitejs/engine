@@ -9,6 +9,7 @@ import { IEnginePipelineStep } from "../interfaces/IEnginePipelineStep";
 import { EngineVariables } from "./engineVariables";
 export declare abstract class EnginePipelineStepBase implements IEnginePipelineStep {
     static MARKER: string;
+    prerequisites(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     abstract process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     log(logger: ILogger, display: IDisplay, message: string, args?: {
         [id: string]: any;

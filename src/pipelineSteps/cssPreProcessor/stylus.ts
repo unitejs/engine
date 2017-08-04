@@ -16,7 +16,7 @@ export class Stylus extends EnginePipelineStepBase {
             try {
                 super.log(logger, display, "Creating Stylus folder", { cssSrcFolder: engineVariables.cssSrcFolder });
 
-                engineVariables.cssSrcFolder = fileSystem.pathCombine(engineVariables.rootFolder, "stylus");
+                engineVariables.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwFolder, "stylus");
                 engineVariables.styleLanguageExt = "styl";
 
                 await fileSystem.directoryCreate(engineVariables.cssSrcFolder);

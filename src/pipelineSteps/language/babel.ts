@@ -17,13 +17,13 @@ export class Babel extends EnginePipelineStepBase {
 
         if (uniteConfiguration.sourceLanguage === "JavaScript") {
             try {
-                super.log(logger, display, `Generating ${Babel.FILENAME}`, { rootFolder: engineVariables.rootFolder });
+                super.log(logger, display, `Generating ${Babel.FILENAME}`, { wwwFolder: engineVariables.wwwFolder });
 
                 let existing;
                 try {
-                    const exists = await fileSystem.fileExists(engineVariables.rootFolder, Babel.FILENAME);
+                    const exists = await fileSystem.fileExists(engineVariables.wwwFolder, Babel.FILENAME);
                     if (exists) {
-                        existing = await fileSystem.fileReadJson<BabelConfiguration>(engineVariables.rootFolder, Babel.FILENAME);
+                        existing = await fileSystem.fileReadJson<BabelConfiguration>(engineVariables.wwwFolder, Babel.FILENAME);
                     }
                 } catch (err) {
                     super.error(logger, display, `Reading existing ${Babel.FILENAME} failed`, err);
@@ -31,15 +31,15 @@ export class Babel extends EnginePipelineStepBase {
                 }
 
                 const config = this.generateConfig(fileSystem, uniteConfiguration, engineVariables, existing);
-                await fileSystem.fileWriteJson(engineVariables.rootFolder, Babel.FILENAME, config);
+                await fileSystem.fileWriteJson(engineVariables.wwwFolder, Babel.FILENAME, config);
 
                 return 0;
             } catch (err) {
-                super.error(logger, display, `Generating ${Babel.FILENAME} failed`, err, { rootFolder: engineVariables.rootFolder });
+                super.error(logger, display, `Generating ${Babel.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwFolder });
                 return 1;
             }
         } else {
-            return await super.deleteFile(logger, display, fileSystem, engineVariables.rootFolder, Babel.FILENAME);
+            return await super.deleteFile(logger, display, fileSystem, engineVariables.wwwFolder, Babel.FILENAME);
         }
     }
 

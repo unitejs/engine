@@ -33,14 +33,14 @@ export class WebdriverIo extends EnginePipelineStepBase {
 
         if (uniteConfiguration.e2eTestRunner === "WebdriverIO") {
             try {
-                const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.rootFolder, WebdriverIo.FILENAME);
+                const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwFolder, WebdriverIo.FILENAME);
 
                 if (hasGeneratedMarker) {
                     super.log(logger, display, `Generating ${WebdriverIo.FILENAME}`);
 
                     const lines: string[] = [];
                     this.generateConfig(fileSystem, uniteConfiguration, engineVariables, lines);
-                    await fileSystem.fileWriteLines(engineVariables.rootFolder, WebdriverIo.FILENAME, lines);
+                    await fileSystem.fileWriteLines(engineVariables.wwwFolder, WebdriverIo.FILENAME, lines);
                 } else {
                     super.log(logger, display, `Skipping ${WebdriverIo.FILENAME} as it has no generated marker`);
                 }
@@ -51,17 +51,17 @@ export class WebdriverIo extends EnginePipelineStepBase {
                 return 1;
             }
         } else {
-            return await super.deleteFile(logger, display, fileSystem, engineVariables.rootFolder, WebdriverIo.FILENAME);
+            return await super.deleteFile(logger, display, fileSystem, engineVariables.wwwFolder, WebdriverIo.FILENAME);
         }
     }
 
     private generateConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, lines: string[]): void {
-        const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, engineVariables.reportsFolder));
+        const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwFolder, engineVariables.reportsFolder));
 
         const webdriverConfiguration = new WebdriverIoConfiguration();
         webdriverConfiguration.baseUrl = "http://localhost:9000";
         webdriverConfiguration.specs = [
-            fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, fileSystem.pathCombine(engineVariables.e2eTestDistFolder, "**/*.spec.js")))
+            fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwFolder, fileSystem.pathCombine(engineVariables.e2eTestDistFolder, "**/*.spec.js")))
         ];
         webdriverConfiguration.capabilities = [
             {
@@ -82,7 +82,7 @@ export class WebdriverIo extends EnginePipelineStepBase {
             }
         };
 
-        const e2eBootstrap = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.rootFolder, fileSystem.pathCombine(engineVariables.e2eTestFolder, "e2e-bootstrap.js")));
+        const e2eBootstrap = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwFolder, fileSystem.pathCombine(engineVariables.e2eTestFolder, "e2e-bootstrap.js")));
 
         lines.push(`exports.config = ${JsonHelper.codify(webdriverConfiguration)}`);
         lines.push(`exports.config.before = require('${e2eBootstrap}');`);

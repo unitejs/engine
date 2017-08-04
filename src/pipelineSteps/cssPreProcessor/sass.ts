@@ -16,7 +16,7 @@ export class Sass extends EnginePipelineStepBase {
             try {
                 super.log(logger, display, "Creating Sass folder", { cssSrcFolder: engineVariables.cssSrcFolder });
 
-                engineVariables.cssSrcFolder = fileSystem.pathCombine(engineVariables.rootFolder, "sass");
+                engineVariables.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwFolder, "sass");
                 engineVariables.styleLanguageExt = "scss";
 
                 await fileSystem.directoryCreate(engineVariables.cssSrcFolder);

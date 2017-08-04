@@ -9,6 +9,7 @@ const source = require("vinyl-source-stream");
 const buffer = require("vinyl-buffer");
 const sourcemaps = require("gulp-sourcemaps");
 const uc = require("./util/unite-config");
+const asyncUtil = require("./util/async-util");
 const clientPackages = require("./util/client-packages");
 const gutil = require("gulp-util");
 const uglify = require("gulp-uglify");
@@ -35,7 +36,7 @@ gulp.task("build-bundle-app", async () => {
             process.env.NODE_ENV = "production";
         }
 
-        return bApp.bundle()
+        return asyncUtil.stream(bApp.bundle()
             .pipe(source("app-bundle.js"))
             .pipe(buffer())
             .pipe(buildConfiguration.minify ? uglify()
@@ -46,7 +47,7 @@ gulp.task("build-bundle-app", async () => {
             .pipe(buildConfiguration.sourcemaps
                 ? sourcemaps.mapSources((sourcePath) => sourcePath.replace(/dist\//, "./")) : gutil.noop())
             .pipe(buildConfiguration.sourcemaps ? sourcemaps.write({"includeContent": true}) : gutil.noop())
-            .pipe(gulp.dest(uniteConfig.directories.dist));
+            .pipe(gulp.dest(uniteConfig.directories.dist)));
     }
 });
 

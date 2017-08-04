@@ -87,22 +87,22 @@ export class Engine implements IEngine {
         this._assetsFolder = fileSystem.pathCombine(this._coreRoot, "/assets/");
     }
 
-    public async init(packageName: string | undefined | null,
-                      title: string | undefined | null,
-                      license: string | undefined | null,
-                      sourceLanguage: UniteSourceLanguage | undefined | null,
-                      moduleType: UniteModuleType | undefined | null,
-                      bundler: UniteBundler | undefined | null,
-                      unitTestRunner: UniteUnitTestRunner | undefined | null,
-                      unitTestFramework: UniteUnitTestFramework | undefined | null,
-                      e2eTestRunner: UniteE2eTestRunner | undefined | null,
-                      e2eTestFramework: UniteE2eTestFramework | undefined | null,
-                      linter: UniteLinter | undefined | null,
-                      cssPre: UniteCssPreProcessor | undefined | null,
-                      cssPost: UniteCssPostProcessor | undefined | null,
-                      packageManager: UnitePackageManager | undefined | null,
-                      applicationFramework: UniteApplicationFramework | undefined | null,
-                      outputDirectory: string | undefined | null): Promise<number> {
+    public async configure(packageName: string | undefined | null,
+                           title: string | undefined | null,
+                           license: string | undefined | null,
+                           sourceLanguage: UniteSourceLanguage | undefined | null,
+                           moduleType: UniteModuleType | undefined | null,
+                           bundler: UniteBundler | undefined | null,
+                           unitTestRunner: UniteUnitTestRunner | undefined | null,
+                           unitTestFramework: UniteUnitTestFramework | undefined | null,
+                           e2eTestRunner: UniteE2eTestRunner | undefined | null,
+                           e2eTestFramework: UniteE2eTestFramework | undefined | null,
+                           linter: UniteLinter | undefined | null,
+                           cssPre: UniteCssPreProcessor | undefined | null,
+                           cssPost: UniteCssPostProcessor | undefined | null,
+                           packageManager: UnitePackageManager | undefined | null,
+                           applicationFramework: UniteApplicationFramework | undefined | null,
+                           outputDirectory: string | undefined | null): Promise<number> {
         outputDirectory = this.cleanupOutputDirectory(outputDirectory);
         let uniteConfiguration = await this.loadConfiguration(outputDirectory);
         if (!uniteConfiguration) {
@@ -196,7 +196,7 @@ export class Engine implements IEngine {
 
         this._display.log("");
 
-        return this.initRun(outputDirectory, uniteConfiguration, spdxLicense);
+        return this.configureRun(outputDirectory, uniteConfiguration, spdxLicense);
     }
 
     public async clientPackage(operation: ModuleOperation | undefined | null,
@@ -287,6 +287,12 @@ export class Engine implements IEngine {
         } else {
             outputDirectory = this._fileSystem.pathFormat(outputDirectory);
         }
+
+        // if the user has specified the www folder then move one up
+        outputDirectory = this._fileSystem.pathFormat(outputDirectory);
+        if (outputDirectory.endsWith("www")) {
+            outputDirectory = this._fileSystem.pathFormat(this._fileSystem.pathCombine(outputDirectory, "../"));
+        }
         return outputDirectory;
     }
 
@@ -295,9 +301,11 @@ export class Engine implements IEngine {
 
         // check if there is a unite.json we can load for default options
         try {
-            const exists = await this._fileSystem.fileExists(outputDirectory, "unite.json");
+            const wwwFolder = this._fileSystem.pathCombine(outputDirectory, "www");
+
+            const exists = await this._fileSystem.fileExists(wwwFolder, "unite.json");
             if (exists) {
-                uniteConfiguration = await this._fileSystem.fileReadJson<UniteConfiguration>(outputDirectory, "unite.json");
+                uniteConfiguration = await this._fileSystem.fileReadJson<UniteConfiguration>(wwwFolder, "unite.json");
             }
         } catch (e) {
             // we can ignore any failures here
@@ -306,7 +314,7 @@ export class Engine implements IEngine {
         return uniteConfiguration;
     }
 
-    private async initRun(outputDirectory: string, uniteConfiguration: UniteConfiguration, license: ISpdxLicense): Promise<number> {
+    private async configureRun(outputDirectory: string, uniteConfiguration: UniteConfiguration, license: ISpdxLicense): Promise<number> {
         this._logger.info("Engine::init", { outputDirectory, uniteConfiguration });
 
         const engineVariables = new EngineVariables();
@@ -374,6 +382,7 @@ export class Engine implements IEngine {
 
             if (ret === 0) {
                 this._display.banner("You should probably run npm install / yarn install before running any gulp commands.");
+                this._display.banner("Successfully Completed.");
             }
         }
 
@@ -452,6 +461,10 @@ export class Engine implements IEngine {
             pipelineSteps.push(new UniteConfigurationJson());
 
             ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
+
+            if (ret === 0) {
+                this._display.banner("Successfully Completed.");
+            }
         }
 
         return ret;
@@ -486,6 +499,10 @@ export class Engine implements IEngine {
             pipelineSteps.push(new UniteConfigurationJson());
 
             ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
+
+            if (ret === 0) {
+                this._display.banner("Successfully Completed.");
+            }
         }
 
         return ret;
@@ -510,6 +527,10 @@ export class Engine implements IEngine {
             const pipelineSteps: IEnginePipelineStep[] = [];
             pipelineSteps.push(new UniteConfigurationJson());
             ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
+
+            if (ret === 0) {
+                this._display.banner("Successfully Completed.");
+            }
         }
 
         return ret;
@@ -528,6 +549,9 @@ export class Engine implements IEngine {
             const pipelineSteps: IEnginePipelineStep[] = [];
             pipelineSteps.push(new UniteConfigurationJson());
             ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
+            if (ret === 0) {
+                this._display.banner("Successfully Completed.");
+            }
         }
 
         return ret;
@@ -536,20 +560,21 @@ export class Engine implements IEngine {
     private async createEngineVariables(outputDirectory: string, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.coreFolder = this._coreRoot;
         engineVariables.rootFolder = outputDirectory;
-        engineVariables.srcFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "src");
-        engineVariables.distFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "dist");
-        engineVariables.gulpBuildFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "build");
-        engineVariables.reportsFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "reports");
-        engineVariables.cssDistFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "css");
-        engineVariables.e2eTestFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "test/e2e");
-        engineVariables.e2eTestSrcFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "test/e2e/src");
-        engineVariables.e2eTestDistFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "test/e2e/dist");
-        engineVariables.unitTestFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "test/unit");
-        engineVariables.unitTestSrcFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "test/unit/src");
-        engineVariables.unitTestDistFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "test/unit/dist");
+        engineVariables.wwwFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "www");
+        engineVariables.srcFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "src");
+        engineVariables.distFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "dist");
+        engineVariables.gulpBuildFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "build");
+        engineVariables.reportsFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "reports");
+        engineVariables.cssDistFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "css");
+        engineVariables.e2eTestFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "test/e2e");
+        engineVariables.e2eTestSrcFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "test/e2e/src");
+        engineVariables.e2eTestDistFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "test/e2e/dist");
+        engineVariables.unitTestFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "test/unit");
+        engineVariables.unitTestSrcFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "test/unit/src");
+        engineVariables.unitTestDistFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "test/unit/dist");
 
-        engineVariables.assetsFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "assets");
-        engineVariables.assetsSourceFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "assetsSource");
+        engineVariables.assetsFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "assets");
+        engineVariables.assetsSourceFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "assetsSource");
 
         engineVariables.packageFolder = "node_modules/";
         engineVariables.packageAssetsDirectory = this._assetsFolder;
@@ -610,6 +635,13 @@ export class Engine implements IEngine {
     }
 
     private async runPipeline(pipelineSteps: IEnginePipelineStep[], uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        for (const pipelineStep of pipelineSteps) {
+            const ret = await pipelineStep.prerequisites(this._logger, this._display, this._fileSystem, uniteConfiguration, engineVariables);
+            if (ret !== 0) {
+                return ret;
+            }
+        }
+
         for (const pipelineStep of pipelineSteps) {
             const ret = await pipelineStep.process(this._logger, this._display, this._fileSystem, uniteConfiguration, engineVariables);
             if (ret !== 0) {

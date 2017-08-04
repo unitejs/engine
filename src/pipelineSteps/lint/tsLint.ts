@@ -12,21 +12,32 @@ import { EngineVariables } from "../../engine/engineVariables";
 export class TsLint extends EnginePipelineStepBase {
     private static FILENAME: string = "tslint.json";
 
+    public async prerequisites(logger: ILogger,
+                               display: IDisplay,
+                               fileSystem: IFileSystem,
+                               uniteConfiguration: UniteConfiguration,
+                               engineVariables: EngineVariables): Promise<number> {
+        if (uniteConfiguration.linter === "TSLint") {
+            if (uniteConfiguration.sourceLanguage !== "TypeScript") {
+                super.error(logger, display, "You can only use TSLint when the source language is TypeScript");
+                return 1;
+            }
+        }
+        return 0;
+    }
+
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["tslint"], uniteConfiguration.linter === "TSLint");
 
         if (uniteConfiguration.linter === "TSLint") {
             try {
-                if (uniteConfiguration.sourceLanguage !== "TypeScript") {
-                    throw new Error("You can only use TSLint when the source language is TypeScript");
-                }
                 super.log(logger, display, `Generating ${TsLint.FILENAME}`);
 
                 let existing;
                 try {
-                    const exists = await fileSystem.fileExists(engineVariables.rootFolder, TsLint.FILENAME);
+                    const exists = await fileSystem.fileExists(engineVariables.wwwFolder, TsLint.FILENAME);
                     if (exists) {
-                        existing = await fileSystem.fileReadJson<TsLintConfiguration>(engineVariables.rootFolder, TsLint.FILENAME);
+                        existing = await fileSystem.fileReadJson<TsLintConfiguration>(engineVariables.wwwFolder, TsLint.FILENAME);
                     }
                 } catch (err) {
                     super.error(logger, display, `Reading existing ${TsLint.FILENAME} failed`, err);
@@ -34,7 +45,7 @@ export class TsLint extends EnginePipelineStepBase {
                 }
 
                 const config = this.generateConfig(fileSystem, uniteConfiguration, engineVariables, existing);
-                await fileSystem.fileWriteJson(engineVariables.rootFolder, TsLint.FILENAME, config);
+                await fileSystem.fileWriteJson(engineVariables.wwwFolder, TsLint.FILENAME, config);
 
                 return 0;
             } catch (err) {
@@ -42,7 +53,7 @@ export class TsLint extends EnginePipelineStepBase {
                 return 1;
             }
         } else {
-            return await super.deleteFile(logger, display, fileSystem, engineVariables.rootFolder, TsLint.FILENAME);
+            return await super.deleteFile(logger, display, fileSystem, engineVariables.wwwFolder, TsLint.FILENAME);
         }
     }
 

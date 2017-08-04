@@ -9,6 +9,20 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { SharedAppFramework } from "./sharedAppFramework";
 
 export class Aurelia extends SharedAppFramework {
+    public async prerequisites(logger: ILogger,
+                               display: IDisplay,
+                               fileSystem: IFileSystem,
+                               uniteConfiguration: UniteConfiguration,
+                               engineVariables: EngineVariables): Promise<number> {
+        if (uniteConfiguration.applicationFramework === "Aurelia") {
+            if (uniteConfiguration.bundler === "Browserify" || uniteConfiguration.bundler === "Webpack") {
+                super.error(logger, display, `Aurelia does not currently support bundling with ${uniteConfiguration.bundler}`);
+                return 1;
+            }
+        }
+        return 0;
+    }
+
     public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["aurelia-protractor-plugin"], uniteConfiguration.applicationFramework === "Aurelia" && uniteConfiguration.e2eTestRunner === "Protractor");
         engineVariables.protractorPlugins["aurelia-protractor-plugin"] = uniteConfiguration.applicationFramework === "Aurelia" && uniteConfiguration.e2eTestRunner === "Protractor";
@@ -16,11 +30,6 @@ export class Aurelia extends SharedAppFramework {
         this.toggleAllPackages(uniteConfiguration, engineVariables);
 
         if (uniteConfiguration.applicationFramework === "Aurelia") {
-            if (uniteConfiguration.bundler === "Browserify" || uniteConfiguration.bundler === "Webpack") {
-                super.error(logger, display, `Aurelia does not currently support bundling with ${uniteConfiguration.bundler}`);
-                return 1;
-            }
-
             let ret = await this.generateAppSource(logger, display, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper", "entryPoint", "child/child"]);
 
             if (ret === 0) {
