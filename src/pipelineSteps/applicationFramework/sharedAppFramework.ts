@@ -1,7 +1,6 @@
 /**
  * Pipeline step to generate scaffolding for shared application.
  */
-import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
@@ -10,7 +9,6 @@ import { EngineVariables } from "../../engine/engineVariables";
 
 export abstract class SharedAppFramework extends EnginePipelineStepBase {
     protected async generateAppSource(logger: ILogger,
-                                      display: IDisplay,
                                       fileSystem: IFileSystem,
                                       uniteConfiguration: UniteConfiguration,
                                       engineVariables: EngineVariables,
@@ -19,7 +17,7 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
                                                       `appFramework/${uniteConfiguration.applicationFramework.toLowerCase()}/src/${uniteConfiguration.sourceLanguage.toLowerCase()}`);
 
         try {
-            super.log(logger, display, "Generating App Source in", { appSourceFolder: engineVariables.srcFolder });
+            logger.info("Generating App Source in", { appSourceFolder: engineVariables.srcFolder });
 
             for (let file of files) {
                 if (file.indexOf("!") >= 0) {
@@ -27,7 +25,7 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
                 } else {
                     file += `.${engineVariables.sourceLanguageExt}`;
                 }
-                await this.copyFile(logger, display, fileSystem,
+                await this.copyFile(logger, fileSystem,
                                     scaffoldFolder,
                                     file,
                                     engineVariables.srcFolder,
@@ -36,13 +34,12 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
 
             return 0;
         } catch (err) {
-            super.error(logger, display, "Generating App Source failed", err, { appSourceFolder: engineVariables.srcFolder });
+            logger.error("Generating App Source failed", err, { appSourceFolder: engineVariables.srcFolder });
             return 1;
         }
     }
 
     protected async generateAppHtml(logger: ILogger,
-                                    display: IDisplay,
                                     fileSystem: IFileSystem,
                                     uniteConfiguration: UniteConfiguration,
                                     engineVariables: EngineVariables,
@@ -50,10 +47,10 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
         const scaffoldFolder = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, `appFramework/${uniteConfiguration.applicationFramework.toLowerCase()}/src/html/`);
 
         try {
-            super.log(logger, display, "Generating App HTML in", { appSourceFolder: engineVariables.srcFolder });
+            logger.info("Generating App HTML in", { appSourceFolder: engineVariables.srcFolder });
 
             for (const htmlFile of htmlFiles) {
-                await this.copyFile(logger, display, fileSystem,
+                await this.copyFile(logger, fileSystem,
                                     scaffoldFolder,
                                     `${htmlFile}.html`,
                                     engineVariables.srcFolder,
@@ -62,13 +59,12 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
 
             return 0;
         } catch (err) {
-            super.error(logger, display, "Generating App HTML failed", err, { appSourceFolder: engineVariables.srcFolder });
+            logger.error("Generating App HTML failed", err, { appSourceFolder: engineVariables.srcFolder });
             return 1;
         }
     }
 
     protected async generateAppCss(logger: ILogger,
-                                   display: IDisplay,
                                    fileSystem: IFileSystem,
                                    uniteConfiguration: UniteConfiguration,
                                    engineVariables: EngineVariables,
@@ -77,10 +73,10 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
                                                       `appFramework/${uniteConfiguration.applicationFramework.toLowerCase()}/src/css/${uniteConfiguration.cssPre.toLowerCase()}/`);
 
         try {
-            super.log(logger, display, "Generating App CSS in", { appSourceFolder: engineVariables.srcFolder });
+            logger.info("Generating App CSS in", { appSourceFolder: engineVariables.srcFolder });
 
             for (const cssFile of cssFiles) {
-                await this.copyFile(logger, display, fileSystem,
+                await this.copyFile(logger, fileSystem,
                                     scaffoldFolder,
                                     `${cssFile}.${engineVariables.styleLanguageExt}`,
                                     engineVariables.srcFolder,
@@ -89,20 +85,19 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
 
             return 0;
         } catch (err) {
-            super.error(logger, display, "Generating CSS HTML failed", err, { appSourceFolder: engineVariables.srcFolder });
+            logger.error("Generating CSS HTML failed", err, { appSourceFolder: engineVariables.srcFolder });
             return 1;
         }
     }
 
     protected async generateUnitTest(logger: ILogger,
-                                     display: IDisplay,
                                      fileSystem: IFileSystem,
                                      uniteConfiguration: UniteConfiguration,
                                      engineVariables: EngineVariables,
                                      specs: string[]): Promise<number> {
         if (uniteConfiguration.unitTestRunner !== "None") {
             try {
-                super.log(logger, display, "Generating unit test scaffold shared", { unitTestSrcFolder: engineVariables.unitTestSrcFolder });
+                logger.info("Generating unit test scaffold shared", { unitTestSrcFolder: engineVariables.unitTestSrcFolder });
 
                 const unitTestsScaffold = fileSystem.pathCombine(engineVariables.packageAssetsDirectory,
                                                                  `appFramework/shared/test/unit/src/sourceLanguage/${uniteConfiguration.sourceLanguage.toLowerCase()}/` +
@@ -112,20 +107,20 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
                                                                            `appFramework/shared/test/unit/moduleType/${uniteConfiguration.moduleType.toLowerCase()}/`);
 
                 for (const spec of specs) {
-                    await this.copyFile(logger, display, fileSystem, unitTestsScaffold,
+                    await this.copyFile(logger, fileSystem, unitTestsScaffold,
                                         `${spec}.spec.${engineVariables.sourceLanguageExt}`,
                                         engineVariables.unitTestSrcFolder,
                                         `${spec}.spec.${engineVariables.sourceLanguageExt}`);
                 }
 
-                await this.copyFile(logger, display, fileSystem, unitTestsScaffoldModuleType,
+                await this.copyFile(logger, fileSystem, unitTestsScaffoldModuleType,
                                     "unit-bootstrap.js",
                                     engineVariables.unitTestFolder,
                                     "unit-bootstrap.js");
 
                 return 0;
             } catch (err) {
-                super.error(logger, display, "Generating application unit test failed", err, { unitTestSrcFolder: engineVariables.unitTestSrcFolder });
+                logger.error("Generating application unit test failed", err, { unitTestSrcFolder: engineVariables.unitTestSrcFolder });
                 return 1;
             }
         } else {
@@ -134,14 +129,13 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
     }
 
     protected async generateE2eTest(logger: ILogger,
-                                    display: IDisplay,
                                     fileSystem: IFileSystem,
                                     uniteConfiguration: UniteConfiguration,
                                     engineVariables: EngineVariables,
                                     specs: string[]): Promise<number> {
         if (uniteConfiguration.e2eTestRunner !== "None") {
             try {
-                super.log(logger, display, "Generating e2e test scaffold shared", { unitTestSrcFolder: engineVariables.e2eTestSrcFolder });
+                logger.info("Generating e2e test scaffold shared", { unitTestSrcFolder: engineVariables.e2eTestSrcFolder });
 
                 const e2eTestsScaffold = fileSystem.pathCombine(engineVariables.packageAssetsDirectory,
                                                                 `appFramework/${uniteConfiguration.applicationFramework.toLowerCase()}/test/e2e/src/e2eTestRunner/` +
@@ -153,26 +147,26 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
                                                                       `test/e2e/e2eTestRunner/${uniteConfiguration.e2eTestRunner.toLowerCase()}`);
 
                 for (const spec of specs) {
-                    await this.copyFile(logger, display, fileSystem, e2eTestsScaffold,
+                    await this.copyFile(logger, fileSystem, e2eTestsScaffold,
                                         `${spec}.spec.${engineVariables.sourceLanguageExt}`,
                                         engineVariables.e2eTestSrcFolder,
                                         `${spec}.spec.${engineVariables.sourceLanguageExt}`);
                 }
 
-                await this.copyFile(logger, display, fileSystem, e2eTestsScaffoldRunner,
+                await this.copyFile(logger, fileSystem, e2eTestsScaffoldRunner,
                                     "e2e-bootstrap.js",
                                     engineVariables.e2eTestFolder,
                                     "e2e-bootstrap.js");
 
                 if (uniteConfiguration.sourceLanguage === "TypeScript") {
-                    await this.copyFile(logger, display, fileSystem, e2eTestsScaffoldRunner,
+                    await this.copyFile(logger, fileSystem, e2eTestsScaffoldRunner,
                                         "e2e-bootstrap.d.ts",
                                         engineVariables.e2eTestFolder,
                                         "e2e-bootstrap.d.ts");
                 }
                 return 0;
             } catch (err) {
-                super.error(logger, display, "Generating application e2e test failed", err, { unitTestSrcFolder: engineVariables.e2eTestSrcFolder });
+                logger.error("Generating application e2e test failed", err, { unitTestSrcFolder: engineVariables.e2eTestSrcFolder });
                 return 1;
             }
         } else {
@@ -180,19 +174,19 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
         }
     }
 
-    protected async generateCss(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    protected async generateCss(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
-            super.log(logger, display, "Generating application css scaffold shared");
+            logger.info("Generating application css scaffold shared", { cssSrcFolder: engineVariables.cssSrcFolder });
 
             const assetCssFolder = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, `appFramework/shared/css/${uniteConfiguration.cssPre.toLowerCase()}`);
 
-            await super.copyFile(logger, display, fileSystem, assetCssFolder, `app.${engineVariables.styleLanguageExt}`, engineVariables.cssSrcFolder, `app.${engineVariables.styleLanguageExt}`);
-            await super.copyFile(logger, display, fileSystem, assetCssFolder, `main.${engineVariables.styleLanguageExt}`, engineVariables.cssSrcFolder, `main.${engineVariables.styleLanguageExt}`);
-            await super.copyFile(logger, display, fileSystem, assetCssFolder, `reset.${engineVariables.styleLanguageExt}`, engineVariables.cssSrcFolder, `reset.${engineVariables.styleLanguageExt}`);
+            await super.copyFile(logger, fileSystem, assetCssFolder, `app.${engineVariables.styleLanguageExt}`, engineVariables.cssSrcFolder, `app.${engineVariables.styleLanguageExt}`);
+            await super.copyFile(logger, fileSystem, assetCssFolder, `main.${engineVariables.styleLanguageExt}`, engineVariables.cssSrcFolder, `main.${engineVariables.styleLanguageExt}`);
+            await super.copyFile(logger, fileSystem, assetCssFolder, `reset.${engineVariables.styleLanguageExt}`, engineVariables.cssSrcFolder, `reset.${engineVariables.styleLanguageExt}`);
 
             return 0;
         } catch (err) {
-            super.error(logger, display, "Generating application css failed", err);
+            logger.error("Generating application css failed", err);
             return 1;
         }
     }

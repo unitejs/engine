@@ -8,7 +8,7 @@ const util = require("util");
 
 async function getUniteConfig () {
     try {
-        const data = await util.promisify(fs.readFile)("./unite.json");
+        const data = await util.promisify(fs.readFile)("../unite.json");
         return JSON.parse(data.toString());
     } catch (err) {
         display.error("Reading unite.json", err);

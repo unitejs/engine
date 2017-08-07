@@ -10,20 +10,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const enginePipelineStepBase_1 = require("../../engine/enginePipelineStepBase");
 class Css extends enginePipelineStepBase_1.EnginePipelineStepBase {
-    process(logger, display, fileSystem, uniteConfiguration, engineVariables) {
-        const _super = name => super[name];
+    process(logger, fileSystem, uniteConfiguration, engineVariables) {
         return __awaiter(this, void 0, void 0, function* () {
             if (uniteConfiguration.cssPre === "Css") {
                 try {
-                    _super("log").call(this, logger, display, "Creating cssSrc folder", { cssSrcFolder: engineVariables.cssSrcFolder });
                     engineVariables.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwFolder, "cssSrc");
+                    logger.info("Creating cssSrc folder", { cssSrcFolder: engineVariables.cssSrcFolder });
                     engineVariables.styleLanguageExt = "css";
                     yield fileSystem.directoryCreate(engineVariables.cssSrcFolder);
                     yield fileSystem.directoryCreate(engineVariables.cssDistFolder);
                     return 0;
                 }
                 catch (err) {
-                    _super("error").call(this, logger, display, "Generating css folder failed", err, { cssSrcFolder: engineVariables.cssSrcFolder });
+                    logger.error("Generating css folder failed", err, { cssSrcFolder: engineVariables.cssSrcFolder });
                     return 1;
                 }
             }
@@ -33,4 +32,4 @@ class Css extends enginePipelineStepBase_1.EnginePipelineStepBase {
 }
 exports.Css = Css;
 
-//# sourceMappingURL=data:application/json;charset=utf8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy9waXBlbGluZVN0ZXBzL2Nzc1ByZVByb2Nlc3Nvci9jc3MudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7OztBQU9BLGdGQUE2RTtBQUc3RSxTQUFpQixTQUFRLCtDQUFzQjtJQUM5QixPQUFPLENBQUMsTUFBZSxFQUFFLE9BQWlCLEVBQUUsVUFBdUIsRUFBRSxrQkFBc0MsRUFBRSxlQUFnQzs7O1lBQ3RKLEVBQUUsQ0FBQyxDQUFDLGtCQUFrQixDQUFDLE1BQU0sS0FBSyxLQUFLLENBQUMsQ0FBQyxDQUFDO2dCQUN0QyxJQUFJLENBQUM7b0JBQ0QsYUFBUyxZQUFDLE1BQU0sRUFBRSxPQUFPLEVBQUUsd0JBQXdCLEVBQUUsRUFBRSxZQUFZLEVBQUUsZUFBZSxDQUFDLFlBQVksRUFBRSxFQUFFO29CQUVyRyxlQUFlLENBQUMsWUFBWSxHQUFHLFVBQVUsQ0FBQyxXQUFXLENBQUMsZUFBZSxDQUFDLFNBQVMsRUFBRSxRQUFRLENBQUMsQ0FBQztvQkFDM0YsZUFBZSxDQUFDLGdCQUFnQixHQUFHLEtBQUssQ0FBQztvQkFFekMsTUFBTSxVQUFVLENBQUMsZUFBZSxDQUFDLGVBQWUsQ0FBQyxZQUFZLENBQUMsQ0FBQztvQkFDL0QsTUFBTSxVQUFVLENBQUMsZUFBZSxDQUFDLGVBQWUsQ0FBQyxhQUFhLENBQUMsQ0FBQztvQkFFaEUsTUFBTSxDQUFDLENBQUMsQ0FBQztnQkFDYixDQUFDO2dCQUFDLEtBQUssQ0FBQyxDQUFDLEdBQUcsQ0FBQyxDQUFDLENBQUM7b0JBQ1gsZUFBVyxZQUFDLE1BQU0sRUFBRSxPQUFPLEVBQUUsOEJBQThCLEVBQUUsR0FBRyxFQUFFLEVBQUUsWUFBWSxFQUFFLGVBQWUsQ0FBQyxZQUFZLEVBQUUsRUFBRTtvQkFDbEgsTUFBTSxDQUFDLENBQUMsQ0FBQztnQkFDYixDQUFDO1lBQ0wsQ0FBQztZQUVELE1BQU0sQ0FBQyxDQUFDLENBQUM7UUFDYixDQUFDO0tBQUE7Q0FDSjtBQXJCRCxrQkFxQkMiLCJmaWxlIjoicGlwZWxpbmVTdGVwcy9jc3NQcmVQcm9jZXNzb3IvY3NzLmpzIiwic291cmNlUm9vdCI6Ii4uL3NyYyJ9
+//# sourceMappingURL=data:application/json;charset=utf8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy9waXBlbGluZVN0ZXBzL2Nzc1ByZVByb2Nlc3Nvci9jc3MudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7OztBQU1BLGdGQUE2RTtBQUc3RSxTQUFpQixTQUFRLCtDQUFzQjtJQUM5QixPQUFPLENBQUMsTUFBZSxFQUFFLFVBQXVCLEVBQUUsa0JBQXNDLEVBQUUsZUFBZ0M7O1lBQ25JLEVBQUUsQ0FBQyxDQUFDLGtCQUFrQixDQUFDLE1BQU0sS0FBSyxLQUFLLENBQUMsQ0FBQyxDQUFDO2dCQUN0QyxJQUFJLENBQUM7b0JBQ0QsZUFBZSxDQUFDLFlBQVksR0FBRyxVQUFVLENBQUMsV0FBVyxDQUFDLGVBQWUsQ0FBQyxTQUFTLEVBQUUsUUFBUSxDQUFDLENBQUM7b0JBRTNGLE1BQU0sQ0FBQyxJQUFJLENBQUMsd0JBQXdCLEVBQUUsRUFBRSxZQUFZLEVBQUUsZUFBZSxDQUFDLFlBQVksRUFBRSxDQUFDLENBQUM7b0JBRXRGLGVBQWUsQ0FBQyxnQkFBZ0IsR0FBRyxLQUFLLENBQUM7b0JBRXpDLE1BQU0sVUFBVSxDQUFDLGVBQWUsQ0FBQyxlQUFlLENBQUMsWUFBWSxDQUFDLENBQUM7b0JBQy9ELE1BQU0sVUFBVSxDQUFDLGVBQWUsQ0FBQyxlQUFlLENBQUMsYUFBYSxDQUFDLENBQUM7b0JBRWhFLE1BQU0sQ0FBQyxDQUFDLENBQUM7Z0JBQ2IsQ0FBQztnQkFBQyxLQUFLLENBQUMsQ0FBQyxHQUFHLENBQUMsQ0FBQyxDQUFDO29CQUNYLE1BQU0sQ0FBQyxLQUFLLENBQUMsOEJBQThCLEVBQUUsR0FBRyxFQUFFLEVBQUUsWUFBWSxFQUFFLGVBQWUsQ0FBQyxZQUFZLEVBQUUsQ0FBQyxDQUFDO29CQUNsRyxNQUFNLENBQUMsQ0FBQyxDQUFDO2dCQUNiLENBQUM7WUFDTCxDQUFDO1lBRUQsTUFBTSxDQUFDLENBQUMsQ0FBQztRQUNiLENBQUM7S0FBQTtDQUNKO0FBdEJELGtCQXNCQyIsImZpbGUiOiJwaXBlbGluZVN0ZXBzL2Nzc1ByZVByb2Nlc3Nvci9jc3MuanMiLCJzb3VyY2VSb290IjoiLi4vc3JjIn0=

@@ -6,7 +6,7 @@ import { $, browser, by } from "protractor";
 
 describe("App", () => {
     it("the title is set", (done) => {
-        const uniteJson = require("../../../unite.json");
+        const uniteJson = require("../../../../unite.json");
         browser.loadAndWaitForAureliaPage("/")
             .then(() => {
                 browser.getTitle()

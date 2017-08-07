@@ -3,7 +3,6 @@
  */
 import * as child from "child_process";
 import * as npm from "npm";
-import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
@@ -11,18 +10,16 @@ import { IPackageManager } from "../interfaces/IPackageManager";
 
 export class YarnPackageManager implements IPackageManager {
     private _logger: ILogger;
-    private _display: IDisplay;
     private _fileSystem: IFileSystem;
 
-    constructor(logger: ILogger, display: IDisplay, fileSystem: IFileSystem) {
+    constructor(logger: ILogger, fileSystem: IFileSystem) {
         this._logger = logger;
-        this._display = display;
         this._fileSystem = fileSystem;
     }
 
     public async info(packageName: string): Promise<PackageConfiguration> {
         // We still use NPM for this as yarn doesn't have this facility yet
-        this._display.info("Looking up package info...");
+        this._logger.info("Looking up package info...");
         return new Promise<PackageConfiguration>((resolve, reject) => {
             npm.load({json: true}, (err, result) => {
                 if (err) {
@@ -46,7 +43,7 @@ export class YarnPackageManager implements IPackageManager {
     }
 
     public async add(workingDirectory: string, packageName: string, version: string, isDev: boolean): Promise<void> {
-        this._display.info("Adding package...");
+        this._logger.info("Adding package...");
 
         const args = ["add", `${packageName}@${version}`];
         if (isDev) {
@@ -57,7 +54,7 @@ export class YarnPackageManager implements IPackageManager {
     }
 
     public async remove(workingDirectory: string, packageName: string, isDev: boolean): Promise<void> {
-        this._display.info("Removing package...");
+        this._logger.info("Removing package...");
 
         const args = ["remove", packageName];
         if (isDev) {
@@ -74,15 +71,15 @@ export class YarnPackageManager implements IPackageManager {
             const spawnProcess = child.spawn(`yarn${isWin ? ".cmd" : ""}`, args, { cwd: this._fileSystem.pathFormat(workingDirectory) });
 
             spawnProcess.stdout.on("data", (data) => {
-                this._display.log((data ? data.toString() : "").replace(/\n/g, ""));
+                this._logger.info((data ? data.toString() : "").replace(/\n/g, ""));
             });
 
             spawnProcess.stderr.on("data", (data) =>  {
                 const error = (data ? data.toString() : "").replace(/\n/g, "");
                 if (error.startsWith("warning")) {
-                    this._display.info(error);
+                    this._logger.info(error);
                 } else {
-                    this._display.error(error);
+                    this._logger.error(error);
                 }
             });
 

@@ -1,7 +1,6 @@
 /**
  * Pipeline step to generate handle css styling.
  */
-import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
@@ -9,12 +8,13 @@ import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 
 export class Css extends EnginePipelineStepBase {
-    public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.cssPre === "Css") {
             try {
-                super.log(logger, display, "Creating cssSrc folder", { cssSrcFolder: engineVariables.cssSrcFolder });
-
                 engineVariables.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwFolder, "cssSrc");
+
+                logger.info("Creating cssSrc folder", { cssSrcFolder: engineVariables.cssSrcFolder });
+
                 engineVariables.styleLanguageExt = "css";
 
                 await fileSystem.directoryCreate(engineVariables.cssSrcFolder);
@@ -22,7 +22,7 @@ export class Css extends EnginePipelineStepBase {
 
                 return 0;
             } catch (err) {
-                super.error(logger, display, "Generating css folder failed", err, { cssSrcFolder: engineVariables.cssSrcFolder });
+                logger.error("Generating css folder failed", err, { cssSrcFolder: engineVariables.cssSrcFolder });
                 return 1;
             }
         }

@@ -1,7 +1,6 @@
 /**
  * Pipeline step to generate TypeScript configuration.
  */
-import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { TypeScriptCompilerOptions } from "../../configuration/models/typeScript/typeScriptCompilerOptions";
@@ -13,12 +12,12 @@ import { EngineVariables } from "../../engine/engineVariables";
 export class TypeScript extends EnginePipelineStepBase {
     private static FILENAME: string = "tsconfig.json";
 
-    public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["typescript"], uniteConfiguration.sourceLanguage === "TypeScript");
 
         if (uniteConfiguration.sourceLanguage === "TypeScript") {
             try {
-                super.log(logger, display, `Generating ${TypeScript.FILENAME}`, { wwwFolder: engineVariables.wwwFolder });
+                logger.info(`Generating ${TypeScript.FILENAME}`, { wwwFolder: engineVariables.wwwFolder });
 
                 const typeScriptConfiguration = new TypeScriptConfiguration();
                 typeScriptConfiguration.compilerOptions = new TypeScriptCompilerOptions();
@@ -51,11 +50,11 @@ export class TypeScript extends EnginePipelineStepBase {
 
                 return 0;
             } catch (err) {
-                super.error(logger, display, `Generating ${TypeScript.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwFolder });
+                logger.error(`Generating ${TypeScript.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwFolder });
                 return 1;
             }
         } else {
-            return await super.deleteFile(logger, display, fileSystem, engineVariables.wwwFolder, TypeScript.FILENAME);
+            return await super.deleteFile(logger, fileSystem, engineVariables.wwwFolder, TypeScript.FILENAME);
         }
     }
 }

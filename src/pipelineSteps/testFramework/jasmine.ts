@@ -1,7 +1,6 @@
 /**
  * Pipeline step to generate jasmine configuration.
  */
-import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
@@ -9,7 +8,7 @@ import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 
 export class Jasmine extends EnginePipelineStepBase {
-    public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["jasmine-core"], uniteConfiguration.unitTestFramework === "Jasmine" || uniteConfiguration.e2eTestFramework === "Jasmine");
         engineVariables.toggleDevDependency(["@types/jasmine"],
                                             (uniteConfiguration.unitTestFramework === "Jasmine" || uniteConfiguration.e2eTestFramework === "Jasmine")
@@ -19,11 +18,11 @@ export class Jasmine extends EnginePipelineStepBase {
 
         if (uniteConfiguration.unitTestFramework === "Jasmine" || uniteConfiguration.e2eTestFramework === "Jasmine") {
             try {
-                super.log(logger, display, "Generating Jasmine Configuration");
+                logger.info("Generating Jasmine Configuration");
 
                 return 0;
             } catch (err) {
-                super.error(logger, display, "Generating Jasmine Configuration failed", err);
+                logger.error("Generating Jasmine Configuration failed", err);
                 return 1;
             }
         }

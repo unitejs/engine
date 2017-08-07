@@ -1,7 +1,6 @@
 /**
  * Pipeline step to generate tslint configuration.
  */
-import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { TsLintConfiguration } from "../../configuration/models/tslint/tsLintConfiguration";
@@ -13,25 +12,24 @@ export class TsLint extends EnginePipelineStepBase {
     private static FILENAME: string = "tslint.json";
 
     public async prerequisites(logger: ILogger,
-                               display: IDisplay,
                                fileSystem: IFileSystem,
                                uniteConfiguration: UniteConfiguration,
                                engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.linter === "TSLint") {
             if (uniteConfiguration.sourceLanguage !== "TypeScript") {
-                super.error(logger, display, "You can only use TSLint when the source language is TypeScript");
+                logger.error("You can only use TSLint when the source language is TypeScript");
                 return 1;
             }
         }
         return 0;
     }
 
-    public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["tslint"], uniteConfiguration.linter === "TSLint");
 
         if (uniteConfiguration.linter === "TSLint") {
             try {
-                super.log(logger, display, `Generating ${TsLint.FILENAME}`);
+                logger.info(`Generating ${TsLint.FILENAME}`);
 
                 let existing;
                 try {
@@ -40,7 +38,7 @@ export class TsLint extends EnginePipelineStepBase {
                         existing = await fileSystem.fileReadJson<TsLintConfiguration>(engineVariables.wwwFolder, TsLint.FILENAME);
                     }
                 } catch (err) {
-                    super.error(logger, display, `Reading existing ${TsLint.FILENAME} failed`, err);
+                    logger.error(`Reading existing ${TsLint.FILENAME} failed`, err);
                     return 1;
                 }
 
@@ -49,11 +47,11 @@ export class TsLint extends EnginePipelineStepBase {
 
                 return 0;
             } catch (err) {
-                super.error(logger, display, `Generating ${TsLint.FILENAME} failed`, err);
+                logger.error(`Generating ${TsLint.FILENAME} failed`, err);
                 return 1;
             }
         } else {
-            return await super.deleteFile(logger, display, fileSystem, engineVariables.wwwFolder, TsLint.FILENAME);
+            return await super.deleteFile(logger, fileSystem, engineVariables.wwwFolder, TsLint.FILENAME);
         }
     }
 

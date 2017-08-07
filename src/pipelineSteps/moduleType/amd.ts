@@ -1,7 +1,6 @@
 /**
  * Pipeline step to generate configuration for amd modules.
  */
-import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
@@ -9,7 +8,7 @@ import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 
 export class Amd extends EnginePipelineStepBase {
-    public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleClientPackage(
             "requirejs",
             "require.js",
@@ -30,7 +29,7 @@ export class Amd extends EnginePipelineStepBase {
 
         if (uniteConfiguration.moduleType === "AMD") {
             try {
-                super.log(logger, display, "Generating Module Loader Scaffold", {});
+                logger.info("Generating Module Loader Scaffold", {});
 
                 engineVariables.htmlNoBundle.scriptIncludes.push("requirejs/require.js");
 
@@ -51,7 +50,7 @@ export class Amd extends EnginePipelineStepBase {
 
                 return 0;
             } catch (err) {
-                super.error(logger, display, "Generating Module Loader Scaffold failed", err);
+                logger.error("Generating Module Loader Scaffold failed", err);
                 return 1;
             }
         }

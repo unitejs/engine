@@ -1,7 +1,6 @@
 /**
  * Pipeline step to generate eslint configuration.
  */
-import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { EsLintConfiguration } from "../../configuration/models/eslint/esLintConfiguration";
@@ -15,25 +14,24 @@ export class EsLint extends EnginePipelineStepBase {
     private static FILENAME2: string = ".eslintignore";
 
     public async prerequisites(logger: ILogger,
-                               display: IDisplay,
                                fileSystem: IFileSystem,
                                uniteConfiguration: UniteConfiguration,
                                engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.linter === "ESLint") {
             if (uniteConfiguration.sourceLanguage !== "JavaScript") {
-                super.error(logger, display, "You can only use ESLint when the source language is JavaScript");
+                logger.error("You can only use ESLint when the source language is JavaScript");
                 return 1;
             }
         }
         return 0;
     }
 
-    public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["eslint"], uniteConfiguration.linter === "ESLint");
 
         if (uniteConfiguration.linter === "ESLint") {
             try {
-                super.log(logger, display, `Generating ${EsLint.FILENAME}`);
+                logger.info(`Generating ${EsLint.FILENAME}`, { wwwFolder: engineVariables.wwwFolder});
 
                 let existing;
                 try {
@@ -42,21 +40,21 @@ export class EsLint extends EnginePipelineStepBase {
                         existing = await fileSystem.fileReadJson<EsLintConfiguration>(engineVariables.wwwFolder, EsLint.FILENAME);
                     }
                 } catch (err) {
-                    super.error(logger, display, `Reading existing ${EsLint.FILENAME} failed`, err);
+                    logger.error(`Reading existing ${EsLint.FILENAME} failed`, err);
                     return 1;
                 }
 
                 const config = this.generateConfig(fileSystem, uniteConfiguration, engineVariables, existing);
                 await fileSystem.fileWriteJson(engineVariables.wwwFolder, EsLint.FILENAME, config);
             } catch (err) {
-                super.error(logger, display, `Generating ${EsLint.FILENAME} failed`, err);
+                logger.error(`Generating ${EsLint.FILENAME} failed`, err);
                 return 1;
             }
             try {
                 const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwFolder, EsLint.FILENAME2);
 
                 if (hasGeneratedMarker) {
-                    super.log(logger, display, `Generating ${EsLint.FILENAME2} Configuration`);
+                    logger.info(`Generating ${EsLint.FILENAME2} Configuration`, { wwwFolder: engineVariables.wwwFolder});
 
                     const lines: string[] = [];
 
@@ -68,18 +66,18 @@ export class EsLint extends EnginePipelineStepBase {
 
                     await fileSystem.fileWriteLines(engineVariables.wwwFolder, EsLint.FILENAME2, lines);
                 } else {
-                    super.log(logger, display, `Skipping ${EsLint.FILENAME2} as it has no generated marker`);
+                    logger.info(`Skipping ${EsLint.FILENAME2} as it has no generated marker`);
                 }
 
                 return 0;
             } catch (err) {
-                super.error(logger, display, `Generating ${EsLint.FILENAME2} failed`, err);
+                logger.error(`Generating ${EsLint.FILENAME2} failed`, err);
                 return 1;
             }
         } else {
-            let ret = await super.deleteFile(logger, display, fileSystem, engineVariables.wwwFolder, EsLint.FILENAME);
+            let ret = await super.deleteFile(logger, fileSystem, engineVariables.wwwFolder, EsLint.FILENAME);
             if (ret === 0) {
-                ret = await super.deleteFile(logger, display, fileSystem, engineVariables.wwwFolder, EsLint.FILENAME2);
+                ret = await super.deleteFile(logger, fileSystem, engineVariables.wwwFolder, EsLint.FILENAME2);
             }
 
             return ret;

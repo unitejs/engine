@@ -3,7 +3,7 @@
  */
 describe("App", () => {
     it("the title is set", () => {
-        const uniteJson = require("../../../unite.json");
+        const uniteJson = require("../../../../unite.json");
         return browser
             .url("/")
             .getTitle()

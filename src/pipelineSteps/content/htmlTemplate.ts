@@ -1,7 +1,6 @@
 /**
  * Pipeline step to generate html template.
  */
-import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
@@ -13,18 +12,17 @@ export class HtmlTemplate extends EnginePipelineStepBase {
     private static FILENAME_NO_BUNDLE: string = "index-no-bundle.html";
     private static FILENAME_BUNDLE: string = "index-bundle.html";
 
-    public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        let ret = await this.createTemplate(logger, display, fileSystem, uniteConfiguration, engineVariables, HtmlTemplate.FILENAME_NO_BUNDLE, engineVariables.htmlNoBundle);
+    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        let ret = await this.createTemplate(logger, fileSystem, uniteConfiguration, engineVariables, HtmlTemplate.FILENAME_NO_BUNDLE, engineVariables.htmlNoBundle);
 
         if (ret === 0) {
-            ret = await this.createTemplate(logger, display, fileSystem, uniteConfiguration, engineVariables, HtmlTemplate.FILENAME_BUNDLE, engineVariables.htmlBundle);
+            ret = await this.createTemplate(logger, fileSystem, uniteConfiguration, engineVariables, HtmlTemplate.FILENAME_BUNDLE, engineVariables.htmlBundle);
         }
 
         return ret;
     }
 
     public async createTemplate(logger: ILogger,
-                                display: IDisplay,
                                 fileSystem: IFileSystem,
                                 uniteConfiguration: UniteConfiguration,
                                 engineVariables: EngineVariables,
@@ -34,7 +32,7 @@ export class HtmlTemplate extends EnginePipelineStepBase {
             const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwFolder, filename);
 
             if (hasGeneratedMarker) {
-                super.log(logger, display, `Generating ${filename}`, { wwwFolder: engineVariables.wwwFolder });
+                logger.info(`Generating ${filename}`, { wwwFolder: engineVariables.wwwFolder });
 
                 const lines: string[] = [];
                 let indent = 0;
@@ -76,12 +74,12 @@ export class HtmlTemplate extends EnginePipelineStepBase {
 
                 await fileSystem.fileWriteLines(engineVariables.wwwFolder, filename, lines);
             } else {
-                super.log(logger, display, `Skipping ${filename} as it has no generated marker`, { wwwFolder: engineVariables.wwwFolder });
+                logger.info(`Skipping ${filename} as it has no generated marker`, { wwwFolder: engineVariables.wwwFolder });
             }
 
             return 0;
         } catch (err) {
-            super.error(logger, display, `Generating ${filename} failed`, err, { wwwFolder: engineVariables.wwwFolder });
+            logger.error(`Generating ${filename} failed`, err, { wwwFolder: engineVariables.wwwFolder });
             return 1;
         }
     }

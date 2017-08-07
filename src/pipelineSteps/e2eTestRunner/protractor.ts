@@ -2,7 +2,6 @@
  * Pipeline step to generate Protractor configuration.
  */
 import { JsonHelper } from "unitejs-framework/dist/helpers/jsonHelper";
-import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
@@ -13,7 +12,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 export class Protractor extends EnginePipelineStepBase {
     private static FILENAME: string = "protractor.conf.js";
 
-    public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["protractor", "browser-sync"], uniteConfiguration.e2eTestRunner === "Protractor");
         engineVariables.toggleDevDependency(["protractor-jasmine2-html-reporter", "jasmine-spec-reporter"],
                                             uniteConfiguration.e2eTestRunner === "Protractor" && uniteConfiguration.e2eTestFramework === "Jasmine");
@@ -28,22 +27,22 @@ export class Protractor extends EnginePipelineStepBase {
                 const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwFolder, Protractor.FILENAME);
 
                 if (hasGeneratedMarker) {
-                    super.log(logger, display, `Generating ${Protractor.FILENAME}`);
+                    logger.info(`Generating ${Protractor.FILENAME}`, { wwwFolder: engineVariables.wwwFolder});
 
                     const lines: string[] = [];
                     this.generateConfig(fileSystem, uniteConfiguration, engineVariables, lines);
                     await fileSystem.fileWriteLines(engineVariables.wwwFolder, Protractor.FILENAME, lines);
                 } else {
-                    super.log(logger, display, `Skipping ${Protractor.FILENAME} as it has no generated marker`);
+                    logger.info(`Skipping ${Protractor.FILENAME} as it has no generated marker`);
                 }
 
                 return 0;
             } catch (err) {
-                super.error(logger, display, `Generating ${Protractor.FILENAME} failed`, err);
+                logger.error(`Generating ${Protractor.FILENAME} failed`, err);
                 return 1;
             }
         } else {
-            return await super.deleteFile(logger, display, fileSystem, engineVariables.wwwFolder, Protractor.FILENAME);
+            return await super.deleteFile(logger, fileSystem, engineVariables.wwwFolder, Protractor.FILENAME);
         }
     }
 

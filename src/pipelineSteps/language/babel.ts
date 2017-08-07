@@ -1,7 +1,6 @@
 /**
  * Pipeline step to generate babel configuration.
  */
-import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { BabelConfiguration } from "../../configuration/models/babel/babelConfiguration";
@@ -12,12 +11,12 @@ import { EngineVariables } from "../../engine/engineVariables";
 export class Babel extends EnginePipelineStepBase {
     private static FILENAME: string = ".babelrc";
 
-    public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["babel-core", "babel-preset-es2015"], uniteConfiguration.sourceLanguage === "JavaScript");
 
         if (uniteConfiguration.sourceLanguage === "JavaScript") {
             try {
-                super.log(logger, display, `Generating ${Babel.FILENAME}`, { wwwFolder: engineVariables.wwwFolder });
+                logger.info(`Generating ${Babel.FILENAME}`, { wwwFolder: engineVariables.wwwFolder });
 
                 let existing;
                 try {
@@ -26,7 +25,7 @@ export class Babel extends EnginePipelineStepBase {
                         existing = await fileSystem.fileReadJson<BabelConfiguration>(engineVariables.wwwFolder, Babel.FILENAME);
                     }
                 } catch (err) {
-                    super.error(logger, display, `Reading existing ${Babel.FILENAME} failed`, err);
+                    logger.error(`Reading existing ${Babel.FILENAME} failed`, err);
                     return 1;
                 }
 
@@ -35,11 +34,11 @@ export class Babel extends EnginePipelineStepBase {
 
                 return 0;
             } catch (err) {
-                super.error(logger, display, `Generating ${Babel.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwFolder });
+                logger.error(`Generating ${Babel.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwFolder });
                 return 1;
             }
         } else {
-            return await super.deleteFile(logger, display, fileSystem, engineVariables.wwwFolder, Babel.FILENAME);
+            return await super.deleteFile(logger, fileSystem, engineVariables.wwwFolder, Babel.FILENAME);
         }
     }
 

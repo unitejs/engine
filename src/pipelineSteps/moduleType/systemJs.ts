@@ -1,7 +1,6 @@
 /**
  * Pipeline step to generate configuration for systemjs.
  */
-import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
@@ -9,7 +8,7 @@ import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 
 export class SystemJs extends EnginePipelineStepBase {
-    public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleClientPackage(
             "systemjs",
             "dist/system.src.js",
@@ -30,7 +29,7 @@ export class SystemJs extends EnginePipelineStepBase {
 
         if (uniteConfiguration.moduleType === "SystemJS") {
             try {
-                super.log(logger, display, "Generating Module Loader Scaffold", { });
+                logger.info("Generating Module Loader Scaffold");
 
                 engineVariables.htmlNoBundle.scriptIncludes.push("systemjs/dist/system.js");
 
@@ -52,7 +51,7 @@ export class SystemJs extends EnginePipelineStepBase {
 
                 return 0;
             } catch (err) {
-                super.error(logger, display, "Generating Module Loader Scaffold failed", err);
+                logger.error("Generating Module Loader Scaffold failed", err);
                 return 1;
             }
         }

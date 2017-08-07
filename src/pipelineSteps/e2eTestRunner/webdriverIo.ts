@@ -2,7 +2,6 @@
  * Pipeline step to generate WebdriverIO configuration.
  */
 import { JsonHelper } from "unitejs-framework/dist/helpers/jsonHelper";
-import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
@@ -13,7 +12,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 export class WebdriverIo extends EnginePipelineStepBase {
     private static FILENAME: string = "wdio.conf.js";
 
-    public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["webdriverio",
                                              "wdio-spec-reporter",
                                              "wdio-allure-reporter",
@@ -36,22 +35,22 @@ export class WebdriverIo extends EnginePipelineStepBase {
                 const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwFolder, WebdriverIo.FILENAME);
 
                 if (hasGeneratedMarker) {
-                    super.log(logger, display, `Generating ${WebdriverIo.FILENAME}`);
+                    logger.info(`Generating ${WebdriverIo.FILENAME}`);
 
                     const lines: string[] = [];
                     this.generateConfig(fileSystem, uniteConfiguration, engineVariables, lines);
                     await fileSystem.fileWriteLines(engineVariables.wwwFolder, WebdriverIo.FILENAME, lines);
                 } else {
-                    super.log(logger, display, `Skipping ${WebdriverIo.FILENAME} as it has no generated marker`);
+                    logger.info(`Skipping ${WebdriverIo.FILENAME} as it has no generated marker`);
                 }
 
                 return 0;
             } catch (err) {
-                super.error(logger, display, `Generating ${WebdriverIo.FILENAME} failed`, err);
+                logger.error(`Generating ${WebdriverIo.FILENAME} failed`, err);
                 return 1;
             }
         } else {
-            return await super.deleteFile(logger, display, fileSystem, engineVariables.wwwFolder, WebdriverIo.FILENAME);
+            return await super.deleteFile(logger, fileSystem, engineVariables.wwwFolder, WebdriverIo.FILENAME);
         }
     }
 

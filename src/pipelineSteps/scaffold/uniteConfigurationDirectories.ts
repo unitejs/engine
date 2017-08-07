@@ -1,7 +1,6 @@
 /**
  * Pipeline step to generate unite.json.
  */
-import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
@@ -10,9 +9,9 @@ import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 
 export class UniteConfigurationDirectories extends EnginePipelineStepBase {
-    public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
-            super.log(logger, display, "Generating directories configuration", { wwwFolder: engineVariables.wwwFolder });
+            logger.info("Generating directories configuration", { wwwFolder: engineVariables.wwwFolder });
 
             uniteConfiguration.directories = new UniteDirectories();
             uniteConfiguration.directories.src = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwFolder, engineVariables.srcFolder));
@@ -39,7 +38,7 @@ export class UniteConfigurationDirectories extends EnginePipelineStepBase {
             uniteConfiguration.directories.assetsSource = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwFolder, engineVariables.assetsSourceFolder));
             return 0;
         } catch (err) {
-            super.error(logger, display, "Generating directories configuration failed", err, { wwwFolder: engineVariables.wwwFolder });
+            logger.error("Generating directories configuration failed", err, { wwwFolder: engineVariables.wwwFolder });
             return 1;
         }
     }

@@ -1,7 +1,6 @@
 /**
  * Pipeline step to generate handle postCss styling.
  */
-import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { PostCssConfiguration } from "../../configuration/models/postcss/postCssConfiguration";
@@ -12,12 +11,12 @@ import { EngineVariables } from "../../engine/engineVariables";
 export class PostCss extends EnginePipelineStepBase {
     private static FILENAME: string = ".postcssrc.json";
 
-    public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["postcss", "postcss-import", "autoprefixer", "cssnano"], uniteConfiguration.cssPost === "PostCss");
 
         if (uniteConfiguration.cssPost === "PostCss") {
             try {
-                super.log(logger, display, `Generating ${PostCss.FILENAME}`, { wwwFolder: engineVariables.wwwFolder });
+                logger.info(`Generating ${PostCss.FILENAME}`, { wwwFolder: engineVariables.wwwFolder });
 
                 let existing;
 
@@ -29,7 +28,7 @@ export class PostCss extends EnginePipelineStepBase {
 
                     }
                 } catch (err) {
-                    super.error(logger, display, `Loading existing ${PostCss.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwFolder });
+                    logger.error(`Loading existing ${PostCss.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwFolder });
                     return 1;
                 }
 
@@ -38,11 +37,11 @@ export class PostCss extends EnginePipelineStepBase {
                 await fileSystem.fileWriteJson(engineVariables.wwwFolder, ".postcssrc.json", config);
                 return 0;
             } catch (err) {
-                super.error(logger, display, `Generating ${PostCss.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwFolder });
+                logger.error(`Generating ${PostCss.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwFolder });
                 return 1;
             }
         } else {
-            return await super.deleteFile(logger, display, fileSystem, engineVariables.wwwFolder, PostCss.FILENAME);
+            return await super.deleteFile(logger, fileSystem, engineVariables.wwwFolder, PostCss.FILENAME);
         }
     }
 

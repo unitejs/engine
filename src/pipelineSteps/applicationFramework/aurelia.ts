@@ -1,7 +1,6 @@
 /**
  * Pipeline step to generate scaffolding for Aurelia application.
  */
-import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
@@ -10,42 +9,41 @@ import { SharedAppFramework } from "./sharedAppFramework";
 
 export class Aurelia extends SharedAppFramework {
     public async prerequisites(logger: ILogger,
-                               display: IDisplay,
                                fileSystem: IFileSystem,
                                uniteConfiguration: UniteConfiguration,
                                engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.applicationFramework === "Aurelia") {
             if (uniteConfiguration.bundler === "Browserify" || uniteConfiguration.bundler === "Webpack") {
-                super.error(logger, display, `Aurelia does not currently support bundling with ${uniteConfiguration.bundler}`);
+                logger.error(`Aurelia does not currently support bundling with ${uniteConfiguration.bundler}`);
                 return 1;
             }
         }
         return 0;
     }
 
-    public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["aurelia-protractor-plugin"], uniteConfiguration.applicationFramework === "Aurelia" && uniteConfiguration.e2eTestRunner === "Protractor");
         engineVariables.protractorPlugins["aurelia-protractor-plugin"] = uniteConfiguration.applicationFramework === "Aurelia" && uniteConfiguration.e2eTestRunner === "Protractor";
 
         this.toggleAllPackages(uniteConfiguration, engineVariables);
 
         if (uniteConfiguration.applicationFramework === "Aurelia") {
-            let ret = await this.generateAppSource(logger, display, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper", "entryPoint", "child/child"]);
+            let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper", "entryPoint", "child/child"]);
 
             if (ret === 0) {
-                ret = await super.generateAppHtml(logger, display, fileSystem, uniteConfiguration, engineVariables, ["app", "child/child"]);
+                ret = await super.generateAppHtml(logger, fileSystem, uniteConfiguration, engineVariables, ["app", "child/child"]);
 
                 if (ret === 0) {
-                    ret = await super.generateAppCss(logger, display, fileSystem, uniteConfiguration, engineVariables, ["child/child"]);
+                    ret = await super.generateAppCss(logger, fileSystem, uniteConfiguration, engineVariables, ["child/child"]);
 
                     if (ret === 0) {
-                        ret = await super.generateE2eTest(logger, display, fileSystem, uniteConfiguration, engineVariables, ["app"]);
+                        ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app"]);
 
                         if (ret === 0) {
-                            ret = await this.generateUnitTest(logger, display, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper"]);
+                            ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper"]);
 
                             if (ret === 0) {
-                                ret = await super.generateCss(logger, display, fileSystem, uniteConfiguration, engineVariables);
+                                ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
                             }
                         }
                     }

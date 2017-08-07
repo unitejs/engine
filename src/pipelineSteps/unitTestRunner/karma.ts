@@ -2,7 +2,6 @@
  * Pipeline step to generate karma configuration.
  */
 import { JsonHelper } from "unitejs-framework/dist/helpers/jsonHelper";
-import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { KarmaConfiguration } from "../../configuration/models/karma/karmaConfiguration";
@@ -13,7 +12,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 export class Karma extends EnginePipelineStepBase {
     private static FILENAME: string = "karma.conf.js";
 
-    public async process(logger: ILogger, display: IDisplay, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["karma",
                                              "karma-chrome-launcher",
                                              "karma-phantomjs-launcher",
@@ -40,22 +39,22 @@ export class Karma extends EnginePipelineStepBase {
                 const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwFolder, Karma.FILENAME);
 
                 if (hasGeneratedMarker) {
-                    super.log(logger, display, `Generating ${Karma.FILENAME}`);
+                    logger.info(`Generating ${Karma.FILENAME}`, { wwwFolder: engineVariables.wwwFolder});
 
                     const lines: string[] = [];
                     this.generateConfig(fileSystem, uniteConfiguration, engineVariables, lines);
                     await fileSystem.fileWriteLines(engineVariables.wwwFolder, Karma.FILENAME, lines);
                 } else {
-                    super.log(logger, display, `Skipping ${Karma.FILENAME} as it has no generated marker`);
+                    logger.info(`Skipping ${Karma.FILENAME} as it has no generated marker`);
                 }
 
                 return 0;
             } catch (err) {
-                super.error(logger, display, `Generating ${Karma.FILENAME} failed`, err);
+                logger.error(`Generating ${Karma.FILENAME} failed`, err);
                 return 1;
             }
         } else {
-            return await super.deleteFile(logger, display, fileSystem, engineVariables.wwwFolder, Karma.FILENAME);
+            return await super.deleteFile(logger, fileSystem, engineVariables.wwwFolder, Karma.FILENAME);
         }
     }
 
@@ -64,7 +63,7 @@ export class Karma extends EnginePipelineStepBase {
 
         const testIncludes: { pattern: string; included: boolean }[] = [];
 
-        testIncludes.push({ pattern: "./unite.json", included: false });
+        testIncludes.push({ pattern: "../unite.json", included: false });
         testIncludes.push({ pattern: "./node_modules/bluebird/js/browser/bluebird.js", included: true });
 
         if (uniteConfiguration.moduleType === "AMD") {

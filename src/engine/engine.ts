@@ -2,7 +2,6 @@
  * Main engine
  */
 import { ParameterValidation } from "unitejs-framework/dist/helpers/parameterValidation";
-import { IDisplay } from "unitejs-framework/dist/interfaces/IDisplay";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
@@ -74,14 +73,12 @@ import { EngineVariables } from "./engineVariables";
 
 export class Engine implements IEngine {
     private _logger: ILogger;
-    private _display: IDisplay;
     private _fileSystem: IFileSystem;
     private _coreRoot: string;
     private _assetsFolder: string;
 
-    constructor(logger: ILogger, display: IDisplay, fileSystem: IFileSystem) {
+    constructor(logger: ILogger, fileSystem: IFileSystem) {
         this._logger = logger;
-        this._display = display;
         this._fileSystem = fileSystem;
         this._coreRoot = fileSystem.pathCombine(__dirname, "../../");
         this._assetsFolder = fileSystem.pathCombine(this._coreRoot, "/assets/");
@@ -129,17 +126,17 @@ export class Engine implements IEngine {
         uniteConfiguration.cssPost = cssPost || uniteConfiguration.cssPost;
         uniteConfiguration.buildConfigurations = uniteConfiguration.buildConfigurations || {};
 
-        if (!ParameterValidation.checkPackageName(this._display, "packageName", uniteConfiguration.packageName)) {
+        if (!ParameterValidation.checkPackageName(this._logger, "packageName", uniteConfiguration.packageName)) {
             return 1;
         }
-        if (!ParameterValidation.notEmpty(this._display, "title", uniteConfiguration.title)) {
+        if (!ParameterValidation.notEmpty(this._logger, "title", uniteConfiguration.title)) {
             return 1;
         }
 
         let spdxLicense: ISpdxLicense;
         try {
             const licenseData = await this._fileSystem.fileReadJson<ISpdx>(this._assetsFolder, "spdx-full.json");
-            if (!ParameterValidation.contains(this._display,
+            if (!ParameterValidation.contains(this._logger,
                                               "license",
                                               Object.keys(licenseData),
                                               uniteConfiguration.license,
@@ -149,52 +146,52 @@ export class Engine implements IEngine {
                 spdxLicense = licenseData[uniteConfiguration.license];
             }
         } catch (e) {
-            this._display.error("There was a problem reading the spdx-full.json file", e);
+            this._logger.error("There was a problem reading the spdx-full.json file", e);
             return 1;
         }
 
-        if (!ParameterValidation.checkOneOf<UniteSourceLanguage>(this._display, "sourceLanguage", uniteConfiguration.sourceLanguage, ["JavaScript", "TypeScript"])) {
+        if (!ParameterValidation.checkOneOf<UniteSourceLanguage>(this._logger, "sourceLanguage", uniteConfiguration.sourceLanguage, ["JavaScript", "TypeScript"])) {
             return 1;
         }
-        if (!ParameterValidation.checkOneOf<UniteModuleType>(this._display, "moduleType", uniteConfiguration.moduleType, ["AMD", "CommonJS", "SystemJS"])) {
+        if (!ParameterValidation.checkOneOf<UniteModuleType>(this._logger, "moduleType", uniteConfiguration.moduleType, ["AMD", "CommonJS", "SystemJS"])) {
             return 1;
         }
-        if (!ParameterValidation.checkOneOf<UniteBundler>(this._display, "bundler", uniteConfiguration.bundler, ["Browserify", "RequireJS", "SystemJSBuilder", "Webpack"])) {
+        if (!ParameterValidation.checkOneOf<UniteBundler>(this._logger, "bundler", uniteConfiguration.bundler, ["Browserify", "RequireJS", "SystemJSBuilder", "Webpack"])) {
             return 1;
         }
-        if (!ParameterValidation.checkOneOf<UniteUnitTestRunner>(this._display, "unitTestRunner", uniteConfiguration.unitTestRunner, ["None", "Karma"])) {
+        if (!ParameterValidation.checkOneOf<UniteUnitTestRunner>(this._logger, "unitTestRunner", uniteConfiguration.unitTestRunner, ["None", "Karma"])) {
             return 1;
         }
         if (unitTestRunner !== "None") {
-            if (!ParameterValidation.checkOneOf<UniteUnitTestFramework>(this._display, "unitTestFramework", uniteConfiguration.unitTestFramework, ["Mocha-Chai", "Jasmine"])) {
+            if (!ParameterValidation.checkOneOf<UniteUnitTestFramework>(this._logger, "unitTestFramework", uniteConfiguration.unitTestFramework, ["Mocha-Chai", "Jasmine"])) {
                 return 1;
             }
         }
-        if (!ParameterValidation.checkOneOf<UniteE2eTestRunner>(this._display, "e2eTestRunner", uniteConfiguration.e2eTestRunner, ["None", "WebdriverIO", "Protractor"])) {
+        if (!ParameterValidation.checkOneOf<UniteE2eTestRunner>(this._logger, "e2eTestRunner", uniteConfiguration.e2eTestRunner, ["None", "WebdriverIO", "Protractor"])) {
             return 1;
         }
         if (e2eTestRunner !== "None") {
-            if (!ParameterValidation.checkOneOf<UniteE2eTestFramework>(this._display, "e2eTestFramework", uniteConfiguration.e2eTestFramework, ["Mocha-Chai", "Jasmine"])) {
+            if (!ParameterValidation.checkOneOf<UniteE2eTestFramework>(this._logger, "e2eTestFramework", uniteConfiguration.e2eTestFramework, ["Mocha-Chai", "Jasmine"])) {
                 return 1;
             }
         }
-        if (!ParameterValidation.checkOneOf<UniteLinter>(this._display, "linter", uniteConfiguration.linter, ["None", "ESLint", "TSLint"])) {
+        if (!ParameterValidation.checkOneOf<UniteLinter>(this._logger, "linter", uniteConfiguration.linter, ["None", "ESLint", "TSLint"])) {
             return 1;
         }
-        if (!ParameterValidation.checkOneOf<UniteCssPreProcessor>(this._display, "cssPre", uniteConfiguration.cssPre, ["Css", "Less", "Sass", "Stylus"])) {
+        if (!ParameterValidation.checkOneOf<UniteCssPreProcessor>(this._logger, "cssPre", uniteConfiguration.cssPre, ["Css", "Less", "Sass", "Stylus"])) {
             return 1;
         }
-        if (!ParameterValidation.checkOneOf<UniteCssPostProcessor>(this._display, "cssPost", uniteConfiguration.cssPost, ["None", "PostCss"])) {
+        if (!ParameterValidation.checkOneOf<UniteCssPostProcessor>(this._logger, "cssPost", uniteConfiguration.cssPost, ["None", "PostCss"])) {
             return 1;
         }
-        if (!ParameterValidation.checkOneOf<UnitePackageManager>(this._display, "packageManager", uniteConfiguration.packageManager, ["Npm", "Yarn"])) {
+        if (!ParameterValidation.checkOneOf<UnitePackageManager>(this._logger, "packageManager", uniteConfiguration.packageManager, ["Npm", "Yarn"])) {
             return 1;
         }
-        if (!ParameterValidation.checkOneOf<UniteApplicationFramework>(this._display, "applicationFramework", uniteConfiguration.applicationFramework, ["PlainApp", "Aurelia", "React"])) {
+        if (!ParameterValidation.checkOneOf<UniteApplicationFramework>(this._logger, "applicationFramework", uniteConfiguration.applicationFramework, ["PlainApp", "Aurelia", "React"])) {
             return 1;
         }
 
-        this._display.log("");
+        this._logger.info("");
 
         return this.configureRun(outputDirectory, uniteConfiguration, spdxLicense);
     }
@@ -218,24 +215,24 @@ export class Engine implements IEngine {
         }
 
         if (!uniteConfiguration) {
-            this._display.error("There is no unite.json to configure.");
+            this._logger.error("There is no unite.json to configure.");
             return 1;
         } else {
             uniteConfiguration.clientPackages = uniteConfiguration.clientPackages || {};
             uniteConfiguration.packageManager = packageManager || uniteConfiguration.packageManager || "Npm";
         }
 
-        if (!ParameterValidation.checkOneOf<ModuleOperation>(this._display, "operation", operation, ["add", "remove"])) {
+        if (!ParameterValidation.checkOneOf<ModuleOperation>(this._logger, "operation", operation, ["add", "remove"])) {
             return 1;
         }
-        if (!ParameterValidation.notEmpty(this._display, "packageName", packageName)) {
+        if (!ParameterValidation.notEmpty(this._logger, "packageName", packageName)) {
             return 1;
         }
-        if (!ParameterValidation.checkOneOf<UnitePackageManager>(this._display, "packageManager", uniteConfiguration.packageManager, ["Npm", "Yarn"])) {
+        if (!ParameterValidation.checkOneOf<UnitePackageManager>(this._logger, "packageManager", uniteConfiguration.packageManager, ["Npm", "Yarn"])) {
             return 1;
         }
 
-        this._display.log("");
+        this._logger.info("");
 
         if (operation === "add") {
             return await this.clientPackageAdd(packageName, version, preload, includeMode, main, mainMinified, isPackage, wrapAssets, outputDirectory, uniteConfiguration);
@@ -256,20 +253,20 @@ export class Engine implements IEngine {
         const uniteConfiguration = await this.loadConfiguration(outputDirectory);
 
         if (!uniteConfiguration) {
-            this._display.error("There is no unite.json to configure.");
+            this._logger.error("There is no unite.json to configure.");
             return 1;
         } else {
             uniteConfiguration.buildConfigurations = uniteConfiguration.buildConfigurations || {};
         }
 
-        if (!ParameterValidation.checkOneOf<BuildConfigurationOperation>(this._display, "operation", operation, ["add", "remove"])) {
+        if (!ParameterValidation.checkOneOf<BuildConfigurationOperation>(this._logger, "operation", operation, ["add", "remove"])) {
             return 1;
         }
-        if (!ParameterValidation.notEmpty(this._display, "configurationName", configurationName)) {
+        if (!ParameterValidation.notEmpty(this._logger, "configurationName", configurationName)) {
             return 1;
         }
 
-        this._display.log("");
+        this._logger.info("");
 
         if (operation === "add") {
             return await this.buildConfigurationAdd(configurationName, bundle, minify, sourcemaps, outputDirectory, uniteConfiguration);
@@ -288,11 +285,6 @@ export class Engine implements IEngine {
             outputDirectory = this._fileSystem.pathFormat(outputDirectory);
         }
 
-        // if the user has specified the www folder then move one up
-        outputDirectory = this._fileSystem.pathFormat(outputDirectory);
-        if (outputDirectory.endsWith("www")) {
-            outputDirectory = this._fileSystem.pathFormat(this._fileSystem.pathCombine(outputDirectory, "../"));
-        }
         return outputDirectory;
     }
 
@@ -301,22 +293,18 @@ export class Engine implements IEngine {
 
         // check if there is a unite.json we can load for default options
         try {
-            const wwwFolder = this._fileSystem.pathCombine(outputDirectory, "www");
-
-            const exists = await this._fileSystem.fileExists(wwwFolder, "unite.json");
+            const exists = await this._fileSystem.fileExists(outputDirectory, "unite.json");
             if (exists) {
-                uniteConfiguration = await this._fileSystem.fileReadJson<UniteConfiguration>(wwwFolder, "unite.json");
+                uniteConfiguration = await this._fileSystem.fileReadJson<UniteConfiguration>(outputDirectory, "unite.json");
             }
         } catch (e) {
-            // we can ignore any failures here
+            this._logger.error("Reading existing unite.json", e);
         }
 
         return uniteConfiguration;
     }
 
     private async configureRun(outputDirectory: string, uniteConfiguration: UniteConfiguration, license: ISpdxLicense): Promise<number> {
-        this._logger.info("Engine::init", { outputDirectory, uniteConfiguration });
-
         const engineVariables = new EngineVariables();
         let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
         if (ret === 0) {
@@ -381,8 +369,8 @@ export class Engine implements IEngine {
             ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
 
             if (ret === 0) {
-                this._display.banner("You should probably run npm install / yarn install before running any gulp commands.");
-                this._display.banner("Successfully Completed.");
+                this._logger.warning("You should probably run npm install / yarn install before running any gulp commands.");
+                this._logger.banner("Successfully Completed.");
             }
         }
 
@@ -399,12 +387,12 @@ export class Engine implements IEngine {
                                    wrapAssets: string | undefined | null,
                                    outputDirectory: string,
                                    uniteConfiguration: UniteConfiguration): Promise<number> {
-        if (!ParameterValidation.checkOneOf<IncludeMode>(this._display, "includeMode", includeMode, ["app", "test", "both"])) {
+        if (!ParameterValidation.checkOneOf<IncludeMode>(this._logger, "includeMode", includeMode, ["app", "test", "both"])) {
             return 1;
         }
 
         if (uniteConfiguration.clientPackages[packageName]) {
-            this._display.error("Package has already been added.");
+            this._logger.error("Package has already been added.");
             return 1;
         }
 
@@ -463,7 +451,7 @@ export class Engine implements IEngine {
             ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
 
             if (ret === 0) {
-                this._display.banner("Successfully Completed.");
+                this._logger.banner("Successfully Completed.");
             }
         }
 
@@ -472,7 +460,7 @@ export class Engine implements IEngine {
 
     private async clientPackageRemove(packageName: string, outputDirectory: string, uniteConfiguration: UniteConfiguration): Promise<number> {
         if (!uniteConfiguration.clientPackages[packageName]) {
-            this._display.error("Package has not been added.");
+            this._logger.error("Package has not been added.");
             return 1;
         }
 
@@ -501,7 +489,7 @@ export class Engine implements IEngine {
             ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
 
             if (ret === 0) {
-                this._display.banner("Successfully Completed.");
+                this._logger.banner("Successfully Completed.");
             }
         }
 
@@ -529,7 +517,7 @@ export class Engine implements IEngine {
             ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
 
             if (ret === 0) {
-                this._display.banner("Successfully Completed.");
+                this._logger.banner("Successfully Completed.");
             }
         }
 
@@ -550,7 +538,7 @@ export class Engine implements IEngine {
             pipelineSteps.push(new UniteConfigurationJson());
             ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
             if (ret === 0) {
-                this._display.banner("Successfully Completed.");
+                this._logger.banner("Successfully Completed.");
             }
         }
 
@@ -558,6 +546,16 @@ export class Engine implements IEngine {
     }
 
     private async createEngineVariables(outputDirectory: string, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        try {
+            this._logger.info("Loading dependencies", { core: this._coreRoot, dependenciesFile: "package.json" });
+
+            engineVariables.corePackageJson = await this._fileSystem.fileReadJson<PackageConfiguration>(this._coreRoot, "package.json");
+            uniteConfiguration.uniteVersion = engineVariables.corePackageJson.version;
+        } catch (err) {
+            this._logger.error("Loading dependencies failed", err, { core: this._coreRoot, dependenciesFile: "package.json" });
+            return 1;
+        }
+
         engineVariables.coreFolder = this._coreRoot;
         engineVariables.rootFolder = outputDirectory;
         engineVariables.wwwFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "www");
@@ -582,9 +580,9 @@ export class Engine implements IEngine {
         engineVariables.gitIgnore = [];
 
         if (uniteConfiguration.packageManager === "Npm") {
-            engineVariables.packageManager = new NpmPackageManager(this._logger, this._display, this._fileSystem);
+            engineVariables.packageManager = new NpmPackageManager(this._logger, this._fileSystem);
         } else if (uniteConfiguration.packageManager === "Yarn") {
-            engineVariables.packageManager = new YarnPackageManager(this._logger, this._display, this._fileSystem);
+            engineVariables.packageManager = new YarnPackageManager(this._logger, this._fileSystem);
         }
 
         uniteConfiguration.buildConfigurations = uniteConfiguration.buildConfigurations || {};
@@ -621,29 +619,19 @@ export class Engine implements IEngine {
 
         engineVariables.transpileProperties = {};
 
-        try {
-            this._logger.log("Loading dependencies", { core: engineVariables.coreFolder, dependenciesFile: "package.json" });
-
-            engineVariables.corePackageJson = await this._fileSystem.fileReadJson<PackageConfiguration>(engineVariables.coreFolder, "package.json");
-            uniteConfiguration.uniteVersion = engineVariables.corePackageJson.version;
-        } catch (err) {
-            this._logger.error("Loading dependencies failed", err, { core: engineVariables.coreFolder, dependenciesFile: "package.json" });
-            return 1;
-        }
-
         return 0;
     }
 
     private async runPipeline(pipelineSteps: IEnginePipelineStep[], uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         for (const pipelineStep of pipelineSteps) {
-            const ret = await pipelineStep.prerequisites(this._logger, this._display, this._fileSystem, uniteConfiguration, engineVariables);
+            const ret = await pipelineStep.prerequisites(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
             if (ret !== 0) {
                 return ret;
             }
         }
 
         for (const pipelineStep of pipelineSteps) {
-            const ret = await pipelineStep.process(this._logger, this._display, this._fileSystem, uniteConfiguration, engineVariables);
+            const ret = await pipelineStep.process(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
             if (ret !== 0) {
                 return ret;
             }

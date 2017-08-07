@@ -1,10 +1,10 @@
 {
-  "name": "unitejs-core",
-  "version": "0.7.0",
-  "description": "Core of the UniteJS JavaScript framework management tool.",
+  "name": "unitejs-engine",
+  "version": "0.7.1",
+  "description": "Engine of the UniteJS JavaScript framework management tool.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/unitejs/core.git"
+    "url": "https://github.com/unitejs/engine.git"
   },
   "keywords": [
     "unite",
@@ -40,9 +40,9 @@
   "author": "martyn@unitejs.com",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/unitejs/core/issues"
+    "url": "https://github.com/unitejs/engine/issues"
   },
-  "homepage": "https://github.com/unitejs/core#readme",
+  "homepage": "https://github.com/unitejs/engine#readme",
   "devDependencies": {
     "@types/chai": "^4.0.1",
     "@types/mocha": "^2.2.41",
@@ -64,7 +64,7 @@
     "typescript": "^2.4.1"
   },
   "dependencies": {
-    "unitejs-framework": "^0.6.2",
+    "unitejs-framework": "^0.7.1",
     "npm": "^5.0.3",
     "yarn": "^0.27.5"
   },
