@@ -46,7 +46,7 @@ gulp.task("build-bundle-vendor", async () => {
 
         try {
             await util.promisify(fs.writeFile)(
-                path.join(uniteConfig.directories.dist, "vendor-bundle-init.js"),
+                path.join(uniteConfig.dirs.www.dist, "vendor-bundle-init.js"),
                 `System.register(${JSON.stringify(keys)}, function () {});`);
         } catch (err) {
             display.error("Writing vendor-bundle-init.js", err);
@@ -56,10 +56,10 @@ gulp.task("build-bundle-vendor", async () => {
         try {
             const builder = new Builder(
                 "./",
-                `${uniteConfig.directories.dist}app-module-config.js`);
+                `${uniteConfig.dirs.www.dist}app-module-config.js`);
 
-            await builder.bundle(path.join(uniteConfig.directories.dist, "vendor-bundle-init.js"),
-                path.join(uniteConfig.directories.dist, "vendor-bundle.js"),
+            await builder.bundle(path.join(uniteConfig.dirs.www.dist, "vendor-bundle-init.js"),
+                path.join(uniteConfig.dirs.www.dist, "vendor-bundle.js"),
                 {
                     "minify": buildConfiguration.minify
                 });
@@ -69,9 +69,9 @@ gulp.task("build-bundle-vendor", async () => {
         }
 
         return asyncUtil.stream(gulp.src(
-            path.join(uniteConfig.directories.dist, "vendor-bundle.js"))
+            path.join(uniteConfig.dirs.www.dist, "vendor-bundle.js"))
             .pipe(insert.prepend(systemJsScript))
-            .pipe(gulp.dest(uniteConfig.directories.dist)));
+            .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
     }
 });
 

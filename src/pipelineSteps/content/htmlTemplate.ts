@@ -29,10 +29,10 @@ export class HtmlTemplate extends EnginePipelineStepBase {
                                 filename: string,
                                 engineVariablesHtml: EngineVariablesHtml): Promise<number> {
         try {
-            const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwFolder, filename);
+            const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, filename);
 
             if (hasGeneratedMarker) {
-                logger.info(`Generating ${filename}`, { wwwFolder: engineVariables.wwwFolder });
+                logger.info(`Generating ${filename}`, { wwwFolder: engineVariables.wwwRootFolder });
 
                 const lines: string[] = [];
                 let indent = 0;
@@ -50,7 +50,9 @@ export class HtmlTemplate extends EnginePipelineStepBase {
 
                 if (engineVariablesHtml.scriptIncludes) {
                     engineVariablesHtml.scriptIncludes.forEach(scriptInclude => {
-                        this.addLine(indent, lines, `<script src="./${engineVariables.packageFolder}${scriptInclude}"></script>`);
+                        const script = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, scriptInclude)));
+
+                        this.addLine(indent, lines, `<script src="${script}"></script>`);
                     });
                 }
 
@@ -72,14 +74,14 @@ export class HtmlTemplate extends EnginePipelineStepBase {
                 this.addLine(indent, lines, "</html>");
                 this.addLine(indent, lines, super.wrapGeneratedMarker("<!-- ", " -->"));
 
-                await fileSystem.fileWriteLines(engineVariables.wwwFolder, filename, lines);
+                await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, filename, lines);
             } else {
-                logger.info(`Skipping ${filename} as it has no generated marker`, { wwwFolder: engineVariables.wwwFolder });
+                logger.info(`Skipping ${filename} as it has no generated marker`, { wwwFolder: engineVariables.wwwRootFolder });
             }
 
             return 0;
         } catch (err) {
-            logger.error(`Generating ${filename} failed`, err, { wwwFolder: engineVariables.wwwFolder });
+            logger.error(`Generating ${filename} failed`, err, { wwwFolder: engineVariables.wwwRootFolder });
             return 1;
         }
     }

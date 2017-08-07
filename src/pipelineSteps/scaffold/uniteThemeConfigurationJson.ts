@@ -13,9 +13,9 @@ export class UniteThemeConfigurationJson extends EnginePipelineStepBase {
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
-            logger.info(`Generating ${UniteThemeConfigurationJson.FILENAME}`, { wwwFolder: engineVariables.wwwFolder});
+            logger.info(`Generating ${UniteThemeConfigurationJson.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder});
 
-            const sourceThemeFolder = fileSystem.pathCombine(engineVariables.assetsSourceFolder, "theme/");
+            const sourceThemeFolder = fileSystem.pathCombine(engineVariables.www.assetsSourceFolder, "theme/");
 
             let existing;
             try {

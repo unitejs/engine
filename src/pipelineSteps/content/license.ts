@@ -12,9 +12,9 @@ export class License extends EnginePipelineStepBase {
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
-            logger.info(`Generating ${License.FILENAME}`, { wwwFolder: engineVariables.wwwFolder});
+            logger.info(`Generating ${License.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder});
 
-            await fileSystem.fileWriteLines(engineVariables.wwwFolder, License.FILENAME, engineVariables.license.licenseText.split("\n"));
+            await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, License.FILENAME, engineVariables.license.licenseText.split("\n"));
 
             return 0;
         } catch (err) {

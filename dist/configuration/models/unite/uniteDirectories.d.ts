@@ -1,18 +1,9 @@
 /**
  * Model of Unite Configuration directories element.
  */
+import { UniteWwwDirectories } from "./uniteWwwDirectories";
 export declare class UniteDirectories {
-    src: string;
-    dist: string;
-    unitTest: string;
-    unitTestSrc: string;
-    unitTestDist: string;
-    cssSrc: string;
-    cssDist: string;
-    e2eTest: string;
-    e2eTestSrc: string;
-    e2eTestDist: string;
-    reports: string;
-    assets: string;
-    assetsSource: string;
+    wwwRoot: string;
+    packagedRoot: string;
+    www: UniteWwwDirectories;
 }

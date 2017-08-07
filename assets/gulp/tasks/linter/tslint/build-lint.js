@@ -13,7 +13,7 @@ gulp.task("build-lint", async () => {
 
     const uniteConfig = await uc.getUniteConfig();
 
-    return asyncUtil.stream(gulp.src(path.join(uniteConfig.directories.src, "**/*.{ts,tsx}"))
+    return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.src, "**/*.{ts,tsx}"))
         .pipe(tslint({"formatter": "verbose"}))
         .pipe(tslint.report())
         .on("error", () => {

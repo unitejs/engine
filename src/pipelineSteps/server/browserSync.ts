@@ -13,7 +13,7 @@ export class BrowserSync extends EnginePipelineStepBase {
 
         if (uniteConfiguration.server === "BrowserSync") {
             try {
-                logger.info("Generating BrowserSync Configuration", { wwwFolder: engineVariables.wwwFolder});
+                logger.info("Generating BrowserSync Configuration", { wwwFolder: engineVariables.wwwRootFolder});
 
                 return 0;
             } catch (err) {

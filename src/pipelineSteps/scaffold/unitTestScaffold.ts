@@ -11,10 +11,10 @@ export class UnitTestScaffold extends EnginePipelineStepBase {
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.unitTestRunner !== "None") {
             try {
-                logger.info("Creating Unit Test Directory", { unitTestSrcFolder: engineVariables.unitTestSrcFolder });
-                await fileSystem.directoryCreate(engineVariables.unitTestSrcFolder);
+                logger.info("Creating Unit Test Directory", { unitTestSrcFolder: engineVariables.www.unitTestSrcFolder });
+                await fileSystem.directoryCreate(engineVariables.www.unitTestSrcFolder);
             } catch (err) {
-                logger.error("Creating Unit Test Directory failed", err, { unitTestSrcFolder: engineVariables.unitTestSrcFolder });
+                logger.error("Creating Unit Test Directory failed", err, { unitTestSrcFolder: engineVariables.www.unitTestSrcFolder });
                 return 1;
             }
         }

@@ -18,7 +18,7 @@ gulp.task("build-transpile", async () => {
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig, true);
     let errorCount = 0;
 
-    gulp.src(path.join(uniteConfig.directories.src, "**/*.{js,jsx}"))
+    gulp.src(path.join(uniteConfig.dirs.www.src, "**/*.{js,jsx}"))
         .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : gutil.noop())
         .pipe(babel())
         .pipe(buildConfiguration.minify ? uglify()
@@ -36,7 +36,7 @@ gulp.task("build-transpile", async () => {
             "includeContent": true,
             "sourceRoot": ""
         }) : gutil.noop())
-        .pipe(gulp.dest(uniteConfig.directories.dist))
+        .pipe(gulp.dest(uniteConfig.dirs.www.dist))
         .on("end", () => {
             if (errorCount > 0) {
                 process.exit();

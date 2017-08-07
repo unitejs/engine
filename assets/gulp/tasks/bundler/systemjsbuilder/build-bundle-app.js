@@ -22,7 +22,7 @@ async function addBootstrap (uniteConfig, buildConfiguration) {
     bootstrap += "SystemJS.import('dist/entryPoint');";
     bootstrap += "});";
 
-    const bootstrapFile = path.join(uniteConfig.directories.dist, "app-bundle-bootstrap.js");
+    const bootstrapFile = path.join(uniteConfig.dirs.www.dist, "app-bundle-bootstrap.js");
 
     try {
         await util.promisify(fs.writeFile)(bootstrapFile, bootstrap);
@@ -33,7 +33,7 @@ async function addBootstrap (uniteConfig, buildConfiguration) {
 
     await asyncUtil.stream(gulp.src(bootstrapFile)
         .pipe(buildConfiguration.minify ? uglify() : gutil.noop())
-        .pipe(gulp.dest(uniteConfig.directories.dist)));
+        .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
 
     let bootstrap2 = null;
     try {
@@ -44,13 +44,13 @@ async function addBootstrap (uniteConfig, buildConfiguration) {
     }
 
     return asyncUtil.stream(
-        gulp.src(path.join(uniteConfig.directories.dist, "app-bundle.js"))
+        gulp.src(path.join(uniteConfig.dirs.www.dist, "app-bundle.js"))
             .pipe(buildConfiguration.sourcemaps
                 ? sourcemaps.init({"loadMaps": true}) : gutil.noop())
             .pipe(insert.append(bootstrap2))
             .pipe(buildConfiguration.sourcemaps
                 ? sourcemaps.write({"includeContent": true}) : gutil.noop())
-            .pipe(gulp.dest(uniteConfig.directories.dist)));
+            .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
 }
 
 gulp.task("build-bundle-app", async () => {
@@ -60,9 +60,9 @@ gulp.task("build-bundle-app", async () => {
     if (buildConfiguration.bundle) {
         display.info("Running", "Systemjs builder for App");
 
-        const builder = new Builder("./", `${uniteConfig.directories.dist}app-module-config.js`);
+        const builder = new Builder("./", `${uniteConfig.dirs.www.dist}app-module-config.js`);
 
-        const dist = uniteConfig.directories.dist;
+        const dist = uniteConfig.dirs.www.dist;
 
         const packageFiles = [
             `${dist}**/*.js`,
@@ -77,7 +77,7 @@ gulp.task("build-bundle-app", async () => {
 
         try {
             await builder.bundle(packageFiles.join(""),
-                path.join(uniteConfig.directories.dist, "app-bundle.js"),
+                path.join(uniteConfig.dirs.www.dist, "app-bundle.js"),
                 {
                     "minify": buildConfiguration.minify,
                     "sourceMaps": sourceMapsFlag

@@ -18,7 +18,7 @@ gulp.task("unit-transpile", async () => {
 
     const regEx = new RegExp(uniteConfig.srcDistReplace, "g");
 
-    return asyncUtil.stream(gulp.src(`${uniteConfig.directories.unitTestSrc}**/*.spec.{js,jsx}`)
+    return asyncUtil.stream(gulp.src(`${uniteConfig.dirs.www.unitTestSrc}**/*.spec.{js,jsx}`)
         .pipe(sourcemaps.init())
         .pipe(babel())
         .on("error", (err) => {
@@ -28,7 +28,7 @@ gulp.task("unit-transpile", async () => {
         })
         .pipe(replace(regEx, uniteConfig.srcDistReplaceWith))
         .pipe(sourcemaps.write({"includeContent": true}))
-        .pipe(gulp.dest(uniteConfig.directories.unitTestDist))
+        .pipe(gulp.dest(uniteConfig.dirs.www.unitTestDist))
         .on("end", () => {
             if (errorCount > 0) {
                 process.exit();

@@ -18,11 +18,19 @@ export class OutputDirectory extends EnginePipelineStepBase {
         }
 
         try {
-            logger.info("Creating WWW Directory", { wwwFolder: engineVariables.wwwFolder });
-            await fileSystem.directoryCreate(engineVariables.wwwFolder);
+            logger.info("Creating WWW Directory", { wwwFolder: engineVariables.wwwRootFolder });
+            await fileSystem.directoryCreate(engineVariables.wwwRootFolder);
+        } catch (err) {
+            logger.error("Creating WWW Directory failed", err, { wwwFolder: engineVariables.wwwRootFolder });
+            return 1;
+        }
+
+        try {
+            logger.info("Creating Packaged Directory", { wwwFolder: engineVariables.packagedRootFolder });
+            await fileSystem.directoryCreate(engineVariables.packagedRootFolder);
             return 0;
         } catch (err) {
-            logger.error("Creating WWW Directory failed", err, { wwwFolder: engineVariables.wwwFolder });
+            logger.error("Creating Packaged Directory failed", err, { wwwFolder: engineVariables.packagedRootFolder });
             return 1;
         }
     }

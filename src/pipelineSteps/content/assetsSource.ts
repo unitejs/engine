@@ -15,18 +15,18 @@ export class AssetsSource extends EnginePipelineStepBase {
         engineVariables.toggleDevDependency(["unitejs-image-cli"], true);
 
         try {
-            logger.info("Creating Directory", { assetsSourceFolder: engineVariables.assetsSourceFolder });
+            logger.info("Creating Directory", { assetsSourceFolder: engineVariables.www.assetsSourceFolder });
 
-            await fileSystem.directoryCreate(engineVariables.assetsSourceFolder);
+            await fileSystem.directoryCreate(engineVariables.www.assetsSourceFolder);
         } catch (err) {
             logger.error("Creating Assets Source folder failed", err);
             return 1;
         }
 
         try {
-            logger.info("Creating Directory", { assetsFolder: engineVariables.assetsFolder });
+            logger.info("Creating Directory", { assetsFolder: engineVariables.www.assetsFolder });
 
-            await fileSystem.directoryCreate(engineVariables.assetsFolder);
+            await fileSystem.directoryCreate(engineVariables.www.assetsFolder);
 
         } catch (err) {
             logger.error("Creating Assets folder failed", err);
@@ -35,7 +35,7 @@ export class AssetsSource extends EnginePipelineStepBase {
 
         try {
             const sourceThemeFolder = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, "assetsSource/theme/");
-            const destThemeFolder = fileSystem.pathCombine(engineVariables.assetsSourceFolder, "theme/");
+            const destThemeFolder = fileSystem.pathCombine(engineVariables.www.assetsSourceFolder, "theme/");
 
             await super.copyFile(logger, fileSystem, sourceThemeFolder, AssetsSource.FILENAME, destThemeFolder, AssetsSource.FILENAME);
             await super.copyFile(logger, fileSystem, sourceThemeFolder, AssetsSource.FILENAME2, destThemeFolder, AssetsSource.FILENAME2);

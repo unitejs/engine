@@ -12,10 +12,10 @@ export class ReadMe extends EnginePipelineStepBase {
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
-            const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwFolder, ReadMe.FILENAME);
+            const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, ReadMe.FILENAME);
 
             if (hasGeneratedMarker) {
-                logger.info(`Generating ${ReadMe.FILENAME}`, { wwwFolder: engineVariables.wwwFolder});
+                logger.info(`Generating ${ReadMe.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder});
 
                 const lines = await fileSystem.fileReadLines(engineVariables.packageAssetsDirectory, ReadMe.FILENAME);
 
@@ -25,7 +25,7 @@ export class ReadMe extends EnginePipelineStepBase {
                 lines.push("---");
                 lines.push(super.wrapGeneratedMarker("*", "* :zap:"));
 
-                await fileSystem.fileWriteLines(engineVariables.wwwFolder, ReadMe.FILENAME, lines);
+                await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, ReadMe.FILENAME, lines);
             } else {
                 logger.info(`Skipping ${ReadMe.FILENAME} as it has no generated marker`);
             }

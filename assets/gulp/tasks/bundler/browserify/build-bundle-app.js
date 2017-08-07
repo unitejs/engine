@@ -23,10 +23,10 @@ gulp.task("build-bundle-app", async () => {
 
         const bApp = browserify({
             "debug": buildConfiguration.sourcemaps,
-            "entries": `./${path.join(uniteConfig.directories.dist, "entryPoint.js")}`
+            "entries": `./${path.join(uniteConfig.dirs.www.dist, "entryPoint.js")}`
         });
 
-        const keys = clientPackages.getKeys(uniteConfig);
+        const keys = clientPackages.getKeys(uniteConfig, ["app", "both"]);
 
         keys.forEach((key) => {
             bApp.exclude(key);
@@ -47,7 +47,7 @@ gulp.task("build-bundle-app", async () => {
             .pipe(buildConfiguration.sourcemaps
                 ? sourcemaps.mapSources((sourcePath) => sourcePath.replace(/dist\//, "./")) : gutil.noop())
             .pipe(buildConfiguration.sourcemaps ? sourcemaps.write({"includeContent": true}) : gutil.noop())
-            .pipe(gulp.dest(uniteConfig.directories.dist)));
+            .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
     }
 });
 

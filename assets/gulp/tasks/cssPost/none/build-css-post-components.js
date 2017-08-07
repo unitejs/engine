@@ -15,14 +15,14 @@ gulp.task("build-css-post-components", async () => {
     const uniteConfig = await uc.getUniteConfig();
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
-    asyncUtil.stream(gulp.src(path.join(uniteConfig.directories.dist, "**/*.css"))
+    asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.dist, "**/*.css"))
         .pipe(buildConfiguration.minify ? cssnano() : gutil.noop())
-        .pipe(gulp.dest(uniteConfig.directories.dist)));
+        .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
 
     if (buildConfiguration.minify) {
-        asyncUtil.stream(gulp.src(path.join(uniteConfig.directories.dist, "**/*.css"))
+        asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.dist, "**/*.css"))
             .pipe(cssnano())
-            .pipe(gulp.dest(uniteConfig.directories.cssDist)));
+            .pipe(gulp.dest(uniteConfig.dirs.www.cssDist)));
     }
 });
 

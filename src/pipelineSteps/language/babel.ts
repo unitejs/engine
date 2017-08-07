@@ -16,13 +16,13 @@ export class Babel extends EnginePipelineStepBase {
 
         if (uniteConfiguration.sourceLanguage === "JavaScript") {
             try {
-                logger.info(`Generating ${Babel.FILENAME}`, { wwwFolder: engineVariables.wwwFolder });
+                logger.info(`Generating ${Babel.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
                 let existing;
                 try {
-                    const exists = await fileSystem.fileExists(engineVariables.wwwFolder, Babel.FILENAME);
+                    const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, Babel.FILENAME);
                     if (exists) {
-                        existing = await fileSystem.fileReadJson<BabelConfiguration>(engineVariables.wwwFolder, Babel.FILENAME);
+                        existing = await fileSystem.fileReadJson<BabelConfiguration>(engineVariables.wwwRootFolder, Babel.FILENAME);
                     }
                 } catch (err) {
                     logger.error(`Reading existing ${Babel.FILENAME} failed`, err);
@@ -30,15 +30,15 @@ export class Babel extends EnginePipelineStepBase {
                 }
 
                 const config = this.generateConfig(fileSystem, uniteConfiguration, engineVariables, existing);
-                await fileSystem.fileWriteJson(engineVariables.wwwFolder, Babel.FILENAME, config);
+                await fileSystem.fileWriteJson(engineVariables.wwwRootFolder, Babel.FILENAME, config);
 
                 return 0;
             } catch (err) {
-                logger.error(`Generating ${Babel.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwFolder });
+                logger.error(`Generating ${Babel.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwRootFolder });
                 return 1;
             }
         } else {
-            return await super.deleteFile(logger, fileSystem, engineVariables.wwwFolder, Babel.FILENAME);
+            return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, Babel.FILENAME);
         }
     }
 

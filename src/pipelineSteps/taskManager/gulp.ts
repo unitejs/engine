@@ -10,6 +10,18 @@ import { EngineVariables } from "../../engine/engineVariables";
 export class Gulp extends EnginePipelineStepBase {
     private static FILENAME: string = "gulpfile.js";
 
+    private _buildFolder: string;
+    private _tasksFolder: string;
+    private _utilFolder: string;
+
+    public async prerequisites(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : Promise<number> {
+        this._buildFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "build");
+        this._tasksFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "build/tasks");
+        this._utilFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "build/tasks/util");
+
+        return 0;
+    }
+
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["gulp",
                                             "bluebird",
@@ -19,68 +31,67 @@ export class Gulp extends EnginePipelineStepBase {
                                             "minimist",
                                             "gulp-uglify",
                                             "uglify-js",
-                                            "mkdirp"],
+                                            "mkdirp",
+                                            "gulp-zip"],
                                             uniteConfiguration.taskManager === "Gulp");
 
         if (uniteConfiguration.taskManager === "Gulp") {
             try {
-                const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwFolder, Gulp.FILENAME);
+                const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, Gulp.FILENAME);
 
                 if (hasGeneratedMarker) {
-                    logger.info(`Generating ${Gulp.FILENAME} in`, { wwwFolder: engineVariables.wwwFolder });
+                    logger.info(`Generating ${Gulp.FILENAME} in`, { wwwFolder: engineVariables.wwwRootFolder });
 
                     const lines: string[] = [];
                     lines.push("require('require-dir')('build/tasks');");
                     lines.push(super.wrapGeneratedMarker("/* ", " */"));
 
-                    await fileSystem.fileWriteLines(engineVariables.wwwFolder, Gulp.FILENAME, lines);
+                    await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, Gulp.FILENAME, lines);
                 } else {
                     logger.info(`Skipping ${Gulp.FILENAME} at it has no generated marker`);
                 }
             } catch (err) {
-                logger.error(`Generating ${Gulp.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwFolder });
+                logger.error(`Generating ${Gulp.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwRootFolder });
                 return 1;
             }
 
             try {
-                logger.info("Creating Gulp Build Directory", { gulpBuildFolder: engineVariables.gulpBuildFolder });
-                await fileSystem.directoryCreate(engineVariables.gulpBuildFolder);
+                logger.info("Creating Gulp Build Directory", { gulpBuildFolder: this._buildFolder });
+                await fileSystem.directoryCreate(this._buildFolder);
             } catch (err) {
-                logger.error("Creating Gulp Build Directory failed", err, { gulpBuildFolder: engineVariables.gulpBuildFolder });
+                logger.error("Creating Gulp Build Directory failed", err, { gulpBuildFolder: this._buildFolder });
                 return 1;
             }
 
-            engineVariables.gulpTasksFolder = fileSystem.pathCombine(engineVariables.gulpBuildFolder, "tasks");
             try {
-                logger.info("Creating Gulp Tasks Directory", { gulpTasksFolder: engineVariables.gulpTasksFolder });
-                await fileSystem.directoryCreate(engineVariables.gulpTasksFolder);
+                logger.info("Creating Gulp Tasks Directory", { gulpTasksFolder: this._tasksFolder });
+                await fileSystem.directoryCreate(this._tasksFolder);
             } catch (err) {
-                logger.error("Creating Gulp Tasks Directory failed", err, { gulpTasksFolder: engineVariables.gulpTasksFolder });
+                logger.error("Creating Gulp Tasks Directory failed", err, { gulpTasksFolder: this._tasksFolder });
                 return 1;
             }
 
-            engineVariables.gulpUtilFolder = fileSystem.pathCombine(engineVariables.gulpTasksFolder, "util");
             try {
-                logger.info("Creating Gulp Util Directory", { gulpUtilFolder: engineVariables.gulpUtilFolder });
-                await fileSystem.directoryCreate(engineVariables.gulpUtilFolder);
+                logger.info("Creating Gulp Util Directory", { gulpUtilFolder: this._utilFolder });
+                await fileSystem.directoryCreate(this._utilFolder);
             } catch (err) {
-                logger.error("Creating Gulp Util Directory failed", err, { gulpUtilFolder: engineVariables.gulpUtilFolder });
+                logger.error("Creating Gulp Util Directory failed", err, { gulpUtilFolder: this._utilFolder });
                 return 1;
             }
         } else {
             try {
-                logger.info("Deleting Gulp Build Directory", { gulpBuildFolder: engineVariables.gulpBuildFolder });
+                logger.info("Deleting Gulp Build Directory", { gulpBuildFolder: this._buildFolder });
 
-                const exists = await fileSystem.directoryExists(engineVariables.wwwFolder);
+                const exists = await fileSystem.directoryExists(engineVariables.wwwRootFolder);
                 if (exists) {
-                    await fileSystem.directoryDelete(engineVariables.gulpBuildFolder);
+                    await fileSystem.directoryDelete(this._buildFolder);
                 }
             } catch (err) {
-                logger.error("Deleting Gulp Build Directory failed", err, { gulpBuildFolder: engineVariables.gulpBuildFolder });
+                logger.error("Deleting Gulp Build Directory failed", err, { gulpBuildFolder: this._buildFolder });
                 return 1;
             }
 
-            const ret2 = await super.deleteFile(logger, fileSystem, engineVariables.wwwFolder, Gulp.FILENAME);
+            const ret2 = await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, Gulp.FILENAME);
             if (ret2 !== 0) {
                 return ret2;
             }
@@ -121,7 +132,7 @@ export class Gulp extends EnginePipelineStepBase {
 
         if (uniteConfiguration.taskManager === "Gulp") {
             try {
-                logger.info("Generating gulp tasks for build in", { gulpTasksFolder: engineVariables.gulpTasksFolder });
+                logger.info("Generating gulp tasks for build in", { gulpTasksFolder: this._tasksFolder });
 
                 const assetTasks = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, "gulp/tasks/");
                 const assetTasksLanguage = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, `gulp/tasks/sourceLanguage/${uniteConfiguration.sourceLanguage.toLowerCase()}/`);
@@ -129,21 +140,24 @@ export class Gulp extends EnginePipelineStepBase {
                 const assetTasksLinter = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, `gulp/tasks/linter/${uniteConfiguration.linter.toLowerCase()}/`);
                 const assetTasksCssPre = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, `gulp/tasks/cssPre/${uniteConfiguration.cssPre.toLowerCase()}/`);
                 const assetTasksCssPost = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, `gulp/tasks/cssPost/${uniteConfiguration.cssPost.toLowerCase()}/`);
+                const assetTasksPlatform = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, "gulp/tasks/platform/");
 
-                await this.copyFile(logger, fileSystem, assetTasksLanguage, "build-transpile.js", engineVariables.gulpTasksFolder, "build-transpile.js");
-                await this.copyFile(logger, fileSystem, assetTasksBundler, "build-bundle-app.js", engineVariables.gulpTasksFolder, "build-bundle-app.js");
-                await this.copyFile(logger, fileSystem, assetTasksBundler, "build-bundle-vendor.js", engineVariables.gulpTasksFolder, "build-bundle-vendor.js");
-                await this.copyFile(logger, fileSystem, assetTasksLinter, "build-lint.js", engineVariables.gulpTasksFolder, "build-lint.js");
-                await this.copyFile(logger, fileSystem, assetTasksCssPre, "build-css-app.js", engineVariables.gulpTasksFolder, "build-css-app.js");
-                await this.copyFile(logger, fileSystem, assetTasksCssPre, "build-css-components.js", engineVariables.gulpTasksFolder, "build-css-components.js");
-                await this.copyFile(logger, fileSystem, assetTasksCssPost, "build-css-post-app.js", engineVariables.gulpTasksFolder, "build-css-post-app.js");
-                await this.copyFile(logger, fileSystem, assetTasksCssPost, "build-css-post-components.js", engineVariables.gulpTasksFolder, "build-css-post-components.js");
+                await this.copyFile(logger, fileSystem, assetTasksLanguage, "build-transpile.js", this._tasksFolder, "build-transpile.js");
+                await this.copyFile(logger, fileSystem, assetTasksBundler, "build-bundle-app.js", this._tasksFolder, "build-bundle-app.js");
+                await this.copyFile(logger, fileSystem, assetTasksBundler, "build-bundle-vendor.js", this._tasksFolder, "build-bundle-vendor.js");
+                await this.copyFile(logger, fileSystem, assetTasksLinter, "build-lint.js", this._tasksFolder, "build-lint.js");
+                await this.copyFile(logger, fileSystem, assetTasksCssPre, "build-css-app.js", this._tasksFolder, "build-css-app.js");
+                await this.copyFile(logger, fileSystem, assetTasksCssPre, "build-css-components.js", this._tasksFolder, "build-css-components.js");
+                await this.copyFile(logger, fileSystem, assetTasksCssPost, "build-css-post-app.js", this._tasksFolder, "build-css-post-app.js");
+                await this.copyFile(logger, fileSystem, assetTasksCssPost, "build-css-post-components.js", this._tasksFolder, "build-css-post-components.js");
 
-                await this.copyFile(logger, fileSystem, assetTasks, "build.js", engineVariables.gulpTasksFolder, "build.js");
+                await this.copyFile(logger, fileSystem, assetTasksPlatform, "platform-web.js", this._tasksFolder, "platform-web.js");
+
+                await this.copyFile(logger, fileSystem, assetTasks, "build.js", this._tasksFolder, "build.js");
 
                 return 0;
             } catch (err) {
-                logger.error("Generating gulp tasks for build failed", err, { gulpTasksFolder: engineVariables.gulpTasksFolder });
+                logger.error("Generating gulp tasks for build failed", err, { gulpTasksFolder: this._tasksFolder });
                 return 1;
             }
         }
@@ -156,7 +170,7 @@ export class Gulp extends EnginePipelineStepBase {
 
         if (uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.unitTestRunner !== "None") {
             try {
-                logger.info("Generating gulp tasks for unit in", { gulpTasksFolder: engineVariables.gulpTasksFolder });
+                logger.info("Generating gulp tasks for unit in", { gulpTasksFolder: this._tasksFolder });
 
                 const assetUnitTest = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, "gulp/tasks/");
 
@@ -169,14 +183,14 @@ export class Gulp extends EnginePipelineStepBase {
                 const assetUnitTestRunner = fileSystem.pathCombine(engineVariables.packageAssetsDirectory,
                                                                    `gulp/tasks/unitTestRunner/${uniteConfiguration.unitTestRunner.toLowerCase()}/`);
 
-                await this.copyFile(logger, fileSystem, assetUnitTest, "unit.js", engineVariables.gulpTasksFolder, "unit.js");
-                await this.copyFile(logger, fileSystem, assetUnitTestLanguage, "unit-transpile.js", engineVariables.gulpTasksFolder, "unit-transpile.js");
-                await this.copyFile(logger, fileSystem, assetLinter, "unit-lint.js", engineVariables.gulpTasksFolder, "unit-lint.js");
-                await this.copyFile(logger, fileSystem, assetUnitTestRunner, "unit-runner.js", engineVariables.gulpTasksFolder, "unit-runner.js");
+                await this.copyFile(logger, fileSystem, assetUnitTest, "unit.js", this._tasksFolder, "unit.js");
+                await this.copyFile(logger, fileSystem, assetUnitTestLanguage, "unit-transpile.js", this._tasksFolder, "unit-transpile.js");
+                await this.copyFile(logger, fileSystem, assetLinter, "unit-lint.js", this._tasksFolder, "unit-lint.js");
+                await this.copyFile(logger, fileSystem, assetUnitTestRunner, "unit-runner.js", this._tasksFolder, "unit-runner.js");
 
                 return 0;
             } catch (err) {
-                logger.error("Generating gulp tasks for unit failed", err, { gulpTasksFolder: engineVariables.gulpTasksFolder });
+                logger.error("Generating gulp tasks for unit failed", err, { gulpTasksFolder: this._tasksFolder });
                 return 1;
             }
         }
@@ -190,7 +204,7 @@ export class Gulp extends EnginePipelineStepBase {
 
         if (uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.e2eTestRunner !== "None") {
             try {
-                logger.info("Generating gulp tasks for e2e in", { gulpTasksFolder: engineVariables.gulpTasksFolder });
+                logger.info("Generating gulp tasks for e2e in", { gulpTasksFolder: this._tasksFolder });
 
                 const assetE2eTest = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, "gulp/tasks/");
 
@@ -203,15 +217,15 @@ export class Gulp extends EnginePipelineStepBase {
                 const assetE2eTestRunner = fileSystem.pathCombine(engineVariables.packageAssetsDirectory,
                                                                   `gulp/tasks/e2eTestRunner/${uniteConfiguration.e2eTestRunner.toLowerCase()}/`);
 
-                await this.copyFile(logger, fileSystem, assetE2eTest, "e2e.js", engineVariables.gulpTasksFolder, "e2e.js");
-                await this.copyFile(logger, fileSystem, assetUnitTestLanguage, "e2e-transpile.js", engineVariables.gulpTasksFolder, "e2e-transpile.js");
-                await this.copyFile(logger, fileSystem, assetLinter, "e2e-lint.js", engineVariables.gulpTasksFolder, "e2e-lint.js");
-                await this.copyFile(logger, fileSystem, assetE2eTestRunner, "e2e-runner.js", engineVariables.gulpTasksFolder, "e2e-runner.js");
-                await this.copyFile(logger, fileSystem, assetE2eTestRunner, "e2e-install.js", engineVariables.gulpTasksFolder, "e2e-install.js");
+                await this.copyFile(logger, fileSystem, assetE2eTest, "e2e.js", this._tasksFolder, "e2e.js");
+                await this.copyFile(logger, fileSystem, assetUnitTestLanguage, "e2e-transpile.js", this._tasksFolder, "e2e-transpile.js");
+                await this.copyFile(logger, fileSystem, assetLinter, "e2e-lint.js", this._tasksFolder, "e2e-lint.js");
+                await this.copyFile(logger, fileSystem, assetE2eTestRunner, "e2e-runner.js", this._tasksFolder, "e2e-runner.js");
+                await this.copyFile(logger, fileSystem, assetE2eTestRunner, "e2e-install.js", this._tasksFolder, "e2e-install.js");
 
                 return 0;
             } catch (err) {
-                logger.error("Generating gulp tasks for e2e failed", err, { gulpTasksFolder: engineVariables.gulpTasksFolder });
+                logger.error("Generating gulp tasks for e2e failed", err, { gulpTasksFolder: this._tasksFolder });
                 return 1;
             }
         }
@@ -223,15 +237,15 @@ export class Gulp extends EnginePipelineStepBase {
         if (uniteConfiguration.taskManager === "Gulp") {
 
             try {
-                logger.info("Generating gulp tasks serve in", { gulpTasksFolder: engineVariables.gulpTasksFolder });
+                logger.info("Generating gulp tasks serve in", { gulpTasksFolder: this._tasksFolder });
 
                 const assetTasksServer = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, `gulp/tasks/server/${uniteConfiguration.server.toLowerCase()}`);
 
-                await this.copyFile(logger, fileSystem, assetTasksServer, "serve.js", engineVariables.gulpTasksFolder, "serve.js");
+                await this.copyFile(logger, fileSystem, assetTasksServer, "serve.js", this._tasksFolder, "serve.js");
 
                 return 0;
             } catch (err) {
-                logger.error("Generating gulp tasks serve failed", err, { gulpTasksFolder: engineVariables.gulpTasksFolder });
+                logger.error("Generating gulp tasks serve failed", err, { gulpTasksFolder: this._tasksFolder });
                 return 1;
             }
         }
@@ -243,15 +257,15 @@ export class Gulp extends EnginePipelineStepBase {
         if (uniteConfiguration.taskManager === "Gulp") {
 
             try {
-                logger.info("Generating gulp tasks theme in", { gulpTasksFolder: engineVariables.gulpTasksFolder });
+                logger.info("Generating gulp tasks theme in", { gulpTasksFolder: this._tasksFolder });
 
                 const assetTasksTheme = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, "gulp/tasks/");
 
-                await this.copyFile(logger, fileSystem, assetTasksTheme, "theme.js", engineVariables.gulpTasksFolder, "theme.js");
+                await this.copyFile(logger, fileSystem, assetTasksTheme, "theme.js", this._tasksFolder, "theme.js");
 
                 return 0;
             } catch (err) {
-                logger.error("Generating gulp tasks serve failed", err, { gulpTasksFolder: engineVariables.gulpTasksFolder });
+                logger.error("Generating gulp tasks serve failed", err, { gulpTasksFolder: this._tasksFolder });
                 return 1;
             }
         }
@@ -264,24 +278,24 @@ export class Gulp extends EnginePipelineStepBase {
 
         if (uniteConfiguration.taskManager === "Gulp") {
             try {
-                logger.info("Generating gulp tasks utils in", { gulpUtilFolder: engineVariables.gulpUtilFolder });
+                logger.info("Generating gulp tasks utils in", { gulpUtilFolder: this._utilFolder });
 
                 const assetUtils = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, "gulp/tasks/util/");
                 const assetUtilModuleType = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, `gulp/tasks/moduleType/${uniteConfiguration.moduleType.toLowerCase()}/util/`);
 
-                await this.copyFile(logger, fileSystem, assetUtils, "async-util.js", engineVariables.gulpUtilFolder, "async-util.js");
-                await this.copyFile(logger, fileSystem, assetUtils, "bundle.js", engineVariables.gulpUtilFolder, "bundle.js");
-                await this.copyFile(logger, fileSystem, assetUtils, "client-packages.js", engineVariables.gulpUtilFolder, "client-packages.js");
-                await this.copyFile(logger, fileSystem, assetUtils, "display.js", engineVariables.gulpUtilFolder, "display.js");
-                await this.copyFile(logger, fileSystem, assetUtils, "exec.js", engineVariables.gulpUtilFolder, "exec.js");
-                await this.copyFile(logger, fileSystem, assetUtils, "theme-utils.js", engineVariables.gulpUtilFolder, "theme-utils.js");
-                await this.copyFile(logger, fileSystem, assetUtils, "unite-config.js", engineVariables.gulpUtilFolder, "unite-config.js");
+                await this.copyFile(logger, fileSystem, assetUtils, "async-util.js", this._utilFolder, "async-util.js");
+                await this.copyFile(logger, fileSystem, assetUtils, "bundle.js", this._utilFolder, "bundle.js");
+                await this.copyFile(logger, fileSystem, assetUtils, "client-packages.js", this._utilFolder, "client-packages.js");
+                await this.copyFile(logger, fileSystem, assetUtils, "display.js", this._utilFolder, "display.js");
+                await this.copyFile(logger, fileSystem, assetUtils, "exec.js", this._utilFolder, "exec.js");
+                await this.copyFile(logger, fileSystem, assetUtils, "theme-utils.js", this._utilFolder, "theme-utils.js");
+                await this.copyFile(logger, fileSystem, assetUtils, "unite-config.js", this._utilFolder, "unite-config.js");
 
-                await this.copyFile(logger, fileSystem, assetUtilModuleType, "module-config.js", engineVariables.gulpUtilFolder, "module-config.js");
+                await this.copyFile(logger, fileSystem, assetUtilModuleType, "module-config.js", this._utilFolder, "module-config.js");
 
                 return 0;
             } catch (err) {
-                logger.error("Generating gulp tasks utils failed", err, { gulpUtilFolder: engineVariables.gulpUtilFolder });
+                logger.error("Generating gulp tasks utils failed", err, { gulpUtilFolder: this._utilFolder });
                 return 1;
             }
         }

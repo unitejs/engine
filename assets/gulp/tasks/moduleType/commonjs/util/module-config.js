@@ -16,8 +16,11 @@ function create (uniteConfig, includeModes, isBundle) {
     const sjsPackages = {};
     sjsPackages[""] = {"defaultExtension": "js"};
 
+    Object.keys(moduleConfig.paths).forEach(key => {
+        moduleConfig.paths[key] = moduleConfig.paths[key].replace(/\.\//, "");
+    });
     moduleConfig.packages.forEach((pkg) => {
-        moduleConfig.paths[pkg.name] = pkg.location;
+        moduleConfig.paths[pkg.name] = pkg.location.replace(/\.\//, "");
         sjsPackages[pkg.name] = {
             "main": pkg.main
         };

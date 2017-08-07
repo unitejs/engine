@@ -16,7 +16,7 @@ gulp.task("e2e-transpile", async () => {
     const tsProject = typescript.createProject("tsconfig.json", {"module": "commonjs"});
     let errorCount = 0;
 
-    return asyncUtil.stream(gulp.src(`${uniteConfig.directories.e2eTestSrc}**/*.spec.{ts,tsx}`)
+    return asyncUtil.stream(gulp.src(`${uniteConfig.dirs.www.e2eTestSrc}**/*.spec.{ts,tsx}`)
         .pipe(sourcemaps.init())
         .pipe(tsProject())
         .on("error", () => {
@@ -24,7 +24,7 @@ gulp.task("e2e-transpile", async () => {
         })
         .js
         .pipe(sourcemaps.write({"includeContent": true}))
-        .pipe(gulp.dest(uniteConfig.directories.e2eTestDist))
+        .pipe(gulp.dest(uniteConfig.dirs.www.e2eTestDist))
         .on("end", () => {
             if (errorCount > 0) {
                 process.exit();

@@ -12,7 +12,7 @@ export class Amd extends EnginePipelineStepBase {
         engineVariables.toggleClientPackage(
             "requirejs",
             "require.js",
-            "",
+            undefined,
             false,
             "app",
             false,
@@ -21,7 +21,7 @@ export class Amd extends EnginePipelineStepBase {
         engineVariables.toggleClientPackage(
             "text",
             "text.js",
-            "",
+            undefined,
             false,
             "both",
             false,

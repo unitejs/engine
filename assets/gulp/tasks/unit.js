@@ -18,11 +18,11 @@ gulp.task("unit-clean", async () => {
     const uniteConfig = await uc.getUniteConfig();
 
     const toClean = [
-        path.join(uniteConfig.directories.unitTestDist, "**/*.spec.js"),
-        path.join(uniteConfig.directories.reports, "unit/**/*"),
-        path.join(uniteConfig.directories.reports, "coverage/**/*"),
-        path.join(uniteConfig.directories.reports, "coverage.json"),
-        path.join(uniteConfig.directories.reports, "coverage-final.json")
+        path.join(uniteConfig.dirs.www.unitTestDist, "**/*.spec.js"),
+        path.join(uniteConfig.dirs.www.reports, "unit/**/*"),
+        path.join(uniteConfig.dirs.www.reports, "coverage/**/*"),
+        path.join(uniteConfig.dirs.www.reports, "coverage.json"),
+        path.join(uniteConfig.dirs.www.reports, "coverage-final.json")
     ];
     display.info("Cleaning", toClean);
     return del(toClean);
@@ -36,7 +36,7 @@ gulp.task("unit-module-config", async () => {
 
     try {
         await util.promisify(fs.writeFile)(
-            path.join(uniteConfig.directories.unitTest, "unit-module-config.js"),
+            path.join(uniteConfig.dirs.www.unitTest, "unit-module-config.js"),
             config);
     } catch (err) {
         display.error("Writing unit-module-config.js", err);

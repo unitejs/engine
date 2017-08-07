@@ -31,13 +31,13 @@ export class EsLint extends EnginePipelineStepBase {
 
         if (uniteConfiguration.linter === "ESLint") {
             try {
-                logger.info(`Generating ${EsLint.FILENAME}`, { wwwFolder: engineVariables.wwwFolder});
+                logger.info(`Generating ${EsLint.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder});
 
                 let existing;
                 try {
-                    const exists = await fileSystem.fileExists(engineVariables.wwwFolder, EsLint.FILENAME);
+                    const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, EsLint.FILENAME);
                     if (exists) {
-                        existing = await fileSystem.fileReadJson<EsLintConfiguration>(engineVariables.wwwFolder, EsLint.FILENAME);
+                        existing = await fileSystem.fileReadJson<EsLintConfiguration>(engineVariables.wwwRootFolder, EsLint.FILENAME);
                     }
                 } catch (err) {
                     logger.error(`Reading existing ${EsLint.FILENAME} failed`, err);
@@ -45,16 +45,16 @@ export class EsLint extends EnginePipelineStepBase {
                 }
 
                 const config = this.generateConfig(fileSystem, uniteConfiguration, engineVariables, existing);
-                await fileSystem.fileWriteJson(engineVariables.wwwFolder, EsLint.FILENAME, config);
+                await fileSystem.fileWriteJson(engineVariables.wwwRootFolder, EsLint.FILENAME, config);
             } catch (err) {
                 logger.error(`Generating ${EsLint.FILENAME} failed`, err);
                 return 1;
             }
             try {
-                const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwFolder, EsLint.FILENAME2);
+                const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, EsLint.FILENAME2);
 
                 if (hasGeneratedMarker) {
-                    logger.info(`Generating ${EsLint.FILENAME2} Configuration`, { wwwFolder: engineVariables.wwwFolder});
+                    logger.info(`Generating ${EsLint.FILENAME2} Configuration`, { wwwFolder: engineVariables.wwwRootFolder});
 
                     const lines: string[] = [];
 
@@ -64,7 +64,7 @@ export class EsLint extends EnginePipelineStepBase {
                     lines.push("test/unit/unit-module-config.js");
                     lines.push(super.wrapGeneratedMarker("# ", ""));
 
-                    await fileSystem.fileWriteLines(engineVariables.wwwFolder, EsLint.FILENAME2, lines);
+                    await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, EsLint.FILENAME2, lines);
                 } else {
                     logger.info(`Skipping ${EsLint.FILENAME2} as it has no generated marker`);
                 }
@@ -75,9 +75,9 @@ export class EsLint extends EnginePipelineStepBase {
                 return 1;
             }
         } else {
-            let ret = await super.deleteFile(logger, fileSystem, engineVariables.wwwFolder, EsLint.FILENAME);
+            let ret = await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, EsLint.FILENAME);
             if (ret === 0) {
-                ret = await super.deleteFile(logger, fileSystem, engineVariables.wwwFolder, EsLint.FILENAME2);
+                ret = await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, EsLint.FILENAME2);
             }
 
             return ret;

@@ -22,7 +22,7 @@ gulp.task("build-bundle-app", async () => {
         const entry = {};
         const plugins = [];
 
-        const keys = clientPackages.getKeys(uniteConfig);
+        const keys = clientPackages.getKeys(uniteConfig, ["app", "both"]);
 
         const idx = keys.indexOf("systemjs");
         if (idx >= 0) {
@@ -42,7 +42,7 @@ gulp.task("build-bundle-app", async () => {
             process.env.NODE_ENV = "production";
         }
 
-        entry.app = `./${path.join(uniteConfig.directories.dist, "entryPoint.js")}`;
+        entry.app = `./${path.join(uniteConfig.dirs.www.dist, "entryPoint.js")}`;
 
         const webpackOptions = {
             entry,
@@ -68,7 +68,7 @@ gulp.task("build-bundle-app", async () => {
 
         return asyncUtil.stream(gulp.src(entry.app)
             .pipe(webpackStream(webpackOptions, webpack))
-            .pipe(gulp.dest(uniteConfig.directories.dist)));
+            .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
     }
 });
 

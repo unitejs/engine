@@ -19,7 +19,7 @@ gulp.task("unit-transpile", async () => {
     const tsProject = typescript.createProject("tsconfig.json");
     let errorCount = 0;
 
-    return asyncUtil.stream(gulp.src(`${uniteConfig.directories.unitTestSrc}**/*.spec.{ts,tsx}`)
+    return asyncUtil.stream(gulp.src(`${uniteConfig.dirs.www.unitTestSrc}**/*.spec.{ts,tsx}`)
         .pipe(sourcemaps.init())
         .pipe(tsProject())
         .on("error", () => {
@@ -28,7 +28,7 @@ gulp.task("unit-transpile", async () => {
         .js
         .pipe(replace(regEx, uniteConfig.srcDistReplaceWith))
         .pipe(sourcemaps.write({"includeContent": true}))
-        .pipe(gulp.dest(uniteConfig.directories.unitTestDist))
+        .pipe(gulp.dest(uniteConfig.dirs.www.unitTestDist))
         .on("end", () => {
             if (errorCount > 0) {
                 process.exit();

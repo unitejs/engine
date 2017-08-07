@@ -17,8 +17,8 @@ gulp.task("e2e-clean", async () => {
     const uniteConfig = await uc.getUniteConfig();
 
     const toClean = [
-        path.join(uniteConfig.directories.e2eTestDist, "**/*.spec.js"),
-        path.join(uniteConfig.directories.reports, "e2e/")
+        path.join(uniteConfig.dirs.www.e2eTestDist, "**/*.spec.js"),
+        path.join(uniteConfig.dirs.www.reports, "e2e/")
     ];
     display.info("Cleaning", toClean);
     return del(toClean);
@@ -27,7 +27,7 @@ gulp.task("e2e-clean", async () => {
 gulp.task("e2e-post-clean", async () => {
     const uniteConfig = await uc.getUniteConfig();
 
-    const toClean = [path.join(uniteConfig.directories.reports, "e2etemp/")];
+    const toClean = [path.join(uniteConfig.dirs.www.reports, "e2etemp/")];
     display.info("Cleaning", toClean);
     return del(toClean);
 });

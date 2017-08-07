@@ -31,7 +31,7 @@ export class SystemJs extends EnginePipelineStepBase {
             try {
                 logger.info("Generating Module Loader Scaffold");
 
-                engineVariables.htmlNoBundle.scriptIncludes.push("systemjs/dist/system.js");
+                engineVariables.htmlNoBundle.scriptIncludes.push("systemjs/dist/system.src.js");
 
                 uniteConfiguration.srcDistReplace = "(System.register)*?(..\/src\/)";
                 uniteConfiguration.srcDistReplaceWith = "../dist/";

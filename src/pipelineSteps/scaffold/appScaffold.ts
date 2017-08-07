@@ -10,11 +10,11 @@ import { EngineVariables } from "../../engine/engineVariables";
 export class AppScaffold extends EnginePipelineStepBase {
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
-            logger.info("Creating App Source Directory", { appSourceFolder: engineVariables.srcFolder });
-            await fileSystem.directoryCreate(engineVariables.srcFolder);
+            logger.info("Creating App Source Directory", { appSourceFolder: engineVariables.www.srcFolder });
+            await fileSystem.directoryCreate(engineVariables.www.srcFolder);
             return 0;
         } catch (err) {
-            logger.error("Creating App Source Directory failed", err, { appSourceFolder: engineVariables.srcFolder });
+            logger.error("Creating App Source Directory failed", err, { appSourceFolder: engineVariables.www.srcFolder });
             return 1;
         }
     }

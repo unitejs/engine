@@ -22,7 +22,7 @@ gulp.task("build-bundle-vendor", async () => {
 
         const bVendor = browserify({"debug": buildConfiguration.sourcemaps});
 
-        const keys = clientPackages.getKeys(uniteConfig);
+        const keys = clientPackages.getKeys(uniteConfig, ["app", "both"]);
 
         const idx = keys.indexOf("systemjs");
         if (idx >= 0) {
@@ -44,7 +44,7 @@ gulp.task("build-bundle-vendor", async () => {
                 .on("error", (err) => {
                     display.error(err.toString());
                 }) : gutil.noop())
-            .pipe(gulp.dest(uniteConfig.directories.dist)));
+            .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
     }
 });
 

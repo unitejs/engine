@@ -14,7 +14,7 @@ gulp.task("theme-clean", async () => {
     const uniteConfig = await uc.getUniteConfig();
 
     const toClean = [
-        path.join(uniteConfig.directories.assets, "favicon/**/*")
+        path.join(uniteConfig.dirs.www.assets, "favicon/**/*")
     ];
     display.info("Cleaning", toClean);
     return del(toClean);
@@ -26,7 +26,7 @@ gulp.task("theme-favicons", async () => {
     const uniteConfig = await uc.getUniteConfig();
     const uniteThemeConfig = await uc.getUniteThemeConfig();
 
-    const favIconDirectory = path.join(uniteConfig.directories.assets, "favicon");
+    const favIconDirectory = path.join(uniteConfig.dirs.www.assets, "favicon");
 
     return themeUtils.generateFavIcons(uniteConfig, uniteThemeConfig, favIconDirectory);
 });
@@ -55,7 +55,9 @@ gulp.task("theme-headers", async () => {
 
     const uniteThemeConfig = await uc.getUniteThemeConfig();
 
-    return themeUtils.buildThemeHeaders(uniteConfig, uniteThemeConfig);
+    await themeUtils.buildThemeHeaders(uniteConfig, uniteThemeConfig);
+
+    return uc.setUniteThemeConfig(uniteThemeConfig);
 });
 
 gulp.task("theme-build", async () => {

@@ -14,12 +14,12 @@ function performVendorOptimize (uniteConfig, buildConfiguration, modulesConfig) 
     return new Promise((resolve, reject) => {
         try {
             requireJs.optimize({
-                "baseUrl": uniteConfig.directories.dist,
+                "baseUrl": uniteConfig.dirs.www.dist,
                 "generateSourceMaps": buildConfiguration.sourcemaps,
                 "logLevel": 2,
                 "name": "vendor-bundle-init",
                 "optimize": buildConfiguration.minify ? "uglify" : "none",
-                "out": path.join(uniteConfig.directories.dist, "vendor-bundle.js"),
+                "out": path.join(uniteConfig.dirs.www.dist, "vendor-bundle.js"),
                 "paths": modulesConfig.paths,
                 "packages": modulesConfig.packages
             }, (result) => {
@@ -63,7 +63,7 @@ gulp.task("build-bundle-vendor", async () => {
         });
 
         try {
-            await util.promisify(fs.writeFile)(path.join(uniteConfig.directories.dist, "vendor-bundle-init.js"),
+            await util.promisify(fs.writeFile)(path.join(uniteConfig.dirs.www.dist, "vendor-bundle-init.js"),
                 `define(${JSON.stringify(keys)}, function () {});`);
 
             await performVendorOptimize(uniteConfig, buildConfiguration, modulesConfig);

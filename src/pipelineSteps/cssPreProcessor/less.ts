@@ -13,18 +13,18 @@ export class Less extends EnginePipelineStepBase {
 
         if (uniteConfiguration.cssPre === "Less") {
             try {
-                engineVariables.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwFolder, "less");
+                engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "less");
 
-                logger.info("Creating Less folder", { cssSrcFolder: engineVariables.cssSrcFolder });
+                logger.info("Creating Less folder", { cssSrcFolder: engineVariables.www.cssSrcFolder });
 
                 engineVariables.styleLanguageExt = "less";
 
-                await fileSystem.directoryCreate(engineVariables.cssSrcFolder);
-                await fileSystem.directoryCreate(engineVariables.cssDistFolder);
+                await fileSystem.directoryCreate(engineVariables.www.cssSrcFolder);
+                await fileSystem.directoryCreate(engineVariables.www.cssDistFolder);
 
                 return 0;
             } catch (err) {
-                logger.error("Generating Less folder failed", err, { cssSrcFolder: engineVariables.cssSrcFolder });
+                logger.error("Generating Less folder failed", err, { cssSrcFolder: engineVariables.www.cssSrcFolder });
                 return 1;
             }
         }

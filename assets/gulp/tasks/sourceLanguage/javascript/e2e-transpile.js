@@ -15,7 +15,7 @@ gulp.task("e2e-transpile", async () => {
 
     let errorCount = 0;
 
-    return asyncUtil.stream(gulp.src(`${uniteConfig.directories.e2eTestSrc}**/*.spec.{js,jsx}`)
+    return asyncUtil.stream(gulp.src(`${uniteConfig.dirs.www.e2eTestSrc}**/*.spec.{js,jsx}`)
         .pipe(sourcemaps.init())
         .pipe(babel({
             "babelrc": false,
@@ -32,7 +32,7 @@ gulp.task("e2e-transpile", async () => {
             errorCount++;
         })
         .pipe(sourcemaps.write({"includeContent": true}))
-        .pipe(gulp.dest(uniteConfig.directories.e2eTestDist))
+        .pipe(gulp.dest(uniteConfig.dirs.www.e2eTestDist))
         .on("end", () => {
             if (errorCount > 0) {
                 process.exit();

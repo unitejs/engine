@@ -1,3 +1,10 @@
+# v0.8.0
+* Added platform packager web
+* unite.json directories configuration changes to have www sub property
+* node_modules path rationalised in config
+* Fixed safari_pinned_tab color in meta headers
+* Fixed saving theme headers into unite-theme.json
+
 # v0.7.1
 * Rationalised logging/display interfaces
 * Renamed repo to engine

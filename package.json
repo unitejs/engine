@@ -142,6 +142,7 @@
     "gulp-uglify": "^3.0.0",
     "gulp-util": "^3.0.7",
     "gulp-webdriver": "^2.0.3",
+    "gulp-zip": "^4.0.0",
     "html-minifier": "^3.5.2",
     "jasmine-core": "^2.5.2",
     "jasmine-spec-reporter": "^4.1.1",

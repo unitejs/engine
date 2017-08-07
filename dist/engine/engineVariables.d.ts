@@ -4,30 +4,31 @@
 import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
 import { ISpdxLicense } from "../configuration/models/spdx/ISpdxLicense";
 import { IncludeMode } from "../configuration/models/unite/includeMode";
+import { UniteClientPackage } from "../configuration/models/unite/uniteClientPackage";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { IPackageManager } from "../interfaces/IPackageManager";
 import { EngineVariablesHtml } from "./engineVariablesHtml";
 export declare class EngineVariables {
     coreFolder: string;
     rootFolder: string;
-    wwwFolder: string;
-    srcFolder: string;
-    distFolder: string;
-    unitTestFolder: string;
-    unitTestSrcFolder: string;
-    unitTestDistFolder: string;
-    cssSrcFolder: string;
-    cssDistFolder: string;
-    e2eTestFolder: string;
-    e2eTestSrcFolder: string;
-    e2eTestDistFolder: string;
-    reportsFolder: string;
-    packageFolder: string;
-    assetsFolder: string;
-    assetsSourceFolder: string;
-    gulpBuildFolder: string;
-    gulpTasksFolder: string;
-    gulpUtilFolder: string;
+    wwwRootFolder: string;
+    packagedRootFolder: string;
+    www: {
+        srcFolder: string;
+        distFolder: string;
+        unitTestFolder: string;
+        unitTestSrcFolder: string;
+        unitTestDistFolder: string;
+        cssSrcFolder: string;
+        cssDistFolder: string;
+        e2eTestFolder: string;
+        e2eTestSrcFolder: string;
+        e2eTestDistFolder: string;
+        reportsFolder: string;
+        packageFolder: string;
+        assetsFolder: string;
+        assetsSourceFolder: string;
+    };
     packageAssetsDirectory: string;
     sourceLanguageExt: string;
     styleLanguageExt: string;
@@ -73,7 +74,9 @@ export declare class EngineVariables {
     private _removedClientPackages;
     constructor();
     toggleClientPackage(name: string, main: string, mainMinified: string, preload: boolean, includeMode: IncludeMode, isPackage: boolean, required: boolean): void;
-    getTestClientPackages(): string[];
+    getTestClientPackages(): {
+        [id: string]: UniteClientPackage;
+    };
     toggleDevDependency(dependencies: string[], required: boolean): void;
     buildDependencies(uniteConfiguration: UniteConfiguration, packageJsonDependencies: {
         [id: string]: string;

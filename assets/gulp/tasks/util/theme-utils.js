@@ -76,12 +76,12 @@ function buildIndex (uniteConfig, uniteThemeConfig, buildConfiguration, packageJ
 }
 
 async function buildBrowserConfig (uniteConfig, uniteThemeConfig) {
-    const tileFilename = path.join(uniteConfig.directories.assets, "favicon/", "mstile-150x150.png");
+    const tileFilename = path.join(uniteConfig.dirs.www.assets, "favicon/", "mstile-150x150.png");
 
     const tileExists = await fileExists(tileFilename);
 
     if (tileExists) {
-        const bcFilename = path.join(uniteConfig.directories.assets, "favicon/", "browserconfig.xml");
+        const bcFilename = path.join(uniteConfig.dirs.www.assets, "favicon/", "browserconfig.xml");
         const browserConfig = [
             "<?xml version=\"1.0\" encoding=\"utf-8\"?>",
             "<browserconfig>",
@@ -120,7 +120,7 @@ async function buildManifestJson (uniteConfig, uniteThemeConfig) {
     const sizes = [192, 512];
 
     for (let i = 0; i < sizes.length; i++) {
-        const fname = path.join(uniteConfig.directories.assets,
+        const fname = path.join(uniteConfig.dirs.www.assets,
             "favicon/",
             `android-chrome-${sizes[i]}x${sizes[i]}.png`);
 
@@ -134,7 +134,7 @@ async function buildManifestJson (uniteConfig, uniteThemeConfig) {
         }
     }
 
-    const manifestFilename = path.join(uniteConfig.directories.assets, "favicon/", "manifest.json");
+    const manifestFilename = path.join(uniteConfig.dirs.www.assets, "favicon/", "manifest.json");
 
     try {
         await util.promisify(fs.writeFile)(manifestFilename, JSON.stringify(manifest, undefined, "\t"));
@@ -150,37 +150,39 @@ async function buildThemeHeaders (uniteConfig, uniteThemeConfig) {
 
     const headers = [
         {
-            "file": path.join(uniteConfig.directories.assets, "favicon/", "apple-touch-icon.png"),
+            "file": path.join(uniteConfig.dirs.www.assets, "favicon/", "apple-touch-icon.png"),
             "header": "<link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"./assets/favicon/apple-touch-icon.png\">"
         },
         {
-            "file": path.join(uniteConfig.directories.assets, "favicon/", "favicon-32x32.png"),
+            "file": path.join(uniteConfig.dirs.www.assets, "favicon/", "favicon-32x32.png"),
             "header": "<link rel=\"icon\" type=\"image/png\" sizes=\"32x32\" " +
             "href=\"./assets/favicon/favicon-32x32.png\">"
         },
         {
-            "file": path.join(uniteConfig.directories.assets, "favicon/", "favicon-16x16.png"),
+            "file": path.join(uniteConfig.dirs.www.assets, "favicon/", "favicon-16x16.png"),
             "header": "<link rel=\"icon\" type=\"image/png\" sizes=\"16x16\" " +
             "href=\"./assets/favicon/favicon-16x16.png\">"
         },
         {
-            "file": path.join(uniteConfig.directories.assets, "favicon/", "manifest.json"),
+            "file": path.join(uniteConfig.dirs.www.assets, "favicon/", "manifest.json"),
             "header": "<link rel=\"manifest\" href=\"./assets/favicon/manifest.json\">"
         },
         {
-            "file": path.join(uniteConfig.directories.assets, "favicon/", "safari-pinned-tab.svg"),
+            "file": path.join(uniteConfig.dirs.www.assets, "favicon/", "safari-pinned-tab.svg"),
             "header": "<link rel=\"mask-icon\" href=\"./assets/favicon/safari-pinned-tab.svg\" " +
-            `color="${uniteConfig.themeColor}">`
+            `color="${uniteThemeConfig.themeColor}">`
         },
         {
-            "file": path.join(uniteConfig.directories.assets, "favicon/", "favicon.ico"),
+            "file": path.join(uniteConfig.dirs.www.assets, "favicon/", "favicon.ico"),
             "header": "<link rel=\"shortcut icon\" href=\"./assets/favicon/favicon.ico\">"
         },
         {
-            "file": path.join(uniteConfig.directories.assets, "favicon/", "browserconfig.xml"),
+            "file": path.join(uniteConfig.dirs.www.assets, "favicon/", "browserconfig.xml"),
             "header": "<meta name=\"msapplication-config\" content=\"./assets/favicon/browserconfig.xml\">"
         }
     ];
+
+    console.log(headers);
 
     if (uniteThemeConfig.themeColor) {
         uniteThemeConfig.themeHeaders.push(`<meta name="theme-color" content="${uniteThemeConfig.themeColor}">`);
@@ -215,7 +217,7 @@ async function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory
     const images = [
         {
             "command": "svgToPng",
-            "sourceFile": `${path.join(uniteConfig.directories.assetsSource, "theme", "logo-tile.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-tile.svg")}`,
             "destFile": `${path.join(favIconDirectory, "android-chrome-192x192.png")}`,
             "width": 192,
             "height": 192,
@@ -225,7 +227,7 @@ async function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory
         },
         {
             "command": "svgToPng",
-            "sourceFile": `${path.join(uniteConfig.directories.assetsSource, "theme", "logo-tile.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-tile.svg")}`,
             "destFile": `${path.join(favIconDirectory, "android-chrome-512x512.png")}`,
             "width": 512,
             "height": 512,
@@ -235,7 +237,7 @@ async function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory
         },
         {
             "command": "svgToPng",
-            "sourceFile": `${path.join(uniteConfig.directories.assetsSource, "theme", "logo-tile.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-tile.svg")}`,
             "destFile": `${path.join(favIconDirectory, "apple-touch-icon.png")}`,
             "width": 180,
             "height": 180,
@@ -245,7 +247,7 @@ async function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory
         },
         {
             "command": "svgToPng",
-            "sourceFile": `${path.join(uniteConfig.directories.assetsSource, "theme", "logo-tile.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-tile.svg")}`,
             "destFile": `${path.join(favIconDirectory, "mstile-70x70.png")}`,
             "width": 128,
             "height": 128,
@@ -254,7 +256,7 @@ async function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory
         },
         {
             "command": "svgToPng",
-            "sourceFile": `${path.join(uniteConfig.directories.assetsSource, "theme", "logo-tile.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-tile.svg")}`,
             "destFile": `${path.join(favIconDirectory, "mstile-144x144.png")}`,
             "width": 144,
             "height": 144,
@@ -263,7 +265,7 @@ async function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory
         },
         {
             "command": "svgToPng",
-            "sourceFile": `${path.join(uniteConfig.directories.assetsSource, "theme", "logo-tile.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-tile.svg")}`,
             "destFile": `${path.join(favIconDirectory, "mstile-150x150.png")}`,
             "width": 270,
             "height": 270,
@@ -272,7 +274,7 @@ async function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory
         },
         {
             "command": "svgToPng",
-            "sourceFile": `${path.join(uniteConfig.directories.assetsSource, "theme", "logo-tile.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-tile.svg")}`,
             "destFile": `${path.join(favIconDirectory, "mstile-310x150.png")}`,
             "width": 558,
             "height": 270,
@@ -281,7 +283,7 @@ async function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory
         },
         {
             "command": "svgToPng",
-            "sourceFile": `${path.join(uniteConfig.directories.assetsSource, "theme", "logo-tile.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-tile.svg")}`,
             "destFile": `${path.join(favIconDirectory, "mstile-310x310.png")}`,
             "width": 558,
             "height": 558,
@@ -290,26 +292,26 @@ async function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory
         },
         {
             "command": "svgToMask",
-            "sourceFile": `${path.join(uniteConfig.directories.assetsSource, "theme", "logo-tile.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-tile.svg")}`,
             "destFile": `${path.join(favIconDirectory, "safari-pinned-tab.svg")}`
         },
         {
             "command": "svgToPng",
-            "sourceFile": `${path.join(uniteConfig.directories.assetsSource, "theme", "logo-transparent.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-transparent.svg")}`,
             "destFile": `${path.join(favIconDirectory, "favicon-16x16.png")}`,
             "width": 16,
             "height": 16
         },
         {
             "command": "svgToPng",
-            "sourceFile": `${path.join(uniteConfig.directories.assetsSource, "theme", "logo-transparent.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-transparent.svg")}`,
             "destFile": `${path.join(favIconDirectory, "favicon-32x32.png")}`,
             "width": 32,
             "height": 32
         },
         {
             "command": "svgToPng",
-            "sourceFile": `${path.join(uniteConfig.directories.assetsSource, "theme", "logo-transparent.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-transparent.svg")}`,
             "destFile": `${path.join(favIconDirectory, "favicon-48x48.png")}`,
             "width": 48,
             "height": 48

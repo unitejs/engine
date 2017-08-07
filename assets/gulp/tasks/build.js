@@ -27,8 +27,8 @@ require("./build-css-post-components");
 gulp.task("build-clean", async () => {
     const uniteConfig = await uc.getUniteConfig();
     const toClean = [
-        path.join(uniteConfig.directories.dist, "**/*"),
-        path.join(uniteConfig.directories.cssDist, "**/*"),
+        path.join(uniteConfig.dirs.www.dist, "**/*"),
+        path.join(uniteConfig.dirs.www.cssDist, "**/*"),
         "./index.html"
     ];
     display.info("Cleaning", toClean);
@@ -52,17 +52,17 @@ gulp.task("build-post-clean", async () => {
     const toClean = [];
 
     if (uniteConfig.cssPost === "None") {
-        toClean.push(path.join(uniteConfig.directories.cssDist, "**/main.css"));
+        toClean.push(path.join(uniteConfig.dirs.www.cssDist, "**/main.css"));
     } else {
-        toClean.push(path.join(uniteConfig.directories.cssDist, "**/!(style).css"));
+        toClean.push(path.join(uniteConfig.dirs.www.cssDist, "**/!(style).css"));
     }
     if (buildConfiguration.bundle) {
-        toClean.push(path.join(uniteConfig.directories.dist, "**/!(app-bundle|vendor-bundle).*"));
+        toClean.push(path.join(uniteConfig.dirs.www.dist, "**/!(app-bundle|vendor-bundle).*"));
     }
     display.info("Cleaning", toClean);
     try {
         await del(toClean);
-        await util.promisify(deleteEmpty)(uniteConfig.directories.dist, {"verbose": false});
+        await util.promisify(deleteEmpty)(uniteConfig.dirs.www.dist, {"verbose": false});
     } catch (err) {
         display.error(err);
         process.exit(1);
@@ -85,17 +85,17 @@ gulp.task("build-html-min", async () => {
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     if (buildConfiguration.minify) {
-        return asyncUtil.stream(gulp.src(path.join(uniteConfig.directories.dist, "**/*.html"))
+        return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.dist, "**/*.html"))
             .pipe(htmlMin({"collapseWhitespace": true, "removeComments": true}))
-            .pipe(gulp.dest(uniteConfig.directories.dist)));
+            .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
     }
 });
 
 gulp.task("build-copy-components", async () => {
     const uniteConfig = await uc.getUniteConfig();
 
-    return asyncUtil.stream(gulp.src([path.join(uniteConfig.directories.src, "**/*.html")])
-        .pipe(gulp.dest(uniteConfig.directories.dist)));
+    return asyncUtil.stream(gulp.src([path.join(uniteConfig.dirs.www.src, "**/*.html")])
+        .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
 });
 
 gulp.task("build-module-config", async () => {
@@ -104,7 +104,7 @@ gulp.task("build-module-config", async () => {
     const config = moduleConfig.create(uniteConfig, ["app", "both"], buildConfiguration.bundle);
 
     try {
-        await util.promisify(fs.writeFile)(path.join(uniteConfig.directories.dist, "app-module-config.js"), config);
+        await util.promisify(fs.writeFile)(path.join(uniteConfig.dirs.www.dist, "app-module-config.js"), config);
     } catch (err) {
         display.error("Writing app-module-config.js", err);
         process.exit(1);

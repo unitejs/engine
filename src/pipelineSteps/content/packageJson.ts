@@ -15,19 +15,19 @@ export class PackageJson extends EnginePipelineStepBase {
         try {
             let existingPackageJson: PackageConfiguration | undefined;
             try {
-                const exists = await fileSystem.fileExists(engineVariables.wwwFolder, PackageJson.FILENAME);
+                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, PackageJson.FILENAME);
 
                 if (exists) {
-                    logger.info(`Loading existing ${PackageJson.FILENAME}`, { core: engineVariables.wwwFolder, dependenciesFile: PackageJson.FILENAME });
+                    logger.info(`Loading existing ${PackageJson.FILENAME}`, { core: engineVariables.wwwRootFolder, dependenciesFile: PackageJson.FILENAME });
 
-                    existingPackageJson = await fileSystem.fileReadJson<PackageConfiguration>(engineVariables.wwwFolder, PackageJson.FILENAME);
+                    existingPackageJson = await fileSystem.fileReadJson<PackageConfiguration>(engineVariables.wwwRootFolder, PackageJson.FILENAME);
                 }
             } catch (err) {
-                logger.error(`Loading existing ${PackageJson.FILENAME} failed`, err, { core: engineVariables.wwwFolder, dependenciesFile: PackageJson.FILENAME });
+                logger.error(`Loading existing ${PackageJson.FILENAME} failed`, err, { core: engineVariables.wwwRootFolder, dependenciesFile: PackageJson.FILENAME });
                 return 1;
             }
 
-            logger.info(`Generating ${PackageJson.FILENAME} in`, { wwwFolder: engineVariables.wwwFolder });
+            logger.info(`Generating ${PackageJson.FILENAME} in`, { wwwFolder: engineVariables.wwwRootFolder });
 
             const packageJson = existingPackageJson || new PackageConfiguration();
             packageJson.name = uniteConfiguration.packageName;
@@ -43,10 +43,10 @@ export class PackageJson extends EnginePipelineStepBase {
             packageJson.dependencies = this.sortDependencies(packageJson.dependencies);
             packageJson.devDependencies = this.sortDependencies(packageJson.devDependencies);
 
-            await fileSystem.fileWriteJson(engineVariables.wwwFolder, PackageJson.FILENAME, packageJson);
+            await fileSystem.fileWriteJson(engineVariables.wwwRootFolder, PackageJson.FILENAME, packageJson);
             return 0;
         } catch (err) {
-            logger.error(`Generating ${PackageJson.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwFolder });
+            logger.error(`Generating ${PackageJson.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwRootFolder });
             return 1;
         }
     }

@@ -49,9 +49,9 @@ gulp.task("e2e-run-test", async () => {
         try {
             await exec.npmRun("allure", [
                 "generate",
-                path.join(uniteConfig.directories.reports, "/e2etemp/"),
+                path.join(uniteConfig.dirs.www.reports, "/e2etemp/"),
                 "-o",
-                path.join(uniteConfig.directories.reports, "/e2e/")
+                path.join(uniteConfig.dirs.www.reports, "/e2e/")
             ]);
         } catch (err) {
             display.error("Executing Allure", err);

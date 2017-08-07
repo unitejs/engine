@@ -13,26 +13,27 @@ export class EngineVariables {
     public coreFolder: string;
 
     public rootFolder: string;
-    public wwwFolder: string;
-    public srcFolder: string;
-    public distFolder: string;
-    public unitTestFolder: string;
-    public unitTestSrcFolder: string;
-    public unitTestDistFolder: string;
-    public cssSrcFolder: string;
-    public cssDistFolder: string;
-    public e2eTestFolder: string;
-    public e2eTestSrcFolder: string;
-    public e2eTestDistFolder: string;
-    public reportsFolder: string;
-    public packageFolder: string;
 
-    public assetsFolder: string;
-    public assetsSourceFolder: string;
+    public wwwRootFolder: string;
+    public packagedRootFolder: string;
 
-    public gulpBuildFolder: string;
-    public gulpTasksFolder: string;
-    public gulpUtilFolder: string;
+    public www: {
+        srcFolder: string;
+        distFolder: string;
+        unitTestFolder: string;
+        unitTestSrcFolder: string;
+        unitTestDistFolder: string;
+        cssSrcFolder: string;
+        cssDistFolder: string;
+        e2eTestFolder: string;
+        e2eTestSrcFolder: string;
+        e2eTestDistFolder: string;
+        reportsFolder: string;
+        packageFolder: string;
+
+        assetsFolder: string;
+        assetsSourceFolder: string;
+    };
 
     public packageAssetsDirectory: string;
 
@@ -97,8 +98,16 @@ export class EngineVariables {
         opArr[name] = clientPackage;
     }
 
-    public getTestClientPackages(): string[] {
-        return Object.keys(this._requiredClientPackages).filter(key => this._requiredClientPackages[key].includeMode === "test" || this._requiredClientPackages[key].includeMode === "both");
+    public getTestClientPackages(): { [id: string] : UniteClientPackage } {
+        const packages: { [id: string] : UniteClientPackage } = {};
+
+        Object.keys(this._requiredClientPackages)
+            .filter(key => this._requiredClientPackages[key].includeMode === "test" || this._requiredClientPackages[key].includeMode === "both")
+            .forEach(key => {
+                packages[key] = this._requiredClientPackages[key];
+            });
+
+        return packages;
     }
 
     public toggleDevDependency(dependencies: string[], required: boolean): void {

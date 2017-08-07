@@ -13,18 +13,18 @@ export class Stylus extends EnginePipelineStepBase {
 
         if (uniteConfiguration.cssPre === "Stylus") {
             try {
-                engineVariables.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwFolder, "stylus");
+                engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "stylus");
 
-                logger.info("Creating Stylus folder", { cssSrcFolder: engineVariables.cssSrcFolder });
+                logger.info("Creating Stylus folder", { cssSrcFolder: engineVariables.www.cssSrcFolder });
 
                 engineVariables.styleLanguageExt = "styl";
 
-                await fileSystem.directoryCreate(engineVariables.cssSrcFolder);
-                await fileSystem.directoryCreate(engineVariables.cssDistFolder);
+                await fileSystem.directoryCreate(engineVariables.www.cssSrcFolder);
+                await fileSystem.directoryCreate(engineVariables.www.cssDistFolder);
 
                 return 0;
             } catch (err) {
-                logger.error("Generating Stylus folder failed", err, { cssSrcFolder: engineVariables.cssSrcFolder });
+                logger.error("Generating Stylus folder failed", err, { cssSrcFolder: engineVariables.www.cssSrcFolder });
                 return 1;
             }
         }

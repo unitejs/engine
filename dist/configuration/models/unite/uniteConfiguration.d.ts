@@ -40,7 +40,7 @@ export declare class UniteConfiguration {
     clientPackages: {
         [id: string]: UniteClientPackage;
     };
-    directories: UniteDirectories;
+    dirs: UniteDirectories;
     srcDistReplace: string;
     srcDistReplaceWith: string;
     buildConfigurations: {

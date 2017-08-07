@@ -11,12 +11,12 @@ async function findAppFiles (uniteConfig, stripJsExtension, htmlPrefixPostfix, c
     let files = null;
 
     try {
-        const jsFiles = await globAsync(path.join(uniteConfig.directories.dist,
+        const jsFiles = await globAsync(path.join(uniteConfig.dirs.www.dist,
             "**/!(app-bundle|vendor-bundle|app-bundle-init|vendor-bundle-init|app-module-config).js"));
 
-        const htmlFiles = await globAsync(path.join(uniteConfig.directories.dist,
+        const htmlFiles = await globAsync(path.join(uniteConfig.dirs.www.dist,
             "**/!(app-bundle|vendor-bundle).html"));
-        const cssFiles = await globAsync(path.join(uniteConfig.directories.dist, "**/*.css"));
+        const cssFiles = await globAsync(path.join(uniteConfig.dirs.www.dist, "**/*.css"));
 
         files = stripJsExtension ? jsFiles.map(file => file.replace(/(\.js)$/, "")) : jsFiles;
         if (htmlPrefixPostfix && htmlPrefixPostfix.length > 0) {

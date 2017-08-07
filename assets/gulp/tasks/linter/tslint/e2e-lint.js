@@ -13,7 +13,7 @@ gulp.task("e2e-lint", async () => {
 
     const uniteConfig = await uc.getUniteConfig();
 
-    return asyncUtil.stream(gulp.src(path.join(uniteConfig.directories.e2eTestSrc, "**/*.{ts,tsx}"))
+    return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.e2eTestSrc, "**/*.{ts,tsx}"))
         .pipe(tslint({"formatter": "verbose"}))
         .pipe(tslint.report())
         .on("error", () => {

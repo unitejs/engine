@@ -14,7 +14,7 @@ gulp.task("e2e-lint", async () => {
     const uniteConfig = await uc.getUniteConfig();
 
     let localResolve = null;
-    return asyncUtil.stream(gulp.src(path.join(uniteConfig.directories.e2eTestSrc, "**/*.{js,jsx}"))
+    return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.e2eTestSrc, "**/*.{js,jsx}"))
         .pipe(eslint())
         .pipe(eslint.format())
         .pipe(eslint.results(result => {

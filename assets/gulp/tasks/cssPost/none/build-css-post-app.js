@@ -16,15 +16,15 @@ gulp.task("build-css-post-app", async () => {
     const uniteConfig = await uc.getUniteConfig();
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
-    await asyncUtil.stream(gulp.src(path.join(uniteConfig.directories.cssDist, "main.css"))
+    await asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.cssDist, "main.css"))
         .pipe(rename("style.css"))
         .pipe(buildConfiguration.minify ? cssnano() : gutil.noop())
-        .pipe(gulp.dest(uniteConfig.directories.cssDist)));
+        .pipe(gulp.dest(uniteConfig.dirs.www.cssDist)));
 
     if (buildConfiguration.minify) {
-        await asyncUtil.stream(gulp.src(path.join(uniteConfig.directories.cssDist, "**/!(style).css"))
+        await asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.cssDist, "**/!(style).css"))
             .pipe(cssnano())
-            .pipe(gulp.dest(uniteConfig.directories.cssDist)));
+            .pipe(gulp.dest(uniteConfig.dirs.www.cssDist)));
     }
 });
 

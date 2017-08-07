@@ -41,7 +41,7 @@ export class UniteConfiguration {
 
     public clientPackages: { [id: string]: UniteClientPackage };
 
-    public directories: UniteDirectories;
+    public dirs: UniteDirectories;
 
     public srcDistReplace: string;
     public srcDistReplaceWith: string;

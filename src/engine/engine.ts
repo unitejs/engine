@@ -558,23 +558,25 @@ export class Engine implements IEngine {
 
         engineVariables.coreFolder = this._coreRoot;
         engineVariables.rootFolder = outputDirectory;
-        engineVariables.wwwFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "www");
-        engineVariables.srcFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "src");
-        engineVariables.distFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "dist");
-        engineVariables.gulpBuildFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "build");
-        engineVariables.reportsFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "reports");
-        engineVariables.cssDistFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "css");
-        engineVariables.e2eTestFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "test/e2e");
-        engineVariables.e2eTestSrcFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "test/e2e/src");
-        engineVariables.e2eTestDistFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "test/e2e/dist");
-        engineVariables.unitTestFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "test/unit");
-        engineVariables.unitTestSrcFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "test/unit/src");
-        engineVariables.unitTestDistFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "test/unit/dist");
+        engineVariables.wwwRootFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "www");
+        engineVariables.packagedRootFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "packaged");
+        engineVariables.www = {
+            srcFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "src"),
+            distFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "dist"),
+            reportsFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "reports"),
+            cssSrcFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "cssSrc"),
+            cssDistFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "css"),
+            e2eTestFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "test/e2e"),
+            e2eTestSrcFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "test/e2e/src"),
+            e2eTestDistFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "test/e2e/dist"),
+            unitTestFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "test/unit"),
+            unitTestSrcFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "test/unit/src"),
+            unitTestDistFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "test/unit/dist"),
+            assetsFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "assets"),
+            assetsSourceFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "assetsSource"),
+            packageFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "node_modules")
+        };
 
-        engineVariables.assetsFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "assets");
-        engineVariables.assetsSourceFolder = this._fileSystem.pathCombine(engineVariables.wwwFolder, "assetsSource");
-
-        engineVariables.packageFolder = "node_modules/";
         engineVariables.packageAssetsDirectory = this._assetsFolder;
         engineVariables.sourceLanguageExt = uniteConfiguration.sourceLanguage === "JavaScript" ? "js" : "ts";
         engineVariables.gitIgnore = [];

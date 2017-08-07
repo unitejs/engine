@@ -22,9 +22,9 @@ function performAppOptimize (uniteConfig, buildConfiguration, modulesConfig, pat
                 "baseUrl": "./",
                 "generateSourceMaps": buildConfiguration.sourcemaps,
                 "logLevel": 2,
-                "name": `${uniteConfig.directories.dist.replace(/\.\//, "")}app-bundle-init`,
+                "name": `${uniteConfig.dirs.www.dist.replace(/\.\//, "")}app-bundle-init`,
                 "optimize": buildConfiguration.minify ? "uglify" : "none",
-                "out": path.join(uniteConfig.directories.dist, "app-bundle.js"),
+                "out": path.join(uniteConfig.dirs.www.dist, "app-bundle.js"),
                 "paths": modulesConfig.paths,
                 "exclude": ["text"]
             }, async (result) => {
@@ -36,19 +36,19 @@ function performAppOptimize (uniteConfig, buildConfiguration, modulesConfig, pat
                 if (modulesConfig.preload.length > 0) {
                     bootstrap += `require(${JSON.stringify(modulesConfig.preload)}, function() {`;
                 }
-                bootstrap += `require(['${uniteConfig.directories.dist.replace(/\.\//, "")}entryPoint']);`;
+                bootstrap += `require(['${uniteConfig.dirs.www.dist.replace(/\.\//, "")}entryPoint']);`;
                 if (modulesConfig.preload.length > 0) {
                     bootstrap += "});";
                 }
 
                 await asyncUtil.stream(
-                    gulp.src(path.join(uniteConfig.directories.dist, "app-bundle.js"))
+                    gulp.src(path.join(uniteConfig.dirs.www.dist, "app-bundle.js"))
                         .pipe(buildConfiguration.sourcemaps
                             ? sourcemaps.init({"loadMaps": true}) : gutil.noop())
                         .pipe(insert.append(bootstrap))
                         .pipe(buildConfiguration.sourcemaps
                             ? sourcemaps.write({"includeContent": true}) : gutil.noop())
-                        .pipe(gulp.dest(uniteConfig.directories.dist)));
+                        .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
 
                 resolve();
             }, (err) => {
@@ -72,7 +72,7 @@ gulp.task("build-bundle-app", async () => {
 
         try {
             await util.promisify(fs.writeFile)(
-                path.join(uniteConfig.directories.dist, "app-bundle-init.js"),
+                path.join(uniteConfig.dirs.www.dist, "app-bundle-init.js"),
                 `define(${JSON.stringify(files)}, function () {});`);
         } catch (err) {
             display.error("Writing app-bundle-init.js", err);
@@ -91,13 +91,13 @@ gulp.task("build-bundle-app", async () => {
                 modulesConfig.paths[key] = modulesConfig.paths[key].replace(/(\.js)$/, "");
             } else {
                 modulesConfig.paths[key] = "empty:";
-                paths[key] = `${uniteConfig.directories.dist}vendor-bundle`;
+                paths[key] = `${uniteConfig.dirs.www.dist}vendor-bundle`;
             }
         }
 
         modulesConfig.packages.forEach(pkg => {
             modulesConfig.paths[pkg.name] = "empty:";
-            paths[pkg.name] = `${uniteConfig.directories.dist}vendor-bundle`;
+            paths[pkg.name] = `${uniteConfig.dirs.www.dist}vendor-bundle`;
         });
 
         try {
