@@ -16,6 +16,7 @@ import { UniteUnitTestRunner } from "../configuration/models/unite/uniteUnitTest
 import { BuildConfigurationOperation } from "../interfaces/buildConfigurationOperation";
 import { IEngine } from "../interfaces/IEngine";
 import { ModuleOperation } from "../interfaces/moduleOperation";
+import { PlatformOperation } from "../interfaces/platformOperation";
 export declare class Engine implements IEngine {
     private _logger;
     private _fileSystem;
@@ -25,6 +26,7 @@ export declare class Engine implements IEngine {
     configure(packageName: string | undefined | null, title: string | undefined | null, license: string | undefined | null, sourceLanguage: UniteSourceLanguage | undefined | null, moduleType: UniteModuleType | undefined | null, bundler: UniteBundler | undefined | null, unitTestRunner: UniteUnitTestRunner | undefined | null, unitTestFramework: UniteUnitTestFramework | undefined | null, e2eTestRunner: UniteE2eTestRunner | undefined | null, e2eTestFramework: UniteE2eTestFramework | undefined | null, linter: UniteLinter | undefined | null, cssPre: UniteCssPreProcessor | undefined | null, cssPost: UniteCssPostProcessor | undefined | null, packageManager: UnitePackageManager | undefined | null, applicationFramework: UniteApplicationFramework | undefined | null, outputDirectory: string | undefined | null): Promise<number>;
     clientPackage(operation: ModuleOperation | undefined | null, packageName: string | undefined | null, version: string | undefined | null, preload: boolean, includeMode: IncludeMode | undefined | null, main: string | undefined | null, mainMinified: string | undefined | null, isPackage: boolean, wrapAssets: string | undefined | null, packageManager: UnitePackageManager | undefined | null, outputDirectory: string | undefined | null): Promise<number>;
     buildConfiguration(operation: BuildConfigurationOperation | undefined | null, configurationName: string | undefined | null, bundle: boolean, minify: boolean, sourcemaps: boolean, outputDirectory: string | undefined | null): Promise<number>;
+    platform(operation: PlatformOperation | undefined | null, platformName: string | undefined | null, outputDirectory: string | undefined | null): Promise<number>;
     private cleanupOutputDirectory(outputDirectory);
     private loadConfiguration(outputDirectory);
     private configureRun(outputDirectory, uniteConfiguration, license);
@@ -32,6 +34,8 @@ export declare class Engine implements IEngine {
     private clientPackageRemove(packageName, outputDirectory, uniteConfiguration);
     private buildConfigurationAdd(configurationName, bundle, minify, sourcemaps, outputDirectory, uniteConfiguration);
     private buildConfigurationRemove(configurationName, outputDirectory, uniteConfiguration);
+    private platformAdd(platformName, outputDirectory, uniteConfiguration);
+    private platformRemove(platformName, outputDirectory, uniteConfiguration);
     private createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
     private runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
 }

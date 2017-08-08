@@ -24,7 +24,7 @@ gulp.task("theme-clean", async () => {
 gulp.task("theme-favicons", async () => {
     display.info("Generating", "Fav Icons");
     const uniteConfig = await uc.getUniteConfig();
-    const uniteThemeConfig = await uc.getUniteThemeConfig();
+    const uniteThemeConfig = await uc.getUniteThemeConfig(uniteConfig);
 
     const favIconDirectory = path.join(uniteConfig.dirs.www.assets, "favicon");
 
@@ -35,7 +35,7 @@ gulp.task("theme-browser-config", async () => {
     display.info("Generating", "browserconfig.xml");
     const uniteConfig = await uc.getUniteConfig();
 
-    const uniteThemeConfig = await uc.getUniteThemeConfig();
+    const uniteThemeConfig = await uc.getUniteThemeConfig(uniteConfig);
 
     return themeUtils.buildBrowserConfig(uniteConfig, uniteThemeConfig);
 });
@@ -44,7 +44,7 @@ gulp.task("theme-manifest-json", async () => {
     display.info("Generating", "manifest.json");
     const uniteConfig = await uc.getUniteConfig();
 
-    const uniteThemeConfig = await uc.getUniteThemeConfig();
+    const uniteThemeConfig = await uc.getUniteThemeConfig(uniteConfig);
 
     return themeUtils.buildManifestJson(uniteConfig, uniteThemeConfig);
 });
@@ -53,11 +53,11 @@ gulp.task("theme-headers", async () => {
     display.info("Generating", "theme headers");
     const uniteConfig = await uc.getUniteConfig();
 
-    const uniteThemeConfig = await uc.getUniteThemeConfig();
+    const uniteThemeConfig = await uc.getUniteThemeConfig(uniteConfig);
 
     await themeUtils.buildThemeHeaders(uniteConfig, uniteThemeConfig);
 
-    return uc.setUniteThemeConfig(uniteThemeConfig);
+    return uc.setUniteThemeConfig(uniteConfig, uniteThemeConfig);
 });
 
 gulp.task("theme-build", async () => {

@@ -49,7 +49,8 @@
 		"no-process-env": "off",
 		"no-empty-function": "off",
 		"consistent-return": "off",
-		"promise/avoid-new": "off"
+		"promise/avoid-new": "off",
+		"max-depth": "off"
 	},
 	"plugins": [
 		"node",

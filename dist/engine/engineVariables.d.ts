@@ -26,6 +26,7 @@ export declare class EngineVariables {
         e2eTestDistFolder: string;
         reportsFolder: string;
         packageFolder: string;
+        buildFolder: string;
         assetsFolder: string;
         assetsSourceFolder: string;
     };

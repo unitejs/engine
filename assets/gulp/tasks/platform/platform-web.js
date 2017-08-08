@@ -8,9 +8,9 @@ const runSequence = require("run-sequence");
 const util = require("util");
 const path = require("path");
 const del = require("del");
-const clientPackages = require("./util/client-packages");
 const asyncUtil = require("./util/async-util");
-const packageJson = require("../../package.json");
+const packageConfig = require("./util/package-config");
+const platformUtils = require("./util/platform-utils");
 const zip = require("gulp-zip");
 
 gulp.task("platform-web-package", async () => {
@@ -28,57 +28,30 @@ gulp.task("platform-web-package", async () => {
 
 gulp.task("platform-web-clean", async () => {
     const uniteConfig = await uc.getUniteConfig();
+    const packageJson = await packageConfig.getPackageJson();
+
     const toClean = [
-        path.join("../", uniteConfig.dirs.packagedRoot, `/web/${packageJson.version}/**/*`)
+        path.join("../", uniteConfig.dirs.packagedRoot, `/${packageJson.version}/web/**/*`),
+        path.join("../", uniteConfig.dirs.packagedRoot, `/${packageJson.version}_web.zip`)
     ];
     display.info("Cleaning", toClean);
     return del(toClean, {"force": true});
 });
 
-gulp.task("platform-web-gather", async () => {
-    const uniteConfig = await uc.getUniteConfig();
-    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
-
-    let files = [
-        path.join("./", "index.html"),
-        path.join(uniteConfig.dirs.www.dist, "**/*"),
-        path.join(uniteConfig.dirs.www.cssDist, "**/*"),
-        path.join(uniteConfig.dirs.www.assets, "**/*")
-    ];
-
-    if (!buildConfiguration.minify) {
-        const packageFiles = clientPackages.getFiles(uniteConfig, ["app", "both", buildConfiguration.minify]);
-        Object.keys(packageFiles).forEach((key) => {
-            files = files.concat(packageFiles[key]);
-        });
-    }
-
-    const dest = path.join("../", uniteConfig.dirs.packagedRoot, `/web/${packageJson.version}/`);
-
-    display.info("Gathering Files", "Web");
-    display.info("Destination", dest);
-
-    for (let i = 0; i < files.length; i++) {
-        const fileDest = path.join(dest,
-            files[i].indexOf("**") > 0 ? files[i].replace(/\*\*[/\\]\*(.*)/, "") : path.dirname(files[i]));
-
-        display.info("Copying Files", files[i]);
-        display.info("To", fileDest);
-
-        await asyncUtil.stream(gulp.src(files[i])
-            .pipe(gulp.dest(fileDest)));
-    }
+gulp.task("platform-web-gather", () => {
+    return platformUtils.gatherFiles("Web");
 });
 
 gulp.task("platform-web-compress", async () => {
     const uniteConfig = await uc.getUniteConfig();
+    const packageJson = await packageConfig.getPackageJson();
 
     display.info("Zipping Files", "Web");
-    const zipName = `${packageJson.name}_${packageJson.version}_web.zip`;
+    const zipName = `${packageJson.version}_web.zip`;
     display.info("To File", zipName);
 
     return asyncUtil.stream(gulp.src(
-        path.join("../", uniteConfig.dirs.packagedRoot, `/web/${packageJson.version}/**/*`))
+        path.join("../", uniteConfig.dirs.packagedRoot, `/${packageJson.version}/web/**/*`))
         .pipe(zip(zipName))
         .pipe(gulp.dest(path.join("../", uniteConfig.dirs.packagedRoot))));
 });

@@ -13,19 +13,6 @@ const exec = require("./exec");
 const asyncUtil = require("./async-util");
 const mkdirp = require("mkdirp");
 
-async function fileExists (filename) {
-    try {
-        const stat = await util.promisify(fs.stat)(filename);
-        return stat.isFile();
-    } catch (err) {
-        if (err.code !== "ENOENT") {
-            display.error(`Error accessing '${filename}`, err);
-            process.exit(1);
-        }
-        return false;
-    }
-}
-
 function writeIndex (templateName, cacheBust, config, headers) {
     const formattedHeaders = headers.filter(header => header.trim().length > 0).join("\r\n        ");
     return asyncUtil.stream(gulp.src(templateName)
@@ -78,7 +65,7 @@ function buildIndex (uniteConfig, uniteThemeConfig, buildConfiguration, packageJ
 async function buildBrowserConfig (uniteConfig, uniteThemeConfig) {
     const tileFilename = path.join(uniteConfig.dirs.www.assets, "favicon/", "mstile-150x150.png");
 
-    const tileExists = await fileExists(tileFilename);
+    const tileExists = await asyncUtil.fileExists(tileFilename);
 
     if (tileExists) {
         const bcFilename = path.join(uniteConfig.dirs.www.assets, "favicon/", "browserconfig.xml");
@@ -124,7 +111,7 @@ async function buildManifestJson (uniteConfig, uniteThemeConfig) {
             "favicon/",
             `android-chrome-${sizes[i]}x${sizes[i]}.png`);
 
-        const imageExists = await fileExists(fname);
+        const imageExists = await asyncUtil.fileExists(fname);
         if (imageExists) {
             manifest.icons.push({
                 "src": `./${fname.replace(/\\/g, "/")}`,
@@ -182,14 +169,12 @@ async function buildThemeHeaders (uniteConfig, uniteThemeConfig) {
         }
     ];
 
-    console.log(headers);
-
     if (uniteThemeConfig.themeColor) {
         uniteThemeConfig.themeHeaders.push(`<meta name="theme-color" content="${uniteThemeConfig.themeColor}">`);
     }
 
     for (let i = 0; i < headers.length; i++) {
-        const headerFileExists = await fileExists(headers[i].file);
+        const headerFileExists = await asyncUtil.fileExists(headers[i].file);
         if (headerFileExists) {
             uniteThemeConfig.themeHeaders.push(headers[i].header);
         }

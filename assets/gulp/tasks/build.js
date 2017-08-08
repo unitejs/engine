@@ -6,13 +6,13 @@ const uc = require("./util/unite-config");
 const moduleConfig = require("./util/module-config");
 const themeUtils = require("./util/theme-utils");
 const asyncUtil = require("./util/async-util");
+const packageConfig = require("./util/package-config");
 const gulp = require("gulp");
 const path = require("path");
 const fs = require("fs");
 const util = require("util");
 const del = require("del");
 const runSequence = require("run-sequence");
-const packageJson = require("../../package.json");
 const htmlMin = require("gulp-htmlmin");
 const deleteEmpty = require("delete-empty");
 require("./build-transpile");
@@ -39,8 +39,9 @@ gulp.task("build-copy-index", async () => {
     display.info("Building Index Page");
 
     const uniteConfig = await uc.getUniteConfig();
-    const uniteThemeConfig = await uc.getUniteThemeConfig();
+    const uniteThemeConfig = await uc.getUniteThemeConfig(uniteConfig);
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
+    const packageJson = await packageConfig.getPackageJson();
 
     return themeUtils.buildIndex(uniteConfig, uniteThemeConfig, buildConfiguration, packageJson);
 });

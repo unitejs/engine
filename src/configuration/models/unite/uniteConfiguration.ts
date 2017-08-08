@@ -47,4 +47,5 @@ export class UniteConfiguration {
     public srcDistReplaceWith: string;
 
     public buildConfigurations: { [id: string]: UniteBuildConfiguration };
+    public platforms: { [id: string]: { [id: string]: any } };
 }

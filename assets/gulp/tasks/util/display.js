@@ -2,14 +2,21 @@
  * Gulp utils for display.
  */
 const gutil = require("gulp-util");
+const os = require("os");
 
 function log (text) {
     gutil.log(text);
 }
 
-function info (caption, text) {
-    if (text) {
-        gutil.log(`[${gutil.colors.cyan(caption)}]`, text);
+function info (caption, args) {
+    if (args) {
+        if (Array.isArray(args)) {
+            args.forEach(arg => {
+                gutil.log(`[${gutil.colors.cyan(caption)}]`, arg);
+            });
+        } else {
+            gutil.log(`[${gutil.colors.cyan(caption)}]`, args);
+        }
     } else {
         gutil.log(`[${gutil.colors.cyan(caption)}]`);
     }

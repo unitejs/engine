@@ -1,5 +1,5 @@
 /**
- * Gulp tasks for unit testing TypeScript.
+ * Gulp tasks for unit testing.
  */
 const display = require("./util/display");
 const uc = require("./util/unite-config");

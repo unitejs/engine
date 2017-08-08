@@ -5,6 +5,7 @@ const display = require("./display");
 const minimist = require("minimist");
 const fs = require("fs");
 const util = require("util");
+const path = require("path");
 
 async function getUniteConfig () {
     try {
@@ -17,9 +18,10 @@ async function getUniteConfig () {
     }
 }
 
-async function getUniteThemeConfig () {
+async function getUniteThemeConfig (uniteConfig) {
     try {
-        const data = await util.promisify(fs.readFile)("./assetsSource/theme/unite-theme.json");
+        const data = await util.promisify(fs.readFile)(path.join(
+            uniteConfig.dirs.www.assetsSource, "/unite-theme.json"));
         return JSON.parse(data.toString());
     } catch (err) {
         display.error("Reading unite-theme.json", err);
@@ -28,9 +30,9 @@ async function getUniteThemeConfig () {
     }
 }
 
-async function setUniteThemeConfig (uniteThemeConfig) {
+async function setUniteThemeConfig (uniteConfig, uniteThemeConfig) {
     try {
-        await util.promisify(fs.writeFile)("./assetsSource/theme/unite-theme.json",
+        await util.promisify(fs.writeFile)(path.join(uniteConfig.dirs.www.assetsSource, "/unite-theme.json"),
             JSON.stringify(uniteThemeConfig, undefined, "\t"));
     } catch (err) {
         display.error("Writing unite-theme.json", err);

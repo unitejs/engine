@@ -54,10 +54,10 @@ export abstract class EnginePipelineStepBase implements IEnginePipelineStep {
 
         if (hasGeneratedMarker) {
             try {
-                const exists = await fileSystem.fileExists(filename, folder);
+                const exists = await fileSystem.fileExists(folder, filename);
                 if (exists) {
                     logger.info(`Deleting ${filename}`, { from: folder });
-                    await fileSystem.fileDelete(filename, folder);
+                    await fileSystem.fileDelete(folder, filename);
                 }
                 return 0;
             } catch (err) {

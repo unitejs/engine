@@ -18,6 +18,7 @@ export class UniteWwwDirectories {
 
     public reports: string;
     public package: string;
+    public build: string;
 
     public assets: string;
     public assetsSource: string;

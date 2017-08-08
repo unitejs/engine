@@ -46,4 +46,9 @@ export declare class UniteConfiguration {
     buildConfigurations: {
         [id: string]: UniteBuildConfiguration;
     };
+    platforms: {
+        [id: string]: {
+            [id: string]: any;
+        };
+    };
 }

@@ -27,6 +27,7 @@ import { BuildConfigurationOperation } from "../interfaces/buildConfigurationOpe
 import { IEngine } from "../interfaces/IEngine";
 import { IEnginePipelineStep } from "../interfaces/IEnginePipelineStep";
 import { ModuleOperation } from "../interfaces/moduleOperation";
+import { PlatformOperation } from "../interfaces/platformOperation";
 import { NpmPackageManager } from "../packageManagers/npmPackageManager";
 import { YarnPackageManager } from "../packageManagers/yarnPackageManager";
 import { Aurelia } from "../pipelineSteps/applicationFramework/aurelia";
@@ -57,6 +58,8 @@ import { TsLint } from "../pipelineSteps/lint/tsLint";
 import { Amd } from "../pipelineSteps/moduleType/amd";
 import { CommonJs } from "../pipelineSteps/moduleType/commonJs";
 import { SystemJs } from "../pipelineSteps/moduleType/systemJs";
+import { Electron } from "../pipelineSteps/platform/electron";
+import { Web } from "../pipelineSteps/platform/web";
 import { AppScaffold } from "../pipelineSteps/scaffold/appScaffold";
 import { E2eTestScaffold } from "../pipelineSteps/scaffold/e2eTestScaffold";
 import { OutputDirectory } from "../pipelineSteps/scaffold/outputDirectory";
@@ -125,6 +128,7 @@ export class Engine implements IEngine {
         uniteConfiguration.cssPre = cssPre || uniteConfiguration.cssPre;
         uniteConfiguration.cssPost = cssPost || uniteConfiguration.cssPost;
         uniteConfiguration.buildConfigurations = uniteConfiguration.buildConfigurations || {};
+        uniteConfiguration.platforms = uniteConfiguration.platforms || { Web: { }};
 
         if (!ParameterValidation.checkPackageName(this._logger, "packageName", uniteConfiguration.packageName)) {
             return 1;
@@ -277,6 +281,37 @@ export class Engine implements IEngine {
         return 0;
     }
 
+    public async platform(operation: PlatformOperation | undefined | null,
+                          platformName: string | undefined | null,
+                          outputDirectory: string | undefined | null): Promise<number> {
+        outputDirectory = this.cleanupOutputDirectory(outputDirectory);
+        const uniteConfiguration = await this.loadConfiguration(outputDirectory);
+
+        if (!uniteConfiguration) {
+            this._logger.error("There is no unite.json to configure.");
+            return 1;
+        } else {
+            uniteConfiguration.platforms = uniteConfiguration.platforms || {};
+        }
+
+        if (!ParameterValidation.checkOneOf<PlatformOperation>(this._logger, "operation", operation, ["add", "remove"])) {
+            return 1;
+        }
+        if (!ParameterValidation.checkOneOf<string>(this._logger, "platformName", platformName, [ Web.PLATFORM, Electron.PLATFORM ])) {
+            return 1;
+        }
+
+        this._logger.info("");
+
+        if (operation === "add") {
+            return await this.platformAdd(platformName, outputDirectory, uniteConfiguration);
+        } else if (operation === "remove") {
+            return await this.platformRemove(platformName, outputDirectory, uniteConfiguration);
+        }
+
+        return 0;
+    }
+
     private cleanupOutputDirectory(outputDirectory: string | null | undefined): string {
         if (outputDirectory === undefined || outputDirectory === null || outputDirectory.length === 0) {
             // no output directory specified so use current
@@ -294,6 +329,7 @@ export class Engine implements IEngine {
         // check if there is a unite.json we can load for default options
         try {
             const exists = await this._fileSystem.fileExists(outputDirectory, "unite.json");
+
             if (exists) {
                 uniteConfiguration = await this._fileSystem.fileReadJson<UniteConfiguration>(outputDirectory, "unite.json");
             }
@@ -317,6 +353,8 @@ export class Engine implements IEngine {
             pipelineSteps.push(new E2eTestScaffold());
 
             pipelineSteps.push(new Gulp());
+            pipelineSteps.push(new Web());
+            pipelineSteps.push(new Electron());
 
             pipelineSteps.push(new Amd());
             pipelineSteps.push(new CommonJs());
@@ -545,6 +583,63 @@ export class Engine implements IEngine {
         return ret;
     }
 
+    private async platformAdd(platformName: string,
+                              outputDirectory: string,
+                              uniteConfiguration: UniteConfiguration): Promise<number> {
+        const engineVariables = new EngineVariables();
+        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
+        if (ret === 0) {
+            uniteConfiguration.platforms[platformName] = uniteConfiguration.platforms[platformName] || {};
+
+            uniteConfiguration.platforms[platformName].options = uniteConfiguration.platforms[platformName].options || {};
+
+            const pipelineSteps: IEnginePipelineStep[] = [];
+            if (platformName === Web.PLATFORM) {
+                pipelineSteps.push(new Web());
+            }
+            if (platformName === Electron.PLATFORM) {
+                pipelineSteps.push(new Electron());
+            }
+            pipelineSteps.push(new PackageJson());
+            pipelineSteps.push(new UniteConfigurationJson());
+            ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
+
+            if (ret === 0) {
+                this._logger.banner("Successfully Completed.");
+            }
+        }
+
+        return ret;
+    }
+
+    private async platformRemove(platformName: string,
+                                 outputDirectory: string,
+                                 uniteConfiguration: UniteConfiguration): Promise<number> {
+        const engineVariables = new EngineVariables();
+        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
+        if (ret === 0) {
+            if (uniteConfiguration.platforms[platformName]) {
+                delete uniteConfiguration.platforms[platformName];
+            }
+
+            const pipelineSteps: IEnginePipelineStep[] = [];
+            if (platformName === Web.PLATFORM) {
+                pipelineSteps.push(new Web());
+            }
+            if (platformName === Electron.PLATFORM) {
+                pipelineSteps.push(new Electron());
+            }
+            pipelineSteps.push(new PackageJson());
+            pipelineSteps.push(new UniteConfigurationJson());
+            ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
+            if (ret === 0) {
+                this._logger.banner("Successfully Completed.");
+            }
+        }
+
+        return ret;
+    }
+
     private async createEngineVariables(outputDirectory: string, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
             this._logger.info("Loading dependencies", { core: this._coreRoot, dependenciesFile: "package.json" });
@@ -574,6 +669,7 @@ export class Engine implements IEngine {
             unitTestDistFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "test/unit/dist"),
             assetsFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "assets"),
             assetsSourceFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "assetsSource"),
+            buildFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "build"),
             packageFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "node_modules")
         };
 

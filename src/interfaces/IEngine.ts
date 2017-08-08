@@ -37,4 +37,8 @@ export interface IEngine {
                        minify: boolean,
                        sourcemaps: boolean,
                        outputDirectory: string | undefined | null): Promise<number>;
+
+    platform(operation: string | undefined | null,
+             platformName: string | undefined | null,
+             outputDirectory: string | undefined | null): Promise<number>;
 }

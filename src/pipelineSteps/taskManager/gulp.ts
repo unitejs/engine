@@ -31,8 +31,7 @@ export class Gulp extends EnginePipelineStepBase {
                                             "minimist",
                                             "gulp-uglify",
                                             "uglify-js",
-                                            "mkdirp",
-                                            "gulp-zip"],
+                                            "mkdirp"],
                                             uniteConfiguration.taskManager === "Gulp");
 
         if (uniteConfiguration.taskManager === "Gulp") {
@@ -140,7 +139,6 @@ export class Gulp extends EnginePipelineStepBase {
                 const assetTasksLinter = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, `gulp/tasks/linter/${uniteConfiguration.linter.toLowerCase()}/`);
                 const assetTasksCssPre = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, `gulp/tasks/cssPre/${uniteConfiguration.cssPre.toLowerCase()}/`);
                 const assetTasksCssPost = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, `gulp/tasks/cssPost/${uniteConfiguration.cssPost.toLowerCase()}/`);
-                const assetTasksPlatform = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, "gulp/tasks/platform/");
 
                 await this.copyFile(logger, fileSystem, assetTasksLanguage, "build-transpile.js", this._tasksFolder, "build-transpile.js");
                 await this.copyFile(logger, fileSystem, assetTasksBundler, "build-bundle-app.js", this._tasksFolder, "build-bundle-app.js");
@@ -151,9 +149,8 @@ export class Gulp extends EnginePipelineStepBase {
                 await this.copyFile(logger, fileSystem, assetTasksCssPost, "build-css-post-app.js", this._tasksFolder, "build-css-post-app.js");
                 await this.copyFile(logger, fileSystem, assetTasksCssPost, "build-css-post-components.js", this._tasksFolder, "build-css-post-components.js");
 
-                await this.copyFile(logger, fileSystem, assetTasksPlatform, "platform-web.js", this._tasksFolder, "platform-web.js");
-
                 await this.copyFile(logger, fileSystem, assetTasks, "build.js", this._tasksFolder, "build.js");
+                await this.copyFile(logger, fileSystem, assetTasks, "version.js", this._tasksFolder, "version.js");
 
                 return 0;
             } catch (err) {
@@ -288,6 +285,8 @@ export class Gulp extends EnginePipelineStepBase {
                 await this.copyFile(logger, fileSystem, assetUtils, "client-packages.js", this._utilFolder, "client-packages.js");
                 await this.copyFile(logger, fileSystem, assetUtils, "display.js", this._utilFolder, "display.js");
                 await this.copyFile(logger, fileSystem, assetUtils, "exec.js", this._utilFolder, "exec.js");
+                await this.copyFile(logger, fileSystem, assetUtils, "package-config.js", this._utilFolder, "package-config.js");
+                await this.copyFile(logger, fileSystem, assetUtils, "platform-utils.js", this._utilFolder, "platform-utils.js");
                 await this.copyFile(logger, fileSystem, assetUtils, "theme-utils.js", this._utilFolder, "theme-utils.js");
                 await this.copyFile(logger, fileSystem, assetUtils, "unite-config.js", this._utilFolder, "unite-config.js");
 

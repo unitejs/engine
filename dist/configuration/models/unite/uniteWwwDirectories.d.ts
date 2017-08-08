@@ -14,6 +14,7 @@ export declare class UniteWwwDirectories {
     e2eTestDist: string;
     reports: string;
     package: string;
+    build: string;
     assets: string;
     assetsSource: string;
 }
