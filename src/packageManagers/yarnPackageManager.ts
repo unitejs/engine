@@ -1,12 +1,11 @@
 /**
  * Yarn Package Manager class.
  */
-import * as child from "child_process";
-import * as npm from "npm";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
 import { IPackageManager } from "../interfaces/IPackageManager";
+import { PackageUtils } from "./packageUtils";
 
 export class YarnPackageManager implements IPackageManager {
     private _logger: ILogger;
@@ -20,29 +19,17 @@ export class YarnPackageManager implements IPackageManager {
     public async info(packageName: string): Promise<PackageConfiguration> {
         // We still use NPM for this as yarn doesn't have this facility yet
         this._logger.info("Looking up package info...");
-        return new Promise<PackageConfiguration>((resolve, reject) => {
-            npm.load({json: true}, (err, result) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    npm.commands.view([packageName, "version", "main"], (err2, result2, result3, result4, result5) => {
-                        if (err2) {
-                            reject(err2);
-                        } else {
-                            const keys = Object.keys(result2);
-                            if (keys.length > 0) {
-                                resolve(result2[keys[0]]);
-                            } else {
-                                reject(new Error("No package information found."));
-                            }
-                        }
-                    });
-                }
+
+        const args = ["view", packageName, "--json", "name", "version", "main"];
+
+        return PackageUtils.exec(this._logger, this._fileSystem, "npm", undefined, args)
+            .then(viewData => JSON.parse(viewData))
+            .catch(() => {
+                throw new Error("No package information found.");
             });
-        });
     }
 
-    public async add(workingDirectory: string, packageName: string, version: string, isDev: boolean): Promise<void> {
+    public async add(workingDirectory: string, packageName: string, version: string, isDev: boolean): Promise<any> {
         this._logger.info("Adding package...");
 
         const args = ["add", `${packageName}@${version}`];
@@ -50,10 +37,10 @@ export class YarnPackageManager implements IPackageManager {
             args.push("--dev");
         }
 
-        return this.execYarn(workingDirectory, args);
+        return PackageUtils.exec(this._logger, this._fileSystem, "yarn", workingDirectory, args);
     }
 
-    public async remove(workingDirectory: string, packageName: string, isDev: boolean): Promise<void> {
+    public async remove(workingDirectory: string, packageName: string, isDev: boolean): Promise<any> {
         this._logger.info("Removing package...");
 
         const args = ["remove", packageName];
@@ -61,39 +48,6 @@ export class YarnPackageManager implements IPackageManager {
             args.push("--dev");
         }
 
-        return this.execYarn(workingDirectory, args);
-    }
-
-    private async execYarn(workingDirectory: string, args: string[]): Promise<void> {
-        const isWin = /^win/.test(process.platform);
-
-        return new Promise<void>((resolve, reject) => {
-            const spawnProcess = child.spawn(`yarn${isWin ? ".cmd" : ""}`, args, { cwd: this._fileSystem.pathFormat(workingDirectory) });
-
-            spawnProcess.stdout.on("data", (data) => {
-                this._logger.info((data ? data.toString() : "").replace(/\n/g, ""));
-            });
-
-            spawnProcess.stderr.on("data", (data) =>  {
-                const error = (data ? data.toString() : "").replace(/\n/g, "");
-                if (error.startsWith("warning")) {
-                    this._logger.info(error);
-                } else {
-                    this._logger.error(error);
-                }
-            });
-
-            spawnProcess.on("error", (err) =>  {
-                reject(err);
-            });
-
-            spawnProcess.on("close", (exitCode) =>  {
-                if (exitCode === 0) {
-                    resolve();
-                } else {
-                    reject();
-                }
-            });
-        });
+        return PackageUtils.exec(this._logger, this._fileSystem, "yarn", workingDirectory, args);
     }
 }

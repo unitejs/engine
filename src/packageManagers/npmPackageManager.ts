@@ -1,11 +1,11 @@
 /**
  * NPM Package Manager class.
  */
-import * as npm from "npm";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
 import { IPackageManager } from "../interfaces/IPackageManager";
+import { PackageUtils } from "./packageUtils";
 
 export class NpmPackageManager implements IPackageManager {
     private _logger: ILogger;
@@ -18,77 +18,47 @@ export class NpmPackageManager implements IPackageManager {
 
     public async info(packageName: string): Promise<PackageConfiguration> {
         this._logger.info("Looking up package info...");
-        return new Promise<PackageConfiguration>((resolve, reject) => {
-            npm.load({json: true}, (err, result) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    npm.commands.view([packageName, "version", "main"], (err2, result2, result3, result4, result5) => {
-                        if (err2) {
-                            reject(err2);
-                        } else {
-                            const keys = Object.keys(result2);
-                            if (keys.length > 0) {
-                                resolve(result2[keys[0]]);
-                            } else {
-                                reject(new Error("No package information found."));
-                            }
-                        }
-                    });
-                }
+
+        const args = ["view", packageName, "--json", "name", "version", "main"];
+
+        return PackageUtils.exec(this._logger, this._fileSystem, "npm", undefined, args)
+            .then(viewData => JSON.parse(viewData))
+            .catch(() => {
+                throw new Error("No package information found.");
             });
-        });
     }
 
-    public async add(workingDirectory: string, packageName: string, version: string, isDev: boolean): Promise<void> {
+    public async add(workingDirectory: string, packageName: string, version: string, isDev: boolean): Promise<any> {
         this._logger.info("Adding package...");
-        return new Promise<void>((resolve, reject) => {
-            const config: { [id: string]: any } = {};
-            config.prefix = this._fileSystem.pathFormat(workingDirectory);
-            if (isDev) {
-                config["save-dev"] = true;
-            } else {
-                config["save-prod"] = true;
-            }
-            npm.load(config, (err, result) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    npm.commands.install([`${packageName}@${version}`], (err2, result2, result3, result4, result5) => {
-                        if (err2) {
-                            reject(err2);
-                        } else {
-                            resolve();
-                        }
-                    });
-                }
+
+        const args = ["install", `${packageName}@${version}`];
+
+        if (isDev) {
+            args.push("--save-dev");
+        } else {
+            args.push("--save-prod");
+        }
+
+        return PackageUtils.exec(this._logger, this._fileSystem, "npm", workingDirectory, args)
+            .catch((err) => {
+                throw err;
             });
-        });
     }
 
-    public async remove(workingDirectory: string, packageName: string, isDev: boolean): Promise<void> {
+    public async remove(workingDirectory: string, packageName: string, isDev: boolean): Promise<any> {
         this._logger.info("Removing package...");
-        return new Promise<void>((resolve, reject) => {
-            const config: { [id: string]: any } = {};
-            config.prefix = this._fileSystem.pathFormat(workingDirectory);
-            if (isDev) {
-                config["save-dev"] = true;
-            } else {
-                config.save = true;
-            }
-            npm.load(config, (err, result) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    npm.commands.uninstall([packageName], (err2, result2, result3, result4, result5) => {
-                        if (err2) {
-                            reject(err2);
-                        } else {
-                            resolve();
-                        }
-                    });
-                }
+
+        const args = ["uninstall", packageName];
+
+        if (isDev) {
+            args.push("--save-dev");
+        } else {
+            args.push("--save");
+        }
+
+        return PackageUtils.exec(this._logger, this._fileSystem, "npm", workingDirectory, args)
+            .catch((err) => {
+                throw err;
             });
-        });
     }
 }

@@ -142,10 +142,6 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
                                                                 `${uniteConfiguration.e2eTestRunner.toLowerCase()}/sourceLanguage/` +
                                                                 `${uniteConfiguration.sourceLanguage.toLowerCase()}/${uniteConfiguration.e2eTestFramework.toLowerCase()}/`);
 
-                const e2eTestsScaffoldRunner = fileSystem.pathCombine(engineVariables.packageAssetsDirectory,
-                                                                      `appFramework/${uniteConfiguration.applicationFramework.toLowerCase()}/` +
-                                                                      `test/e2e/e2eTestRunner/${uniteConfiguration.e2eTestRunner.toLowerCase()}`);
-
                 for (const spec of specs) {
                     await this.copyFile(logger, fileSystem, e2eTestsScaffold,
                                         `${spec}.spec.${engineVariables.sourceLanguageExt}`,
@@ -153,17 +149,6 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
                                         `${spec}.spec.${engineVariables.sourceLanguageExt}`);
                 }
 
-                await this.copyFile(logger, fileSystem, e2eTestsScaffoldRunner,
-                                    "e2e-bootstrap.js",
-                                    engineVariables.www.e2eTestFolder,
-                                    "e2e-bootstrap.js");
-
-                if (uniteConfiguration.sourceLanguage === "TypeScript") {
-                    await this.copyFile(logger, fileSystem, e2eTestsScaffoldRunner,
-                                        "e2e-bootstrap.d.ts",
-                                        engineVariables.www.e2eTestFolder,
-                                        "e2e-bootstrap.d.ts");
-                }
                 return 0;
             } catch (err) {
                 logger.error("Generating application e2e test failed", err, { unitTestSrcFolder: engineVariables.www.e2eTestSrcFolder });

@@ -9,5 +9,5 @@ export class UniteClientPackage {
     public mainMinified: string;
     public includeMode: IncludeMode;
     public isPackage: boolean;
-    public wrapAssets: string;
+    public assets: string;
 }

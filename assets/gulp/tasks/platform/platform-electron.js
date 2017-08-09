@@ -15,7 +15,6 @@ const exec = require("./util/exec");
 const asyncUtil = require("./util/async-util");
 const platformUtils = require("./util/platform-utils");
 const packageConfig = require("./util/package-config");
-const zip = require("gulp-zip");
 
 const DEF_PLATFORM_ARCH = ["win32/ia32"];
 const DEF_RUNTIME_VERSION = "1.6.11";
@@ -81,10 +80,11 @@ gulp.task("platform-electron-gather", async () => {
     const platformArchs = platformSettings.platformArch || DEF_PLATFORM_ARCH;
 
     const hasLinux = platformArchs.filter(platformArch => platformArch.startsWith("linux")).length > 0;
-    const hasDarwin = platformArchs.filter(platformArch => platformArch.startsWith("darwin") || platformArch.startsWith("mas")).length > 0;
+    const hasDarwin = platformArchs.filter(platformArch =>
+        platformArch.startsWith("darwin") || platformArch.startsWith("mas")).length > 0;
 
     const linuxPng = path.join(platformSrc, "/assets/favicon/", "linux-1024.png");
-    const osxIcns = path.join(platformSrc, "/assets/favicon/", "osx");
+    const osxIcns = path.join(platformSrc, "/assets/favicon/", "osx.icns");
 
     if (hasLinux || hasDarwin) {
         try {
@@ -107,15 +107,13 @@ gulp.task("platform-electron-gather", async () => {
     if (hasDarwin) {
         try {
             const args = [
-                linuxPng,
-                osxIcns,
-                "-icns",
-                "-i"
+                "pngToIcns",
+                `--sourceFile=${linuxPng}`,
+                `--destFile=${osxIcns}`
             ];
-            display.info("Creating", "OSX Icons");
-            await exec.npmRun("png2icons", args);
+            await exec.npmRun("unite-image", args);
         } catch (err) {
-            display.error("Executing png2icons", err);
+            display.error("Executing unite-image", err);
             process.exit(1);
         }
     }
@@ -184,7 +182,7 @@ gulp.task("platform-electron-bundle", async () => {
                 iconFilename = "favicon.ico";
             } else if (platform === "linux") {
                 iconFilename = "linux-1024.png";
-            } else if (platform === "darwin") {
+            } else if (platform === "darwin" || platform === "mas") {
                 iconFilename = "osx.icns";
             }
             if (iconFilename.length > 0) {
@@ -231,16 +229,19 @@ gulp.task("platform-electron-compress", async () => {
     for (let i = 0; i < platformArchs.length; i++) {
         const parts = platformArchs[i].split("/");
         if (parts.length === 2) {
-            display.info("Zipping File", "Electron");
-            const zipName = `${packageJson.version}_electron_${parts[0]}_${parts[1]}.zip`;
-            display.info("To File", zipName);
+            const platform = parts[0];
+            const architecture = parts[1];
 
-            await asyncUtil.stream(gulp.src(
+            display.info("Zipping File", "Electron");
+            const zipName = `${packageJson.version}_electron_${platform}_${architecture}.zip`;
+
+            display.info("To File", zipName);
+            await asyncUtil.zipFolder(
                 path.join("../",
                     uniteConfig.dirs.packagedRoot,
-                    `/${packageJson.version}/electron_${parts[0]}_${parts[1]}/**/*`))
-                .pipe(zip(zipName))
-                .pipe(gulp.dest(path.join("../", uniteConfig.dirs.packagedRoot))));
+                    `/${packageJson.version}/electron_${platform}_${architecture}/`),
+                path.join("../", uniteConfig.dirs.packagedRoot, zipName)
+            );
         } else {
             display.error(`Malformed platformArch '${platformArchs[i]}'`);
             process.exit(1);

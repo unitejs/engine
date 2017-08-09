@@ -13,7 +13,10 @@ export class Electron extends EnginePipelineStepBase {
     private static FILENAME2: string = "main.js";
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["gulp-zip", "electron-packager", "png2icons"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.platforms[Electron.PLATFORM] !== undefined);
+        engineVariables.toggleDevDependency(["archiver",
+                                            "electron-packager",
+                                            "unitejs-image-cli"],
+                                            uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.platforms[Electron.PLATFORM] !== undefined);
 
         const buildAssetPlatform = fileSystem.pathCombine(engineVariables.www.buildFolder, "/assets/platform/electron/");
         const buildTasks = fileSystem.pathCombine(engineVariables.www.buildFolder, "/tasks/");

@@ -15,6 +15,12 @@ export class React extends SharedAppFramework {
         engineVariables.toggleDevDependency(["@types/react", "@types/react-dom", "@types/react-router-dom"],
                                             uniteConfiguration.applicationFramework === "React" && uniteConfiguration.sourceLanguage === "TypeScript");
 
+        engineVariables.toggleDevDependency(["unitejs-react-protractor-plugin"], uniteConfiguration.applicationFramework === "React" && uniteConfiguration.e2eTestRunner === "Protractor");
+        engineVariables.e2ePlugins["unitejs-react-protractor-plugin"] = uniteConfiguration.applicationFramework === "React" && uniteConfiguration.e2eTestRunner === "Protractor";
+
+        engineVariables.toggleDevDependency(["unitejs-react-webdriver-plugin"], uniteConfiguration.applicationFramework === "React" && uniteConfiguration.e2eTestRunner === "WebdriverIO");
+        engineVariables.e2ePlugins["unitejs-react-webdriver-plugin"] = uniteConfiguration.applicationFramework === "React" && uniteConfiguration.e2eTestRunner === "WebdriverIO";
+
         engineVariables.toggleClientPackage(
             "react",
             "dist/react.js",

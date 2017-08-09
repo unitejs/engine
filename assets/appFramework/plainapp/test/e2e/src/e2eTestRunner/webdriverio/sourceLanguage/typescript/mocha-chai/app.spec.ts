@@ -1,7 +1,7 @@
 /**
  * Tests for App.
  */
-/// <reference path="../e2e-bootstrap.d.ts" />
+/// <reference types="unitejs-plain-webdriver-plugin"/>
 import { expect } from "chai";
 
 describe("App", () => {
@@ -17,7 +17,7 @@ describe("App", () => {
 
     it("the root text is set", () => {
         return browser
-            .loadAndWaitForPage("/")
+            .loadAndWaitForPlainPage("/")
             .element("#root")
             .getText()
             .then((rootContent) => {

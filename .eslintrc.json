@@ -50,7 +50,8 @@
 		"no-empty-function": "off",
 		"consistent-return": "off",
 		"promise/avoid-new": "off",
-		"max-depth": "off"
+		"max-depth": "off",
+		"no-extra-parens": "off"
 	},
 	"plugins": [
 		"node",

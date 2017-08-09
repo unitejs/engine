@@ -1,7 +1,8 @@
 /**
  * Tests for App.
  */
-/// <reference path="../e2e-bootstrap.d.ts" />
+/// <reference types="unitejs-react-webdriver-plugin"/>
+
 describe("App", () => {
     it("the title is set", () => {
         const uniteJson = require("../../../../unite.json");

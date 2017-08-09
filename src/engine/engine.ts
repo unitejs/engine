@@ -208,7 +208,7 @@ export class Engine implements IEngine {
                                main: string | undefined | null,
                                mainMinified: string | undefined | null,
                                isPackage: boolean,
-                               wrapAssets: string | undefined | null,
+                               assets: string | undefined | null,
                                packageManager: UnitePackageManager | undefined | null,
                                outputDirectory: string | undefined | null): Promise<number> {
         outputDirectory = this.cleanupOutputDirectory(outputDirectory);
@@ -236,10 +236,8 @@ export class Engine implements IEngine {
             return 1;
         }
 
-        this._logger.info("");
-
         if (operation === "add") {
-            return await this.clientPackageAdd(packageName, version, preload, includeMode, main, mainMinified, isPackage, wrapAssets, outputDirectory, uniteConfiguration);
+            return await this.clientPackageAdd(packageName, version, preload, includeMode, main, mainMinified, isPackage, assets, outputDirectory, uniteConfiguration);
         } else if (operation === "remove") {
             return await this.clientPackageRemove(packageName, outputDirectory, uniteConfiguration);
         }
@@ -422,12 +420,14 @@ export class Engine implements IEngine {
                                    main: string | undefined | null,
                                    mainMinified: string | undefined | null,
                                    isPackage: boolean,
-                                   wrapAssets: string | undefined | null,
+                                   assets: string | undefined | null,
                                    outputDirectory: string,
                                    uniteConfiguration: UniteConfiguration): Promise<number> {
         if (!ParameterValidation.checkOneOf<IncludeMode>(this._logger, "includeMode", includeMode, ["app", "test", "both"])) {
             return 1;
         }
+
+        this._logger.info("");
 
         if (uniteConfiguration.clientPackages[packageName]) {
             this._logger.error("Package has already been added.");
@@ -465,24 +465,13 @@ export class Engine implements IEngine {
             clientPackage.mainMinified = finalMainMinified;
             clientPackage.isPackage = isPackage;
             clientPackage.includeMode = includeMode;
-            clientPackage.wrapAssets = wrapAssets;
+            clientPackage.assets = assets;
 
             uniteConfiguration.clientPackages[packageName] = clientPackage;
 
-            await engineVariables.packageManager.add(outputDirectory, packageName, version, false);
+            await engineVariables.packageManager.add(engineVariables.wwwRootFolder, packageName, version, false);
 
             const pipelineSteps: IEnginePipelineStep[] = [];
-            pipelineSteps.push(new Amd());
-            pipelineSteps.push(new CommonJs());
-            pipelineSteps.push(new SystemJs());
-
-            pipelineSteps.push(new Browserify());
-            pipelineSteps.push(new RequireJs());
-            pipelineSteps.push(new SystemJsBuilder());
-            pipelineSteps.push(new Webpack());
-
-            pipelineSteps.push(new HtmlTemplate());
-
             pipelineSteps.push(new Karma());
             pipelineSteps.push(new UniteConfigurationJson());
 
@@ -507,19 +496,9 @@ export class Engine implements IEngine {
         const engineVariables = new EngineVariables();
         let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
         if (ret === 0) {
-            await engineVariables.packageManager.remove(outputDirectory, packageName, false);
+            await engineVariables.packageManager.remove(engineVariables.wwwRootFolder, packageName, false);
 
             const pipelineSteps: IEnginePipelineStep[] = [];
-            pipelineSteps.push(new Amd());
-            pipelineSteps.push(new CommonJs());
-            pipelineSteps.push(new SystemJs());
-
-            pipelineSteps.push(new Browserify());
-            pipelineSteps.push(new RequireJs());
-            pipelineSteps.push(new SystemJsBuilder());
-            pipelineSteps.push(new Webpack());
-
-            pipelineSteps.push(new HtmlTemplate());
 
             pipelineSteps.push(new Karma());
             pipelineSteps.push(new UniteConfigurationJson());
@@ -705,7 +684,7 @@ export class Engine implements IEngine {
             scriptIncludes: []
         };
 
-        engineVariables.protractorPlugins = {};
+        engineVariables.e2ePlugins = {};
 
         engineVariables.transpilePresets = {};
 

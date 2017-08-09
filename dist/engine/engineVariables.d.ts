@@ -39,7 +39,7 @@ export declare class EngineVariables {
     htmlBundle: EngineVariablesHtml;
     packageManager: IPackageManager;
     corePackageJson: PackageConfiguration;
-    protractorPlugins: {
+    e2ePlugins: {
         [id: string]: boolean;
     };
     lintFeatures: {

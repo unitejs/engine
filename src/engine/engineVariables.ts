@@ -50,7 +50,7 @@ export class EngineVariables {
 
     public corePackageJson: PackageConfiguration;
 
-    public protractorPlugins: { [id: string]: boolean };
+    public e2ePlugins: { [id: string]: boolean };
 
     public lintFeatures: { [id: string]: { required: boolean; object: any } };
     public lintExtends: { [id: string]: boolean };

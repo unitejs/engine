@@ -2,7 +2,6 @@
  * Gulp utils for display.
  */
 const gutil = require("gulp-util");
-const os = require("os");
 
 function log (text) {
     gutil.log(text);

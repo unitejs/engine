@@ -13,7 +13,7 @@ class Web extends enginePipelineStepBase_1.EnginePipelineStepBase {
     process(logger, fileSystem, uniteConfiguration, engineVariables) {
         const _super = name => super[name];
         return __awaiter(this, void 0, void 0, function* () {
-            engineVariables.toggleDevDependency(["gulp-zip"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.platforms[Web.PLATFORM] !== undefined);
+            engineVariables.toggleDevDependency(["archiver"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.platforms[Web.PLATFORM] !== undefined);
             const buildTasks = fileSystem.pathCombine(engineVariables.www.buildFolder, "/tasks/");
             if (uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.platforms[Web.PLATFORM] !== undefined) {
                 try {

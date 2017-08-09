@@ -14,11 +14,11 @@ export class WebdriverIo extends EnginePipelineStepBase {
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["webdriverio",
-                                             "wdio-spec-reporter",
-                                             "wdio-allure-reporter",
-                                             "browser-sync",
-                                             "selenium-standalone",
-                                             "allure-commandline"],
+                                            "wdio-spec-reporter",
+                                            "wdio-allure-reporter",
+                                            "browser-sync",
+                                            "selenium-standalone",
+                                            "allure-commandline"],
                                             uniteConfiguration.e2eTestRunner === "WebdriverIO");
 
         engineVariables.toggleDevDependency(["wdio-jasmine-framework"], uniteConfiguration.e2eTestRunner === "WebdriverIO" && uniteConfiguration.e2eTestFramework === "Jasmine");
@@ -81,10 +81,18 @@ export class WebdriverIo extends EnginePipelineStepBase {
             }
         };
 
-        const e2eBootstrap = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.e2eTestFolder, "e2e-bootstrap.js")));
-
         lines.push(`exports.config = ${JsonHelper.codify(webdriverConfiguration)}`);
-        lines.push(`exports.config.before = require('${e2eBootstrap}');`);
+        lines.push("exports.config.before = () => {");
+        const keys = Object.keys(engineVariables.e2ePlugins);
+        keys.forEach(plugin => {
+            if (engineVariables.e2ePlugins[plugin]) {
+                const pluginPath = fileSystem.pathToWeb(fileSystem.pathFileRelative
+                    (engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, `${plugin}/index.js`)));
+
+                lines.push(`    require('${pluginPath}')();`);
+            }
+        });
+        lines.push("};");
         lines.push(super.wrapGeneratedMarker("/* ", " */"));
     }
 }

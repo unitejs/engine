@@ -7,7 +7,7 @@ const minimist = require("minimist");
 const packageConfig = require("./util/package-config");
 
 gulp.task("version", async () => {
-    let packageJson = await packageConfig.getPackageJson();
+    const packageJson = await packageConfig.getPackageJson();
 
     const knownOptions = {
         "default": {

@@ -18,8 +18,6 @@ export class Protractor extends EnginePipelineStepBase {
                                             uniteConfiguration.e2eTestRunner === "Protractor" && uniteConfiguration.e2eTestFramework === "Jasmine");
         engineVariables.toggleDevDependency(["mochawesome-screenshots"], uniteConfiguration.e2eTestRunner === "Protractor" && uniteConfiguration.e2eTestFramework === "Mocha-Chai");
 
-        engineVariables.toggleDevDependency(["@types/protractor"], uniteConfiguration.e2eTestRunner === "Protractor" && uniteConfiguration.sourceLanguage === "TypeScript");
-
         engineVariables.lintEnv.protractor = uniteConfiguration.e2eTestRunner === "Protractor" && uniteConfiguration.linter === "ESLint";
 
         if (uniteConfiguration.e2eTestRunner === "Protractor") {
@@ -58,13 +56,11 @@ export class Protractor extends EnginePipelineStepBase {
             browserName: "chrome"
         };
 
-        protractorConfiguration.plugins = [{
-            path: "test/e2e/e2e-bootstrap.js"
-        }];
+        protractorConfiguration.plugins = [];
 
-        for (const key in engineVariables.protractorPlugins) {
+        for (const key in engineVariables.e2ePlugins) {
             const pluginPath = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, key)));
-            if (engineVariables.protractorPlugins[key]) {
+            if (engineVariables.e2ePlugins[key]) {
                 let exists = false;
                 protractorConfiguration.plugins.forEach(plugin => {
                     if (plugin.path === pluginPath) {

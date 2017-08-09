@@ -27,7 +27,7 @@ export interface IEngine {
                   main: string | undefined | null,
                   mainMinified: string | undefined | null,
                   isPackage: boolean,
-                  wrapAssets: string | undefined | null,
+                  assets: string | undefined | null,
                   packageManager: string | undefined | null,
                   outputDirectory: string | undefined | null): Promise<number>;
 

@@ -39,6 +39,8 @@ async function gatherFiles (platformName) {
         });
     }
 
+    files = files.concat(clientPackages.getAssets(uniteConfig));
+
     const dest = path.join("../",
         uniteConfig.dirs.packagedRoot,
         `/${packageJson.version}/${platformName.toLowerCase()}/`);

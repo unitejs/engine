@@ -1,7 +1,7 @@
 /**
  * Tests for App.
  */
-/// <reference path="../e2e-bootstrap.d.ts" />
+/// <reference types="unitejs-react-webdriver-plugin"/>
 import { expect } from "chai";
 
 describe("App", () => {

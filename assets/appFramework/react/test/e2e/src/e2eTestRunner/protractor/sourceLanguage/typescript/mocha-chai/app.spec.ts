@@ -1,7 +1,7 @@
 /**
  * Tests for App.
  */
-/// <reference path="../e2e-bootstrap.d.ts" />
+/// <reference types="unitejs-react-protractor-plugin"/>
 import { expect } from "chai";
 import { $, browser, by } from "protractor";
 
