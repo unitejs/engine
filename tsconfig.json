@@ -13,12 +13,7 @@
         "noImplicitReturns": true,
         "strictNullChecks": false,
         "outDir": "./dist",
-        "baseUrl": ".",
-        "paths": {
-            "unitejs-framework/*": [
-                "node_modules/unitejs-framework/*"
-            ]
-        }
+        "baseUrl": "."
     },
     "include": [
         "src/**/*",
