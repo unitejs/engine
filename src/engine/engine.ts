@@ -140,11 +140,11 @@ export class Engine implements IEngine {
         let spdxLicense: ISpdxLicense;
         try {
             const licenseData = await this._fileSystem.fileReadJson<ISpdx>(this._assetsFolder, "spdx-full.json");
-            if (!ParameterValidation.contains(this._logger,
-                                              "license",
-                                              Object.keys(licenseData),
-                                              uniteConfiguration.license,
-                                              "does not match any of the possible SPDX license values (see https://spdx.org/licenses/).")) {
+            if (!ParameterValidation.checkOneOf<string>(this._logger,
+                                                        "license",
+                                                        uniteConfiguration.license,
+                                                        Object.keys(licenseData),
+                                                        "does not match any of the possible SPDX license values (see https://spdx.org/licenses/).")) {
                 return 1;
             } else {
                 spdxLicense = licenseData[uniteConfiguration.license];
