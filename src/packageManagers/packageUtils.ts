@@ -13,7 +13,7 @@ export class PackageUtils {
             let finalData = "";
             const options: { cwd?: string } = {};
             if (workingDirectory !== null && workingDirectory !== undefined) {
-                options.cwd = fileSystem.pathFormat(workingDirectory);
+                options.cwd = fileSystem.pathAbsolute(workingDirectory);
             }
             const spawnProcess = child.spawn(`${packageName}${isWin ? ".cmd" : ""}`, args, options);
 

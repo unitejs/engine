@@ -17,10 +17,10 @@ export abstract class EnginePipelineStepBase implements IEnginePipelineStep {
         return 0;
     }
 
-    public abstract process(logger: ILogger,
-                            fileSystem: IFileSystem,
-                            uniteConfiguration: UniteConfiguration,
-                            engineVariables: EngineVariables): Promise<number>;
+    public abstract async process(logger: ILogger,
+                                  fileSystem: IFileSystem,
+                                  uniteConfiguration: UniteConfiguration,
+                                  engineVariables: EngineVariables): Promise<number>;
 
     public async copyFile(logger: ILogger,
                           fileSystem: IFileSystem,

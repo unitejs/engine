@@ -315,7 +315,7 @@ export class Engine implements IEngine {
             // no output directory specified so use current
             outputDirectory = "./";
         } else {
-            outputDirectory = this._fileSystem.pathFormat(outputDirectory);
+            outputDirectory = this._fileSystem.pathAbsolute(outputDirectory);
         }
 
         return outputDirectory;
