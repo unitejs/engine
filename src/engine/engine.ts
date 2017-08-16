@@ -680,7 +680,6 @@ export class Engine implements IEngine {
         engineVariables.www = {
             srcFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "src"),
             distFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "dist"),
-            reportsFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "reports"),
             cssSrcFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "cssSrc"),
             cssDistFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "css"),
             e2eTestFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "test/e2e"),
@@ -689,6 +688,7 @@ export class Engine implements IEngine {
             unitTestFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "test/unit"),
             unitTestSrcFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "test/unit/src"),
             unitTestDistFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "test/unit/dist"),
+            reportsFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "test/reports"),
             assetsFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "assets"),
             assetsSourceFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "assetsSource"),
             buildFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "build"),

@@ -1,5 +1,9 @@
 # v0.8.2
 * Unit Tests and Fixes
+* Unit Test Reports show full coverage not summary
+* Unit Tests now show coverage for all files not just those with tests using karma-coverage-allsources
+* Added Unit Test also outputs lcov
+* Moved reports folder into test
 
 # v0.8.1
 * Housekeeping and CI Integration

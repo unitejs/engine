@@ -90,6 +90,8 @@ export declare class KarmaConfiguration {
     urlRoot: string;
     jsVersion: number;
     coverageReporter: {
+        include: string;
+        exclude: string;
         reporters: {
             type: string;
             dir: string;

@@ -40,8 +40,8 @@ export abstract class EnginePipelineStepBase implements IEnginePipelineStep {
                 await fileSystem.directoryCreate(folderOnly);
             }
 
-            const lines = await fileSystem.fileReadLines(sourceFolder, sourceFilename);
-            await fileSystem.fileWriteLines(destFolder, destFilename, lines);
+            const buffer = await fileSystem.fileReadBinary(sourceFolder, sourceFilename);
+            await fileSystem.fileWriteBinary(destFolder, destFilename, buffer);
         } else {
             logger.info(`Skipping ${sourceFilename} as it has no generated marker`,
                         { from: sourceFolder, to: destFolder });

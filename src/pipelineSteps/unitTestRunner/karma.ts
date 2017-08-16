@@ -19,6 +19,7 @@ export class Karma extends EnginePipelineStepBase {
                                              "karma-story-reporter",
                                              "karma-html-reporter",
                                              "karma-coverage",
+                                             "karma-coverage-allsources",
                                              "karma-sourcemap-loader",
                                              "karma-remap-istanbul",
                                              "remap-istanbul",
@@ -106,14 +107,10 @@ export class Karma extends EnginePipelineStepBase {
             testFrameworks.push("jasmine");
         }
 
-        const srcInclude = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.distFolder, "**/!(*-bundle|entryPoint).js")));
+        const srcInclude = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
+                                                                            fileSystem.pathCombine(engineVariables.www.distFolder, "**/!(*-bundle|app-module-config|entryPoint).js")));
         testIncludes.push({
             pattern: srcInclude,
-            included: false
-        });
-
-        testIncludes.push({
-            pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "**/*.spec.js"))),
             included: false
         });
 
@@ -127,15 +124,22 @@ export class Karma extends EnginePipelineStepBase {
             included: true
         });
 
+        testIncludes.push({
+            pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "**/*.spec.js"))),
+            included: false
+        });
+
         const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.reportsFolder));
 
         const karmaConfiguration = new KarmaConfiguration();
         karmaConfiguration.basePath = "__dirname";
         karmaConfiguration.singleRun = true;
         karmaConfiguration.frameworks = testFrameworks;
-        karmaConfiguration.reporters = ["story", "coverage", "html", "karma-remap-istanbul"];
+        karmaConfiguration.reporters = ["story", "coverage-allsources", "coverage", "html", "karma-remap-istanbul"];
         karmaConfiguration.browsers = ["PhantomJS"];
         karmaConfiguration.coverageReporter = {
+            include: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.distFolder, "**/!(app-module-config|entryPoint).js"))),
+            exclude: "",
             reporters: [
                 {
                     type: "json",
@@ -152,9 +156,10 @@ export class Karma extends EnginePipelineStepBase {
 
         karmaConfiguration.remapIstanbulReporter = {
             reports: {
+                text: "",
                 json: `${reportsFolder}/coverage.json`,
                 html: `${reportsFolder}/coverage`,
-                "text-summary": ""
+                lcovonly: `${reportsFolder}/lcov.info`
             }
         };
 

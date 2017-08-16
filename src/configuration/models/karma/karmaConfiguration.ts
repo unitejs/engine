@@ -57,7 +57,7 @@ export class KarmaConfiguration {
     public urlRoot: string;
     public jsVersion: number;
 
-    public coverageReporter: { reporters: { type: string; dir: string; subdir: string } [] };
+    public coverageReporter: { include: string; exclude: string; reporters: { type: string; dir: string; subdir: string } [] };
     public htmlReporter: { outputDir: string; reportName: string};
     public remapIstanbulReporter: { reports: { [id: string]: string } };
 
