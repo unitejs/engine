@@ -12,6 +12,16 @@ import { EngineVariables } from "../../engine/engineVariables";
 export class TypeScript extends EnginePipelineStepBase {
     private static FILENAME: string = "tsconfig.json";
 
+    public async prerequisites(logger: ILogger,
+                               fileSystem: IFileSystem,
+                               uniteConfiguration: UniteConfiguration,
+                               engineVariables: EngineVariables): Promise<number> {
+        if (uniteConfiguration.sourceLanguage === "TypeScript") {
+            engineVariables.sourceLanguageExt = "ts";
+        }
+        return 0;
+    }
+
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["typescript"], uniteConfiguration.sourceLanguage === "TypeScript");
 
@@ -38,7 +48,7 @@ export class TypeScript extends EnginePipelineStepBase {
                     typeScriptConfiguration.compilerOptions.module = "commonjs";
                 }
 
-                const additional: { [id: string]: any} = {};
+                const additional: { [id: string]: any } = {};
                 for (const key in engineVariables.transpileProperties) {
                     if (engineVariables.transpileProperties[key].required) {
                         additional[key] = engineVariables.transpileProperties[key].object;

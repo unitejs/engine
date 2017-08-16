@@ -22,20 +22,20 @@ export interface IEngine {
     clientPackage(operation: string | undefined | null,
                   packageName: string | undefined | null,
                   version: string | undefined | null,
-                  preload: boolean,
+                  preload: boolean | undefined,
                   includeMode: string | undefined | null,
                   main: string | undefined | null,
                   mainMinified: string | undefined | null,
-                  isPackage: boolean,
+                  isPackage: boolean | undefined,
                   assets: string | undefined | null,
                   packageManager: string | undefined | null,
                   outputDirectory: string | undefined | null): Promise<number>;
 
     buildConfiguration(operation: string | undefined | null,
                        configurationName: string | undefined | null,
-                       bundle: boolean,
-                       minify: boolean,
-                       sourcemaps: boolean,
+                       bundle: boolean | undefined,
+                       minify: boolean | undefined,
+                       sourcemaps: boolean | undefined,
                        outputDirectory: string | undefined | null): Promise<number>;
 
     platform(operation: string | undefined | null,

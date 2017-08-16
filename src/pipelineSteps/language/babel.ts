@@ -11,6 +11,15 @@ import { EngineVariables } from "../../engine/engineVariables";
 export class Babel extends EnginePipelineStepBase {
     private static FILENAME: string = ".babelrc";
 
+    public async prerequisites(logger: ILogger,
+                               fileSystem: IFileSystem,
+                               uniteConfiguration: UniteConfiguration,
+                               engineVariables: EngineVariables): Promise<number> {
+        if (uniteConfiguration.sourceLanguage === "JavaScript") {
+            engineVariables.sourceLanguageExt = "js";
+        }
+        return 0;
+    }
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["babel-core", "babel-preset-es2015"], uniteConfiguration.sourceLanguage === "JavaScript");
 

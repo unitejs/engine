@@ -14,6 +14,8 @@ export class UniteConfigurationJson extends EnginePipelineStepBase {
         try {
             logger.info(`Generating ${UniteConfigurationJson.FILENAME} in`, { rootFolder: engineVariables.rootFolder });
 
+            uniteConfiguration.uniteVersion = engineVariables.corePackageJson.version;
+
             await fileSystem.fileWriteJson(engineVariables.rootFolder, UniteConfigurationJson.FILENAME, uniteConfiguration);
             return 0;
         } catch (err) {
