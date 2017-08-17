@@ -7,16 +7,28 @@ const asyncUtil = require("./util/async-util");
 const gulp = require("gulp");
 const typescript = require("gulp-typescript");
 const sourcemaps = require("gulp-sourcemaps");
+const minimist = require("minimist");
 
 gulp.task("e2e-transpile", async () => {
     display.info("Running", "TypeScript");
+
+    const knownOptions = {
+        "default": {
+            "grep": "*"
+        },
+        "string": [
+            "grep"
+        ]
+    };
+
+    const options = minimist(process.argv.slice(2), knownOptions);
 
     const uniteConfig = await uc.getUniteConfig();
 
     const tsProject = typescript.createProject("tsconfig.json", {"module": "commonjs"});
     let errorCount = 0;
 
-    return asyncUtil.stream(gulp.src(`${uniteConfig.dirs.www.e2eTestSrc}**/*.spec.{ts,tsx}`)
+    return asyncUtil.stream(gulp.src(`${uniteConfig.dirs.www.e2eTestSrc}**/${options.grep}.spec.{ts,tsx}`)
         .pipe(sourcemaps.init())
         .pipe(tsProject())
         .on("error", () => {

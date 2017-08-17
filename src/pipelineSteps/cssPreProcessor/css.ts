@@ -8,14 +8,22 @@ import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 
 export class Css extends EnginePipelineStepBase {
+    public async prerequisites(logger: ILogger,
+                               fileSystem: IFileSystem,
+                               uniteConfiguration: UniteConfiguration,
+                               engineVariables: EngineVariables): Promise<number> {
+        if (uniteConfiguration.cssPre === "Css") {
+            engineVariables.styleLanguageExt = "css";
+        }
+        return 0;
+    }
+
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.cssPre === "Css") {
             try {
                 engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "cssSrc");
 
                 logger.info("Creating cssSrc folder", { cssSrcFolder: engineVariables.www.cssSrcFolder });
-
-                engineVariables.styleLanguageExt = "css";
 
                 await fileSystem.directoryCreate(engineVariables.www.cssSrcFolder);
                 await fileSystem.directoryCreate(engineVariables.www.cssDistFolder);

@@ -22,7 +22,7 @@ export class Electron extends EnginePipelineStepBase {
         const buildTasks = fileSystem.pathCombine(engineVariables.www.buildFolder, "/tasks/");
         if (uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.platforms[Electron.PLATFORM] !== undefined) {
             try {
-                const assetTasksPlatform = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, "gulp/tasks/platform/");
+                const assetTasksPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/platform/");
                 await this.copyFile(logger, fileSystem, assetTasksPlatform, Electron.FILENAME, buildTasks, Electron.FILENAME);
             } catch (err) {
                 logger.error(`Generating ${Electron.FILENAME} failed`, err);
@@ -30,7 +30,7 @@ export class Electron extends EnginePipelineStepBase {
             }
 
             try {
-                const assetPlatform = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, "gulp/assets/platform/electron/");
+                const assetPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/assets/platform/electron/");
                 await this.copyFile(logger, fileSystem, assetPlatform, Electron.FILENAME2, buildAssetPlatform, Electron.FILENAME2);
                 return 0;
             } catch (err) {

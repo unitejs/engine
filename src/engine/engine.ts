@@ -77,14 +77,14 @@ import { EngineVariables } from "./engineVariables";
 export class Engine implements IEngine {
     private _logger: ILogger;
     private _fileSystem: IFileSystem;
-    private _coreRoot: string;
-    private _assetsFolder: string;
+    private _engineRootFolder: string;
+    private _engineAssetsFolder: string;
 
     constructor(logger: ILogger, fileSystem: IFileSystem) {
         this._logger = logger;
         this._fileSystem = fileSystem;
-        this._coreRoot = fileSystem.pathCombine(__dirname, "../../");
-        this._assetsFolder = fileSystem.pathCombine(this._coreRoot, "/assets/");
+        this._engineRootFolder = fileSystem.pathCombine(__dirname, "../../");
+        this._engineAssetsFolder = fileSystem.pathCombine(this._engineRootFolder, "/assets/");
     }
 
     public async configure(packageName: string | undefined | null,
@@ -147,7 +147,7 @@ export class Engine implements IEngine {
 
         let spdxLicense: ISpdxLicense;
         try {
-            const licenseData = await this._fileSystem.fileReadJson<ISpdx>(this._assetsFolder, "spdx-full.json");
+            const licenseData = await this._fileSystem.fileReadJson<ISpdx>(this._engineAssetsFolder, "spdx-full.json");
             if (!ParameterValidation.checkOneOf<string>(this._logger,
                                                         "license",
                                                         uniteConfiguration.license,
@@ -665,70 +665,23 @@ export class Engine implements IEngine {
 
     private async createEngineVariables(outputDirectory: string, packageManager: UnitePackageManager, engineVariables: EngineVariables): Promise<number> {
         try {
-            this._logger.info("Loading dependencies", { core: this._coreRoot, dependenciesFile: "package.json" });
+            this._logger.info("Loading dependencies", { core: this._engineRootFolder, dependenciesFile: "package.json" });
 
-            engineVariables.corePackageJson = await this._fileSystem.fileReadJson<PackageConfiguration>(this._coreRoot, "package.json");
+            engineVariables.corePackageJson = await this._fileSystem.fileReadJson<PackageConfiguration>(this._engineRootFolder, "package.json");
         } catch (err) {
-            this._logger.error("Loading dependencies failed", err, { core: this._coreRoot, dependenciesFile: "package.json" });
+            this._logger.error("Loading dependencies failed", err, { core: this._engineRootFolder, dependenciesFile: "package.json" });
             return 1;
         }
 
-        engineVariables.coreFolder = this._coreRoot;
-        engineVariables.rootFolder = outputDirectory;
-        engineVariables.wwwRootFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "www");
-        engineVariables.packagedRootFolder = this._fileSystem.pathCombine(engineVariables.rootFolder, "packaged");
-        engineVariables.www = {
-            srcFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "src"),
-            distFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "dist"),
-            cssSrcFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "cssSrc"),
-            cssDistFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "css"),
-            e2eTestFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "test/e2e"),
-            e2eTestSrcFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "test/e2e/src"),
-            e2eTestDistFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "test/e2e/dist"),
-            unitTestFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "test/unit"),
-            unitTestSrcFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "test/unit/src"),
-            unitTestDistFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "test/unit/dist"),
-            reportsFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "test/reports"),
-            assetsFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "assets"),
-            assetsSourceFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "assetsSource"),
-            buildFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "build"),
-            packageFolder: this._fileSystem.pathCombine(engineVariables.wwwRootFolder, "node_modules")
-        };
-
-        engineVariables.packageAssetsDirectory = this._assetsFolder;
-        engineVariables.gitIgnore = [];
+        engineVariables.engineRootFolder = this._engineRootFolder;
+        engineVariables.engineAssetsFolder = this._engineAssetsFolder;
+        engineVariables.createDirectories(this._fileSystem, outputDirectory);
 
         if (packageManager === "Yarn") {
             engineVariables.packageManager = new YarnPackageManager(this._logger, this._fileSystem);
         } else {
             engineVariables.packageManager = new NpmPackageManager(this._logger, this._fileSystem);
         }
-
-        engineVariables.htmlNoBundle = {
-            head: [],
-            body: [],
-            separateCss: true,
-            scriptIncludes: []
-        };
-
-        engineVariables.htmlBundle = {
-            head: [],
-            body: [],
-            separateCss: true,
-            scriptIncludes: []
-        };
-
-        engineVariables.e2ePlugins = {};
-
-        engineVariables.transpilePresets = {};
-
-        engineVariables.lintFeatures = {};
-        engineVariables.lintExtends = {};
-        engineVariables.lintPlugins = {};
-        engineVariables.lintEnv = {};
-        engineVariables.lintGlobals = {};
-
-        engineVariables.transpileProperties = {};
 
         return 0;
     }

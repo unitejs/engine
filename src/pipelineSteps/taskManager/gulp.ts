@@ -133,12 +133,12 @@ export class Gulp extends EnginePipelineStepBase {
             try {
                 logger.info("Generating gulp tasks for build in", { gulpTasksFolder: this._tasksFolder });
 
-                const assetTasks = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, "gulp/tasks/");
-                const assetTasksLanguage = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, `gulp/tasks/sourceLanguage/${uniteConfiguration.sourceLanguage.toLowerCase()}/`);
-                const assetTasksBundler = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, `gulp/tasks/bundler/${uniteConfiguration.bundler.toLowerCase()}/`);
-                const assetTasksLinter = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, `gulp/tasks/linter/${uniteConfiguration.linter.toLowerCase()}/`);
-                const assetTasksCssPre = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, `gulp/tasks/cssPre/${uniteConfiguration.cssPre.toLowerCase()}/`);
-                const assetTasksCssPost = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, `gulp/tasks/cssPost/${uniteConfiguration.cssPost.toLowerCase()}/`);
+                const assetTasks = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/");
+                const assetTasksLanguage = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/sourceLanguage/${uniteConfiguration.sourceLanguage.toLowerCase()}/`);
+                const assetTasksBundler = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/bundler/${uniteConfiguration.bundler.toLowerCase()}/`);
+                const assetTasksLinter = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/linter/${uniteConfiguration.linter.toLowerCase()}/`);
+                const assetTasksCssPre = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/cssPre/${uniteConfiguration.cssPre.toLowerCase()}/`);
+                const assetTasksCssPost = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/cssPost/${uniteConfiguration.cssPost.toLowerCase()}/`);
 
                 await this.copyFile(logger, fileSystem, assetTasksLanguage, "build-transpile.js", this._tasksFolder, "build-transpile.js");
                 await this.copyFile(logger, fileSystem, assetTasksBundler, "build-bundle-app.js", this._tasksFolder, "build-bundle-app.js");
@@ -169,15 +169,15 @@ export class Gulp extends EnginePipelineStepBase {
             try {
                 logger.info("Generating gulp tasks for unit in", { gulpTasksFolder: this._tasksFolder });
 
-                const assetUnitTest = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, "gulp/tasks/");
+                const assetUnitTest = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/");
 
-                const assetUnitTestLanguage = fileSystem.pathCombine(engineVariables.packageAssetsDirectory,
+                const assetUnitTestLanguage = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
                                                                      `gulp/tasks/sourceLanguage/${uniteConfiguration.sourceLanguage.toLowerCase()}/`);
 
-                const assetLinter = fileSystem.pathCombine(engineVariables.packageAssetsDirectory,
+                const assetLinter = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
                                                            `gulp/tasks/linter/${uniteConfiguration.linter.toLowerCase()}/`);
 
-                const assetUnitTestRunner = fileSystem.pathCombine(engineVariables.packageAssetsDirectory,
+                const assetUnitTestRunner = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
                                                                    `gulp/tasks/unitTestRunner/${uniteConfiguration.unitTestRunner.toLowerCase()}/`);
 
                 await this.copyFile(logger, fileSystem, assetUnitTest, "unit.js", this._tasksFolder, "unit.js");
@@ -203,15 +203,15 @@ export class Gulp extends EnginePipelineStepBase {
             try {
                 logger.info("Generating gulp tasks for e2e in", { gulpTasksFolder: this._tasksFolder });
 
-                const assetE2eTest = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, "gulp/tasks/");
+                const assetE2eTest = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/");
 
-                const assetUnitTestLanguage = fileSystem.pathCombine(engineVariables.packageAssetsDirectory,
+                const assetUnitTestLanguage = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
                                                                      `gulp/tasks/sourceLanguage/${uniteConfiguration.sourceLanguage.toLowerCase()}/`);
 
-                const assetLinter = fileSystem.pathCombine(engineVariables.packageAssetsDirectory,
+                const assetLinter = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
                                                            `gulp/tasks/linter/${uniteConfiguration.linter.toLowerCase()}/`);
 
-                const assetE2eTestRunner = fileSystem.pathCombine(engineVariables.packageAssetsDirectory,
+                const assetE2eTestRunner = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
                                                                   `gulp/tasks/e2eTestRunner/${uniteConfiguration.e2eTestRunner.toLowerCase()}/`);
 
                 await this.copyFile(logger, fileSystem, assetE2eTest, "e2e.js", this._tasksFolder, "e2e.js");
@@ -236,7 +236,7 @@ export class Gulp extends EnginePipelineStepBase {
             try {
                 logger.info("Generating gulp tasks serve in", { gulpTasksFolder: this._tasksFolder });
 
-                const assetTasksServer = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, `gulp/tasks/server/${uniteConfiguration.server.toLowerCase()}`);
+                const assetTasksServer = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/server/${uniteConfiguration.server.toLowerCase()}`);
 
                 await this.copyFile(logger, fileSystem, assetTasksServer, "serve.js", this._tasksFolder, "serve.js");
 
@@ -256,7 +256,7 @@ export class Gulp extends EnginePipelineStepBase {
             try {
                 logger.info("Generating gulp tasks theme in", { gulpTasksFolder: this._tasksFolder });
 
-                const assetTasksTheme = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, "gulp/tasks/");
+                const assetTasksTheme = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/");
 
                 await this.copyFile(logger, fileSystem, assetTasksTheme, "theme.js", this._tasksFolder, "theme.js");
 
@@ -277,8 +277,8 @@ export class Gulp extends EnginePipelineStepBase {
             try {
                 logger.info("Generating gulp tasks utils in", { gulpUtilFolder: this._utilFolder });
 
-                const assetUtils = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, "gulp/tasks/util/");
-                const assetUtilModuleType = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, `gulp/tasks/moduleType/${uniteConfiguration.moduleType.toLowerCase()}/util/`);
+                const assetUtils = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/util/");
+                const assetUtilModuleType = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/moduleType/${uniteConfiguration.moduleType.toLowerCase()}/util/`);
 
                 await this.copyFile(logger, fileSystem, assetUtils, "async-util.js", this._utilFolder, "async-util.js");
                 await this.copyFile(logger, fileSystem, assetUtils, "bundle.js", this._utilFolder, "bundle.js");

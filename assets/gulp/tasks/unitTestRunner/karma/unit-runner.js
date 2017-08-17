@@ -4,12 +4,30 @@
 const display = require("./util/display");
 const gulp = require("gulp");
 const karma = require("karma");
+const minimist = require("minimist");
+const uc = require("./util/unite-config");
 
-gulp.task("unit-run-test", () => {
+gulp.task("unit-run-test", async () => {
     display.info("Running", "Karma");
 
+    const knownOptions = {
+        "default": {
+            "grep": "*"
+        },
+        "string": [
+            "grep"
+        ]
+    };
+
+    const options = minimist(process.argv.slice(2), knownOptions);
+
+    const uniteConfig = await uc.getUniteConfig();
+
     const server = new karma.Server({
-        "configFile": "../../../karma.conf.js"
+        "configFile": "../../../karma.conf.js",
+        "coverageReporter": {
+            "include": `${uniteConfig.dirs.www.dist}**/${options.grep}.js`
+        }
     }, (exitCode) => {
         if (exitCode !== 0) {
             display.error(`Karma exited with code ${exitCode}`);
@@ -20,13 +38,29 @@ gulp.task("unit-run-test", () => {
     server.start();
 });
 
-gulp.task("unit-run-test-ui", () => {
+gulp.task("unit-run-test-ui", async () => {
     display.info("Running", "Karma");
+
+    const knownOptions = {
+        "default": {
+            "grep": "*"
+        },
+        "string": [
+            "grep"
+        ]
+    };
+
+    const options = minimist(process.argv.slice(2), knownOptions);
+
+    const uniteConfig = await uc.getUniteConfig();
 
     const server = new karma.Server({
         "browsers": ["Chrome"],
         "configFile": "../../../karma.conf.js",
-        "singleRun": false
+        "singleRun": false,
+        "coverageReporter": {
+            "include": `${uniteConfig.dirs.www.dist}**/${options.grep}.js`
+        }
     }, (exitCode) => {
         if (exitCode !== 0) {
             display.error(`Karma exited with code ${exitCode}`);

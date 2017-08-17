@@ -17,7 +17,7 @@ export class ReadMe extends EnginePipelineStepBase {
             if (hasGeneratedMarker) {
                 logger.info(`Generating ${ReadMe.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder});
 
-                const lines = await fileSystem.fileReadLines(engineVariables.packageAssetsDirectory, ReadMe.FILENAME);
+                const lines = await fileSystem.fileReadLines(engineVariables.engineAssetsFolder, ReadMe.FILENAME);
 
                 lines.unshift("");
                 lines.unshift(`# ${uniteConfiguration.title}`);

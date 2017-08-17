@@ -24,8 +24,8 @@ export class YarnPackageManager implements IPackageManager {
 
         return PackageUtils.exec(this._logger, this._fileSystem, "npm", undefined, args)
             .then(viewData => JSON.parse(viewData))
-            .catch(() => {
-                throw new Error("No package information found.");
+            .catch((err) => {
+                throw new Error(`No package information found: ${err}`);
             });
     }
 
@@ -37,7 +37,10 @@ export class YarnPackageManager implements IPackageManager {
             args.push("--dev");
         }
 
-        return PackageUtils.exec(this._logger, this._fileSystem, "yarn", workingDirectory, args);
+        return PackageUtils.exec(this._logger, this._fileSystem, "yarn", workingDirectory, args)
+            .catch((err) => {
+                throw new Error(`Unable to add package: ${err}`);
+            });
     }
 
     public async remove(workingDirectory: string, packageName: string, isDev: boolean): Promise<any> {
@@ -48,6 +51,9 @@ export class YarnPackageManager implements IPackageManager {
             args.push("--dev");
         }
 
-        return PackageUtils.exec(this._logger, this._fileSystem, "yarn", workingDirectory, args);
+        return PackageUtils.exec(this._logger, this._fileSystem, "yarn", workingDirectory, args)
+            .catch((err) => {
+                throw new Error(`Unable to remove package: ${err}`);
+            });
     }
 }

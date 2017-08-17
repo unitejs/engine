@@ -1,9 +1,11 @@
 # v0.8.2
 * Unit Tests and Fixes
-* Unit Test Reports show full coverage not summary
-* Unit Tests now show coverage for all files not just those with tests using karma-coverage-allsources
-* Added Unit Test also outputs lcov
-* Moved reports folder into test
+* Generate App - Unit Test Reports show full coverage not summary
+* Generate App - Unit Tests now show coverage for all files not just those with tests using karma-coverage-allsources
+* Generate App - Added Unit Test also outputs lcov
+* Generate App - Unit Tests can be run with grep command to include only specific tests
+* Generate App - E2E Tests can be run with grep command to include only specific tests
+* Generate App - Moved reports folder into test
 
 # v0.8.1
 * Housekeeping and CI Integration

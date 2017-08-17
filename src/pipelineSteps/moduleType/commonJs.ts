@@ -17,6 +17,7 @@ export class CommonJs extends EnginePipelineStepBase {
             false,
             "app",
             false,
+            undefined,
             uniteConfiguration.moduleType === "CommonJS");
 
         if (uniteConfiguration.moduleType === "CommonJS") {

@@ -8,10 +8,21 @@ const gulp = require("gulp");
 const replace = require("gulp-replace");
 const typescript = require("gulp-typescript");
 const sourcemaps = require("gulp-sourcemaps");
+const minimist = require("minimist");
 
 gulp.task("unit-transpile", async () => {
     display.info("Running", "TypeScript");
 
+    const knownOptions = {
+        "default": {
+            "grep": "*"
+        },
+        "string": [
+            "grep"
+        ]
+    };
+
+    const options = minimist(process.argv.slice(2), knownOptions);    
     const uniteConfig = await uc.getUniteConfig();
 
     const regEx = new RegExp(uniteConfig.srcDistReplace, "g");
@@ -19,7 +30,7 @@ gulp.task("unit-transpile", async () => {
     const tsProject = typescript.createProject("tsconfig.json");
     let errorCount = 0;
 
-    return asyncUtil.stream(gulp.src(`${uniteConfig.dirs.www.unitTestSrc}**/*.spec.{ts,tsx}`)
+    return asyncUtil.stream(gulp.src(`${uniteConfig.dirs.www.unitTestSrc}**/${options.grep}.spec.{ts,tsx}`)
         .pipe(sourcemaps.init())
         .pipe(tsProject())
         .on("error", () => {

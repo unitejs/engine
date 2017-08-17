@@ -34,7 +34,7 @@ export class AssetsSource extends EnginePipelineStepBase {
         }
 
         try {
-            const sourceThemeFolder = fileSystem.pathCombine(engineVariables.packageAssetsDirectory, "assetsSource/theme/");
+            const sourceThemeFolder = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "assetsSource/theme/");
             const destThemeFolder = fileSystem.pathCombine(engineVariables.www.assetsSourceFolder, "theme/");
 
             await super.copyFile(logger, fileSystem, sourceThemeFolder, AssetsSource.FILENAME, destThemeFolder, AssetsSource.FILENAME);

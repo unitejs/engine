@@ -7,14 +7,26 @@ const eslint = require("gulp-eslint");
 const path = require("path");
 const uc = require("./util/unite-config");
 const asyncUtil = require("./util/async-util");
+const minimist = require("minimist");
 
 gulp.task("e2e-lint", async () => {
     display.info("Running", "ESLint");
 
+    const knownOptions = {
+        "default": {
+            "grep": "*"
+        },
+        "string": [
+            "grep"
+        ]
+    };
+
+    const options = minimist(process.argv.slice(2), knownOptions);
+
     const uniteConfig = await uc.getUniteConfig();
 
     let localResolve = null;
-    return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.e2eTestSrc, "**/*.{js,jsx}"))
+    return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.e2eTestSrc, `**/${options.grep}.{js,jsx}`))
         .pipe(eslint())
         .pipe(eslint.format())
         .pipe(eslint.results(result => {

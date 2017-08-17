@@ -8,6 +8,16 @@ import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 
 export class Stylus extends EnginePipelineStepBase {
+    public async prerequisites(logger: ILogger,
+                               fileSystem: IFileSystem,
+                               uniteConfiguration: UniteConfiguration,
+                               engineVariables: EngineVariables): Promise<number> {
+        if (uniteConfiguration.cssPre === "Stylus") {
+            engineVariables.styleLanguageExt = "styl";
+        }
+        return 0;
+    }
+
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["stylus"], uniteConfiguration.cssPre === "Stylus");
 
@@ -16,8 +26,6 @@ export class Stylus extends EnginePipelineStepBase {
                 engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "stylus");
 
                 logger.info("Creating Stylus folder", { cssSrcFolder: engineVariables.www.cssSrcFolder });
-
-                engineVariables.styleLanguageExt = "styl";
 
                 await fileSystem.directoryCreate(engineVariables.www.cssSrcFolder);
                 await fileSystem.directoryCreate(engineVariables.www.cssDistFolder);

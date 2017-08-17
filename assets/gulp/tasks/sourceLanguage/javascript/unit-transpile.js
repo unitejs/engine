@@ -8,9 +8,21 @@ const asyncUtil = require("./util/async-util");
 const replace = require("gulp-replace");
 const babel = require("gulp-babel");
 const sourcemaps = require("gulp-sourcemaps");
+const minimist = require("minimist");
 
 gulp.task("unit-transpile", async () => {
     display.info("Running", "Babel");
+
+    const knownOptions = {
+        "default": {
+            "grep": "*"
+        },
+        "string": [
+            "grep"
+        ]
+    };
+
+    const options = minimist(process.argv.slice(2), knownOptions);
 
     const uniteConfig = await uc.getUniteConfig();
 
@@ -18,7 +30,7 @@ gulp.task("unit-transpile", async () => {
 
     const regEx = new RegExp(uniteConfig.srcDistReplace, "g");
 
-    return asyncUtil.stream(gulp.src(`${uniteConfig.dirs.www.unitTestSrc}**/*.spec.{js,jsx}`)
+    return asyncUtil.stream(gulp.src(`${uniteConfig.dirs.www.unitTestSrc}**/${options.grep}.spec.{js,jsx}`)
         .pipe(sourcemaps.init())
         .pipe(babel())
         .on("error", (err) => {

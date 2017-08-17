@@ -28,6 +28,7 @@ export class React extends SharedAppFramework {
             false,
             "both",
             false,
+            undefined,
             uniteConfiguration.applicationFramework === "React");
 
         engineVariables.toggleClientPackage(
@@ -37,6 +38,7 @@ export class React extends SharedAppFramework {
             false,
             "both",
             false,
+            undefined,
             uniteConfiguration.applicationFramework === "React");
 
         engineVariables.toggleClientPackage(
@@ -46,6 +48,7 @@ export class React extends SharedAppFramework {
             false,
             "both",
             false,
+            undefined,
             uniteConfiguration.applicationFramework === "React");
 
         engineVariables.transpilePresets.react = uniteConfiguration.applicationFramework === "React" && uniteConfiguration.sourceLanguage === "JavaScript";
@@ -56,7 +59,7 @@ export class React extends SharedAppFramework {
         engineVariables.transpileProperties.jsx = {required: uniteConfiguration.applicationFramework === "React" && uniteConfiguration.sourceLanguage === "TypeScript", object: "react"};
 
         if (uniteConfiguration.applicationFramework === "React") {
-            const codeExtension = uniteConfiguration.sourceLanguage === "JavaScript" ? "!jsx" : "!tsx";
+            const codeExtension = `!${engineVariables.sourceLanguageExt}x`;
             let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [
                 `app${codeExtension}`,
                 `child/child${codeExtension}`,
@@ -74,6 +77,8 @@ export class React extends SharedAppFramework {
                     }
                 }
             }
+
+            return ret;
         }
 
         return 0;

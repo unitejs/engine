@@ -8,6 +8,16 @@ import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 
 export class Sass extends EnginePipelineStepBase {
+    public async prerequisites(logger: ILogger,
+                               fileSystem: IFileSystem,
+                               uniteConfiguration: UniteConfiguration,
+                               engineVariables: EngineVariables): Promise<number> {
+        if (uniteConfiguration.cssPre === "Sass") {
+            engineVariables.styleLanguageExt = "scss";
+        }
+        return 0;
+    }
+
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["node-sass"], uniteConfiguration.cssPre === "Sass");
 
@@ -16,8 +26,6 @@ export class Sass extends EnginePipelineStepBase {
                 engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "sass");
 
                 logger.info("Creating Sass folder", { cssSrcFolder: engineVariables.www.cssSrcFolder });
-
-                engineVariables.styleLanguageExt = "scss";
 
                 await fileSystem.directoryCreate(engineVariables.www.cssSrcFolder);
                 await fileSystem.directoryCreate(engineVariables.www.cssDistFolder);

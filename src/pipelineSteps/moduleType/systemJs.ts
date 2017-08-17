@@ -16,6 +16,7 @@ export class SystemJs extends EnginePipelineStepBase {
             false,
             "app",
             false,
+            undefined,
             uniteConfiguration.moduleType === "SystemJS");
 
         engineVariables.toggleClientPackage(
@@ -25,6 +26,7 @@ export class SystemJs extends EnginePipelineStepBase {
             false,
             "both",
             false,
+            undefined,
             uniteConfiguration.moduleType === "SystemJS");
 
         if (uniteConfiguration.moduleType === "SystemJS") {

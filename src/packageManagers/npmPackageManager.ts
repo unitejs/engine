@@ -23,8 +23,8 @@ export class NpmPackageManager implements IPackageManager {
 
         return PackageUtils.exec(this._logger, this._fileSystem, "npm", undefined, args)
             .then(viewData => JSON.parse(viewData))
-            .catch(() => {
-                throw new Error("No package information found.");
+            .catch((err) => {
+                throw new Error(`No package information found: ${err}`);
             });
     }
 
@@ -41,7 +41,7 @@ export class NpmPackageManager implements IPackageManager {
 
         return PackageUtils.exec(this._logger, this._fileSystem, "npm", workingDirectory, args)
             .catch((err) => {
-                throw err;
+                throw new Error(`Unable to add package: ${err}`);
             });
     }
 
@@ -58,7 +58,7 @@ export class NpmPackageManager implements IPackageManager {
 
         return PackageUtils.exec(this._logger, this._fileSystem, "npm", workingDirectory, args)
             .catch((err) => {
-                throw err;
+                throw new Error(`Unable to remove package: ${err}`);
             });
     }
 }

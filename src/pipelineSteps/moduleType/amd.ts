@@ -16,6 +16,7 @@ export class Amd extends EnginePipelineStepBase {
             false,
             "app",
             false,
+            undefined,
             uniteConfiguration.moduleType === "AMD");
 
         engineVariables.toggleClientPackage(
@@ -25,6 +26,7 @@ export class Amd extends EnginePipelineStepBase {
             false,
             "both",
             false,
+            undefined,
             uniteConfiguration.moduleType === "AMD");
 
         if (uniteConfiguration.moduleType === "AMD") {

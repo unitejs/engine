@@ -27,24 +27,39 @@ export abstract class EnginePipelineStepBase implements IEnginePipelineStep {
                           sourceFolder: string,
                           sourceFilename: string,
                           destFolder: string,
-                          destFilename: string): Promise<void> {
-        const hasGeneratedMarker = await this.fileHasGeneratedMarker(fileSystem, destFolder, destFilename);
+                          destFilename: string): Promise<number> {
+        const sourceFileExists = await fileSystem.fileExists(sourceFolder, sourceFilename);
 
-        if (hasGeneratedMarker) {
-            logger.info(`Copying ${sourceFilename}`, { from: sourceFolder, to: destFolder });
+        if (sourceFileExists) {
+            const hasGeneratedMarker = await this.fileHasGeneratedMarker(fileSystem, destFolder, destFilename);
 
-            const folderWithFile = fileSystem.pathCombine(destFolder, destFilename);
-            const folderOnly = fileSystem.pathGetDirectory(folderWithFile);
-            const dirExists = await fileSystem.directoryExists(folderOnly);
-            if (!dirExists) {
-                await fileSystem.directoryCreate(folderOnly);
+            if (hasGeneratedMarker) {
+                logger.info(`Copying ${sourceFilename}`, { from: sourceFolder, to: destFolder });
+
+                try {
+                    // We recombine this as sometimes the filename contains more folders
+                    const folderWithFile = fileSystem.pathCombine(destFolder, destFilename);
+                    const folderOnly = fileSystem.pathGetDirectory(folderWithFile);
+                    const dirExists = await fileSystem.directoryExists(folderOnly);
+                    if (!dirExists) {
+                        await fileSystem.directoryCreate(folderOnly);
+                    }
+
+                    const buffer = await fileSystem.fileReadBinary(sourceFolder, sourceFilename);
+                    await fileSystem.fileWriteBinary(destFolder, destFilename, buffer);
+                } catch (err) {
+                    logger.error(`Copying ${sourceFilename} failed`, err, { from: sourceFolder, to: destFolder });
+                    return 1;
+                }
+            } else {
+                logger.info(`Skipping ${sourceFilename} as it has no generated marker`,
+                            { from: sourceFolder, to: destFolder });
             }
-
-            const buffer = await fileSystem.fileReadBinary(sourceFolder, sourceFilename);
-            await fileSystem.fileWriteBinary(destFolder, destFilename, buffer);
+            return 0;
         } else {
-            logger.info(`Skipping ${sourceFilename} as it has no generated marker`,
-                        { from: sourceFolder, to: destFolder });
+            logger.error(`${sourceFilename} does not exist`,
+                         { folder: sourceFolder, file: sourceFilename });
+            return 1;
         }
     }
 
@@ -82,11 +97,9 @@ export abstract class EnginePipelineStepBase implements IEnginePipelineStep {
             if (exists) {
                 const existingLines = await fileSystem.fileReadLines(folder, filename);
                 // Test the last few lines in case there are line breaks
-                if (existingLines) {
-                    hasMarker = false;
-                    for (let i = existingLines.length - 1; i >= 0 && i >= existingLines.length - 5 && !hasMarker; i--) {
-                        hasMarker = existingLines[i].indexOf(EnginePipelineStepBase.MARKER) >= 0;
-                    }
+                hasMarker = false;
+                for (let i = existingLines.length - 1; i >= 0 && i >= existingLines.length - 5 && !hasMarker; i--) {
+                    hasMarker = existingLines[i].indexOf(EnginePipelineStepBase.MARKER) >= 0;
                 }
             }
             return hasMarker;

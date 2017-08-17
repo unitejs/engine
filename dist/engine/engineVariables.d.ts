@@ -1,6 +1,7 @@
 /**
  * Variables used by the engine.
  */
+import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
 import { ISpdxLicense } from "../configuration/models/spdx/ISpdxLicense";
 import { IncludeMode } from "../configuration/models/unite/includeMode";
@@ -9,7 +10,8 @@ import { UniteConfiguration } from "../configuration/models/unite/uniteConfigura
 import { IPackageManager } from "../interfaces/IPackageManager";
 import { EngineVariablesHtml } from "./engineVariablesHtml";
 export declare class EngineVariables {
-    coreFolder: string;
+    engineRootFolder: string;
+    engineAssetsFolder: string;
     rootFolder: string;
     wwwRootFolder: string;
     packagedRootFolder: string;
@@ -30,7 +32,6 @@ export declare class EngineVariables {
         assetsFolder: string;
         assetsSourceFolder: string;
     };
-    packageAssetsDirectory: string;
     sourceLanguageExt: string;
     styleLanguageExt: string;
     gitIgnore: string[];
@@ -74,7 +75,8 @@ export declare class EngineVariables {
     private _requiredClientPackages;
     private _removedClientPackages;
     constructor();
-    toggleClientPackage(name: string, main: string, mainMinified: string, preload: boolean, includeMode: IncludeMode, isPackage: boolean, required: boolean): void;
+    createDirectories(fileSystem: IFileSystem, rootFolder: string): void;
+    toggleClientPackage(name: string, main: string, mainMinified: string, preload: boolean, includeMode: IncludeMode, isPackage: boolean, assets: string, required: boolean): void;
     getTestClientPackages(): {
         [id: string]: UniteClientPackage;
     };

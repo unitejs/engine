@@ -65,7 +65,7 @@ export class Aurelia extends SharedAppFramework {
             location += "amd/";
         } else if (uniteConfiguration.moduleType === "CommonJS") {
             location += "commonjs/";
-        } else if (uniteConfiguration.moduleType === "SystemJS") {
+        } else {
             location += "system/";
         }
 
@@ -107,6 +107,7 @@ export class Aurelia extends SharedAppFramework {
             false,
             "both",
             false,
+            undefined,
             uniteConfiguration.applicationFramework === "Aurelia");
     }
 
@@ -123,6 +124,7 @@ export class Aurelia extends SharedAppFramework {
                 false,
                 "both",
                 clientPackage.isPackage ? true : false,
+                undefined,
                 uniteConfiguration.applicationFramework === "Aurelia");
         });
     }

@@ -7,13 +7,25 @@ const tslint = require("gulp-tslint");
 const path = require("path");
 const uc = require("./util/unite-config");
 const asyncUtil = require("./util/async-util");
+const minimist = require("minimist");
 
 gulp.task("unit-lint", async () => {
     display.info("Running", "TSLint");
 
+    const knownOptions = {
+        "default": {
+            "grep": "*"
+        },
+        "string": [
+            "grep"
+        ]
+    };
+
+    const options = minimist(process.argv.slice(2), knownOptions);
+
     const uniteConfig = await uc.getUniteConfig();
 
-    return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.unitTestSrc, "**/*{ts,tsx}"))
+    return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.unitTestSrc, `**/${options.grep}.{ts,tsx}`))
         .pipe(tslint({"formatter": "verbose"}))
         .pipe(tslint.report())
         .on("error", () => {

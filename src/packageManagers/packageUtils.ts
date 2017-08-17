@@ -36,7 +36,7 @@ export class PackageUtils {
                 if (exitCode === 0) {
                     resolve(finalData);
                 } else {
-                    reject();
+                    reject(exitCode);
                 }
             });
         });

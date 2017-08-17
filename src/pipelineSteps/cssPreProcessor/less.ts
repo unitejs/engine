@@ -8,6 +8,16 @@ import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 
 export class Less extends EnginePipelineStepBase {
+    public async prerequisites(logger: ILogger,
+                               fileSystem: IFileSystem,
+                               uniteConfiguration: UniteConfiguration,
+                               engineVariables: EngineVariables): Promise<number> {
+        if (uniteConfiguration.cssPre === "Less") {
+            engineVariables.styleLanguageExt = "less";
+        }
+        return 0;
+    }
+
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["less"], uniteConfiguration.cssPre === "Less");
 
@@ -16,8 +26,6 @@ export class Less extends EnginePipelineStepBase {
                 engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "less");
 
                 logger.info("Creating Less folder", { cssSrcFolder: engineVariables.www.cssSrcFolder });
-
-                engineVariables.styleLanguageExt = "less";
 
                 await fileSystem.directoryCreate(engineVariables.www.cssSrcFolder);
                 await fileSystem.directoryCreate(engineVariables.www.cssDistFolder);

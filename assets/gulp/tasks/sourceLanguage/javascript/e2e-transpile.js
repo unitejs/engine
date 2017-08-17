@@ -7,15 +7,27 @@ const gulp = require("gulp");
 const babel = require("gulp-babel");
 const sourcemaps = require("gulp-sourcemaps");
 const asyncUtil = require("./util/async-util");
+const minimist = require("minimist");
 
 gulp.task("e2e-transpile", async () => {
     display.info("Running", "Babel");
+
+    const knownOptions = {
+        "default": {
+            "grep": "*"
+        },
+        "string": [
+            "grep"
+        ]
+    };
+
+    const options = minimist(process.argv.slice(2), knownOptions);
 
     const uniteConfig = await uc.getUniteConfig();
 
     let errorCount = 0;
 
-    return asyncUtil.stream(gulp.src(`${uniteConfig.dirs.www.e2eTestSrc}**/*.spec.{js,jsx}`)
+    return asyncUtil.stream(gulp.src(`${uniteConfig.dirs.www.e2eTestSrc}**/${options.grep}.spec.{js,jsx}`)
         .pipe(sourcemaps.init())
         .pipe(babel({
             "babelrc": false,
