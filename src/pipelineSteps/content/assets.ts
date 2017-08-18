@@ -7,7 +7,7 @@ import { UniteConfiguration } from "../../configuration/models/unite/uniteConfig
 import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 
-export class AssetsSource extends EnginePipelineStepBase {
+export class Assets extends EnginePipelineStepBase {
     private static FILENAME: string = "logo-tile.svg";
     private static FILENAME2: string = "logo-transparent.svg";
 
@@ -15,9 +15,9 @@ export class AssetsSource extends EnginePipelineStepBase {
         engineVariables.toggleDevDependency(["unitejs-image-cli"], true);
 
         try {
-            logger.info("Creating Directory", { assetsSourceFolder: engineVariables.www.assetsSourceFolder });
+            logger.info("Creating Directory", { assetsSrcFolder: engineVariables.www.assetsSrcFolder });
 
-            await fileSystem.directoryCreate(engineVariables.www.assetsSourceFolder);
+            await fileSystem.directoryCreate(engineVariables.www.assetsSrcFolder);
         } catch (err) {
             logger.error("Creating Assets Source folder failed", err);
             return 1;
@@ -34,13 +34,16 @@ export class AssetsSource extends EnginePipelineStepBase {
         }
 
         try {
-            const sourceThemeFolder = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "assetsSource/theme/");
-            const destThemeFolder = fileSystem.pathCombine(engineVariables.www.assetsSourceFolder, "theme/");
+            const sourceThemeFolder = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "assetsSrc/theme/");
+            const destThemeFolder = fileSystem.pathCombine(engineVariables.www.assetsSrcFolder, "theme/");
 
-            await super.copyFile(logger, fileSystem, sourceThemeFolder, AssetsSource.FILENAME, destThemeFolder, AssetsSource.FILENAME);
-            await super.copyFile(logger, fileSystem, sourceThemeFolder, AssetsSource.FILENAME2, destThemeFolder, AssetsSource.FILENAME2);
+            let ret = await super.copyFile(logger, fileSystem, sourceThemeFolder, Assets.FILENAME, destThemeFolder, Assets.FILENAME);
 
-            return 0;
+            if (ret === 0) {
+                ret = await super.copyFile(logger, fileSystem, sourceThemeFolder, Assets.FILENAME2, destThemeFolder, Assets.FILENAME2);
+            }
+
+            return ret;
         } catch (err) {
             logger.error("Copy Assets failed", err);
             return 1;

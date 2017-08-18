@@ -1,8 +1,14 @@
 /**
  * Pipeline step to generate scaffolding for React application.
  */
+import { ArrayHelper } from "unitejs-framework/dist/helpers/arrayHelper";
+import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
+import { BabelConfiguration } from "../../configuration/models/babel/babelConfiguration";
+import { EsLintConfiguration } from "../../configuration/models/eslint/esLintConfiguration";
+import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
+import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
 import { SharedAppFramework } from "./sharedAppFramework";
@@ -16,10 +22,7 @@ export class React extends SharedAppFramework {
                                             uniteConfiguration.applicationFramework === "React" && uniteConfiguration.sourceLanguage === "TypeScript");
 
         engineVariables.toggleDevDependency(["unitejs-react-protractor-plugin"], uniteConfiguration.applicationFramework === "React" && uniteConfiguration.e2eTestRunner === "Protractor");
-        engineVariables.e2ePlugins["unitejs-react-protractor-plugin"] = uniteConfiguration.applicationFramework === "React" && uniteConfiguration.e2eTestRunner === "Protractor";
-
         engineVariables.toggleDevDependency(["unitejs-react-webdriver-plugin"], uniteConfiguration.applicationFramework === "React" && uniteConfiguration.e2eTestRunner === "WebdriverIO");
-        engineVariables.e2ePlugins["unitejs-react-webdriver-plugin"] = uniteConfiguration.applicationFramework === "React" && uniteConfiguration.e2eTestRunner === "WebdriverIO";
 
         engineVariables.toggleClientPackage(
             "react",
@@ -51,14 +54,33 @@ export class React extends SharedAppFramework {
             undefined,
             uniteConfiguration.applicationFramework === "React");
 
-        engineVariables.transpilePresets.react = uniteConfiguration.applicationFramework === "React" && uniteConfiguration.sourceLanguage === "JavaScript";
-        engineVariables.lintFeatures.jsx = { required: uniteConfiguration.applicationFramework === "React" && uniteConfiguration.linter === "ESLint", object: true };
-        engineVariables.lintExtends["plugin:react/recommended"] = uniteConfiguration.applicationFramework === "React" && uniteConfiguration.linter === "ESLint";
-        engineVariables.lintPlugins.react = uniteConfiguration.applicationFramework === "React" && uniteConfiguration.linter === "ESLint";
+        const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
+        if (esLintConfiguration) {
+            esLintConfiguration.parserOptions.ecmaFeatures.jsx = uniteConfiguration.applicationFramework === "React";
+            ArrayHelper.addRemove(esLintConfiguration.extends, "plugin:react/recommended", uniteConfiguration.applicationFramework === "React");
+            ArrayHelper.addRemove(esLintConfiguration.plugins, "react", uniteConfiguration.applicationFramework === "React");
+        }
 
-        engineVariables.transpileProperties.jsx = {required: uniteConfiguration.applicationFramework === "React" && uniteConfiguration.sourceLanguage === "TypeScript", object: "react"};
+        const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
+        if (babelConfiguration) {
+            ArrayHelper.addRemove(babelConfiguration.presets, "react", uniteConfiguration.applicationFramework === "React");
+        }
+
+        const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
+        if (typeScriptConfiguration) {
+            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "jsx", "react", uniteConfiguration.applicationFramework === "React");
+        }
 
         if (uniteConfiguration.applicationFramework === "React") {
+            const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
+            if (protractorConfiguration) {
+                protractorConfiguration.plugins.push({ path: "unitejs-react-protractor-plugin" });
+            }
+            const webdriverIoPlugins = engineVariables.getConfiguration<string[]>("WebdriverIO.Plugins");
+            if (webdriverIoPlugins) {
+                webdriverIoPlugins.push("unitejs-react-webdriver-plugin");
+            }
+
             const codeExtension = `!${engineVariables.sourceLanguageExt}x`;
             let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [
                 `app${codeExtension}`,

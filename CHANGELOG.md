@@ -6,6 +6,8 @@
 * Generate App - Unit Tests can be run with grep command to include only specific tests
 * Generate App - E2E Tests can be run with grep command to include only specific tests
 * Generate App - Moved reports folder into test
+* Renamed AssetsSource to AssetSrc for consistency
+* LICENSE file has year substituted in
 
 # v0.8.1
 * Housekeeping and CI Integration

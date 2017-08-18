@@ -5,6 +5,10 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
+import { BabelConfiguration } from "../../../../../dist/configuration/models/babel/babelConfiguration";
+import { EsLintConfiguration } from "../../../../../dist/configuration/models/eslint/esLintConfiguration";
+import { ProtractorConfiguration } from "../../../../../dist/configuration/models/protractor/protractorConfiguration";
+import { TypeScriptConfiguration } from "../../../../../dist/configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../../dist/engine/engineVariables";
 import { React } from "../../../../../dist/pipelineSteps/applicationFramework/react";
@@ -46,8 +50,11 @@ describe("React", () => {
         engineVariablesStub.sourceLanguageExt = "js";
         engineVariablesStub.styleLanguageExt = "css";
         engineVariablesStub.engineAssetsFolder = "./assets/";
-        engineVariablesStub.createDirectories(fileSystemMock, "./test/unit/temp");
+        engineVariablesStub.setupDirectories(fileSystemMock, "./test/unit/temp");
         engineVariablesStub.findDependencyVersion = sandbox.stub().returns("1.2.3");
+        engineVariablesStub.setConfiguration("Protractor", { plugins: []});
+        engineVariablesStub.setConfiguration("ESLint", { parserOptions: { ecmaFeatures: {}}, extends: [], env: {}, globals: {}, rules: {}, plugins: []});
+        engineVariablesStub.setConfiguration("Babel", { presets: []});
     });
 
     afterEach(async () => {
@@ -66,16 +73,16 @@ describe("React", () => {
             uniteConfigurationStub.applicationFramework = "PlainApp";
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.e2ePlugins["unitejs-react-protractor-plugin"]).to.be.equal(false);
-            Chai.expect(engineVariablesStub.e2ePlugins["unitejs-react-webdriver-plugin"]).to.be.equal(false);
+            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins")).to.be.equal(undefined);
         });
 
         it("can be called with application framework matching and javascript", async () => {
             const obj = new React();
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.e2ePlugins["unitejs-react-protractor-plugin"]).to.be.equal(true);
-            Chai.expect(engineVariablesStub.e2ePlugins["unitejs-react-webdriver-plugin"]).to.be.equal(false);
+            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(1);
+            Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins")).to.be.equal(undefined);
 
             const packageJsonDependencies: { [id: string]: string } = {};
             const packageJsonDevDependencies: { [id: string]: string } = {};
@@ -93,22 +100,36 @@ describe("React", () => {
             Chai.expect(packageJsonDevDependencies["babel-preset-react"]).to.be.equal("1.2.3");
             Chai.expect(packageJsonDevDependencies["eslint-plugin-react"]).to.be.equal("1.2.3");
 
-            Chai.expect(engineVariablesStub.transpilePresets.react).to.be.equal(true);
-            Chai.expect(engineVariablesStub.lintFeatures.jsx.required).to.be.equal(true);
-            Chai.expect(engineVariablesStub.lintExtends["plugin:react/recommended"]).to.be.equal(true);
-            Chai.expect(engineVariablesStub.lintPlugins.react).to.be.equal(true);
-            Chai.expect(engineVariablesStub.transpileProperties.jsx.required).to.be.equal(false);
+            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").presets).contains("react");
+            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parserOptions.ecmaFeatures.jsx).to.be.equal(true);
+            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").extends).contains("plugin:react/recommended");
+            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").plugins).contains("react");
+            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript")).to.be.equal(undefined);
+        });
+
+        it("can be called with application framework matching and webdriverio", async () => {
+            engineVariablesStub.setConfiguration("Protractor", undefined);
+            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", []);
+            const obj = new React();
+            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor")).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins").length).to.be.equal(1);
         });
 
         it("can be called with application framework matching and typescript", async () => {
+            engineVariablesStub.setConfiguration("ESLint", undefined);
+            engineVariablesStub.setConfiguration("Babel", undefined);
+            engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {}});
+
             const obj = new React();
             uniteConfigurationStub.sourceLanguage = "TypeScript";
             uniteConfigurationStub.linter = "TSLint";
             engineVariablesStub.sourceLanguageExt = "ts";
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.e2ePlugins["unitejs-react-protractor-plugin"]).to.be.equal(true);
-            Chai.expect(engineVariablesStub.e2ePlugins["unitejs-react-webdriver-plugin"]).to.be.equal(false);
+            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(1);
+            Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins")).to.be.equal(undefined);
 
             const packageJsonDependencies: { [id: string]: string } = {};
             const packageJsonDevDependencies: { [id: string]: string } = {};
@@ -126,11 +147,11 @@ describe("React", () => {
             Chai.expect(packageJsonDevDependencies["babel-preset-react"]).to.be.equal(undefined);
             Chai.expect(packageJsonDevDependencies["eslint-plugin-react"]).to.be.equal(undefined);
 
-            Chai.expect(engineVariablesStub.transpilePresets.react).to.be.equal(false);
-            Chai.expect(engineVariablesStub.lintFeatures.jsx.required).to.be.equal(false);
-            Chai.expect(engineVariablesStub.lintExtends["plugin:react/recommended"]).to.be.equal(false);
-            Chai.expect(engineVariablesStub.lintPlugins.react).to.be.equal(false);
-            Chai.expect(engineVariablesStub.transpileProperties.jsx.required).to.be.equal(true);
+            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel")).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint")).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint")).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint")).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.jsx).to.be.equal("react");
         });
 
         it("can fail with no source", async () => {

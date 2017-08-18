@@ -14,7 +14,7 @@ export class Gulp extends EnginePipelineStepBase {
     private _tasksFolder: string;
     private _utilFolder: string;
 
-    public async prerequisites(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : Promise<number> {
+    public async preProcess(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : Promise<number> {
         this._buildFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "build");
         this._tasksFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "build/tasks");
         this._utilFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "build/tasks/util");
@@ -128,6 +128,7 @@ export class Gulp extends EnginePipelineStepBase {
         engineVariables.toggleDevDependency(["gulp-sass"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPre === "Sass");
         engineVariables.toggleDevDependency(["gulp-stylus"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPre === "Stylus");
         engineVariables.toggleDevDependency(["gulp-postcss"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPost === "PostCss");
+        engineVariables.toggleDevDependency(["gulp-cssnano"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPost === "None");
 
         if (uniteConfiguration.taskManager === "Gulp") {
             try {

@@ -3,15 +3,16 @@
  */
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
+import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
 import { SharedAppFramework } from "./sharedAppFramework";
 
 export class Aurelia extends SharedAppFramework {
-    public async prerequisites(logger: ILogger,
-                               fileSystem: IFileSystem,
-                               uniteConfiguration: UniteConfiguration,
-                               engineVariables: EngineVariables): Promise<number> {
+    public async preProcess(logger: ILogger,
+                            fileSystem: IFileSystem,
+                            uniteConfiguration: UniteConfiguration,
+                            engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.applicationFramework === "Aurelia") {
             if (uniteConfiguration.bundler === "Browserify" || uniteConfiguration.bundler === "Webpack") {
                 logger.error(`Aurelia does not currently support bundling with ${uniteConfiguration.bundler}`);
@@ -23,14 +24,20 @@ export class Aurelia extends SharedAppFramework {
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["aurelia-protractor-plugin"], uniteConfiguration.applicationFramework === "Aurelia" && uniteConfiguration.e2eTestRunner === "Protractor");
-        engineVariables.e2ePlugins["aurelia-protractor-plugin"] = uniteConfiguration.applicationFramework === "Aurelia" && uniteConfiguration.e2eTestRunner === "Protractor";
-
         engineVariables.toggleDevDependency(["unitejs-aurelia-webdriver-plugin"], uniteConfiguration.applicationFramework === "Aurelia" && uniteConfiguration.e2eTestRunner === "WebdriverIO");
-        engineVariables.e2ePlugins["unitejs-aurelia-webdriver-plugin"] = uniteConfiguration.applicationFramework === "Aurelia" && uniteConfiguration.e2eTestRunner === "WebdriverIO";
 
         this.toggleAllPackages(uniteConfiguration, engineVariables);
 
         if (uniteConfiguration.applicationFramework === "Aurelia") {
+            const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
+            if (protractorConfiguration) {
+                protractorConfiguration.plugins.push({ path: "aurelia-protractor-plugin" });
+            }
+            const webdriverIoPlugins = engineVariables.getConfiguration<string[]>("WebdriverIO.Plugins");
+            if (webdriverIoPlugins) {
+                webdriverIoPlugins.push("unitejs-aurelia-webdriver-plugin");
+            }
+
             let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper", "entryPoint", "child/child"]);
 
             if (ret === 0) {

@@ -3,20 +3,42 @@
  */
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
+import { HtmlTemplateConfiguration } from "../../configuration/models/htmlTemplate/htmlTemplateConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
-import { EngineVariablesHtml } from "../../engine/engineVariablesHtml";
 
 export class HtmlTemplate extends EnginePipelineStepBase {
     private static FILENAME_NO_BUNDLE: string = "index-no-bundle.html";
     private static FILENAME_BUNDLE: string = "index-bundle.html";
 
+    private _htmlNoBundle: HtmlTemplateConfiguration;
+    private _htmlBundle: HtmlTemplateConfiguration;
+
+    public async preProcess(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        this._htmlNoBundle = {
+            head: [],
+            body: [],
+            scriptIncludes: []
+        };
+
+        this._htmlBundle = {
+            head: [],
+            body: [],
+            scriptIncludes: []
+        };
+
+        engineVariables.setConfiguration("HTMLBundle", this._htmlBundle);
+        engineVariables.setConfiguration("HTMLNoBundle", this._htmlNoBundle);
+
+        return 0;
+    }
+
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        let ret = await this.createTemplate(logger, fileSystem, uniteConfiguration, engineVariables, HtmlTemplate.FILENAME_NO_BUNDLE, engineVariables.htmlNoBundle);
+        let ret = await this.createTemplate(logger, fileSystem, uniteConfiguration, engineVariables, HtmlTemplate.FILENAME_NO_BUNDLE, this._htmlNoBundle);
 
         if (ret === 0) {
-            ret = await this.createTemplate(logger, fileSystem, uniteConfiguration, engineVariables, HtmlTemplate.FILENAME_BUNDLE, engineVariables.htmlBundle);
+            ret = await this.createTemplate(logger, fileSystem, uniteConfiguration, engineVariables, HtmlTemplate.FILENAME_BUNDLE, this._htmlBundle);
         }
 
         return ret;
@@ -27,7 +49,7 @@ export class HtmlTemplate extends EnginePipelineStepBase {
                                 uniteConfiguration: UniteConfiguration,
                                 engineVariables: EngineVariables,
                                 filename: string,
-                                engineVariablesHtml: EngineVariablesHtml): Promise<number> {
+                                engineVariablesHtml: HtmlTemplateConfiguration): Promise<number> {
         try {
             const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, filename);
 
@@ -43,18 +65,14 @@ export class HtmlTemplate extends EnginePipelineStepBase {
                 indent++;
                 this.addLine(indent, lines, "<meta charset=\"utf-8\"/>");
                 this.addLine(indent, lines, `<title>${uniteConfiguration.title}</title>`);
-                if (engineVariablesHtml.separateCss) {
-                    this.addLine(indent, lines, "<link rel=\"stylesheet\" href=\"./css/style.css{CACHEBUST}\">");
-                }
+                this.addLine(indent, lines, "<link rel=\"stylesheet\" href=\"./css/style.css{CACHEBUST}\">");
                 lines.push("{THEME}");
 
-                if (engineVariablesHtml.scriptIncludes) {
-                    engineVariablesHtml.scriptIncludes.forEach(scriptInclude => {
-                        const script = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, scriptInclude)));
+                engineVariablesHtml.scriptIncludes.forEach(scriptInclude => {
+                    const script = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, scriptInclude)));
 
-                        this.addLine(indent, lines, `<script src="${script}"></script>`);
-                    });
-                }
+                    this.addLine(indent, lines, `<script src="${script}"></script>`);
+                });
 
                 engineVariablesHtml.head.forEach(head => {
                     this.addLine(indent, lines, head);

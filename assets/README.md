@@ -90,9 +90,9 @@ For configuring options for this task see the [Platforms](#platforms) section.
 
 During the app generation 3 files will have been created, if you change any of them then you should run the task again.
 
-* assetsSource/theme/logo-tile.svg
-* assetsSource/theme/logo-transparent.svg
-* assetsSource/theme/unite-theme.json
+* assetsSrc/theme/logo-tile.svg
+* assetsSrc/theme/logo-transparent.svg
+* assetsSrc/theme/unite-theme.json
 
 The logo-tile.svg image should have a design that works well on a tile, e.g. a white icon with transparent background (the background color can be specified as part of the unite-theme.json configuration).
 

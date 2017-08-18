@@ -43,7 +43,7 @@ export class UniteConfigurationDirectories extends EnginePipelineStepBase {
             uniteConfiguration.dirs.www.build = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.buildFolder));
 
             uniteConfiguration.dirs.www.assets = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.assetsFolder));
-            uniteConfiguration.dirs.www.assetsSource = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.assetsSourceFolder));
+            uniteConfiguration.dirs.www.assetsSrc = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.assetsSrcFolder));
             return 0;
         } catch (err) {
             logger.error("Generating directories configuration failed", err, { wwwFolder: engineVariables.wwwRootFolder });

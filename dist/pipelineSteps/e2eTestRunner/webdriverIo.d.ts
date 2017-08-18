@@ -5,6 +5,10 @@ import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 export declare class WebdriverIo extends EnginePipelineStepBase {
     private static FILENAME;
+    private _configuration;
+    private _plugins;
+    preProcess(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
-    private generateConfig(fileSystem, uniteConfiguration, engineVariables, lines);
+    private configDefaults(fileSystem, engineVariables);
+    private finaliseConfig(fileSystem, uniteConfiguration, engineVariables);
 }

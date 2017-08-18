@@ -1,10 +1,9 @@
 /**
- * Variables used by the engine.
+ * HTML Template Configuration.
  */
 
-export class EngineVariablesHtml {
+export class HtmlTemplateConfiguration {
     public head: string[];
     public body: string[];
-    public separateCss: boolean;
     public scriptIncludes: string[];
 }

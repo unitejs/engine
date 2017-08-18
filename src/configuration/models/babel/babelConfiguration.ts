@@ -24,7 +24,7 @@ export class BabelConfiguration {
     public only: string;
     public parserOpts: {};
     public plugins: string[];
-    public presets: {}[];
+    public presets: any[];
     public retainLines: boolean;
     public resolveModuleSource: string;
     public sourceFileName: string;

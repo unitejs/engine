@@ -8,10 +8,10 @@ import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 
 export class SystemJsBuilder extends EnginePipelineStepBase {
-    public async prerequisites(logger: ILogger,
-                               fileSystem: IFileSystem,
-                               uniteConfiguration: UniteConfiguration,
-                               engineVariables: EngineVariables): Promise<number> {
+    public async preProcess(logger: ILogger,
+                            fileSystem: IFileSystem,
+                            uniteConfiguration: UniteConfiguration,
+                            engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.bundler === "SystemJSBuilder") {
             if (uniteConfiguration.moduleType !== "SystemJS") {
                 logger.error("You can only use SystemJS modules with SystemJSBuilder");

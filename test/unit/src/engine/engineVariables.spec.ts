@@ -36,7 +36,7 @@ describe("EngineVariables", () => {
 
         it("can fail when peer dependencies does not contain package", async() => {
             const obj = new EngineVariables();
-            obj.corePackageJson = <any>{ peerDependencies };
+            obj.enginePackageJson = <any>{ peerDependencies };
             try {
                 obj.toggleClientPackage("package", "main.js", "main.min.js", false, "app", false, undefined, true);
             } catch (err) {
@@ -47,7 +47,7 @@ describe("EngineVariables", () => {
         it("can get added as a dependency contain package", async() => {
             const obj = new EngineVariables();
             peerDependencies.package = "^1.2.3";
-            obj.corePackageJson = <any>{ peerDependencies };
+            obj.enginePackageJson = <any>{ peerDependencies };
             obj.toggleClientPackage("package", "main.js", "main.min.js", false, "app", false, "**/*.css", true);
             obj.buildDependencies(uniteConfiguration, packageJsonDependencies);
             Chai.should().exist(uniteConfiguration.clientPackages.package);
@@ -66,7 +66,7 @@ describe("EngineVariables", () => {
         it("can get removed as a dependency contain package", async() => {
             const obj = new EngineVariables();
             peerDependencies.package = "^1.2.3";
-            obj.corePackageJson = <any>{ peerDependencies };
+            obj.enginePackageJson = <any>{ peerDependencies };
             obj.toggleClientPackage("package", "main.js", "main.min.js", false, "app", false, "**/*.css", false);
             obj.buildDependencies(uniteConfiguration, packageJsonDependencies);
             Chai.should().not.exist(uniteConfiguration.clientPackages.package);
@@ -76,7 +76,7 @@ describe("EngineVariables", () => {
         it("can get added and removed as a dependency contain package", async() => {
             const obj = new EngineVariables();
             peerDependencies.package = "^1.2.3";
-            obj.corePackageJson = <any>{ peerDependencies };
+            obj.enginePackageJson = <any>{ peerDependencies };
             obj.toggleClientPackage("package", "main.js", "main.min.js", false, "app", false, "**/*.css", true);
             obj.toggleClientPackage("package", "main.js", "main.min.js", false, "app", false, "**/*.css", false);
             obj.buildDependencies(uniteConfiguration, packageJsonDependencies);
@@ -103,7 +103,7 @@ describe("EngineVariables", () => {
 
         it("can succeed when app packages have been added", async() => {
             const obj = new EngineVariables();
-            obj.corePackageJson = <any>{ peerDependencies };
+            obj.enginePackageJson = <any>{ peerDependencies };
             peerDependencies.package = "^1.2.3";
             obj.toggleClientPackage("package", "main.js", "main.min.js", false, "app", false, "**/*.css", true);
             const packages = obj.getTestClientPackages();
@@ -112,7 +112,7 @@ describe("EngineVariables", () => {
 
         it("can succeed when test packages have been added", async() => {
             const obj = new EngineVariables();
-            obj.corePackageJson = <any>{ peerDependencies };
+            obj.enginePackageJson = <any>{ peerDependencies };
             peerDependencies.package = "^1.2.3";
             obj.toggleClientPackage("package", "main.js", "main.min.js", false, "test", false, "**/*.css", true);
             const packages = obj.getTestClientPackages();
@@ -121,7 +121,7 @@ describe("EngineVariables", () => {
 
         it("can succeed when both packages have been added", async() => {
             const obj = new EngineVariables();
-            obj.corePackageJson = <any>{ peerDependencies };
+            obj.enginePackageJson = <any>{ peerDependencies };
             peerDependencies.package = "^1.2.3";
             obj.toggleClientPackage("package", "main.js", "main.min.js", false, "both", false, "**/*.css", true);
             const packages = obj.getTestClientPackages();
@@ -141,7 +141,7 @@ describe("EngineVariables", () => {
 
         it("can fail when peer dependencies does not contain package", async() => {
             const obj = new EngineVariables();
-            obj.corePackageJson = <any>{ peerDependencies };
+            obj.enginePackageJson = <any>{ peerDependencies };
             try {
                 obj.toggleDevDependency(["package"], true);
             } catch (err) {
@@ -152,7 +152,7 @@ describe("EngineVariables", () => {
         it("can succeed when adding a dev dependency", async() => {
             const obj = new EngineVariables();
             peerDependencies.package = "^1.2.3";
-            obj.corePackageJson = <any>{ peerDependencies };
+            obj.enginePackageJson = <any>{ peerDependencies };
             obj.toggleDevDependency(["package"], true);
             obj.buildDevDependencies(packageJsonDevDependencies);
             Chai.should().exist(packageJsonDevDependencies.package);
@@ -164,7 +164,7 @@ describe("EngineVariables", () => {
         it("can succeed when adding a dev dependency twice", async() => {
             const obj = new EngineVariables();
             peerDependencies.package = "^1.2.3";
-            obj.corePackageJson = <any>{ peerDependencies };
+            obj.enginePackageJson = <any>{ peerDependencies };
             obj.toggleDevDependency(["package"], true);
             obj.toggleDevDependency(["package"], true);
             obj.buildDevDependencies(packageJsonDevDependencies);
@@ -177,7 +177,7 @@ describe("EngineVariables", () => {
         it("can succeed when removing a dev dependency", async() => {
             const obj = new EngineVariables();
             peerDependencies.package = "^1.2.3";
-            obj.corePackageJson = <any>{ peerDependencies };
+            obj.enginePackageJson = <any>{ peerDependencies };
             obj.toggleDevDependency(["package"], false);
             obj.buildDevDependencies(packageJsonDevDependencies);
             Chai.should().not.exist(packageJsonDevDependencies.package);
@@ -191,7 +191,7 @@ describe("EngineVariables", () => {
         it("can get removed from existing dependencies", async() => {
             const obj = new EngineVariables();
             peerDependencies.package = "^1.2.3";
-            obj.corePackageJson = <any>{ peerDependencies };
+            obj.enginePackageJson = <any>{ peerDependencies };
             obj.toggleClientPackage("package", "main.js", "main.min.js", false, "app", false, "**/*.css", false);
             packageJsonDependencies.package = "blah";
             obj.buildDependencies(uniteConfiguration, packageJsonDependencies);
@@ -200,7 +200,7 @@ describe("EngineVariables", () => {
         it("can get added as a app package", async() => {
             const obj = new EngineVariables();
             peerDependencies.package = "^1.2.3";
-            obj.corePackageJson = <any>{ peerDependencies };
+            obj.enginePackageJson = <any>{ peerDependencies };
             obj.toggleClientPackage("package", "main.js", "main.min.js", false, "app", false, "**/*.css", true);
             obj.buildDependencies(uniteConfiguration, packageJsonDependencies);
             Chai.should().exist(uniteConfiguration.clientPackages.package);
@@ -209,7 +209,7 @@ describe("EngineVariables", () => {
         it("can get added as a app package and removed from dev if it exists", async() => {
             const obj = new EngineVariables();
             peerDependencies.package = "^1.2.3";
-            obj.corePackageJson = <any>{ peerDependencies };
+            obj.enginePackageJson = <any>{ peerDependencies };
             obj.toggleClientPackage("package", "main.js", "main.min.js", false, "app", false, "**/*.css", true);
             obj.toggleDevDependency(["package"], true);
             obj.buildDependencies(uniteConfiguration, packageJsonDependencies);
@@ -221,7 +221,7 @@ describe("EngineVariables", () => {
         it("can get added as a test package", async() => {
             const obj = new EngineVariables();
             peerDependencies.package = "^1.2.3";
-            obj.corePackageJson = <any>{ peerDependencies };
+            obj.enginePackageJson = <any>{ peerDependencies };
             obj.toggleClientPackage("package", "main.js", "main.min.js", false, "test", false, "**/*.css", true);
             obj.buildDependencies(uniteConfiguration, packageJsonDependencies);
             Chai.should().exist(uniteConfiguration.clientPackages.package);
@@ -235,7 +235,7 @@ describe("EngineVariables", () => {
         it("can get removed from existing dependencies", async() => {
             const obj = new EngineVariables();
             peerDependencies.package = "^1.2.3";
-            obj.corePackageJson = <any>{ peerDependencies };
+            obj.enginePackageJson = <any>{ peerDependencies };
             obj.toggleDevDependency(["package"], false);
             packageJsonDevDependencies.package = "blah";
             obj.buildDevDependencies(packageJsonDevDependencies);

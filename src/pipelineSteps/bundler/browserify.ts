@@ -8,10 +8,10 @@ import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 
 export class Browserify extends EnginePipelineStepBase {
-    public async prerequisites(logger: ILogger,
-                               fileSystem: IFileSystem,
-                               uniteConfiguration: UniteConfiguration,
-                               engineVariables: EngineVariables): Promise<number> {
+    public async preProcess(logger: ILogger,
+                            fileSystem: IFileSystem,
+                            uniteConfiguration: UniteConfiguration,
+                            engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.bundler === "Browserify") {
             if (uniteConfiguration.moduleType !== "CommonJS") {
                 logger.error("You can only use CommonJS modules with Browserify");

@@ -1,6 +1,7 @@
 /**
  * Pipeline step to generate tslint configuration.
  */
+import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { TsLintConfiguration } from "../../configuration/models/tslint/tsLintConfiguration";
@@ -11,15 +12,31 @@ import { EngineVariables } from "../../engine/engineVariables";
 export class TsLint extends EnginePipelineStepBase {
     private static FILENAME: string = "tslint.json";
 
-    public async prerequisites(logger: ILogger,
-                               fileSystem: IFileSystem,
-                               uniteConfiguration: UniteConfiguration,
-                               engineVariables: EngineVariables): Promise<number> {
+    private _configuration: TsLintConfiguration;
+
+    public async preProcess(logger: ILogger,
+                            fileSystem: IFileSystem,
+                            uniteConfiguration: UniteConfiguration,
+                            engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.linter === "TSLint") {
             if (uniteConfiguration.sourceLanguage !== "TypeScript") {
                 logger.error("You can only use TSLint when the source language is TypeScript");
                 return 1;
             }
+
+            logger.info(`Initialising ${TsLint.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
+
+            try {
+                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, TsLint.FILENAME);
+                if (exists) {
+                    this._configuration = await fileSystem.fileReadJson<TsLintConfiguration>(engineVariables.wwwRootFolder, TsLint.FILENAME);
+                }
+            } catch (err) {
+                logger.error(`Reading existing ${TsLint.FILENAME} failed`, err);
+                return 1;
+            }
+
+            this.configDefaults(engineVariables);
         }
         return 0;
     }
@@ -31,19 +48,8 @@ export class TsLint extends EnginePipelineStepBase {
             try {
                 logger.info(`Generating ${TsLint.FILENAME}`);
 
-                let existing;
-                try {
-                    const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, TsLint.FILENAME);
-                    if (exists) {
-                        existing = await fileSystem.fileReadJson<TsLintConfiguration>(engineVariables.wwwRootFolder, TsLint.FILENAME);
-                    }
-                } catch (err) {
-                    logger.error(`Reading existing ${TsLint.FILENAME} failed`, err);
-                    return 1;
-                }
-
-                const config = this.generateConfig(fileSystem, uniteConfiguration, engineVariables, existing);
-                await fileSystem.fileWriteJson(engineVariables.wwwRootFolder, TsLint.FILENAME, config);
+                this.configFinalise();
+                await fileSystem.fileWriteJson(engineVariables.wwwRootFolder, TsLint.FILENAME, this._configuration);
 
                 return 0;
             } catch (err) {
@@ -55,25 +61,25 @@ export class TsLint extends EnginePipelineStepBase {
         }
     }
 
-    private generateConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, existing: TsLintConfiguration | undefined): TsLintConfiguration {
-        const config = new TsLintConfiguration();
+    private configDefaults(engineVariables: EngineVariables): void {
+        const defaultConfiguration = new TsLintConfiguration();
 
-        config.extends = "tslint:recommended";
-        config.rulesDirectory = [];
-        config.rules = {};
+        defaultConfiguration.extends = "tslint:recommended";
+        defaultConfiguration.rulesDirectory = [];
+        defaultConfiguration.rules = {};
 
-        if (existing) {
-            config.extends = existing.extends || config.extends;
-            config.rulesDirectory = existing.rulesDirectory || config.rulesDirectory;
-            config.rules = existing.rules || config.rules;
+        this._configuration = ObjectHelper.merge(defaultConfiguration, this._configuration);
+
+        engineVariables.setConfiguration("TSLint", this._configuration);
+    }
+
+    private configFinalise(): void {
+        if (!this._configuration.rules["object-literal-sort-keys"]) {
+            this._configuration.rules["object-literal-sort-keys"] = false;
         }
 
-        if (!config.rules["object-literal-sort-keys"]) {
-            config.rules["object-literal-sort-keys"] = false;
-        }
-
-        if (!config.rules["trailing-comma"]) {
-            config.rules["trailing-comma"] = [
+        if (!this._configuration.rules["trailing-comma"]) {
+            this._configuration.rules["trailing-comma"] = [
                 true,
                 {
                     multiline: {
@@ -83,10 +89,8 @@ export class TsLint extends EnginePipelineStepBase {
             ];
         }
 
-        if (!config.rules["no-reference"]) {
-            config.rules["no-reference"] = false;
+        if (!this._configuration.rules["no-reference"]) {
+            this._configuration.rules["no-reference"] = false;
         }
-
-        return config;
     }
 }

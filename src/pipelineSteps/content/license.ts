@@ -14,7 +14,10 @@ export class License extends EnginePipelineStepBase {
         try {
             logger.info(`Generating ${License.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder});
 
-            await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, License.FILENAME, engineVariables.license.licenseText.split("\n"));
+            const yearString = new Date().getFullYear().toString();
+            const replaced = engineVariables.license.licenseText.replace(/<year>/gi, yearString);
+
+            await fileSystem.fileWriteText(engineVariables.wwwRootFolder, License.FILENAME, replaced);
 
             return 0;
         } catch (err) {

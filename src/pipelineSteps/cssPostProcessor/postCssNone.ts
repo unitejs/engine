@@ -9,7 +9,9 @@ import { EngineVariables } from "../../engine/engineVariables";
 
 export class PostCssNone extends EnginePipelineStepBase {
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["cssnano", "gulp-cssnano"], uniteConfiguration.cssPost === "None");
+        logger.info("Generating Post CSS None Configuration");
+
+        engineVariables.toggleDevDependency(["cssnano"], uniteConfiguration.cssPost === "None");
 
         return 0;
     }

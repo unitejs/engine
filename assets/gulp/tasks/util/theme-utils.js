@@ -202,7 +202,7 @@ async function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory
     const images = [
         {
             "command": "svgToPng",
-            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-tile.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSrc, "theme", "logo-tile.svg")}`,
             "destFile": `${path.join(favIconDirectory, "android-chrome-192x192.png")}`,
             "width": 192,
             "height": 192,
@@ -212,7 +212,7 @@ async function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory
         },
         {
             "command": "svgToPng",
-            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-tile.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSrc, "theme", "logo-tile.svg")}`,
             "destFile": `${path.join(favIconDirectory, "android-chrome-512x512.png")}`,
             "width": 512,
             "height": 512,
@@ -222,7 +222,7 @@ async function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory
         },
         {
             "command": "svgToPng",
-            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-tile.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSrc, "theme", "logo-tile.svg")}`,
             "destFile": `${path.join(favIconDirectory, "apple-touch-icon.png")}`,
             "width": 180,
             "height": 180,
@@ -232,7 +232,7 @@ async function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory
         },
         {
             "command": "svgToPng",
-            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-tile.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSrc, "theme", "logo-tile.svg")}`,
             "destFile": `${path.join(favIconDirectory, "mstile-70x70.png")}`,
             "width": 128,
             "height": 128,
@@ -241,7 +241,7 @@ async function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory
         },
         {
             "command": "svgToPng",
-            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-tile.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSrc, "theme", "logo-tile.svg")}`,
             "destFile": `${path.join(favIconDirectory, "mstile-144x144.png")}`,
             "width": 144,
             "height": 144,
@@ -250,7 +250,7 @@ async function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory
         },
         {
             "command": "svgToPng",
-            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-tile.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSrc, "theme", "logo-tile.svg")}`,
             "destFile": `${path.join(favIconDirectory, "mstile-150x150.png")}`,
             "width": 270,
             "height": 270,
@@ -259,7 +259,7 @@ async function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory
         },
         {
             "command": "svgToPng",
-            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-tile.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSrc, "theme", "logo-tile.svg")}`,
             "destFile": `${path.join(favIconDirectory, "mstile-310x150.png")}`,
             "width": 558,
             "height": 270,
@@ -268,7 +268,7 @@ async function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory
         },
         {
             "command": "svgToPng",
-            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-tile.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSrc, "theme", "logo-tile.svg")}`,
             "destFile": `${path.join(favIconDirectory, "mstile-310x310.png")}`,
             "width": 558,
             "height": 558,
@@ -277,26 +277,26 @@ async function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory
         },
         {
             "command": "svgToMask",
-            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-tile.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSrc, "theme", "logo-tile.svg")}`,
             "destFile": `${path.join(favIconDirectory, "safari-pinned-tab.svg")}`
         },
         {
             "command": "svgToPng",
-            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-transparent.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSrc, "theme", "logo-transparent.svg")}`,
             "destFile": `${path.join(favIconDirectory, "favicon-16x16.png")}`,
             "width": 16,
             "height": 16
         },
         {
             "command": "svgToPng",
-            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-transparent.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSrc, "theme", "logo-transparent.svg")}`,
             "destFile": `${path.join(favIconDirectory, "favicon-32x32.png")}`,
             "width": 32,
             "height": 32
         },
         {
             "command": "svgToPng",
-            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-transparent.svg")}`,
+            "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSrc, "theme", "logo-transparent.svg")}`,
             "destFile": `${path.join(favIconDirectory, "favicon-48x48.png")}`,
             "width": 48,
             "height": 48

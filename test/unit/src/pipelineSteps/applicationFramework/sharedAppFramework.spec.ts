@@ -81,7 +81,7 @@ describe("SharedAppFramework", () => {
         engineVariablesStub.sourceLanguageExt = "js";
         engineVariablesStub.styleLanguageExt = "css";
         engineVariablesStub.engineAssetsFolder = "./assets/";
-        engineVariablesStub.createDirectories(fileSystemMock, "./test/unit/temp");
+        engineVariablesStub.setupDirectories(fileSystemMock, "./test/unit/temp");
         engineVariablesStub.findDependencyVersion = sandbox.stub().returns("1.2.3");
     });
 

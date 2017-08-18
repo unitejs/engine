@@ -1,6 +1,7 @@
 /**
  * Pipeline step to generate unite-theme.json.
  */
+import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
@@ -15,7 +16,7 @@ export class UniteThemeConfigurationJson extends EnginePipelineStepBase {
         try {
             logger.info(`Generating ${UniteThemeConfigurationJson.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder});
 
-            const sourceThemeFolder = fileSystem.pathCombine(engineVariables.www.assetsSourceFolder, "theme/");
+            const sourceThemeFolder = fileSystem.pathCombine(engineVariables.www.assetsSrcFolder, "theme/");
 
             let existing;
             try {
@@ -39,7 +40,7 @@ export class UniteThemeConfigurationJson extends EnginePipelineStepBase {
     }
 
     private generateConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, existing: UniteThemeConfiguration | undefined): UniteThemeConfiguration {
-        const config = new UniteThemeConfiguration();
+        let config = new UniteThemeConfiguration();
 
         config.metaDescription = uniteConfiguration.title;
         config.metaKeywords = uniteConfiguration.title.split(" ");
@@ -49,9 +50,7 @@ export class UniteThemeConfigurationJson extends EnginePipelineStepBase {
         config.backgroundColor = "#339933";
         config.themeColor = "#339933";
 
-        if (existing) {
-            Object.assign(config, existing);
-        }
+        config = ObjectHelper.merge(config, existing);
 
         return config;
     }

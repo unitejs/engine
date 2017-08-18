@@ -1,6 +1,7 @@
 /**
  * Variables used by the engine.
  */
+import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
 import { ISpdxLicense } from "../configuration/models/spdx/ISpdxLicense";
@@ -8,11 +9,11 @@ import { IncludeMode } from "../configuration/models/unite/includeMode";
 import { UniteClientPackage } from "../configuration/models/unite/uniteClientPackage";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { IPackageManager } from "../interfaces/IPackageManager";
-import { EngineVariablesHtml } from "./engineVariablesHtml";
 
 export class EngineVariables {
     public engineRootFolder: string;
     public engineAssetsFolder: string;
+    public enginePackageJson: PackageConfiguration;
 
     public rootFolder: string;
     public wwwRootFolder: string;
@@ -34,32 +35,17 @@ export class EngineVariables {
         buildFolder: string;
 
         assetsFolder: string;
-        assetsSourceFolder: string;
+        assetsSrcFolder: string;
     };
 
     public sourceLanguageExt: string;
     public styleLanguageExt: string;
 
-    public gitIgnore: string[];
     public license: ISpdxLicense;
-    public htmlNoBundle: EngineVariablesHtml;
-    public htmlBundle: EngineVariablesHtml;
 
     public packageManager: IPackageManager;
 
-    public corePackageJson: PackageConfiguration;
-
-    public e2ePlugins: { [id: string]: boolean };
-
-    public lintFeatures: { [id: string]: { required: boolean; object: any } };
-    public lintExtends: { [id: string]: boolean };
-    public lintPlugins: { [id: string]: boolean };
-    public lintEnv: { [id: string]: boolean };
-    public lintGlobals: { [id: string]: boolean };
-
-    public transpileProperties: { [id: string]: { required: boolean; object: any } };
-
-    public transpilePresets: { [id: string]: boolean };
+    private _configuration: { [id: string]: any };
 
     private _requiredDevDependencies: string[];
     private _removedDevDependencies: string[];
@@ -67,32 +53,7 @@ export class EngineVariables {
     private _removedClientPackages: { [id: string]: UniteClientPackage };
 
     constructor() {
-        this.gitIgnore = [];
-        this.htmlNoBundle = {
-            head: [],
-            body: [],
-            separateCss: true,
-            scriptIncludes: []
-        };
-
-        this.htmlBundle = {
-            head: [],
-            body: [],
-            separateCss: true,
-            scriptIncludes: []
-        };
-
-        this.e2ePlugins = {};
-
-        this.transpilePresets = {};
-
-        this.lintFeatures = {};
-        this.lintExtends = {};
-        this.lintPlugins = {};
-        this.lintEnv = {};
-        this.lintGlobals = {};
-
-        this.transpileProperties = {};
+        this._configuration = {};
 
         this._requiredDevDependencies = [];
         this._removedDevDependencies = [];
@@ -100,7 +61,15 @@ export class EngineVariables {
         this._removedClientPackages = {};
     }
 
-    public createDirectories(fileSystem: IFileSystem, rootFolder: string) : void {
+    public setConfiguration(name: string, config: any): void {
+        this._configuration[name] = config;
+    }
+
+    public getConfiguration<T>(name: string): T {
+        return <T>this._configuration[name];
+    }
+
+    public setupDirectories(fileSystem: IFileSystem, rootFolder: string) : void {
         this.rootFolder = rootFolder;
         this.wwwRootFolder = fileSystem.pathCombine(this.rootFolder, "www");
         this.packagedRootFolder = fileSystem.pathCombine(this.rootFolder, "packaged");
@@ -117,7 +86,7 @@ export class EngineVariables {
             unitTestDistFolder: fileSystem.pathCombine(this.wwwRootFolder, "test/unit/dist"),
             reportsFolder: fileSystem.pathCombine(this.wwwRootFolder, "test/reports"),
             assetsFolder: fileSystem.pathCombine(this.wwwRootFolder, "assets"),
-            assetsSourceFolder: fileSystem.pathCombine(this.wwwRootFolder, "assetsSource"),
+            assetsSrcFolder: fileSystem.pathCombine(this.wwwRootFolder, "assetsSrc"),
             buildFolder: fileSystem.pathCombine(this.wwwRootFolder, "build"),
             packageFolder: fileSystem.pathCombine(this.wwwRootFolder, "node_modules")
         };
@@ -202,6 +171,8 @@ export class EngineVariables {
         }
         this.toggleDevDependency(addedTestDependencies, true);
         this.toggleDevDependency(removedTestDependencies, false);
+
+        packageJsonDependencies = ObjectHelper.sort(packageJsonDependencies);
     }
 
     public buildDevDependencies(packageJsonDevDependencies: { [id: string]: string }): void {
@@ -214,12 +185,14 @@ export class EngineVariables {
         this._requiredDevDependencies.forEach(requiredDependency => {
             packageJsonDevDependencies[requiredDependency] = this.findDependencyVersion(requiredDependency);
         });
+
+        packageJsonDevDependencies = ObjectHelper.sort(packageJsonDevDependencies);
     }
 
     public findDependencyVersion(requiredDependency: string): string {
-        if (this.corePackageJson && this.corePackageJson.peerDependencies) {
-            if (this.corePackageJson.peerDependencies[requiredDependency]) {
-                return this.corePackageJson.peerDependencies[requiredDependency];
+        if (this.enginePackageJson && this.enginePackageJson.peerDependencies) {
+            if (this.enginePackageJson.peerDependencies[requiredDependency]) {
+                return this.enginePackageJson.peerDependencies[requiredDependency];
             } else {
                 throw new Error(`Missing Dependency '${requiredDependency}'`);
             }

@@ -3,6 +3,7 @@
  */
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
+import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
 import { SharedAppFramework } from "./sharedAppFramework";
@@ -10,12 +11,19 @@ import { SharedAppFramework } from "./sharedAppFramework";
 export class PlainApp extends SharedAppFramework {
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["unitejs-plain-protractor-plugin"], uniteConfiguration.applicationFramework === "PlainApp" && uniteConfiguration.e2eTestRunner === "Protractor");
-        engineVariables.e2ePlugins["unitejs-plain-protractor-plugin"] = uniteConfiguration.applicationFramework === "PlainApp" && uniteConfiguration.e2eTestRunner === "Protractor";
 
         engineVariables.toggleDevDependency(["unitejs-plain-webdriver-plugin"], uniteConfiguration.applicationFramework === "PlainApp" && uniteConfiguration.e2eTestRunner === "WebdriverIO");
-        engineVariables.e2ePlugins["unitejs-plain-webdriver-plugin"] = uniteConfiguration.applicationFramework === "PlainApp" && uniteConfiguration.e2eTestRunner === "WebdriverIO";
 
         if (uniteConfiguration.applicationFramework === "PlainApp") {
+            const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
+            if (protractorConfiguration) {
+                protractorConfiguration.plugins.push({ path: "unitejs-plain-protractor-plugin" });
+            }
+            const webdriverIoPlugins = engineVariables.getConfiguration<string[]>("WebdriverIO.Plugins");
+            if (webdriverIoPlugins) {
+                webdriverIoPlugins.push("unitejs-plain-webdriver-plugin");
+            }
+
             let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper", "entryPoint"]);
 
             if (ret === 0) {

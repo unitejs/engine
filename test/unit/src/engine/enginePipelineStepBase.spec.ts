@@ -51,10 +51,10 @@ describe("EnginePipelineStepBase", () => {
         Chai.should().exist(obj);
     });
 
-    describe("prerequisites", () => {
+    describe("preProcess", () => {
         it("can be called", async () => {
             const obj = new TestPipelineStep();
-            const res = await obj.prerequisites(loggerStub, fileSystemStub, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.preProcess(loggerStub, fileSystemStub, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
         });
     });

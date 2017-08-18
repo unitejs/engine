@@ -16,5 +16,5 @@ export declare class UniteWwwDirectories {
     package: string;
     build: string;
     assets: string;
-    assetsSource: string;
+    assetsSrc: string;
 }

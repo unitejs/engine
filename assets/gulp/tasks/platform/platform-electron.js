@@ -90,7 +90,7 @@ gulp.task("platform-electron-gather", async () => {
         try {
             const args = [
                 "svgToPng",
-                `--sourceFile=${path.join(uniteConfig.dirs.www.assetsSource, "theme", "logo-transparent.svg")}`,
+                `--sourceFile=${path.join(uniteConfig.dirs.www.assetsSrc, "theme", "logo-transparent.svg")}`,
                 `--destFile=${linuxPng}`,
                 "--width=1024",
                 "--height=1024",

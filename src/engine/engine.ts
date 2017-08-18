@@ -37,7 +37,7 @@ import { Browserify } from "../pipelineSteps/bundler/browserify";
 import { RequireJs } from "../pipelineSteps/bundler/requireJs";
 import { SystemJsBuilder } from "../pipelineSteps/bundler/systemJsBuilder";
 import { Webpack } from "../pipelineSteps/bundler/webpack";
-import { AssetsSource } from "../pipelineSteps/content/assetsSource";
+import { Assets } from "../pipelineSteps/content/assets";
 import { GitIgnore } from "../pipelineSteps/content/gitIgnore";
 import { HtmlTemplate } from "../pipelineSteps/content/htmlTemplate";
 import { License } from "../pipelineSteps/content/license";
@@ -58,6 +58,8 @@ import { TsLint } from "../pipelineSteps/lint/tsLint";
 import { Amd } from "../pipelineSteps/moduleType/amd";
 import { CommonJs } from "../pipelineSteps/moduleType/commonJs";
 import { SystemJs } from "../pipelineSteps/moduleType/systemJs";
+import { Npm } from "../pipelineSteps/packageManager/npm";
+import { Yarn } from "../pipelineSteps/packageManager/yarn";
 import { Electron } from "../pipelineSteps/platform/electron";
 import { Web } from "../pipelineSteps/platform/web";
 import { AppScaffold } from "../pipelineSteps/scaffold/appScaffold";
@@ -400,13 +402,16 @@ export class Engine implements IEngine {
             pipelineSteps.push(new TsLint());
             pipelineSteps.push(new Karma());
 
+            pipelineSteps.push(new Npm());
+            pipelineSteps.push(new Yarn());
+
             pipelineSteps.push(new BrowserSync());
 
             pipelineSteps.push(new ReadMe());
             pipelineSteps.push(new GitIgnore());
             pipelineSteps.push(new License());
 
-            pipelineSteps.push(new AssetsSource());
+            pipelineSteps.push(new Assets());
             pipelineSteps.push(new PackageJson());
             pipelineSteps.push(new UniteConfigurationDirectories());
             pipelineSteps.push(new UniteThemeConfigurationJson());
@@ -667,7 +672,7 @@ export class Engine implements IEngine {
         try {
             this._logger.info("Loading dependencies", { core: this._engineRootFolder, dependenciesFile: "package.json" });
 
-            engineVariables.corePackageJson = await this._fileSystem.fileReadJson<PackageConfiguration>(this._engineRootFolder, "package.json");
+            engineVariables.enginePackageJson = await this._fileSystem.fileReadJson<PackageConfiguration>(this._engineRootFolder, "package.json");
         } catch (err) {
             this._logger.error("Loading dependencies failed", err, { core: this._engineRootFolder, dependenciesFile: "package.json" });
             return 1;
@@ -675,7 +680,7 @@ export class Engine implements IEngine {
 
         engineVariables.engineRootFolder = this._engineRootFolder;
         engineVariables.engineAssetsFolder = this._engineAssetsFolder;
-        engineVariables.createDirectories(this._fileSystem, outputDirectory);
+        engineVariables.setupDirectories(this._fileSystem, outputDirectory);
 
         if (packageManager === "Yarn") {
             engineVariables.packageManager = new YarnPackageManager(this._logger, this._fileSystem);
@@ -688,7 +693,7 @@ export class Engine implements IEngine {
 
     private async runPipeline(pipelineSteps: IEnginePipelineStep[], uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         for (const pipelineStep of pipelineSteps) {
-            const ret = await pipelineStep.prerequisites(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
+            const ret = await pipelineStep.preProcess(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
             if (ret !== 0) {
                 return ret;
             }

@@ -21,5 +21,5 @@ export class UniteWwwDirectories {
     public build: string;
 
     public assets: string;
-    public assetsSource: string;
+    public assetsSrc: string;
 }

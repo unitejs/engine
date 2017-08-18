@@ -8,6 +8,7 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../../dist/engine/engineVariables";
 import { Aurelia } from "../../../../../dist/pipelineSteps/applicationFramework/aurelia";
+import { ProtractorConfiguration } from "../../../../../src/configuration/models/protractor/protractorConfiguration";
 import { FileSystemMock } from "../../fileSystem.mock";
 
 describe("Aurelia", () => {
@@ -46,8 +47,9 @@ describe("Aurelia", () => {
         engineVariablesStub.sourceLanguageExt = "js";
         engineVariablesStub.styleLanguageExt = "css";
         engineVariablesStub.engineAssetsFolder = "./assets/";
-        engineVariablesStub.createDirectories(fileSystemMock, "./test/unit/temp");
+        engineVariablesStub.setupDirectories(fileSystemMock, "./test/unit/temp");
         engineVariablesStub.findDependencyVersion = sandbox.stub().returns("1.2.3");
+        engineVariablesStub.setConfiguration("Protractor", { plugins: []});
     });
 
     afterEach(async () => {
@@ -60,25 +62,25 @@ describe("Aurelia", () => {
         Chai.should().exist(obj);
     });
 
-    describe("prerequisites", () => {
+    describe("preProcess", () => {
         it("can be called with application framework not matching", async () => {
             const obj = new Aurelia();
             uniteConfigurationStub.applicationFramework = "PlainApp";
-            const res = await obj.prerequisites(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
         });
 
         it("can be called with application framework matching but failing bundler", async () => {
             const obj = new Aurelia();
             uniteConfigurationStub.bundler = "Browserify";
-            const res = await obj.prerequisites(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("not currently support");
         });
 
         it("can be called with application framework matching and working bundler", async () => {
             const obj = new Aurelia();
-            const res = await obj.prerequisites(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
         });
     });
@@ -89,16 +91,26 @@ describe("Aurelia", () => {
             uniteConfigurationStub.applicationFramework = "PlainApp";
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.e2ePlugins["aurelia-protractor-plugin"]).to.be.equal(false);
-            Chai.expect(engineVariablesStub.e2ePlugins["unitejs-aurelia-webdriver-plugin"]).to.be.equal(false);
+            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins")).to.be.equal(undefined);
         });
 
         it("can be called with application framework matching", async () => {
             const obj = new Aurelia();
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.e2ePlugins["aurelia-protractor-plugin"]).to.be.equal(true);
-            Chai.expect(engineVariablesStub.e2ePlugins["unitejs-aurelia-webdriver-plugin"]).to.be.equal(false);
+            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(1);
+            Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins")).to.be.equal(undefined);
+        });
+
+        it("can be called with application framework matching webdriverio", async () => {
+            engineVariablesStub.setConfiguration("Protractor", undefined);
+            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", []);
+            const obj = new Aurelia();
+            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor")).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins").length).to.be.equal(1);
         });
 
         it("can be called with AMD module type", async () => {

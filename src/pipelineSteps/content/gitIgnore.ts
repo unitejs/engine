@@ -10,6 +10,14 @@ import { EngineVariables } from "../../engine/engineVariables";
 export class GitIgnore extends EnginePipelineStepBase {
     private static FILENAME: string = ".gitignore";
 
+    private _configuration: string[];
+
+    public async preProcess(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        this._configuration = [];
+        engineVariables.setConfiguration("GitIgnore", this._configuration);
+        return 0;
+    }
+
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
             const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, GitIgnore.FILENAME);
@@ -17,12 +25,9 @@ export class GitIgnore extends EnginePipelineStepBase {
             if (hasGeneratedMarker) {
                 logger.info(`Generating ${GitIgnore.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder});
 
-                if (uniteConfiguration.packageManager === "Npm" || uniteConfiguration.packageManager === "Yarn") {
-                    engineVariables.gitIgnore.push("node_modules");
-                }
-                engineVariables.gitIgnore.push(super.wrapGeneratedMarker("# ", ""));
+                this._configuration.push(super.wrapGeneratedMarker("# ", ""));
 
-                await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, GitIgnore.FILENAME, engineVariables.gitIgnore);
+                await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, GitIgnore.FILENAME, this._configuration);
             } else {
                 logger.info(`Skipping ${GitIgnore.FILENAME} as it has no generated marker`);
             }

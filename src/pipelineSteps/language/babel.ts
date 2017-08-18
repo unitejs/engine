@@ -1,6 +1,7 @@
 /**
  * Pipeline step to generate babel configuration.
  */
+import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { BabelConfiguration } from "../../configuration/models/babel/babelConfiguration";
@@ -11,12 +12,28 @@ import { EngineVariables } from "../../engine/engineVariables";
 export class Babel extends EnginePipelineStepBase {
     private static FILENAME: string = ".babelrc";
 
-    public async prerequisites(logger: ILogger,
-                               fileSystem: IFileSystem,
-                               uniteConfiguration: UniteConfiguration,
-                               engineVariables: EngineVariables): Promise<number> {
+    private _configuration: BabelConfiguration;
+
+    public async preProcess(logger: ILogger,
+                            fileSystem: IFileSystem,
+                            uniteConfiguration: UniteConfiguration,
+                            engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.sourceLanguage === "JavaScript") {
             engineVariables.sourceLanguageExt = "js";
+
+            logger.info(`Initialising ${Babel.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
+
+            try {
+                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, Babel.FILENAME);
+                if (exists) {
+                    this._configuration = await fileSystem.fileReadJson<BabelConfiguration>(engineVariables.wwwRootFolder, Babel.FILENAME);
+                }
+            } catch (err) {
+                logger.error(`Reading existing ${Babel.FILENAME} failed`, err);
+                return 1;
+            }
+
+            this.configDefaults(engineVariables);
         }
         return 0;
     }
@@ -27,19 +44,7 @@ export class Babel extends EnginePipelineStepBase {
             try {
                 logger.info(`Generating ${Babel.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
-                let existing;
-                try {
-                    const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, Babel.FILENAME);
-                    if (exists) {
-                        existing = await fileSystem.fileReadJson<BabelConfiguration>(engineVariables.wwwRootFolder, Babel.FILENAME);
-                    }
-                } catch (err) {
-                    logger.error(`Reading existing ${Babel.FILENAME} failed`, err);
-                    return 1;
-                }
-
-                const config = this.generateConfig(fileSystem, uniteConfiguration, engineVariables, existing);
-                await fileSystem.fileWriteJson(engineVariables.wwwRootFolder, Babel.FILENAME, config);
+                await fileSystem.fileWriteJson(engineVariables.wwwRootFolder, Babel.FILENAME, this._configuration);
 
                 return 0;
             } catch (err) {
@@ -51,49 +56,15 @@ export class Babel extends EnginePipelineStepBase {
         }
     }
 
-    private generateConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, existing: BabelConfiguration | undefined): BabelConfiguration {
-        const config = new BabelConfiguration();
-        config.presets = [];
+    private configDefaults(engineVariables: EngineVariables): void {
+        const defaultConfiguration = new BabelConfiguration();
 
-        if (existing) {
-            Object.assign(config, existing);
-        }
+        defaultConfiguration.presets = [];
+        defaultConfiguration.plugins = [];
+        defaultConfiguration.env = {};
 
-        let modules = "";
-        if (uniteConfiguration.moduleType === "AMD") {
-            modules = "amd";
-        } else if (uniteConfiguration.moduleType === "SystemJS") {
-            modules = "systemjs";
-        } else {
-            modules = "commonjs";
-        }
+        this._configuration = ObjectHelper.merge(defaultConfiguration, this._configuration);
 
-        let foundDefault = false;
-        config.presets.forEach(preset => {
-            if (Array.isArray(preset) && preset.length > 0) {
-                if (preset[0] === "es2015") {
-                    foundDefault = true;
-                }
-            }
-        });
-
-        if (!foundDefault) {
-            config.presets.push(["es2015", { modules }]);
-        }
-
-        for (const key in engineVariables.transpilePresets) {
-            const idx = config.presets.indexOf(key);
-            if (engineVariables.transpilePresets[key]) {
-                if (idx < 0) {
-                    config.presets.push(key);
-                }
-            } else {
-                if (idx >= 0) {
-                    config.presets.splice(idx, 1);
-                }
-            }
-        }
-
-        return config;
+        engineVariables.setConfiguration("Babel", this._configuration);
     }
 }

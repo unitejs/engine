@@ -1,9 +1,12 @@
 /**
  * Pipeline step to generate WebdriverIO configuration.
  */
+import { ArrayHelper } from "unitejs-framework/dist/helpers/arrayHelper";
 import { JsonHelper } from "unitejs-framework/dist/helpers/jsonHelper";
+import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
+import { EsLintConfiguration } from "../../configuration/models/eslint/esLintConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { WebdriverIoConfiguration } from "../../configuration/models/webdriverIo/webdriverIoConfiguration";
 import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
@@ -11,6 +14,17 @@ import { EngineVariables } from "../../engine/engineVariables";
 
 export class WebdriverIo extends EnginePipelineStepBase {
     private static FILENAME: string = "wdio.conf.js";
+
+    private _configuration: WebdriverIoConfiguration;
+    private _plugins: string[];
+
+    public async preProcess(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        if (uniteConfiguration.e2eTestRunner === "WebdriverIO") {
+            this.configDefaults(fileSystem, engineVariables);
+        }
+
+        return 0;
+    }
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["webdriverio",
@@ -21,14 +35,15 @@ export class WebdriverIo extends EnginePipelineStepBase {
                                             "allure-commandline"],
                                             uniteConfiguration.e2eTestRunner === "WebdriverIO");
 
-        engineVariables.toggleDevDependency(["wdio-jasmine-framework"], uniteConfiguration.e2eTestRunner === "WebdriverIO" && uniteConfiguration.e2eTestFramework === "Jasmine");
-        engineVariables.toggleDevDependency(["wdio-mocha-framework"], uniteConfiguration.e2eTestRunner === "WebdriverIO" && uniteConfiguration.e2eTestFramework === "Mocha-Chai");
         engineVariables.toggleDevDependency(["@types/webdriverio"], uniteConfiguration.e2eTestRunner === "WebdriverIO" && uniteConfiguration.sourceLanguage === "TypeScript");
 
         engineVariables.toggleDevDependency(["eslint-plugin-webdriverio"], uniteConfiguration.e2eTestRunner === "WebdriverIO" && uniteConfiguration.linter === "ESLint");
 
-        engineVariables.lintPlugins.webdriverio = uniteConfiguration.e2eTestRunner === "WebdriverIO" && uniteConfiguration.linter === "ESLint";
-        engineVariables.lintEnv["webdriverio/wdio"] = uniteConfiguration.e2eTestRunner === "WebdriverIO" && uniteConfiguration.linter === "ESLint";
+        const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
+        if (esLintConfiguration) {
+            ArrayHelper.addRemove(esLintConfiguration.plugins, "webdriverio", uniteConfiguration.e2eTestRunner === "WebdriverIO");
+            ObjectHelper.addRemove(esLintConfiguration.env, "webdriverio/wdio", true, uniteConfiguration.e2eTestRunner === "WebdriverIO");
+        }
 
         if (uniteConfiguration.e2eTestRunner === "WebdriverIO") {
             try {
@@ -37,8 +52,7 @@ export class WebdriverIo extends EnginePipelineStepBase {
                 if (hasGeneratedMarker) {
                     logger.info(`Generating ${WebdriverIo.FILENAME}`);
 
-                    const lines: string[] = [];
-                    this.generateConfig(fileSystem, uniteConfiguration, engineVariables, lines);
+                    const lines: string[] = this.finaliseConfig(fileSystem, uniteConfiguration, engineVariables);
                     await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, WebdriverIo.FILENAME, lines);
                 } else {
                     logger.info(`Skipping ${WebdriverIo.FILENAME} as it has no generated marker`);
@@ -54,45 +68,48 @@ export class WebdriverIo extends EnginePipelineStepBase {
         }
     }
 
-    private generateConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, lines: string[]): void {
+    private configDefaults(fileSystem: IFileSystem, engineVariables: EngineVariables): void {
+        const defaultConfiguration = new WebdriverIoConfiguration();
+
         const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.reportsFolder));
 
-        const webdriverConfiguration = new WebdriverIoConfiguration();
-        webdriverConfiguration.baseUrl = "http://localhost:9000";
-        webdriverConfiguration.specs = [
+        defaultConfiguration.baseUrl = "http://localhost:9000";
+        defaultConfiguration.specs = [
             fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.e2eTestDistFolder, "**/*.spec.js")))
         ];
-        webdriverConfiguration.capabilities = [
+        defaultConfiguration.capabilities = [
             {
                 browserName: "chrome"
             }
         ];
-        webdriverConfiguration.sync = false;
+        defaultConfiguration.sync = false;
 
-        if (uniteConfiguration.e2eTestFramework === "Jasmine") {
-            webdriverConfiguration.framework = "jasmine";
-        } else if (uniteConfiguration.e2eTestFramework === "Mocha-Chai") {
-            webdriverConfiguration.framework = "mocha";
-        }
-        webdriverConfiguration.reporters = ["spec", "allure"];
-        webdriverConfiguration.reporterOptions = {
+        defaultConfiguration.reporters = ["spec", "allure"];
+        defaultConfiguration.reporterOptions = {
             allure: {
                 outputDir: `${reportsFolder}/e2etemp/`
             }
         };
 
-        lines.push(`exports.config = ${JsonHelper.codify(webdriverConfiguration)}`);
-        lines.push("exports.config.before = () => {");
-        const keys = Object.keys(engineVariables.e2ePlugins);
-        keys.forEach(plugin => {
-            if (engineVariables.e2ePlugins[plugin]) {
-                const pluginPath = fileSystem.pathToWeb(fileSystem.pathFileRelative
-                    (engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, `${plugin}/index.js`)));
+        this._configuration = ObjectHelper.merge(defaultConfiguration, this._configuration);
+        this._plugins = [];
 
-                lines.push(`    require('${pluginPath}')();`);
-            }
+        engineVariables.setConfiguration("WebdriverIO", this._configuration);
+        engineVariables.setConfiguration("WebdriverIO.Plugins", this._plugins);
+    }
+
+    private finaliseConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): string[] {
+        const lines: string[] = [];
+        lines.push(`exports.config = ${JsonHelper.codify(this._configuration)}`);
+        lines.push("exports.config.before = () => {");
+        this._plugins.forEach(plugin => {
+            const pluginPath = fileSystem.pathToWeb(fileSystem.pathFileRelative
+                (engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, `${plugin}/index.js`)));
+
+            lines.push(`    require('${pluginPath}')();`);
         });
         lines.push("};");
         lines.push(super.wrapGeneratedMarker("/* ", " */"));
+        return lines;
     }
 }

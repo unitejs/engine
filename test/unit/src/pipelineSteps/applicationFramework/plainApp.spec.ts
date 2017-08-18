@@ -8,6 +8,7 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../../dist/engine/engineVariables";
 import { PlainApp } from "../../../../../dist/pipelineSteps/applicationFramework/plainApp";
+import { ProtractorConfiguration } from "../../../../../src/configuration/models/protractor/protractorConfiguration";
 import { FileSystemMock } from "../../fileSystem.mock";
 
 describe("PlainApp", () => {
@@ -46,8 +47,9 @@ describe("PlainApp", () => {
         engineVariablesStub.sourceLanguageExt = "js";
         engineVariablesStub.styleLanguageExt = "css";
         engineVariablesStub.engineAssetsFolder = "./assets/";
-        engineVariablesStub.createDirectories(fileSystemMock, "./test/unit/temp");
+        engineVariablesStub.setupDirectories(fileSystemMock, "./test/unit/temp");
         engineVariablesStub.findDependencyVersion = sandbox.stub().returns("1.2.3");
+        engineVariablesStub.setConfiguration("Protractor", { plugins: []});
     });
 
     afterEach(async () => {
@@ -66,16 +68,26 @@ describe("PlainApp", () => {
             uniteConfigurationStub.applicationFramework = "Aurelia";
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.e2ePlugins["unitejs-plain-protractor-plugin"]).to.be.equal(false);
-            Chai.expect(engineVariablesStub.e2ePlugins["unitejs-plain-webdriver-plugin"]).to.be.equal(false);
+            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins")).to.be.equal(undefined);
         });
 
         it("can be called with application framework matching", async () => {
             const obj = new PlainApp();
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.e2ePlugins["unitejs-plain-protractor-plugin"]).to.be.equal(true);
-            Chai.expect(engineVariablesStub.e2ePlugins["unitejs-plain-webdriver-plugin"]).to.be.equal(false);
+            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(1);
+            Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins")).to.be.equal(undefined);
+        });
+
+        it("can be called with application framework matching webdriverio", async () => {
+            engineVariablesStub.setConfiguration("Protractor", undefined);
+            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", []);
+            const obj = new PlainApp();
+            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor")).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins").length).to.be.equal(1);
         });
 
         it("can fail with no source", async () => {

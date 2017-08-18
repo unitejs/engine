@@ -21,7 +21,7 @@ async function getUniteConfig () {
 async function getUniteThemeConfig (uniteConfig) {
     try {
         const data = await util.promisify(fs.readFile)(path.join(
-            uniteConfig.dirs.www.assetsSource, "/theme/unite-theme.json"));
+            uniteConfig.dirs.www.assetsSrc, "/theme/unite-theme.json"));
         return JSON.parse(data.toString());
     } catch (err) {
         display.error("Reading unite-theme.json", err);
@@ -32,7 +32,7 @@ async function getUniteThemeConfig (uniteConfig) {
 
 async function setUniteThemeConfig (uniteConfig, uniteThemeConfig) {
     try {
-        await util.promisify(fs.writeFile)(path.join(uniteConfig.dirs.www.assetsSource, "/theme/unite-theme.json"),
+        await util.promisify(fs.writeFile)(path.join(uniteConfig.dirs.www.assetsSrc, "/theme/unite-theme.json"),
             JSON.stringify(uniteThemeConfig, undefined, "\t"));
     } catch (err) {
         display.error("Writing unite-theme.json", err);

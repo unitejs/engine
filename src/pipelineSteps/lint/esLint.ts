@@ -1,6 +1,7 @@
 /**
  * Pipeline step to generate eslint configuration.
  */
+import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { EsLintConfiguration } from "../../configuration/models/eslint/esLintConfiguration";
@@ -13,15 +14,31 @@ export class EsLint extends EnginePipelineStepBase {
     private static FILENAME: string = ".eslintrc.json";
     private static FILENAME2: string = ".eslintignore";
 
-    public async prerequisites(logger: ILogger,
-                               fileSystem: IFileSystem,
-                               uniteConfiguration: UniteConfiguration,
-                               engineVariables: EngineVariables): Promise<number> {
+    private _configuration: EsLintConfiguration;
+
+    public async preProcess(logger: ILogger,
+                            fileSystem: IFileSystem,
+                            uniteConfiguration: UniteConfiguration,
+                            engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.linter === "ESLint") {
             if (uniteConfiguration.sourceLanguage !== "JavaScript") {
                 logger.error("You can only use ESLint when the source language is JavaScript");
                 return 1;
             }
+
+            logger.info(`Initialising ${EsLint.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
+
+            try {
+                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, EsLint.FILENAME);
+                if (exists) {
+                    this._configuration = await fileSystem.fileReadJson<EsLintConfiguration>(engineVariables.wwwRootFolder, EsLint.FILENAME);
+                }
+            } catch (err) {
+                logger.error(`Reading existing ${EsLint.FILENAME} failed`, err);
+                return 1;
+            }
+
+            this.configDefaults(engineVariables);
         }
         return 0;
     }
@@ -31,30 +48,19 @@ export class EsLint extends EnginePipelineStepBase {
 
         if (uniteConfiguration.linter === "ESLint") {
             try {
-                logger.info(`Generating ${EsLint.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder});
+                logger.info(`Generating ${EsLint.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
-                let existing;
-                try {
-                    const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, EsLint.FILENAME);
-                    if (exists) {
-                        existing = await fileSystem.fileReadJson<EsLintConfiguration>(engineVariables.wwwRootFolder, EsLint.FILENAME);
-                    }
-                } catch (err) {
-                    logger.error(`Reading existing ${EsLint.FILENAME} failed`, err);
-                    return 1;
-                }
-
-                const config = this.generateConfig(fileSystem, uniteConfiguration, engineVariables, existing);
-                await fileSystem.fileWriteJson(engineVariables.wwwRootFolder, EsLint.FILENAME, config);
+                await fileSystem.fileWriteJson(engineVariables.wwwRootFolder, EsLint.FILENAME, this._configuration);
             } catch (err) {
                 logger.error(`Generating ${EsLint.FILENAME} failed`, err);
                 return 1;
             }
+
             try {
                 const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, EsLint.FILENAME2);
 
                 if (hasGeneratedMarker) {
-                    logger.info(`Generating ${EsLint.FILENAME2} Configuration`, { wwwFolder: engineVariables.wwwRootFolder});
+                    logger.info(`Generating ${EsLint.FILENAME2} Configuration`, { wwwFolder: engineVariables.wwwRootFolder });
 
                     const lines: string[] = [];
 
@@ -84,85 +90,26 @@ export class EsLint extends EnginePipelineStepBase {
         }
     }
 
-    private generateConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, existing: EsLintConfiguration | undefined): EsLintConfiguration {
-        const config = new EsLintConfiguration();
+    private configDefaults(engineVariables: EngineVariables): void {
+        const defaultConfiguration = new EsLintConfiguration();
 
-        engineVariables.lintExtends["eslint:recommended"] = true;
-        engineVariables.lintEnv.browser = true;
-        engineVariables.lintGlobals.require = true;
+        defaultConfiguration.parserOptions = new EsLintParserOptions();
+        defaultConfiguration.parserOptions.ecmaVersion = 6;
+        defaultConfiguration.parserOptions.sourceType = "module";
+        defaultConfiguration.parserOptions.ecmaFeatures = {};
 
-        config.parserOptions = new EsLintParserOptions();
+        defaultConfiguration.extends = ["eslint:recommended"];
+        defaultConfiguration.env = {
+            browser: true
+        };
+        defaultConfiguration.globals = {
+            require: true
+        };
+        defaultConfiguration.rules = {};
+        defaultConfiguration.plugins = [];
 
-        config.extends = [];
-        config.env = {};
-        config.globals = {};
-        config.rules = {};
-        config.plugins = [];
+        this._configuration = ObjectHelper.merge(defaultConfiguration, this._configuration);
 
-        if (existing) {
-            Object.assign(config, existing);
-        }
-
-        config.parserOptions.ecmaVersion = 6;
-        config.parserOptions.sourceType = "module";
-        config.parserOptions.ecmaFeatures = {};
-
-        for (const key in engineVariables.lintFeatures) {
-            if (engineVariables.lintFeatures[key].required) {
-                config.parserOptions.ecmaFeatures[key] = engineVariables.lintFeatures[key].object;
-            } else {
-                if (config.parserOptions.ecmaFeatures[key]) {
-                    delete config.parserOptions.ecmaFeatures[key];
-                }
-            }
-        }
-
-        for (const key in engineVariables.lintPlugins) {
-            const idx = config.plugins.indexOf(key);
-            if (engineVariables.lintPlugins[key]) {
-                if (idx < 0) {
-                    config.plugins.push(key);
-                }
-            } else {
-                if (idx >= 0) {
-                    config.plugins.splice(idx, 1);
-                }
-            }
-        }
-
-        for (const key in engineVariables.lintExtends) {
-            const idx = config.extends.indexOf(key);
-            if (engineVariables.lintExtends[key]) {
-                if (idx < 0) {
-                    config.extends.push(key);
-                }
-            } else {
-                if (idx >= 0) {
-                    config.extends.splice(idx, 1);
-                }
-            }
-        }
-
-        for (const key in engineVariables.lintEnv) {
-            if (engineVariables.lintEnv[key]) {
-                config.env[key] = true;
-            } else {
-                if (config.env[key]) {
-                    delete config.env[key];
-                }
-            }
-        }
-
-        for (const key in engineVariables.lintGlobals) {
-            if (engineVariables.lintGlobals[key]) {
-                config.globals[key] = true;
-            } else {
-                if (config.globals[key]) {
-                    delete config.globals[key];
-                }
-            }
-        }
-
-        return config;
+        engineVariables.setConfiguration("ESLint", this._configuration);
     }
 }
