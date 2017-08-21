@@ -15,8 +15,9 @@ export class EsLint extends EnginePipelineStepBase {
     private static FILENAME2: string = ".eslintignore";
 
     private _configuration: EsLintConfiguration;
+    private _ignore: string[];
 
-    public async preProcess(logger: ILogger,
+    public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
@@ -32,6 +33,16 @@ export class EsLint extends EnginePipelineStepBase {
                 const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, EsLint.FILENAME);
                 if (exists) {
                     this._configuration = await fileSystem.fileReadJson<EsLintConfiguration>(engineVariables.wwwRootFolder, EsLint.FILENAME);
+                }
+            } catch (err) {
+                logger.error(`Reading existing ${EsLint.FILENAME} failed`, err);
+                return 1;
+            }
+
+            try {
+                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, EsLint.FILENAME2);
+                if (exists) {
+                    this._ignore = await fileSystem.fileReadLines(engineVariables.wwwRootFolder, EsLint.FILENAME2);
                 }
             } catch (err) {
                 logger.error(`Reading existing ${EsLint.FILENAME} failed`, err);
@@ -59,18 +70,12 @@ export class EsLint extends EnginePipelineStepBase {
             try {
                 const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, EsLint.FILENAME2);
 
-                if (hasGeneratedMarker) {
+                if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker") {
                     logger.info(`Generating ${EsLint.FILENAME2} Configuration`, { wwwFolder: engineVariables.wwwRootFolder });
 
-                    const lines: string[] = [];
+                    this._ignore.push(super.wrapGeneratedMarker("# ", ""));
 
-                    lines.push("dist/*");
-                    lines.push("build/*");
-                    lines.push("test/unit/unit-bootstrap.js");
-                    lines.push("test/unit/unit-module-config.js");
-                    lines.push(super.wrapGeneratedMarker("# ", ""));
-
-                    await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, EsLint.FILENAME2, lines);
+                    await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, EsLint.FILENAME2, this._ignore);
                 } else {
                     logger.info(`Skipping ${EsLint.FILENAME2} as it has no generated marker`);
                 }
@@ -108,8 +113,23 @@ export class EsLint extends EnginePipelineStepBase {
         defaultConfiguration.rules = {};
         defaultConfiguration.plugins = [];
 
+        const defaultIgnore = [
+            "dist/*",
+            "build/*",
+            "test/unit/unit-bootstrap.js",
+            "test/unit/unit-module-config.js"
+        ];
+
         this._configuration = ObjectHelper.merge(defaultConfiguration, this._configuration);
+        this._ignore = ObjectHelper.merge(defaultIgnore, this._ignore);
+
+        const markerLine = super.wrapGeneratedMarker("# ", "");
+        const idx = this._ignore.indexOf(markerLine);
+        if (idx >= 0) {
+            this._ignore.splice(idx, 1);
+        }
 
         engineVariables.setConfiguration("ESLint", this._configuration);
+        engineVariables.setConfiguration("ESLint.Ignore", this._ignore);
     }
 }

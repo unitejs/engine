@@ -7,7 +7,7 @@ export declare class WebdriverIo extends EnginePipelineStepBase {
     private static FILENAME;
     private _configuration;
     private _plugins;
-    preProcess(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
+    initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     private configDefaults(fileSystem, engineVariables);
     private finaliseConfig(fileSystem, uniteConfiguration, engineVariables);

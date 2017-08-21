@@ -12,7 +12,7 @@ export declare class HtmlTemplate extends EnginePipelineStepBase {
     private static FILENAME_BUNDLE;
     private _htmlNoBundle;
     private _htmlBundle;
-    preProcess(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
+    initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     createTemplate(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, filename: string, engineVariablesHtml: HtmlTemplateConfiguration): Promise<number>;
     private addLine(indent, lines, content);

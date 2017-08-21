@@ -21,22 +21,15 @@ export class Electron extends EnginePipelineStepBase {
         const buildAssetPlatform = fileSystem.pathCombine(engineVariables.www.buildFolder, "/assets/platform/electron/");
         const buildTasks = fileSystem.pathCombine(engineVariables.www.buildFolder, "/tasks/");
         if (uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.platforms[Electron.PLATFORM] !== undefined) {
-            try {
-                const assetTasksPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/platform/");
-                await this.copyFile(logger, fileSystem, assetTasksPlatform, Electron.FILENAME, buildTasks, Electron.FILENAME);
-            } catch (err) {
-                logger.error(`Generating ${Electron.FILENAME} failed`, err);
-                return 1;
+            const assetTasksPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/platform/");
+            let ret = await this.copyFile(logger, fileSystem, assetTasksPlatform, Electron.FILENAME, buildTasks, Electron.FILENAME);
+
+            if (ret === 0) {
+                const assetPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/assets/platform/electron/");
+                ret = await this.copyFile(logger, fileSystem, assetPlatform, Electron.FILENAME2, buildAssetPlatform, Electron.FILENAME2);
             }
 
-            try {
-                const assetPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/assets/platform/electron/");
-                await this.copyFile(logger, fileSystem, assetPlatform, Electron.FILENAME2, buildAssetPlatform, Electron.FILENAME2);
-                return 0;
-            } catch (err) {
-                logger.error(`Generating ${Electron.FILENAME2} failed`, err);
-                return 1;
-            }
+            return ret;
         } else {
             let ret = await super.deleteFile(logger, fileSystem, buildTasks, Electron.FILENAME);
             if (ret === 0) {

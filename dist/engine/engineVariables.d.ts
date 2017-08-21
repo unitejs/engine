@@ -1,3 +1,6 @@
+/**
+ * Variables used by the engine.
+ */
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
 import { ISpdxLicense } from "../configuration/models/spdx/ISpdxLicense";

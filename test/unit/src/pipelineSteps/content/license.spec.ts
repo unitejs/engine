@@ -63,7 +63,7 @@ describe("License", () => {
             await fileSystemMock.directoryCreate("./test/unit/temp/www/");
 
             const obj = new License();
-            await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerInfoSpy.args[0][0]).contains("Generating");

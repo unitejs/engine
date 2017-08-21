@@ -18,7 +18,7 @@ export class WebdriverIo extends EnginePipelineStepBase {
     private _configuration: WebdriverIoConfiguration;
     private _plugins: string[];
 
-    public async preProcess(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.e2eTestRunner === "WebdriverIO") {
             this.configDefaults(fileSystem, engineVariables);
         }
@@ -49,7 +49,7 @@ export class WebdriverIo extends EnginePipelineStepBase {
             try {
                 const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, WebdriverIo.FILENAME);
 
-                if (hasGeneratedMarker) {
+                if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker") {
                     logger.info(`Generating ${WebdriverIo.FILENAME}`);
 
                     const lines: string[] = this.finaliseConfig(fileSystem, uniteConfiguration, engineVariables);

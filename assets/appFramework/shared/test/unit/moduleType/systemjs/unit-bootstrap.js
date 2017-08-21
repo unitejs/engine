@@ -19,7 +19,7 @@ SystemJS.config({
     }
 });
 
-Promise.all(preloadModules).then(function () {
+Promise.all(window.preloadModules).then(function () {
     Promise.all(allTestFiles.map(function (module) { return SystemJS.import(module) }))
         .then(function (modules) {
             /* Now we have loaded all the modules we can start the tests */

@@ -59,7 +59,7 @@ export class SystemJs extends EnginePipelineStepBase {
                 if (karmaConfiguration) {
                     const sysInclude = fileSystem.pathToWeb(
                         fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, "systemjs/dist/system.src.js")));
-                    karmaConfiguration.files.unshift({ pattern: sysInclude, included: true });
+                    karmaConfiguration.files.push({ pattern: sysInclude, included: true });
                 }
 
                 uniteConfiguration.srcDistReplace = "(System.register)*?(..\/src\/)";
@@ -71,7 +71,7 @@ export class SystemJs extends EnginePipelineStepBase {
 
                     htmlNoBundle.body.push("<script src=\"./dist/app-module-config.js\"></script>");
                     htmlNoBundle.body.push("<script>");
-                    htmlNoBundle.body.push("Promise.all(preloadModules.map(function(module) { return SystemJS.import(module); }))");
+                    htmlNoBundle.body.push("Promise.all(window.preloadModules.map(function(module) { return SystemJS.import(module); }))");
                     htmlNoBundle.body.push("    .then(function() {");
                     htmlNoBundle.body.push("        {UNITECONFIG}");
                     htmlNoBundle.body.push("        SystemJS.import('dist/entryPoint');");

@@ -58,7 +58,7 @@ export class Amd extends EnginePipelineStepBase {
                 if (karmaConfiguration) {
                     const reqInclude = fileSystem.pathToWeb(
                         fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, "requirejs/require.js")));
-                    karmaConfiguration.files.unshift({ pattern: reqInclude, included: true });
+                    karmaConfiguration.files.push({ pattern: reqInclude, included: true });
                 }
 
                 uniteConfiguration.srcDistReplace = "(define)*?(..\/src\/)";
@@ -71,7 +71,7 @@ export class Amd extends EnginePipelineStepBase {
 
                     htmlNoBundle.body.push("<script src=\"./dist/app-module-config.js\"></script>");
                     htmlNoBundle.body.push("<script>");
-                    htmlNoBundle.body.push("require(preloadModules, function() {");
+                    htmlNoBundle.body.push("require(window.preloadModules, function() {");
                     htmlNoBundle.body.push("    {UNITECONFIG}");
                     htmlNoBundle.body.push("    require(['dist/entryPoint']);");
                     htmlNoBundle.body.push("});");

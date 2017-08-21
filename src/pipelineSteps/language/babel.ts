@@ -14,7 +14,7 @@ export class Babel extends EnginePipelineStepBase {
 
     private _configuration: BabelConfiguration;
 
-    public async preProcess(logger: ILogger,
+    public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {

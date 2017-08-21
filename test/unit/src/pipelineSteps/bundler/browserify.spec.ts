@@ -45,25 +45,25 @@ describe("Browserify", () => {
         Chai.should().exist(obj);
     });
 
-    describe("preProcess", () => {
+    describe("initialise", () => {
         it("can be called with bundler not matching", async () => {
             const obj = new Browserify();
             uniteConfigurationStub.bundler = "Webpack";
-            const res = await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
         });
 
         it("can be called with bundler matching but failing moduleType", async () => {
             const obj = new Browserify();
             uniteConfigurationStub.moduleType = "AMD";
-            const res = await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("can only use");
         });
 
         it("can be called with bundler matching and working moduleType", async () => {
             const obj = new Browserify();
-            const res = await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
         });
     });

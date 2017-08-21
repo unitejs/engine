@@ -22,7 +22,7 @@ export class MochaChai extends EnginePipelineStepBase {
         const isEither = isUnit || isE2E;
 
         engineVariables.toggleDevDependency(["mocha"], isEither);
-        engineVariables.toggleDevDependency(["@types/mocha", "@types/chai"], isEither && uniteConfiguration.sourceLanguage === "TypeScript");
+        engineVariables.toggleDevDependency(["@types/mocha", "@types/chai"], uniteConfiguration.sourceLanguage === "TypeScript" && isEither);
 
         engineVariables.toggleDevDependency(["karma-mocha", "karma-chai"], uniteConfiguration.unitTestRunner === "Karma" && isUnit);
 

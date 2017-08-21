@@ -12,7 +12,7 @@ export class GitIgnore extends EnginePipelineStepBase {
 
     private _configuration: string[];
 
-    public async preProcess(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         this._configuration = [];
         engineVariables.setConfiguration("GitIgnore", this._configuration);
         return 0;
@@ -22,7 +22,7 @@ export class GitIgnore extends EnginePipelineStepBase {
         try {
             const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, GitIgnore.FILENAME);
 
-            if (hasGeneratedMarker) {
+            if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker") {
                 logger.info(`Generating ${GitIgnore.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder});
 
                 this._configuration.push(super.wrapGeneratedMarker("# ", ""));

@@ -47,12 +47,12 @@ describe("Babel", () => {
         Chai.should().exist(obj);
     });
 
-    describe("preProcess", () => {
+    describe("initialise", () => {
         it("can fail when exception is thrown", async () => {
             sandbox.stub(fileSystemMock, "fileExists").throws("error");
 
             const obj = new Babel();
-            const res = await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
         });
@@ -60,14 +60,14 @@ describe("Babel", () => {
         it("can not setup the engine configuration if not Babel", async () => {
             const obj = new Babel();
             uniteConfigurationStub.sourceLanguage = "TypeScript";
-            const res = await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration("Babel")).to.be.equal(undefined);
         });
 
         it("can setup the engine configuration", async () => {
             const obj = new Babel();
-            const res = await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration("Babel")).to.be.deep.equal({
                 presets: [],
@@ -90,7 +90,7 @@ describe("Babel", () => {
             const stub = sandbox.stub(fileSystemMock, "fileExists").returns(false);
             const obj = new Babel();
             uniteConfigurationStub.sourceLanguage = "TypeScript";
-            await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(stub.called).to.be.equal(true);
@@ -106,7 +106,7 @@ describe("Babel", () => {
             await fileSystemMock.directoryCreate("./test/unit/temp/www/");
 
             const obj = new Babel();
-            await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerInfoSpy.args[1][0]).contains("Generating");
@@ -128,7 +128,7 @@ describe("Babel", () => {
             await fileSystemMock.fileWriteJson("./test/unit/temp/www/", ".babelrc", initjson);
 
             const obj = new Babel();
-            await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerInfoSpy.args[1][0]).contains("Generating");

@@ -18,7 +18,7 @@ export class Protractor extends EnginePipelineStepBase {
     private _scriptStart: string[];
     private _scriptEnd: string[];
 
-    public async preProcess(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.e2eTestRunner === "Protractor") {
             this.configDefaults(fileSystem, engineVariables);
         }
@@ -38,10 +38,10 @@ export class Protractor extends EnginePipelineStepBase {
             try {
                 const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, Protractor.FILENAME);
 
-                if (hasGeneratedMarker) {
+                if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker") {
                     logger.info(`Generating ${Protractor.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
-                    const lines: string[] = this.configFinalise();
+                    const lines: string[] = this.createConfig();
                     await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, Protractor.FILENAME, lines);
                 } else {
                     logger.info(`Skipping ${Protractor.FILENAME} as it has no generated marker`);
@@ -80,7 +80,7 @@ export class Protractor extends EnginePipelineStepBase {
         engineVariables.setConfiguration("Protractor.ScriptEnd", this._scriptEnd);
     }
 
-    private configFinalise(): string[] {
+    private createConfig(): string[] {
         let lines: string[] = [];
         lines = lines.concat(this._scriptStart);
         lines.push(`exports.config = ${JsonHelper.codify(this._configuration)};`);

@@ -62,25 +62,25 @@ describe("Aurelia", () => {
         Chai.should().exist(obj);
     });
 
-    describe("preProcess", () => {
+    describe("initialise", () => {
         it("can be called with application framework not matching", async () => {
             const obj = new Aurelia();
             uniteConfigurationStub.applicationFramework = "PlainApp";
-            const res = await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
         });
 
         it("can be called with application framework matching but failing bundler", async () => {
             const obj = new Aurelia();
             uniteConfigurationStub.bundler = "Browserify";
-            const res = await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("not currently support");
         });
 
         it("can be called with application framework matching and working bundler", async () => {
             const obj = new Aurelia();
-            const res = await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
         });
     });

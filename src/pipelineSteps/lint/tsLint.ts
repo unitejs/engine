@@ -14,7 +14,7 @@ export class TsLint extends EnginePipelineStepBase {
 
     private _configuration: TsLintConfiguration;
 
-    public async preProcess(logger: ILogger,
+    public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
@@ -48,7 +48,6 @@ export class TsLint extends EnginePipelineStepBase {
             try {
                 logger.info(`Generating ${TsLint.FILENAME}`);
 
-                this.configFinalise();
                 await fileSystem.fileWriteJson(engineVariables.wwwRootFolder, TsLint.FILENAME, this._configuration);
 
                 return 0;
@@ -68,29 +67,19 @@ export class TsLint extends EnginePipelineStepBase {
         defaultConfiguration.rulesDirectory = [];
         defaultConfiguration.rules = {};
 
+        defaultConfiguration.rules["object-literal-sort-keys"] = false;
+        defaultConfiguration.rules["trailing-comma"] = [
+            true,
+            {
+                multiline: {
+                    objects: "never"
+                }
+            }
+        ];
+        defaultConfiguration.rules["no-reference"] = false;
+
         this._configuration = ObjectHelper.merge(defaultConfiguration, this._configuration);
 
         engineVariables.setConfiguration("TSLint", this._configuration);
-    }
-
-    private configFinalise(): void {
-        if (!this._configuration.rules["object-literal-sort-keys"]) {
-            this._configuration.rules["object-literal-sort-keys"] = false;
-        }
-
-        if (!this._configuration.rules["trailing-comma"]) {
-            this._configuration.rules["trailing-comma"] = [
-                true,
-                {
-                    multiline: {
-                        objects: "never"
-                    }
-                }
-            ];
-        }
-
-        if (!this._configuration.rules["no-reference"]) {
-            this._configuration.rules["no-reference"] = false;
-        }
     }
 }

@@ -15,7 +15,7 @@ export class TypeScript extends EnginePipelineStepBase {
 
     private _configuration: TypeScriptConfiguration;
 
-    public async preProcess(logger: ILogger,
+    public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
@@ -40,7 +40,7 @@ export class TypeScript extends EnginePipelineStepBase {
     }
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["typescript"], uniteConfiguration.sourceLanguage === "TypeScript");
+        engineVariables.toggleDevDependency(["typescript", "unitejs-types"], uniteConfiguration.sourceLanguage === "TypeScript");
 
         if (uniteConfiguration.sourceLanguage === "TypeScript") {
             try {

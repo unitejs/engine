@@ -14,7 +14,7 @@ export class ReadMe extends EnginePipelineStepBase {
         try {
             const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, ReadMe.FILENAME);
 
-            if (hasGeneratedMarker) {
+            if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker") {
                 logger.info(`Generating ${ReadMe.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder});
 
                 const lines = await fileSystem.fileReadLines(engineVariables.engineAssetsFolder, ReadMe.FILENAME);

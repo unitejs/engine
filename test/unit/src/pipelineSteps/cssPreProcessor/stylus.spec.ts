@@ -46,18 +46,18 @@ describe("Stylus", () => {
         Chai.should().exist(obj);
     });
 
-    describe("preProcess", () => {
+    describe("initialise", () => {
         it("can not setup the engine configuration if not Stylus", async () => {
             const obj = new Stylus();
             uniteConfigurationStub.cssPre = "Sass";
-            const res = await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.styleLanguageExt).to.be.equal(undefined);
         });
 
         it("can setup the engine configuration", async () => {
             const obj = new Stylus();
-            const res = await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.styleLanguageExt).to.be.equal("styl");
         });

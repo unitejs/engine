@@ -12,25 +12,35 @@ import { EngineVariables } from "../../engine/engineVariables";
 export class UniteThemeConfigurationJson extends EnginePipelineStepBase {
     private static FILENAME: string = "unite-theme.json";
 
+    private _configuration: UniteThemeConfiguration;
+
+    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        logger.info("Initialising Unite Theme Config");
+
+        const sourceThemeFolder = fileSystem.pathCombine(engineVariables.www.assetsSrcFolder, "theme/");
+
+        try {
+            const exists = await fileSystem.fileExists(sourceThemeFolder, UniteThemeConfigurationJson.FILENAME);
+            if (exists) {
+                this._configuration = await fileSystem.fileReadJson<UniteThemeConfiguration>(sourceThemeFolder, UniteThemeConfigurationJson.FILENAME);
+            }
+        } catch (err) {
+            logger.error(`Reading existing ${UniteThemeConfigurationJson.FILENAME} failed`, err);
+            return 1;
+        }
+
+        this.configDefaults(uniteConfiguration, engineVariables);
+
+        return 0;
+    }
+
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
             logger.info(`Generating ${UniteThemeConfigurationJson.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder});
 
             const sourceThemeFolder = fileSystem.pathCombine(engineVariables.www.assetsSrcFolder, "theme/");
 
-            let existing;
-            try {
-                const exists = await fileSystem.fileExists(sourceThemeFolder, UniteThemeConfigurationJson.FILENAME);
-                if (exists) {
-                    existing = await fileSystem.fileReadJson<UniteThemeConfiguration>(sourceThemeFolder, UniteThemeConfigurationJson.FILENAME);
-                }
-            } catch (err) {
-                logger.error(`Reading existing ${UniteThemeConfigurationJson.FILENAME} failed`, err);
-                return 1;
-            }
-
-            const config = this.generateConfig(fileSystem, uniteConfiguration, engineVariables, existing);
-            await fileSystem.fileWriteJson(sourceThemeFolder, UniteThemeConfigurationJson.FILENAME, config);
+            await fileSystem.fileWriteJson(sourceThemeFolder, UniteThemeConfigurationJson.FILENAME, this._configuration);
 
             return 0;
         } catch (err) {
@@ -39,19 +49,21 @@ export class UniteThemeConfigurationJson extends EnginePipelineStepBase {
         }
     }
 
-    private generateConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, existing: UniteThemeConfiguration | undefined): UniteThemeConfiguration {
-        let config = new UniteThemeConfiguration();
+    private configDefaults(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void {
+        const defaultConfiguration = new UniteThemeConfiguration();
 
-        config.metaDescription = uniteConfiguration.title;
-        config.metaKeywords = uniteConfiguration.title.split(" ");
-        config.metaAuthor = "";
-        config.customHeaders = [];
-        config.themeHeaders = [];
-        config.backgroundColor = "#339933";
-        config.themeColor = "#339933";
+        if (uniteConfiguration.title) {
+            defaultConfiguration.metaDescription = uniteConfiguration.title;
+            defaultConfiguration.metaKeywords = uniteConfiguration.title.split(" ");
+        }
+        defaultConfiguration.metaAuthor = "";
+        defaultConfiguration.customHeaders = [];
+        defaultConfiguration.themeHeaders = [];
+        defaultConfiguration.backgroundColor = "#339933";
+        defaultConfiguration.themeColor = "#339933";
 
-        config = ObjectHelper.merge(config, existing);
+        this._configuration = ObjectHelper.merge(defaultConfiguration, this._configuration);
 
-        return config;
+        engineVariables.setConfiguration("UniteTheme", this._configuration);
     }
 }

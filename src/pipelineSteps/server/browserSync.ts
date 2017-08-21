@@ -9,18 +9,8 @@ import { EngineVariables } from "../../engine/engineVariables";
 
 export class BrowserSync extends EnginePipelineStepBase {
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        logger.info("Generating BrowserSync Configuration");
         engineVariables.toggleDevDependency(["browser-sync"], uniteConfiguration.server === "BrowserSync");
-
-        if (uniteConfiguration.server === "BrowserSync") {
-            try {
-                logger.info("Generating BrowserSync Configuration", { wwwFolder: engineVariables.wwwRootFolder});
-
-                return 0;
-            } catch (err) {
-                logger.error("Generating BrowserSync configuration failed", err);
-                return 1;
-            }
-        }
 
         return 0;
     }

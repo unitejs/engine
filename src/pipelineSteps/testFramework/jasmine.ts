@@ -22,7 +22,7 @@ export class Jasmine extends EnginePipelineStepBase {
         const isEither = isUnit || isE2E;
 
         engineVariables.toggleDevDependency(["jasmine-core"], isEither);
-        engineVariables.toggleDevDependency(["@types/jasmine"], isEither && uniteConfiguration.sourceLanguage === "TypeScript");
+        engineVariables.toggleDevDependency(["@types/jasmine"], uniteConfiguration.sourceLanguage === "TypeScript" && isEither);
 
         engineVariables.toggleDevDependency(["karma-jasmine"], uniteConfiguration.unitTestRunner === "Karma" && isUnit);
 

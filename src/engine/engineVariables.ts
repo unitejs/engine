@@ -1,7 +1,6 @@
 /**
  * Variables used by the engine.
  */
-import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
 import { ISpdxLicense } from "../configuration/models/spdx/ISpdxLicense";
@@ -171,8 +170,6 @@ export class EngineVariables {
         }
         this.toggleDevDependency(addedTestDependencies, true);
         this.toggleDevDependency(removedTestDependencies, false);
-
-        packageJsonDependencies = ObjectHelper.sort(packageJsonDependencies);
     }
 
     public buildDevDependencies(packageJsonDevDependencies: { [id: string]: string }): void {
@@ -185,8 +182,6 @@ export class EngineVariables {
         this._requiredDevDependencies.forEach(requiredDependency => {
             packageJsonDevDependencies[requiredDependency] = this.findDependencyVersion(requiredDependency);
         });
-
-        packageJsonDevDependencies = ObjectHelper.sort(packageJsonDevDependencies);
     }
 
     public findDependencyVersion(requiredDependency: string): string {

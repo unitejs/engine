@@ -3,7 +3,6 @@
  */
 import { bootstrap as abootstrap } from "aurelia-bootstrapper";
 import { Aurelia } from "aurelia-framework";
-declare var unite: { config: { name: string } };
 
 export function bootstrap(): void {
     abootstrap((aurelia: Aurelia) => {
@@ -12,7 +11,7 @@ export function bootstrap(): void {
             .plugin("aurelia-dialog")
             .plugin("aurelia-validation");
 
-        if (unite.config.name === "dev") {
+        if (unite.configName === "dev") {
             aurelia.use.developmentLogging();
         }
 

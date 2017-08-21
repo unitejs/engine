@@ -7,7 +7,8 @@ export declare class EsLint extends EnginePipelineStepBase {
     private static FILENAME;
     private static FILENAME2;
     private _configuration;
-    preProcess(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
+    private _ignore;
+    initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     private configDefaults(engineVariables);
 }

@@ -8,8 +8,8 @@ export declare class Protractor extends EnginePipelineStepBase {
     private _configuration;
     private _scriptStart;
     private _scriptEnd;
-    preProcess(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
+    initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     private configDefaults(fileSystem, engineVariables);
-    private configFinalise();
+    private createConfig();
 }

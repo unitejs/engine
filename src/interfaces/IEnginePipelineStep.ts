@@ -7,7 +7,7 @@ import { UniteConfiguration } from "../configuration/models/unite/uniteConfigura
 import { EngineVariables } from "../engine/engineVariables";
 
 export interface IEnginePipelineStep {
-    preProcess(logger: ILogger,
+    initialise(logger: ILogger,
                fileSystem: IFileSystem,
                uniteConfiguration: UniteConfiguration,
                engineVariables: EngineVariables): Promise<number>;

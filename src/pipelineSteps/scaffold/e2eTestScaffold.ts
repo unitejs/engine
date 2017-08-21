@@ -13,7 +13,6 @@ export class E2eTestScaffold extends EnginePipelineStepBase {
             try {
                 logger.info("Creating E2E Test Directory", { e2eTestSrcFolder: engineVariables.www.e2eTestSrcFolder });
                 await fileSystem.directoryCreate(engineVariables.www.e2eTestSrcFolder);
-                return 0;
             } catch (err) {
                 logger.error("Creating E2E Test Directory failed", err, { e2eTestSrcFolder: engineVariables.www.e2eTestSrcFolder });
                 return 1;

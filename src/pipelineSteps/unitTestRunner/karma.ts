@@ -15,7 +15,7 @@ export class Karma extends EnginePipelineStepBase {
 
     private _configuration: KarmaConfiguration;
 
-    public async preProcess(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
 
         if (uniteConfiguration.unitTestRunner === "Karma") {
             this.configDefaults(fileSystem, engineVariables);
@@ -26,38 +26,33 @@ export class Karma extends EnginePipelineStepBase {
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["karma",
-                                             "karma-chrome-launcher",
-                                             "karma-phantomjs-launcher",
-                                             "karma-story-reporter",
-                                             "karma-html-reporter",
-                                             "karma-coverage",
-                                             "karma-coverage-allsources",
-                                             "karma-sourcemap-loader",
-                                             "karma-remap-istanbul",
-                                             "remap-istanbul",
-                                             "bluebird"
-                                            ],
+            "karma-chrome-launcher",
+            "karma-phantomjs-launcher",
+            "karma-story-reporter",
+            "karma-html-reporter",
+            "karma-coverage",
+            "karma-coverage-allsources",
+            "karma-sourcemap-loader",
+            "karma-remap-istanbul",
+            "remap-istanbul",
+            "bluebird"
+        ],
                                             uniteConfiguration.unitTestRunner === "Karma");
 
         if (uniteConfiguration.unitTestRunner === "Karma") {
-            try {
-                const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, Karma.FILENAME);
+            const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, Karma.FILENAME);
 
-                if (hasGeneratedMarker) {
-                    logger.info(`Generating ${Karma.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder});
+            if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker") {
+                logger.info(`Generating ${Karma.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
-                    const lines: string[] = [];
-                    this.generateConfig(fileSystem, uniteConfiguration, engineVariables, lines);
-                    await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, Karma.FILENAME, lines);
-                } else {
-                    logger.info(`Skipping ${Karma.FILENAME} as it has no generated marker`);
-                }
-
-                return 0;
-            } catch (err) {
-                logger.error(`Generating ${Karma.FILENAME} failed`, err);
-                return 1;
+                const lines: string[] = [];
+                this.generateConfig(fileSystem, uniteConfiguration, engineVariables, lines);
+                await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, Karma.FILENAME, lines);
+            } else {
+                logger.info(`Skipping ${Karma.FILENAME} as it has no generated marker`);
             }
+
+            return 0;
         } else {
             return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, Karma.FILENAME);
         }
@@ -110,7 +105,7 @@ export class Karma extends EnginePipelineStepBase {
         defaultConfiguration.files.push({
             pattern: srcInclude,
             included: false
-            });
+        });
 
         this._configuration = ObjectHelper.merge(defaultConfiguration, this._configuration);
 
@@ -128,19 +123,30 @@ export class Karma extends EnginePipelineStepBase {
         const testPackages = engineVariables.getTestClientPackages();
 
         Object.keys(testPackages).forEach(key => {
-            const mainSplit = testPackages[key].main.split("/");
-            const main = mainSplit.pop();
-            let location = mainSplit.join("/");
+            if (testPackages[key].main) {
+                const mainSplit = testPackages[key].main.split("/");
+                const main = mainSplit.pop();
+                let location = mainSplit.join("/");
 
-            if (testPackages[key].isPackage) {
-                const keyInclude = fileSystem.pathToWeb(
-                    fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, `${key}/${location}/**/*.{js,html,css}`)));
-                this._configuration.files.push({ pattern: keyInclude, included: false });
-            } else {
-                location += location.length > 0 ? "/" : "";
-                const keyInclude = fileSystem.pathToWeb(
-                    fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, `${key}/${location}${main}`)));
-                this._configuration.files.push({ pattern: keyInclude, included: false });
+                if (testPackages[key].isPackage) {
+                    const keyInclude = fileSystem.pathToWeb(
+                        fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, `${key}/${location}/**/*.{js,html,css}`)));
+                    this._configuration.files.push({ pattern: keyInclude, included: false });
+                } else {
+                    location += location.length > 0 ? "/" : "";
+                    const keyInclude = fileSystem.pathToWeb(
+                        fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, `${key}/${location}${main}`)));
+                    this._configuration.files.push({ pattern: keyInclude, included: false });
+                }
+            }
+
+            if (testPackages[key].assets !== undefined && testPackages[key].assets !== null && testPackages[key].assets.length > 0) {
+                const cas = testPackages[key].assets.split(",");
+                cas.forEach((ca) => {
+                    const keyInclude = fileSystem.pathToWeb(
+                        fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, `${key}/${ca}`)));
+                    this._configuration.files.push({ pattern: keyInclude, included: false });
+                });
             }
         });
 

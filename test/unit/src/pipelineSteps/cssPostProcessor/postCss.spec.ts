@@ -47,12 +47,12 @@ describe("PostCss", () => {
         Chai.should().exist(obj);
     });
 
-    describe("preProcess", () => {
+    describe("initialise", () => {
         it("can fail when exception is thrown", async () => {
             sandbox.stub(fileSystemMock, "fileExists").throws("error");
 
             const obj = new PostCss();
-            const res = await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
         });
@@ -60,14 +60,14 @@ describe("PostCss", () => {
         it("can not setup the engine configuration if not PostCss", async () => {
             const obj = new PostCss();
             uniteConfigurationStub.cssPost = "None";
-            const res = await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration("PostCss")).to.be.equal(undefined);
         });
 
         it("can setup the engine configuration", async () => {
             const obj = new PostCss();
-            const res = await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration("PostCss")).to.be.deep.equal({
                 plugins: {
@@ -91,7 +91,7 @@ describe("PostCss", () => {
             const stub = sandbox.stub(fileSystemMock, "fileExists").returns(false);
             const obj = new PostCss();
             uniteConfigurationStub.cssPost = "None";
-            await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(stub.called).to.be.equal(true);
@@ -109,7 +109,7 @@ describe("PostCss", () => {
             await fileSystemMock.directoryCreate("./test/unit/temp/www/");
 
             const obj = new PostCss();
-            await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerInfoSpy.args[1][0]).contains("Generating");
@@ -139,7 +139,7 @@ describe("PostCss", () => {
             await fileSystemMock.fileWriteJson("./test/unit/temp/www/", ".postcssrc.json", initjson);
 
             const obj = new PostCss();
-            await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerInfoSpy.args[1][0]).contains("Generating");

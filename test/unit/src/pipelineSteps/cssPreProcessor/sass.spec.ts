@@ -46,18 +46,18 @@ describe("Sass", () => {
         Chai.should().exist(obj);
     });
 
-    describe("preProcess", () => {
+    describe("initialise", () => {
         it("can not setup the engine configuration if not Sass", async () => {
             const obj = new Sass();
             uniteConfigurationStub.cssPre = "Less";
-            const res = await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariabSasstub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariabSasstub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariabSasstub.styleLanguageExt).to.be.equal(undefined);
         });
 
         it("can setup the engine configuration", async () => {
             const obj = new Sass();
-            const res = await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariabSasstub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariabSasstub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariabSasstub.styleLanguageExt).to.be.equal("scss");
         });

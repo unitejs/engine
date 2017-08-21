@@ -47,19 +47,19 @@ describe("PackageJson", () => {
         Chai.should().exist(obj);
     });
 
-    describe("preProcess", () => {
+    describe("initialise", () => {
         it("can fail when exception is thrown", async () => {
             sandbox.stub(fileSystemMock, "fileExists").throws("error");
 
             const obj = new PackageJson();
-            const res = await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
         });
 
         it("can setup the engine configuration", async () => {
             const obj = new PackageJson();
-            const res = await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration("PackageJson")).to.be.deep.equal({
                 name: "test",
@@ -84,7 +84,7 @@ describe("PackageJson", () => {
             await fileSystemMock.directoryCreate("./test/unit/temp/www/");
 
             const obj = new PackageJson();
-            await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerInfoSpy.args[1][0]).contains("Generating");
@@ -102,13 +102,13 @@ describe("PackageJson", () => {
             const initjson = new PackageConfiguration();
             initjson.name = "fred";
             initjson.version = "1.0.0";
-            initjson.dependencies = { "my-package": "1.0.1" };
-            initjson.devDependencies = { "dev-package": "2.0.2" };
+            initjson.dependencies = { "my-package": "1.0.1", "a-package": "1.0.1" };
+            initjson.devDependencies = { "dev-package": "2.0.2", "a-dev-package": "2.0.2" };
             initjson.engines = { "my-engine": "3.0.0" };
             await fileSystemMock.fileWriteJson("./test/unit/temp/www/", "package.json", initjson);
 
             const obj = new PackageJson();
-            await obj.preProcess(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerInfoSpy.args[1][0]).contains("Generating");
@@ -116,8 +116,8 @@ describe("PackageJson", () => {
             const json = await fileSystemMock.fileReadJson<PackageConfiguration>("./test/unit/temp/www/", "package.json");
             Chai.expect(json.name).to.be.equal("fred");
             Chai.expect(json.version).to.be.equal("1.0.0");
-            Chai.expect(json.dependencies).to.be.deep.equal({ "my-package": "1.0.1" });
-            Chai.expect(json.devDependencies).to.be.deep.equal({ "dev-package": "2.0.2" });
+            Chai.expect(json.dependencies).to.be.deep.equal({ "my-package": "1.0.1", "a-package": "1.0.1" });
+            Chai.expect(json.devDependencies).to.be.deep.equal({ "a-dev-package": "2.0.2", "dev-package": "2.0.2" });
             Chai.expect(json.engines).to.be.deep.equal({ "my-engine": "3.0.0", node: ">=8.0.0" });
         });
     });

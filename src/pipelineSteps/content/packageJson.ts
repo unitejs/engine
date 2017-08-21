@@ -14,7 +14,7 @@ export class PackageJson extends EnginePipelineStepBase {
 
     private _configuration: PackageConfiguration;
 
-    public async preProcess(logger: ILogger,
+    public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
@@ -41,6 +41,9 @@ export class PackageJson extends EnginePipelineStepBase {
 
             engineVariables.buildDependencies(uniteConfiguration, this._configuration.dependencies);
             engineVariables.buildDevDependencies(this._configuration.devDependencies);
+
+            this._configuration.dependencies = ObjectHelper.sort(this._configuration.dependencies);
+            this._configuration.devDependencies = ObjectHelper.sort(this._configuration.devDependencies);
 
             await fileSystem.fileWriteJson(engineVariables.wwwRootFolder, PackageJson.FILENAME, this._configuration);
             return 0;

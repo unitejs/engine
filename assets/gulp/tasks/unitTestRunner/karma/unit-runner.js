@@ -12,7 +12,7 @@ gulp.task("unit-run-test", async () => {
 
     const knownOptions = {
         "default": {
-            "grep": "*"
+            "grep": "!(*-bundle|app-module-config|entryPoint)"
         },
         "string": [
             "grep"
@@ -43,7 +43,7 @@ gulp.task("unit-run-test-ui", async () => {
 
     const knownOptions = {
         "default": {
-            "grep": "*"
+            "grep": "!(*-bundle|app-module-config|entryPoint)"
         },
         "string": [
             "grep"

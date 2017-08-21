@@ -693,7 +693,7 @@ export class Engine implements IEngine {
 
     private async runPipeline(pipelineSteps: IEnginePipelineStep[], uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         for (const pipelineStep of pipelineSteps) {
-            const ret = await pipelineStep.preProcess(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
+            const ret = await pipelineStep.initialise(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
             if (ret !== 0) {
                 return ret;
             }

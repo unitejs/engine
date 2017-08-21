@@ -14,7 +14,7 @@ require.config({
     baseUrl: '/base/'
 });
 
-require(preloadModules, function () {
+require(window.preloadModules, function () {
     require(allTestFiles, function () {
         /* Now we have loaded all the modules we can start the tests */
         window.__karma__.start();

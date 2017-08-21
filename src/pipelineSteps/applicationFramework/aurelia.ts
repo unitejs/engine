@@ -9,7 +9,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { SharedAppFramework } from "./sharedAppFramework";
 
 export class Aurelia extends SharedAppFramework {
-    public async preProcess(logger: ILogger,
+    public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
