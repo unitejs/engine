@@ -30,6 +30,17 @@ export class MochaChai extends EnginePipelineStepBase {
 
         engineVariables.toggleDevDependency(["wdio-mocha-framework"], uniteConfiguration.e2eTestRunner === "WebdriverIO" && isE2E);
 
+        engineVariables.toggleClientPackage(
+            "chai",
+            "chai.js",
+            undefined,
+            true,
+            "test",
+            false,
+            false,
+            undefined,
+            isEither);
+
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
             ObjectHelper.addRemove(esLintConfiguration.env, "mocha", true, isEither);
@@ -38,7 +49,6 @@ export class MochaChai extends EnginePipelineStepBase {
         const karmaConfiguration = engineVariables.getConfiguration<KarmaConfiguration>("Karma");
         if (karmaConfiguration) {
             ArrayHelper.addRemove(karmaConfiguration.frameworks, "mocha", isUnit);
-            ArrayHelper.addRemove(karmaConfiguration.frameworks, "chai", isUnit);
         }
 
         if (isE2E) {
