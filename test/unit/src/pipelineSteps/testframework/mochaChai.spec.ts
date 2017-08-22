@@ -100,7 +100,6 @@ describe("MochaChai", () => {
 
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint")).to.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma").frameworks).contains("mocha");
-            Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma").frameworks).contains("chai");
             Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor")).to.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<string[]>("Protractor.ScriptStart")).to.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<string[]>("Protractor.ScriptEnd")).to.be.equal(undefined);
