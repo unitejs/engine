@@ -5,7 +5,6 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { BabelConfiguration } from "../../configuration/models/babel/babelConfiguration";
 import { HtmlTemplateConfiguration } from "../../configuration/models/htmlTemplate/htmlTemplateConfiguration";
-import { KarmaConfiguration } from "../../configuration/models/karma/karmaConfiguration";
 import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
@@ -21,7 +20,8 @@ export class SystemJs extends EnginePipelineStepBase {
             "dist/system.src.js",
             "dist/system.js",
             false,
-            "app",
+            "both",
+            true,
             false,
             undefined,
             uniteConfiguration.moduleType === "SystemJS");
@@ -32,6 +32,7 @@ export class SystemJs extends EnginePipelineStepBase {
             undefined,
             false,
             "both",
+            false,
             false,
             undefined,
             uniteConfiguration.moduleType === "SystemJS");
@@ -53,13 +54,6 @@ export class SystemJs extends EnginePipelineStepBase {
                     } else {
                         babelConfiguration.presets.push(["es2015", { modules: "systemjs" }]);
                     }
-                }
-
-                const karmaConfiguration = engineVariables.getConfiguration<KarmaConfiguration>("Karma");
-                if (karmaConfiguration) {
-                    const sysInclude = fileSystem.pathToWeb(
-                        fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, "systemjs/dist/system.src.js")));
-                    karmaConfiguration.files.push({ pattern: sysInclude, included: true });
                 }
 
                 uniteConfiguration.srcDistReplace = "(System.register)*?(..\/src\/)";

@@ -31,6 +31,7 @@ export class React extends SharedAppFramework {
             false,
             "both",
             false,
+            false,
             undefined,
             uniteConfiguration.applicationFramework === "React");
 
@@ -41,6 +42,7 @@ export class React extends SharedAppFramework {
             false,
             "both",
             false,
+            false,
             undefined,
             uniteConfiguration.applicationFramework === "React");
 
@@ -50,6 +52,7 @@ export class React extends SharedAppFramework {
             "umd/react-router-dom.min.js",
             false,
             "both",
+            false,
             false,
             undefined,
             uniteConfiguration.applicationFramework === "React");

@@ -30,16 +30,6 @@ export class MochaChai extends EnginePipelineStepBase {
 
         engineVariables.toggleDevDependency(["wdio-mocha-framework"], uniteConfiguration.e2eTestRunner === "WebdriverIO" && isE2E);
 
-        engineVariables.toggleClientPackage(
-            "chai",
-            "chai.js",
-            undefined,
-            true,
-            "test",
-            false,
-            undefined,
-            isEither);
-
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
             ObjectHelper.addRemove(esLintConfiguration.env, "mocha", true, isEither);

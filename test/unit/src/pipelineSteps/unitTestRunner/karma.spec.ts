@@ -156,11 +156,11 @@ describe("Karma", () => {
             const config = engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma");
 
             Chai.expect(config.files.length).to.be.equal(11);
-            Chai.expect(config.files[3].pattern).contains("testPackage2/index.js");
-            Chai.expect(config.files[4].pattern).contains("testPackage3/dist/index.js");
-            Chai.expect(config.files[5].pattern).contains("testPackage4/**/*.{js,html,css}");
-            Chai.expect(config.files[6].pattern).contains("testPackage5/dist/**/*.{js,html,css}");
-            Chai.expect(config.files[7].pattern).contains("testPackage5/assets/**/*.json");
+            Chai.expect(config.files[2].pattern).contains("testPackage2/index.js");
+            Chai.expect(config.files[3].pattern).contains("testPackage3/dist/index.js");
+            Chai.expect(config.files[4].pattern).contains("testPackage4/**/*.{js,html,css}");
+            Chai.expect(config.files[5].pattern).contains("testPackage5/dist/**/*.{js,html,css}");
+            Chai.expect(config.files[6].pattern).contains("testPackage5/assets/**/*.json");
         });
     });
 });

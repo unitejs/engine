@@ -114,6 +114,7 @@ export class Aurelia extends SharedAppFramework {
             false,
             "both",
             false,
+            false,
             undefined,
             uniteConfiguration.applicationFramework === "Aurelia");
     }
@@ -130,6 +131,7 @@ export class Aurelia extends SharedAppFramework {
                 undefined,
                 false,
                 "both",
+                false,
                 clientPackage.isPackage ? true : false,
                 undefined,
                 uniteConfiguration.applicationFramework === "Aurelia");

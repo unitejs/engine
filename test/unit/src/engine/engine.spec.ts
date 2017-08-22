@@ -354,7 +354,7 @@ describe("Engine", () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage(undefined, undefined, undefined, undefined, undefined, undefined,
-                                                undefined, undefined, undefined, undefined, undefined);
+                                                undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("no unite.json");
         });
@@ -362,7 +362,7 @@ describe("Engine", () => {
         it("can fail when calling with undefined operation", async () => {
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage(undefined, undefined, undefined, undefined, undefined, undefined,
-                                                undefined, undefined, undefined, undefined, undefined);
+                                                undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("operation");
         });
@@ -370,7 +370,7 @@ describe("Engine", () => {
         it("can fail when calling with undefined packageName", async () => {
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage("add", undefined, undefined, undefined, undefined, undefined,
-                                                undefined, undefined, undefined, undefined, undefined);
+                                                undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("packageName");
         });
@@ -379,7 +379,7 @@ describe("Engine", () => {
             uniteJson.packageManager = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage("add", "moment", undefined, undefined, undefined, undefined,
-                                                undefined, undefined, undefined, undefined, undefined);
+                                                undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("packageManager");
         });
@@ -388,7 +388,7 @@ describe("Engine", () => {
             uniteJson.clientPackages = { moment: {} };
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage("add", "moment", undefined, undefined, <any>"foo", undefined,
-                                                undefined, undefined, undefined, undefined, undefined);
+                                                undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("includeMode");
         });
@@ -397,7 +397,7 @@ describe("Engine", () => {
             uniteJson.clientPackages = { moment: {} };
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage("add", "moment", undefined, undefined, undefined, undefined,
-                                                undefined, undefined, undefined, undefined, undefined);
+                                                undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("already");
         });
@@ -406,7 +406,7 @@ describe("Engine", () => {
             packageJsonErrors = true;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage("add", "moment", undefined, undefined, undefined, undefined,
-                                                undefined, undefined, undefined, undefined, undefined);
+                                                undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("dependencies");
         });
@@ -415,7 +415,7 @@ describe("Engine", () => {
             packageInfo = null;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage("add", "moment", undefined, undefined, undefined, undefined,
-                                                undefined, undefined, undefined, undefined, undefined);
+                                                undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("Package Information");
         });
@@ -425,7 +425,7 @@ describe("Engine", () => {
             fileWriteJsonErrors = true;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage("add", "moment", undefined, undefined, undefined, undefined,
-                                                "mainMinified.js", undefined, undefined, undefined, undefined);
+                                                "mainMinified.js", undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("failed");
         });
@@ -434,7 +434,7 @@ describe("Engine", () => {
             packageInfo = "{}";
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage("add", "moment", undefined, undefined, undefined, undefined,
-                                                undefined, undefined, undefined, undefined, undefined);
+                                                undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
             Chai.expect(uniteJsonWritten.clientPackages.moment.version).to.be.equal("^0.0.1");
@@ -446,7 +446,7 @@ describe("Engine", () => {
             packageInfo = "{ \"version\": \"1.2.3\", \"main\": \"index.js\"}";
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage("add", "moment", undefined, undefined, "app", undefined,
-                                                undefined, undefined, undefined, undefined, undefined);
+                                                undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
             Chai.expect(uniteJsonWritten.clientPackages.moment.version).to.be.equal("^1.2.3");
@@ -458,7 +458,7 @@ describe("Engine", () => {
             packageInfo = "{ \"version\": \"1.2.3\", \"main\": \"index.js\"}";
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage("add", "moment", "4.5.6", undefined, "app", undefined,
-                                                undefined, undefined, undefined, undefined, undefined);
+                                                undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
             Chai.expect(uniteJsonWritten.clientPackages.moment.version).to.be.equal("4.5.6");
@@ -469,7 +469,7 @@ describe("Engine", () => {
         it("can succeed with override main packageManager info", async () => {
             packageInfo = "{ \"version\": \"1.2.3\", \"main\": \"index.js\"}";
             const obj = new Engine(loggerStub, fileSystemStub);
-            const res = await obj.clientPackage("add", "moment", undefined, undefined, "test", "main.js",
+            const res = await obj.clientPackage("add", "moment", undefined, undefined, "test", false, "main.js",
                                                 undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
@@ -481,7 +481,7 @@ describe("Engine", () => {
         it("can succeed with override main and version packageManager info", async () => {
             packageInfo = "{ \"version\": \"1.2.3\", \"main\": \"index.js\"}";
             const obj = new Engine(loggerStub, fileSystemStub);
-            const res = await obj.clientPackage("add", "moment", "4.5.6", undefined, "test", "main.js",
+            const res = await obj.clientPackage("add", "moment", "4.5.6", undefined, "test", false, "main.js",
                                                 undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
@@ -493,7 +493,7 @@ describe("Engine", () => {
         it("can succeed with override mainMinified and version packageManager info", async () => {
             packageInfo = "{ \"version\": \"1.2.3\", \"main\": \"index.js\"}";
             const obj = new Engine(loggerStub, fileSystemStub);
-            const res = await obj.clientPackage("add", "moment", undefined, undefined, undefined, undefined,
+            const res = await obj.clientPackage("add", "moment", undefined, undefined, undefined, undefined, undefined,
                                                 "mainMinified.js", undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
@@ -506,13 +506,14 @@ describe("Engine", () => {
         it("can succeed with all parameters", async () => {
             packageInfo = "{ \"version\": \"1.2.3\", \"main\": \"index.js\"}";
             const obj = new Engine(loggerStub, fileSystemStub);
-            const res = await obj.clientPackage("add", "moment", "7.8.9", true, "both", "1.js",
+            const res = await obj.clientPackage("add", "moment", "7.8.9", true, "both", false, "1.js",
                                                 "2.js", false, "**/*.css", undefined, undefined);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
             Chai.expect(uniteJsonWritten.clientPackages.moment.version).to.be.equal("7.8.9");
             Chai.expect(uniteJsonWritten.clientPackages.moment.preload).to.be.equal(true);
             Chai.expect(uniteJsonWritten.clientPackages.moment.includeMode).to.be.equal("both");
+            Chai.expect(uniteJsonWritten.clientPackages.moment.testScriptInclude).to.be.equal(false);
             Chai.expect(uniteJsonWritten.clientPackages.moment.main).to.be.equal("1.js");
             Chai.expect(uniteJsonWritten.clientPackages.moment.mainMinified).to.be.equal("2.js");
             Chai.expect(uniteJsonWritten.clientPackages.moment.isPackage).to.be.equal(false);
@@ -525,7 +526,7 @@ describe("Engine", () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage(undefined, undefined, undefined, undefined, undefined, undefined,
-                                                undefined, undefined, undefined, undefined, undefined);
+                                                undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("no unite.json");
         });
@@ -533,7 +534,7 @@ describe("Engine", () => {
         it("can fail when calling with undefined operation", async () => {
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage(undefined, undefined, undefined, undefined, undefined, undefined,
-                                                undefined, undefined, undefined, undefined, undefined);
+                                                undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("operation");
         });
@@ -541,7 +542,7 @@ describe("Engine", () => {
         it("can fail when calling with undefined packageName", async () => {
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage("remove", undefined, undefined, undefined, undefined, undefined,
-                                                undefined, undefined, undefined, undefined, undefined);
+                                                undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("packageName");
         });
@@ -550,7 +551,7 @@ describe("Engine", () => {
             uniteJson.packageManager = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage("remove", "moment", undefined, undefined, undefined, undefined,
-                                                undefined, undefined, undefined, undefined, undefined);
+                                                undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("packageManager");
         });
@@ -558,7 +559,7 @@ describe("Engine", () => {
         it("can fail if package does not exist", async () => {
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage("remove", "moment", undefined, undefined, undefined, undefined,
-                                                undefined, undefined, undefined, undefined, undefined);
+                                                undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("not been");
         });
@@ -569,7 +570,7 @@ describe("Engine", () => {
 
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage("remove", "moment", undefined, undefined, undefined, undefined,
-                                                undefined, undefined, undefined, undefined, undefined);
+                                                undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("dependencies");
         });
@@ -580,7 +581,7 @@ describe("Engine", () => {
 
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage("remove", "moment", undefined, undefined, undefined, undefined,
-                                                undefined, undefined, undefined, undefined, undefined);
+                                                undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("failed");
         });
@@ -590,7 +591,7 @@ describe("Engine", () => {
 
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage("remove", "moment", undefined, undefined, undefined, undefined,
-                                                undefined, undefined, undefined, undefined, undefined);
+                                                undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
         });

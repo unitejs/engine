@@ -24,6 +24,7 @@ export interface IEngine {
                   version: string | undefined | null,
                   preload: boolean | undefined,
                   includeMode: string | undefined | null,
+                  testScriptInclude: boolean | undefined,
                   main: string | undefined | null,
                   mainMinified: string | undefined | null,
                   isPackage: boolean | undefined,

@@ -225,6 +225,7 @@ export class Engine implements IEngine {
                                version: string | undefined | null,
                                preload: boolean | undefined,
                                includeMode: IncludeMode | undefined | null,
+                               testScriptInclude: boolean | undefined,
                                main: string | undefined | null,
                                mainMinified: string | undefined | null,
                                isPackage: boolean | undefined,
@@ -254,7 +255,7 @@ export class Engine implements IEngine {
         }
 
         if (operation === "add") {
-            return await this.clientPackageAdd(packageName, version, preload, includeMode, main, mainMinified, isPackage, assets, outputDirectory, uniteConfiguration);
+            return await this.clientPackageAdd(packageName, version, preload, includeMode, testScriptInclude, main, mainMinified, isPackage, assets, outputDirectory, uniteConfiguration);
         } else {
             return await this.clientPackageRemove(packageName, outputDirectory, uniteConfiguration);
         }
@@ -432,6 +433,7 @@ export class Engine implements IEngine {
                                    version: string,
                                    preload: boolean | undefined,
                                    includeMode: IncludeMode,
+                                   testScriptInclude: boolean | undefined,
                                    main: string | undefined | null,
                                    mainMinified: string | undefined | null,
                                    isPackage: boolean | undefined,
@@ -441,6 +443,10 @@ export class Engine implements IEngine {
 
         if (includeMode === undefined || includeMode === null || includeMode.length === 0) {
             includeMode = "both";
+        }
+
+        if (testScriptInclude === undefined) {
+            testScriptInclude = false;
         }
 
         if (preload === undefined) {
@@ -495,6 +501,7 @@ export class Engine implements IEngine {
             clientPackage.mainMinified = mainMinified;
             clientPackage.isPackage = isPackage;
             clientPackage.includeMode = includeMode;
+            clientPackage.testScriptInclude = testScriptInclude;
             clientPackage.assets = assets;
 
             uniteConfiguration.clientPackages[packageName] = clientPackage;

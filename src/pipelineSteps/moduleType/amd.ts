@@ -5,7 +5,6 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { BabelConfiguration } from "../../configuration/models/babel/babelConfiguration";
 import { HtmlTemplateConfiguration } from "../../configuration/models/htmlTemplate/htmlTemplateConfiguration";
-import { KarmaConfiguration } from "../../configuration/models/karma/karmaConfiguration";
 import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
@@ -20,7 +19,8 @@ export class Amd extends EnginePipelineStepBase {
             "require.js",
             undefined,
             false,
-            "app",
+            "both",
+            true,
             false,
             undefined,
             uniteConfiguration.moduleType === "AMD");
@@ -31,6 +31,7 @@ export class Amd extends EnginePipelineStepBase {
             undefined,
             false,
             "both",
+            false,
             false,
             undefined,
             uniteConfiguration.moduleType === "AMD");
@@ -52,13 +53,6 @@ export class Amd extends EnginePipelineStepBase {
                     } else {
                         babelConfiguration.presets.push(["es2015", { modules: "amd" }]);
                     }
-                }
-
-                const karmaConfiguration = engineVariables.getConfiguration<KarmaConfiguration>("Karma");
-                if (karmaConfiguration) {
-                    const reqInclude = fileSystem.pathToWeb(
-                        fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, "requirejs/require.js")));
-                    karmaConfiguration.files.push({ pattern: reqInclude, included: true });
                 }
 
                 uniteConfiguration.srcDistReplace = "(define)*?(..\/src\/)";

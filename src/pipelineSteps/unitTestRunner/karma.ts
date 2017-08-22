@@ -107,19 +107,17 @@ export class Karma extends EnginePipelineStepBase {
             included: false
         });
 
+        // Bluebird should only be necessary while we are using PhantomJS
+        const bbInclude = fileSystem.pathToWeb(
+            fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, "bluebird/js/browser/bluebird.js")));
+        defaultConfiguration.files.push({ pattern: bbInclude, included: true });
+
         this._configuration = ObjectHelper.merge(defaultConfiguration, this._configuration);
 
         engineVariables.setConfiguration("Karma", this._configuration);
     }
 
     private generateConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, lines: string[]): void {
-        this._configuration.files.push({ pattern: "../unite.json", included: false });
-
-        // Bluebird should only be necessary while we are using PhantomJS
-        const bbInclude = fileSystem.pathToWeb(
-            fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, "bluebird/js/browser/bluebird.js")));
-        this._configuration.files.push({ pattern: bbInclude, included: true });
-
         const testPackages = engineVariables.getTestClientPackages();
 
         Object.keys(testPackages).forEach(key => {
@@ -131,12 +129,12 @@ export class Karma extends EnginePipelineStepBase {
                 if (testPackages[key].isPackage) {
                     const keyInclude = fileSystem.pathToWeb(
                         fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, `${key}/${location}/**/*.{js,html,css}`)));
-                    this._configuration.files.push({ pattern: keyInclude, included: false });
+                    this._configuration.files.push({ pattern: keyInclude, included: testPackages[key].testScriptInclude });
                 } else {
                     location += location.length > 0 ? "/" : "";
                     const keyInclude = fileSystem.pathToWeb(
                         fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, `${key}/${location}${main}`)));
-                    this._configuration.files.push({ pattern: keyInclude, included: false });
+                    this._configuration.files.push({ pattern: keyInclude, included: testPackages[key].testScriptInclude });
                 }
             }
 
@@ -149,6 +147,8 @@ export class Karma extends EnginePipelineStepBase {
                 });
             }
         });
+
+        this._configuration.files.push({ pattern: "../unite.json", included: false });
 
         this._configuration.files.push({
             pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "../unit-module-config.js"))),

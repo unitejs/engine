@@ -96,6 +96,7 @@ export class EngineVariables {
                                mainMinified: string,
                                preload: boolean,
                                includeMode: IncludeMode,
+                               testScriptInclude: boolean,
                                isPackage: boolean,
                                assets: string,
                                required: boolean): void {
@@ -107,6 +108,7 @@ export class EngineVariables {
         clientPackage.isPackage = isPackage;
         clientPackage.version = this.findDependencyVersion(name);
         clientPackage.assets = assets;
+        clientPackage.testScriptInclude = testScriptInclude;
 
         let opArr: { [id: string]: UniteClientPackage };
         if (required) {

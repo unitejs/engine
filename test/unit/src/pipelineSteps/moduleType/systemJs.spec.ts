@@ -7,7 +7,6 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { BabelConfiguration } from "../../../../../dist/configuration/models/babel/babelConfiguration";
 import { HtmlTemplateConfiguration } from "../../../../../dist/configuration/models/htmlTemplate/htmlTemplateConfiguration";
-import { KarmaConfiguration } from "../../../../../dist/configuration/models/karma/karmaConfiguration";
 import { TypeScriptConfiguration } from "../../../../../dist/configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../../dist/engine/engineVariables";
@@ -77,8 +76,7 @@ describe("SystemJs", () => {
         });
 
         it("can throw exception", async () => {
-            engineVariablesStub.setConfiguration("Karma", {});
-            sandbox.stub(fileSystemMock, "pathToWeb").throws("error");
+            engineVariablesStub.setConfiguration("Babel", {});
             const obj = new SystemJs();
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
@@ -89,7 +87,6 @@ describe("SystemJs", () => {
         it("can be called with matching module type and engine configuration", async () => {
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {}});
             engineVariablesStub.setConfiguration("Babel", { presets: []});
-            engineVariablesStub.setConfiguration("Karma", { files: []});
             engineVariablesStub.setConfiguration("HTMLNoBundle", { scriptIncludes: [], body: []});
             engineVariablesStub.setConfiguration("HTMLBundle", { body: []});
 
@@ -99,7 +96,6 @@ describe("SystemJs", () => {
 
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.module).to.be.equal("system");
             Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").presets[0][1].modules).to.be.equal("systemjs");
-            Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma").files.length).to.be.equal(1);
             Chai.expect(engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle").scriptIncludes.length).to.be.equal(1);
             Chai.expect(engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle").body.length).to.be.equal(8);
             Chai.expect(engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLBundle").body.length).to.be.equal(3);

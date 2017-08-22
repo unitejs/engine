@@ -19,6 +19,7 @@ export function bootstrap () {
                 const root = document.getElementById("root");
                 aurelia.setRoot("dist/app", root);
                 root.setAttribute("aurelia-app", "");
+                return aurelia;
             });
     });
 }

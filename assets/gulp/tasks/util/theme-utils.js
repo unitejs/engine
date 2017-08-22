@@ -191,7 +191,9 @@ async function callUniteImage (config) {
     params.push(config.command);
 
     for (const key in config) {
-        params.push(`--${key}=${config[key]}`);
+        if (key !== "command") {
+            params.push(`--${key}=${config[key]}`);
+        }
     }
 
     try {
