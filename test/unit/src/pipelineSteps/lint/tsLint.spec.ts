@@ -8,7 +8,7 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../../dist/engine/engineVariables";
 import { TsLint } from "../../../../../dist/pipelineSteps/lint/tsLint";
-import { TsLintConfiguration } from "../../../../../src/configuration/models/TsLint/TsLintConfiguration";
+import { TsLintConfiguration } from "../../../../../src/configuration/models/tsLint/tsLintConfiguration";
 import { FileSystemMock } from "../../fileSystem.mock";
 
 describe("TsLint", () => {
