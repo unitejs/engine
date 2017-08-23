@@ -3,11 +3,7 @@ node_js:
   - "node"
 install:
   - npm install
-jobs:
-  include:
-  - stage: Build
-  - script: gulp build
-  - stage: Unit Test
-  - script: gulp unit
-  - stage: Unit Test Results
-  - script: gulp coveralls
+script:
+  - gulp build
+  - gulp unit
+  - gulp coveralls
