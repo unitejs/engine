@@ -1,12 +1,16 @@
 language: node_js
 node_js:
   - "node"
+before_script:
+  - npm install -g gulp-cli
 install:
   - npm install
 jobs:
   include:
   - stage: Build
+  - script: gulp build
   - stage: Unit Test
+  - script: gulp unit
   - stage: Unit Test Results
   - script: gulp coveralls
 cache:
