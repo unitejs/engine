@@ -111,6 +111,21 @@ describe("PackageUtils", () => {
             Chai.expect(data).to.be.equal("");
         });
 
+        it("can be called on windows platform", async () => {
+            childSpawnProcess.on = (name: string, cb: any) => {
+                if (name === "close") {
+                    cb(0);
+                }
+            };
+
+            sandbox.stub(process);
+            Object.defineProperty(process, "platform", { value: "win" });
+
+            const data = await PackageUtils.exec(loggerStub, fileSystemStub, "package", undefined, undefined);
+            Chai.expect(childSpawnStub.args[0][0]).to.be.equal("package.cmd");
+            Chai.expect(data).to.be.equal("");
+        });
+
         it("can be called and exit with code 1", async () => {
             childSpawnProcess.on = (name: string, cb: any) => {
                 if (name === "close") {
