@@ -9,7 +9,7 @@ import { UniteConfiguration } from "../../../../dist/configuration/models/unite/
 import { Engine } from "../../../../dist/engine/engine";
 import { PackageUtils } from "../../../../dist/packageManagers/packageUtils";
 import { FileSystemMock } from "../fileSystem.mock";
-import { ReadOnlyFileSystemMock } from "../readOnlyfileSystem.mock";
+import { ReadOnlyFileSystemMock } from "../readOnlyFileSystem.mock";
 
 describe("Engine", () => {
     let sandbox: Sinon.SinonSandbox;
