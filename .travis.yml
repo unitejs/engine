@@ -5,6 +5,7 @@ before_script:
   - npm install -g gulp-cli
 install:
   - npm install
+script: 
 jobs:
   include:
   - stage: Build
