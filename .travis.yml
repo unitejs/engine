@@ -3,14 +3,12 @@ node_js:
   - "node"
 install:
   - npm install
-before_script:
-  - npm install -g gulp-cli
-script: gulp
 jobs:
   include:
   - stage: Build
-  - script: gulp build
   - stage: Unit Test
-  - script: gulp unit
   - stage: Unit Test Results
   - script: gulp coveralls
+cache:
+  directories:
+  - node_modules

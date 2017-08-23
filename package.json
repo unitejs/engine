@@ -50,6 +50,10 @@
   "engines": {
     "node": ">=8.0.0"
   },
+  "scripts": {
+    "build": "gulp build",
+    "test": "gulp unit"
+  },
   "devDependencies": {
     "@types/chai": "^4.0.4",
     "@types/mocha": "^2.2.42",
