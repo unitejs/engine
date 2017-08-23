@@ -176,6 +176,8 @@ gulp.task("unit-runner", () => {
         .pipe(mocha({
             "reporter": "spec",
             "timeout": "360000"
+        }).on("error", () => {
+            process.exit(1);
         }))
         .pipe(istanbul.writeReports({
             "dir": unitReportsFolder,
