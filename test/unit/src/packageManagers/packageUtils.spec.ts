@@ -59,7 +59,8 @@ describe("PackageUtils", () => {
             };
 
             const data = await PackageUtils.exec(loggerStub, fileSystemStub, "package", undefined, undefined);
-            Chai.expect(childSpawnStub.args[0][0]).to.be.equal("package.cmd");
+            const isWin = /^win/.test(process.platform);
+            Chai.expect(childSpawnStub.args[0][0]).to.be.equal(`package${isWin ? ".cmd" : ""}`);
             Chai.expect(data).to.be.equal("");
         });
 
@@ -73,7 +74,8 @@ describe("PackageUtils", () => {
 
             const data = await PackageUtils.exec(loggerStub, fileSystemStub, "package", "foo", undefined);
             Chai.expect(data).to.be.equal("");
-            Chai.expect(childSpawnStub.args[0][0]).to.be.equal("package.cmd");
+            const isWin = /^win/.test(process.platform);
+            Chai.expect(childSpawnStub.args[0][0]).to.be.equal(`package${isWin ? ".cmd" : ""}`);
             Chai.expect(childSpawnStub.args[0][2].cwd).to.be.equal("/someplace/foo");
         });
 
@@ -87,7 +89,8 @@ describe("PackageUtils", () => {
 
             const data = await PackageUtils.exec(loggerStub, fileSystemStub, "package", "foo", ["arg1", "arg2"]);
             Chai.expect(data).to.be.equal("");
-            Chai.expect(childSpawnStub.args[0][0]).to.be.equal("package.cmd");
+            const isWin = /^win/.test(process.platform);
+            Chai.expect(childSpawnStub.args[0][0]).to.be.equal(`package${isWin ? ".cmd" : ""}`);
             Chai.expect(childSpawnStub.args[0][1]).to.contain("arg1");
             Chai.expect(childSpawnStub.args[0][1]).to.contain("arg2");
             Chai.expect(childSpawnStub.args[0][2].cwd).to.be.equal("/someplace/foo");
