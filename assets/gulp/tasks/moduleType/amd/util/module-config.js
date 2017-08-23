@@ -25,7 +25,7 @@ function create (uniteConfig, includeModes, isBundle) {
     const jsonPreload = JSON.stringify(moduleConfig.preload, undefined, "\t");
 
     let config = `require.config(${jsonConfig});${os.EOL}`;
-    config += `window.preloadModules = ${jsonPreload};${os.EOL}`;
+    config += `preloadModules = ${jsonPreload};${os.EOL}`;
 
     return config;
 }

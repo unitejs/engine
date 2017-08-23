@@ -65,7 +65,7 @@ export class Amd extends EnginePipelineStepBase {
 
                     htmlNoBundle.body.push("<script src=\"./dist/app-module-config.js\"></script>");
                     htmlNoBundle.body.push("<script>");
-                    htmlNoBundle.body.push("require(window.preloadModules, function() {");
+                    htmlNoBundle.body.push("require(preloadModules, function() {");
                     htmlNoBundle.body.push("    {UNITECONFIG}");
                     htmlNoBundle.body.push("    require(['dist/entryPoint']);");
                     htmlNoBundle.body.push("});");

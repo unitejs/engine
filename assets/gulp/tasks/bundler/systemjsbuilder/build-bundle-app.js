@@ -17,7 +17,7 @@ const uglify = require("gulp-uglify");
 
 async function addBootstrap (uniteConfig, buildConfiguration) {
     let bootstrap = moduleConfig.create(uniteConfig, ["app", "both"], true);
-    bootstrap += "Promise.all(window.preloadModules.map(function(module) { return SystemJS.import(module); }))";
+    bootstrap += "Promise.all(preloadModules.map(function(module) { return SystemJS.import(module); }))";
     bootstrap += ".then(function() {";
     bootstrap += "SystemJS.import('dist/entryPoint');";
     bootstrap += "});";

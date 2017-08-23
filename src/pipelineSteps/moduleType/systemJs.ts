@@ -65,7 +65,7 @@ export class SystemJs extends EnginePipelineStepBase {
 
                     htmlNoBundle.body.push("<script src=\"./dist/app-module-config.js\"></script>");
                     htmlNoBundle.body.push("<script>");
-                    htmlNoBundle.body.push("Promise.all(window.preloadModules.map(function(module) { return SystemJS.import(module); }))");
+                    htmlNoBundle.body.push("Promise.all(preloadModules.map(function(module) { return SystemJS.import(module); }))");
                     htmlNoBundle.body.push("    .then(function() {");
                     htmlNoBundle.body.push("        {UNITECONFIG}");
                     htmlNoBundle.body.push("        SystemJS.import('dist/entryPoint');");

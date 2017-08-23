@@ -623,8 +623,6 @@ export class Engine implements IEngine {
         if (ret === 0) {
             uniteConfiguration.platforms[platformName] = uniteConfiguration.platforms[platformName] || {};
 
-            uniteConfiguration.platforms[platformName].options = uniteConfiguration.platforms[platformName].options || {};
-
             const pipelineSteps: IEnginePipelineStep[] = [];
             if (platformName === Web.PLATFORM) {
                 pipelineSteps.push(new Web());
@@ -637,6 +635,7 @@ export class Engine implements IEngine {
             ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
 
             if (ret === 0) {
+                this._logger.warning("You should probably run npm install / yarn install before running any gulp packaging commands.");
                 this._logger.banner("Successfully Completed.");
             }
         }
@@ -668,6 +667,7 @@ export class Engine implements IEngine {
             pipelineSteps.push(new UniteConfigurationJson());
             ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
             if (ret === 0) {
+                this._logger.warning("You should probably run npm install / yarn install to remove any unnecessary packages.");
                 this._logger.banner("Successfully Completed.");
             }
         }

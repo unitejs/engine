@@ -31,7 +31,9 @@ export class Aurelia extends SharedAppFramework {
         if (uniteConfiguration.applicationFramework === "Aurelia") {
             const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
             if (protractorConfiguration) {
-                protractorConfiguration.plugins.push({ path: "aurelia-protractor-plugin" });
+                const plugin = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
+                                                                                fileSystem.pathCombine(engineVariables.www.packageFolder, "aurelia-protractor-plugin")));
+                protractorConfiguration.plugins.push({ path: plugin });
             }
             const webdriverIoPlugins = engineVariables.getConfiguration<string[]>("WebdriverIO.Plugins");
             if (webdriverIoPlugins) {

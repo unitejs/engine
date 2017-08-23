@@ -17,7 +17,9 @@ export class PlainApp extends SharedAppFramework {
         if (uniteConfiguration.applicationFramework === "PlainApp") {
             const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
             if (protractorConfiguration) {
-                protractorConfiguration.plugins.push({ path: "unitejs-plain-protractor-plugin" });
+                const plugin = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
+                                                                                fileSystem.pathCombine(engineVariables.www.packageFolder, "unitejs-plain-protractor-plugin")));
+                protractorConfiguration.plugins.push({ path: plugin });
             }
             const webdriverIoPlugins = engineVariables.getConfiguration<string[]>("WebdriverIO.Plugins");
             if (webdriverIoPlugins) {

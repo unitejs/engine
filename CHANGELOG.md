@@ -1,4 +1,5 @@
-# v0.8.2
+# v0.9.0
+* Finalise API
 * Unit Tests and Fixes
 * Generate App - Unit Test Reports show full coverage not summary
 * Generate App - Unit Tests now show coverage for all files not just those with tests using karma-coverage-allsources

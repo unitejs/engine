@@ -1,6 +1,6 @@
 {
   "name": "unitejs-engine",
-  "version": "0.8.2",
+  "version": "0.9.0",
   "description": "Engine of the UniteJS JavaScript framework management tool.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -79,7 +79,7 @@
     "typescript": "^2.5.1"
   },
   "dependencies": {
-    "unitejs-framework": "^0.7.4",
+    "unitejs-framework": "^0.8.0",
     "npm": "^5.0.3",
     "yarn": "^0.27.5"
   },
@@ -204,7 +204,7 @@
     "uglify-js": "^3.0.28",
     "uglifyjs-webpack-plugin": "^0.4.6",
     "unitejs-aurelia-webdriver-plugin": "^0.0.1",
-    "unitejs-image-cli": "^0.1.0",
+    "unitejs-image-cli": "^0.2.0",
     "unitejs-plain-protractor-plugin": "^0.0.1",
     "unitejs-plain-webdriver-plugin": "^0.0.1",
     "unitejs-react-protractor-plugin": "^0.0.1",

@@ -77,7 +77,9 @@ export class React extends SharedAppFramework {
         if (uniteConfiguration.applicationFramework === "React") {
             const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
             if (protractorConfiguration) {
-                protractorConfiguration.plugins.push({ path: "unitejs-react-protractor-plugin" });
+                const plugin = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
+                                                                                fileSystem.pathCombine(engineVariables.www.packageFolder, "unitejs-react-protractor-plugin")));
+                protractorConfiguration.plugins.push({ path: plugin });
             }
             const webdriverIoPlugins = engineVariables.getConfiguration<string[]>("WebdriverIO.Plugins");
             if (webdriverIoPlugins) {
