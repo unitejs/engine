@@ -10,5 +10,5 @@ export class UniteClientPackage {
     public includeMode: IncludeMode;
     public isPackage: boolean;
     public assets: string;
-    public testScriptInclude: boolean;
+    public scriptInclude: boolean;
 }

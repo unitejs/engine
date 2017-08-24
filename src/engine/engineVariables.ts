@@ -96,7 +96,7 @@ export class EngineVariables {
                                mainMinified: string,
                                preload: boolean,
                                includeMode: IncludeMode,
-                               testScriptInclude: boolean,
+                               scriptInclude: boolean,
                                isPackage: boolean,
                                assets: string,
                                required: boolean): void {
@@ -108,7 +108,7 @@ export class EngineVariables {
         clientPackage.isPackage = isPackage;
         clientPackage.version = this.findDependencyVersion(name);
         clientPackage.assets = assets;
-        clientPackage.testScriptInclude = testScriptInclude;
+        clientPackage.scriptInclude = scriptInclude;
 
         let opArr: { [id: string]: UniteClientPackage };
         if (required) {
@@ -125,6 +125,18 @@ export class EngineVariables {
 
         Object.keys(this._requiredClientPackages)
             .filter(key => this._requiredClientPackages[key].includeMode === "test" || this._requiredClientPackages[key].includeMode === "both")
+            .forEach(key => {
+                packages[key] = this._requiredClientPackages[key];
+            });
+
+        return packages;
+    }
+
+    public getAppClientPackages(): { [id: string] : UniteClientPackage } {
+        const packages: { [id: string] : UniteClientPackage } = {};
+
+        Object.keys(this._requiredClientPackages)
+            .filter(key => this._requiredClientPackages[key].includeMode === "app" || this._requiredClientPackages[key].includeMode === "both")
             .forEach(key => {
                 packages[key] = this._requiredClientPackages[key];
             });

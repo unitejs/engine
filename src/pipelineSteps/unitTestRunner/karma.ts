@@ -129,12 +129,12 @@ export class Karma extends EnginePipelineStepBase {
                 if (testPackages[key].isPackage) {
                     const keyInclude = fileSystem.pathToWeb(
                         fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, `${key}/${location}/**/*.{js,html,css}`)));
-                    this._configuration.files.push({ pattern: keyInclude, included: testPackages[key].testScriptInclude });
+                    this._configuration.files.push({ pattern: keyInclude, included: testPackages[key].scriptInclude });
                 } else {
                     location += location.length > 0 ? "/" : "";
                     const keyInclude = fileSystem.pathToWeb(
                         fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, `${key}/${location}${main}`)));
-                    this._configuration.files.push({ pattern: keyInclude, included: testPackages[key].testScriptInclude });
+                    this._configuration.files.push({ pattern: keyInclude, included: testPackages[key].scriptInclude });
                 }
             }
 

@@ -14,6 +14,7 @@ export class Sass extends EnginePipelineStepBase {
                             engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.cssPre === "Sass") {
             engineVariables.styleLanguageExt = "scss";
+            engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "sass");
         }
         return 0;
     }
@@ -23,8 +24,6 @@ export class Sass extends EnginePipelineStepBase {
 
         if (uniteConfiguration.cssPre === "Sass") {
             try {
-                engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "sass");
-
                 logger.info("Creating Sass folder", { cssSrcFolder: engineVariables.www.cssSrcFolder });
 
                 await fileSystem.directoryCreate(engineVariables.www.cssSrcFolder);

@@ -5,10 +5,8 @@ const gulp = require("gulp");
 const path = require("path");
 const fs = require("fs");
 const util = require("util");
-const insert = require("gulp-insert");
 const uc = require("./util/unite-config");
 const clientPackages = require("./util/client-packages");
-const asyncUtil = require("./util/async-util");
 const display = require("./util/display");
 const Builder = require("systemjs-builder");
 
@@ -20,29 +18,7 @@ gulp.task("build-bundle-vendor", async () => {
     if (buildConfiguration.bundle) {
         display.info("Running", "Systemjs builder for Vendor");
 
-        const modulesConfig = clientPackages.buildModuleConfig(
-            uniteConfig,
-            ["app", "both"],
-            buildConfiguration.minify);
-        let keys = [];
-        let systemJsLoaderFile = "";
-
-        for (const key in modulesConfig.paths) {
-            if (key === "systemjs") {
-                systemJsLoaderFile = `${modulesConfig.paths[key]}.js`;
-            } else {
-                keys.push(key);
-            }
-        }
-        keys = keys.concat(modulesConfig.packages.map(pkg => pkg.name));
-
-        let systemJsScript = null;
-        try {
-            systemJsScript = await util.promisify(fs.readFile)(systemJsLoaderFile);
-        } catch (err) {
-            display.error(`Reading ${systemJsLoaderFile}`, err);
-            process.exit(1);
-        }
+        const keys = clientPackages.getRequires(uniteConfig, ["app", "both"], true);
 
         try {
             await util.promisify(fs.writeFile)(
@@ -67,11 +43,6 @@ gulp.task("build-bundle-vendor", async () => {
             display.error("Running bundler", err);
             process.exit(1);
         }
-
-        return asyncUtil.stream(gulp.src(
-            path.join(uniteConfig.dirs.www.dist, "vendor-bundle.js"))
-            .pipe(insert.prepend(systemJsScript))
-            .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
     }
 });
 

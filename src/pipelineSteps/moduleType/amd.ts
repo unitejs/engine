@@ -61,8 +61,6 @@ export class Amd extends EnginePipelineStepBase {
                 const htmlNoBundle = engineVariables.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle");
 
                 if (htmlNoBundle) {
-                    htmlNoBundle.scriptIncludes.push("requirejs/require.js");
-
                     htmlNoBundle.body.push("<script src=\"./dist/app-module-config.js\"></script>");
                     htmlNoBundle.body.push("<script>");
                     htmlNoBundle.body.push("require(preloadModules, function() {");

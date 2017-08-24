@@ -14,6 +14,7 @@ export class Css extends EnginePipelineStepBase {
                             engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.cssPre === "Css") {
             engineVariables.styleLanguageExt = "css";
+            engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "cssSrc");
         }
         return 0;
     }
@@ -21,8 +22,6 @@ export class Css extends EnginePipelineStepBase {
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.cssPre === "Css") {
             try {
-                engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "cssSrc");
-
                 logger.info("Creating cssSrc folder", { cssSrcFolder: engineVariables.www.cssSrcFolder });
 
                 await fileSystem.directoryCreate(engineVariables.www.cssSrcFolder);

@@ -18,14 +18,12 @@ export class HtmlTemplate extends EnginePipelineStepBase {
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         this._htmlNoBundle = {
             head: [],
-            body: [],
-            scriptIncludes: []
+            body: []
         };
 
         this._htmlBundle = {
             head: [],
-            body: [],
-            scriptIncludes: []
+            body: []
         };
 
         engineVariables.setConfiguration("HTMLBundle", this._htmlBundle);
@@ -35,10 +33,10 @@ export class HtmlTemplate extends EnginePipelineStepBase {
     }
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        let ret = await this.createTemplate(logger, fileSystem, uniteConfiguration, engineVariables, HtmlTemplate.FILENAME_NO_BUNDLE, this._htmlNoBundle);
+        let ret = await this.createTemplate(logger, fileSystem, uniteConfiguration, engineVariables, HtmlTemplate.FILENAME_NO_BUNDLE, this._htmlNoBundle, false);
 
         if (ret === 0) {
-            ret = await this.createTemplate(logger, fileSystem, uniteConfiguration, engineVariables, HtmlTemplate.FILENAME_BUNDLE, this._htmlBundle);
+            ret = await this.createTemplate(logger, fileSystem, uniteConfiguration, engineVariables, HtmlTemplate.FILENAME_BUNDLE, this._htmlBundle, true);
         }
 
         return ret;
@@ -49,7 +47,8 @@ export class HtmlTemplate extends EnginePipelineStepBase {
                                 uniteConfiguration: UniteConfiguration,
                                 engineVariables: EngineVariables,
                                 filename: string,
-                                engineVariablesHtml: HtmlTemplateConfiguration): Promise<number> {
+                                engineVariablesHtml: HtmlTemplateConfiguration,
+                                useMinified: boolean): Promise<number> {
         try {
             const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, filename);
 
@@ -68,11 +67,16 @@ export class HtmlTemplate extends EnginePipelineStepBase {
                 this.addLine(indent, lines, "<link rel=\"stylesheet\" href=\"./css/style.css{CACHEBUST}\">");
                 lines.push("{THEME}");
 
-                engineVariablesHtml.scriptIncludes.forEach(scriptInclude => {
-                    const script = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, scriptInclude)));
+                const appClientPackages = engineVariables.getAppClientPackages();
 
-                    this.addLine(indent, lines, `<script src="${script}"></script>`);
-                });
+                for (const pkg in appClientPackages) {
+                    if (appClientPackages[pkg].scriptInclude) {
+                        const main = (useMinified && appClientPackages[pkg].mainMinified) ? appClientPackages[pkg].mainMinified : appClientPackages[pkg].main;
+                        const script = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, `${pkg}/${main}`)));
+
+                        this.addLine(indent, lines, `<script src="${script}"></script>`);
+                    }
+                }
 
                 engineVariablesHtml.head.forEach(head => {
                     this.addLine(indent, lines, head);

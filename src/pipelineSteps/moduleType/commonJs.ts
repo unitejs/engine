@@ -50,8 +50,6 @@ export class CommonJs extends EnginePipelineStepBase {
 
                 const htmlNoBundle = engineVariables.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle");
                 if (htmlNoBundle) {
-                    htmlNoBundle.scriptIncludes.push("systemjs/dist/system.src.js");
-
                     htmlNoBundle.body.push("<script src=\"./dist/app-module-config.js\"></script>");
                     htmlNoBundle.body.push("<script>");
                     htmlNoBundle.body.push("Promise.all(preloadModules.map(function(module) { return SystemJS.import(module); }))");

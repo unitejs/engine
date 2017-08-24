@@ -3,6 +3,7 @@
  */
 import { EsLintParserOptions } from "./esLintParserOptions";
 export declare class EsLintConfiguration {
+    parser: string;
     parserOptions: EsLintParserOptions;
     extends: string[];
     env: {

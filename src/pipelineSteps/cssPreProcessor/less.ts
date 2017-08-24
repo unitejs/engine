@@ -14,6 +14,7 @@ export class Less extends EnginePipelineStepBase {
                             engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.cssPre === "Less") {
             engineVariables.styleLanguageExt = "less";
+            engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "less");
         }
         return 0;
     }
@@ -23,8 +24,6 @@ export class Less extends EnginePipelineStepBase {
 
         if (uniteConfiguration.cssPre === "Less") {
             try {
-                engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "less");
-
                 logger.info("Creating Less folder", { cssSrcFolder: engineVariables.www.cssSrcFolder });
 
                 await fileSystem.directoryCreate(engineVariables.www.cssSrcFolder);

@@ -98,6 +98,7 @@ export class EsLint extends EnginePipelineStepBase {
     private configDefaults(engineVariables: EngineVariables): void {
         const defaultConfiguration = new EsLintConfiguration();
 
+        defaultConfiguration.parser = "esprima";
         defaultConfiguration.parserOptions = new EsLintParserOptions();
         defaultConfiguration.parserOptions.ecmaVersion = 6;
         defaultConfiguration.parserOptions.sourceType = "module";

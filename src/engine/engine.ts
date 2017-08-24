@@ -30,6 +30,7 @@ import { ModuleOperation } from "../interfaces/moduleOperation";
 import { PlatformOperation } from "../interfaces/platformOperation";
 import { NpmPackageManager } from "../packageManagers/npmPackageManager";
 import { YarnPackageManager } from "../packageManagers/yarnPackageManager";
+import { Angular } from "../pipelineSteps/applicationFramework/angular";
 import { Aurelia } from "../pipelineSteps/applicationFramework/aurelia";
 import { PlainApp } from "../pipelineSteps/applicationFramework/plainApp";
 import { React } from "../pipelineSteps/applicationFramework/react";
@@ -211,7 +212,7 @@ export class Engine implements IEngine {
         if (!ParameterValidation.checkOneOf<UnitePackageManager>(this._logger, "packageManager", uniteConfiguration.packageManager, ["Npm", "Yarn"])) {
             return 1;
         }
-        if (!ParameterValidation.checkOneOf<UniteApplicationFramework>(this._logger, "applicationFramework", uniteConfiguration.applicationFramework, ["PlainApp", "Aurelia", "React"])) {
+        if (!ParameterValidation.checkOneOf<UniteApplicationFramework>(this._logger, "applicationFramework", uniteConfiguration.applicationFramework, ["PlainApp", "Angular", "Aurelia", "React"])) {
             return 1;
         }
 
@@ -225,7 +226,7 @@ export class Engine implements IEngine {
                                version: string | undefined | null,
                                preload: boolean | undefined,
                                includeMode: IncludeMode | undefined | null,
-                               testScriptInclude: boolean | undefined,
+                               scriptInclude: boolean | undefined,
                                main: string | undefined | null,
                                mainMinified: string | undefined | null,
                                isPackage: boolean | undefined,
@@ -255,7 +256,7 @@ export class Engine implements IEngine {
         }
 
         if (operation === "add") {
-            return await this.clientPackageAdd(packageName, version, preload, includeMode, testScriptInclude, main, mainMinified, isPackage, assets, outputDirectory, uniteConfiguration);
+            return await this.clientPackageAdd(packageName, version, preload, includeMode, scriptInclude, main, mainMinified, isPackage, assets, outputDirectory, uniteConfiguration);
         } else {
             return await this.clientPackageRemove(packageName, outputDirectory, uniteConfiguration);
         }
@@ -363,6 +364,11 @@ export class Engine implements IEngine {
             pipelineSteps.push(new UnitTestScaffold());
             pipelineSteps.push(new E2eTestScaffold());
 
+            pipelineSteps.push(new PlainApp());
+            pipelineSteps.push(new Angular());
+            pipelineSteps.push(new Aurelia());
+            pipelineSteps.push(new React());
+
             pipelineSteps.push(new Gulp());
             pipelineSteps.push(new Web());
             pipelineSteps.push(new Electron());
@@ -376,8 +382,6 @@ export class Engine implements IEngine {
             pipelineSteps.push(new SystemJsBuilder());
             pipelineSteps.push(new Webpack());
 
-            pipelineSteps.push(new HtmlTemplate());
-
             pipelineSteps.push(new Css());
             pipelineSteps.push(new Less());
             pipelineSteps.push(new Sass());
@@ -388,10 +392,6 @@ export class Engine implements IEngine {
 
             pipelineSteps.push(new MochaChai());
             pipelineSteps.push(new Jasmine());
-
-            pipelineSteps.push(new PlainApp());
-            pipelineSteps.push(new Aurelia());
-            pipelineSteps.push(new React());
 
             pipelineSteps.push(new Babel());
             pipelineSteps.push(new TypeScript());
@@ -407,6 +407,8 @@ export class Engine implements IEngine {
             pipelineSteps.push(new Yarn());
 
             pipelineSteps.push(new BrowserSync());
+
+            pipelineSteps.push(new HtmlTemplate());
 
             pipelineSteps.push(new ReadMe());
             pipelineSteps.push(new GitIgnore());
@@ -433,7 +435,7 @@ export class Engine implements IEngine {
                                    version: string,
                                    preload: boolean | undefined,
                                    includeMode: IncludeMode,
-                                   testScriptInclude: boolean | undefined,
+                                   scriptInclude: boolean | undefined,
                                    main: string | undefined | null,
                                    mainMinified: string | undefined | null,
                                    isPackage: boolean | undefined,
@@ -445,8 +447,8 @@ export class Engine implements IEngine {
             includeMode = "both";
         }
 
-        if (testScriptInclude === undefined) {
-            testScriptInclude = false;
+        if (scriptInclude === undefined) {
+            scriptInclude = false;
         }
 
         if (preload === undefined) {
@@ -501,7 +503,7 @@ export class Engine implements IEngine {
             clientPackage.mainMinified = mainMinified;
             clientPackage.isPackage = isPackage;
             clientPackage.includeMode = includeMode;
-            clientPackage.testScriptInclude = testScriptInclude;
+            clientPackage.scriptInclude = scriptInclude;
             clientPackage.assets = assets;
 
             uniteConfiguration.clientPackages[packageName] = clientPackage;

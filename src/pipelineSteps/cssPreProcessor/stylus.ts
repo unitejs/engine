@@ -14,6 +14,7 @@ export class Stylus extends EnginePipelineStepBase {
                             engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.cssPre === "Stylus") {
             engineVariables.styleLanguageExt = "styl";
+            engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "stylus");
         }
         return 0;
     }
@@ -23,8 +24,6 @@ export class Stylus extends EnginePipelineStepBase {
 
         if (uniteConfiguration.cssPre === "Stylus") {
             try {
-                engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "stylus");
-
                 logger.info("Creating Stylus folder", { cssSrcFolder: engineVariables.www.cssSrcFolder });
 
                 await fileSystem.directoryCreate(engineVariables.www.cssSrcFolder);
