@@ -11,6 +11,7 @@ const gutil = require("gulp-util");
 const uc = require("./util/unite-config");
 const asyncUtil = require("./util/async-util");
 const moduleConfig = require("./util/module-config");
+const clientPackages = require("./util/client-packages");
 const display = require("./util/display");
 const Builder = require("systemjs-builder");
 const uglify = require("gulp-uglify");
@@ -63,15 +64,21 @@ gulp.task("build-bundle-app", async () => {
         const builder = new Builder("./", `${uniteConfig.dirs.www.dist}app-module-config.js`);
 
         const dist = uniteConfig.dirs.www.dist;
+        const moduleIds = clientPackages.getModuleIds(uniteConfig, ["app", "both"]);
+        const hasText = moduleIds.indexOf("systemjs-plugin-text") >= 0;
 
         const packageFiles = [
-            `${dist}**/*.js`,
-            ` + ${dist}**/*.html!text`,
-            ` + ${dist}**/*.css!text`,
-            ` - ${dist}vendor-bundle.js`,
-            ` - ${dist}vendor-bundle-init.js`,
-            ` - ${dist}app-module-config.js`
+            `${dist}**/*.js`
         ];
+
+        if (hasText) {
+            packageFiles.push(` + ${dist}**/*.html!text`);
+            packageFiles.push(` + ${dist}**/*.css!text`);
+        }
+
+        packageFiles.push(` - ${dist}vendor-bundle.js`);
+        packageFiles.push(` - ${dist}vendor-bundle-init.js`);
+        packageFiles.push(` - ${dist}app-module-config.js`);
 
         const sourceMapsFlag = buildConfiguration.sourcemaps ? "inline" : false;
 

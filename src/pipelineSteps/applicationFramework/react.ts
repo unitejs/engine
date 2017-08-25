@@ -28,10 +28,13 @@ export class React extends SharedAppFramework {
             "react",
             "dist/react.js",
             "dist/react.min.js",
+            undefined,
             false,
             "both",
+            "none",
             false,
-            false,
+            undefined,
+            undefined,
             undefined,
             uniteConfiguration.applicationFramework === "React");
 
@@ -39,10 +42,13 @@ export class React extends SharedAppFramework {
             "react-dom",
             "dist/react-dom.js",
             "dist/react-dom.min.js",
+            undefined,
             false,
             "both",
+            "none",
             false,
-            false,
+            undefined,
+            undefined,
             undefined,
             uniteConfiguration.applicationFramework === "React");
 
@@ -50,10 +56,13 @@ export class React extends SharedAppFramework {
             "react-router-dom",
             "umd/react-router-dom.js",
             "umd/react-router-dom.min.js",
+            undefined,
             false,
             "both",
+            "none",
             false,
-            false,
+            undefined,
+            undefined,
             undefined,
             uniteConfiguration.applicationFramework === "React");
 
@@ -97,7 +106,7 @@ export class React extends SharedAppFramework {
                 ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app"]);
 
                 if (ret === 0) {
-                    ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper"]);
+                    ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper"], true);
 
                     if (ret === 0) {
                         ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);

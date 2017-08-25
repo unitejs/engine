@@ -2,13 +2,12 @@
  * Tests for App.
  */
 import {App} from "../../../src/app";
-import Chai from "chai";
+import chai from "chai";
 
 describe("App", () => {
-    it("can be created", (done) => {
+    it("can be created", () => {
         const app = new App();
-        Chai.should().exist(app);
-        done();
+        chai.should().exist(app);
     });
 });
 

@@ -1,3 +1,16 @@
+# v0.9.2
+
+* Added Angular as an App Framework
+* Changed requirejs/text module to requirejs-text
+* Improved module config to only add text/css loaders when necessary
+* Client packages can now be wildcards e.g. rxjs
+* Added map capabilities to client packages
+* Added loader capabilities to client packages
+* Added testing additional components to client packages
+* Script Include Mode now allow for "none", "bundled", "notBundled", "both" instead of boolean
+* Gulp pipeline step removes tasks if options change
+* Karma includes and additional testing libs from client packages
+
 # v0.9.1
 
 * Fixed missing gulpfile.js from assets in npm package

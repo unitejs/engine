@@ -19,10 +19,13 @@ export class CommonJs extends EnginePipelineStepBase {
             "systemjs",
             "dist/system.src.js",
             "dist/system.js",
+            undefined,
             false,
             "both",
-            true,
+            "notBundled",
             false,
+            undefined,
+            undefined,
             undefined,
             uniteConfiguration.moduleType === "CommonJS");
 

@@ -18,21 +18,13 @@ export class Amd extends EnginePipelineStepBase {
             "requirejs",
             "require.js",
             undefined,
-            false,
-            "both",
-            true,
-            false,
-            undefined,
-            uniteConfiguration.moduleType === "AMD");
-
-        engineVariables.toggleClientPackage(
-            "text",
-            "text.js",
             undefined,
             false,
             "both",
+            "both",
             false,
-            false,
+            undefined,
+            undefined,
             undefined,
             uniteConfiguration.moduleType === "AMD");
 

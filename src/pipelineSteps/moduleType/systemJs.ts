@@ -12,28 +12,19 @@ import { EngineVariables } from "../../engine/engineVariables";
 
 export class SystemJs extends EnginePipelineStepBase {
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        // We use SystemJS for testing CommonJS modules so we don't need to webpack the tests
         engineVariables.toggleDevDependency(["systemjs"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.moduleType === "SystemJS");
 
         engineVariables.toggleClientPackage(
             "systemjs",
             "dist/system.src.js",
             "dist/system.js",
-            false,
-            "both",
-            true,
-            false,
-            undefined,
-            uniteConfiguration.moduleType === "SystemJS");
-
-        engineVariables.toggleClientPackage(
-            "systemjs-plugin-text",
-            "text.js",
             undefined,
             false,
             "both",
+            "both",
             false,
-            false,
+            undefined,
+            undefined,
             undefined,
             uniteConfiguration.moduleType === "SystemJS");
 

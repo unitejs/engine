@@ -7,43 +7,36 @@ const clientPackages = require("./client-packages");
 function create (uniteConfig, includeModes, isBundle) {
     /* We use the SystemJS loader for CommonJS modules when testing and unbundled, 
     we need to specify the module format as cjs for it to work */
-    const moduleConfig = clientPackages.buildModuleConfig(uniteConfig, includeModes, false);
+    const moduleConfig = clientPackages.buildModuleConfig(uniteConfig, includeModes, isBundle);
 
-    if (isBundle && moduleConfig.paths.systemjs) {
-        moduleConfig.paths.systemjs = `${moduleConfig.paths.systemjs}-production`;
-    }
+    const sjsConfig = {
+        "paths": moduleConfig.paths,
+        "packages": {},
+        "map": { },
+        "meta": {
+            "dist/*": {
+                "format": "cjs"
+            }
+        }
+    };
 
-    const sjsPackages = {};
-    sjsPackages[""] = {"defaultExtension": "js"};
+    sjsConfig.packages[""] = {"defaultExtension": "js"};
 
     Object.keys(moduleConfig.paths).forEach(key => {
         moduleConfig.paths[key] = moduleConfig.paths[key].replace(/\.\//, "");
     });
     moduleConfig.packages.forEach((pkg) => {
         moduleConfig.paths[pkg.name] = pkg.location.replace(/\.\//, "");
-        sjsPackages[pkg.name] = {
+        sjsConfig.packages[pkg.name] = {
             "main": pkg.main
         };
     });
-
-    const sjsConfig = {
-        "paths": moduleConfig.paths,
-        "packages": sjsPackages,
-        "map": {
-            "text": "systemjs-plugin-text"
-        },
-        "meta": {
-            "dist/*": {
-                "format": "cjs"
-            },
-            "*.html": {
-                "loader": "text"
-            },
-            "*.css": {
-                "loader": "css"
-            }
-        }
-    };
+    Object.keys(moduleConfig.map).forEach(key => {
+        sjsConfig.map[key] = moduleConfig.map[key];
+    });
+    Object.keys(moduleConfig.loaders).forEach(key => {
+        sjsConfig.meta[key] = {"loader": moduleConfig.loaders[key]};
+    });
 
     const jsonConfig = JSON.stringify(sjsConfig, undefined, "\t");
     const jsonPreload = JSON.stringify(moduleConfig.preload, undefined, "\t");

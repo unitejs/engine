@@ -26,7 +26,7 @@ gulp.task("build-bundle-app", async () => {
             "entries": `./${path.join(uniteConfig.dirs.www.dist, "entryPoint.js")}`
         });
 
-        const keys = clientPackages.getKeys(uniteConfig, ["app", "both"]);
+        const keys = clientPackages.getModuleIds(uniteConfig, ["app", "both"]);
 
         keys.forEach((key) => {
             bApp.exclude(key);

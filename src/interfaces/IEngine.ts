@@ -24,11 +24,14 @@ export interface IEngine {
                   version: string | undefined | null,
                   preload: boolean | undefined,
                   includeMode: string | undefined | null,
-                  scriptInclude: boolean | undefined,
+                  scriptIncludeMode: string | undefined | null,
                   main: string | undefined | null,
                   mainMinified: string | undefined | null,
+                  testingAdditions: string | undefined | null,
                   isPackage: boolean | undefined,
                   assets: string | undefined | null,
+                  map: string | undefined | null,
+                  loaders: string | undefined | null,
                   packageManager: string | undefined | null,
                   outputDirectory: string | undefined | null): Promise<number>;
 

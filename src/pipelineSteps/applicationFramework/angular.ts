@@ -27,9 +27,6 @@ export class Angular extends SharedAppFramework {
 
         engineVariables.toggleDevDependency(["babel-plugin-transform-decorators-legacy"], uniteConfiguration.applicationFramework === "Angular" && uniteConfiguration.sourceLanguage === "JavaScript");
         engineVariables.toggleDevDependency(["babel-eslint"], uniteConfiguration.applicationFramework === "Angular" && uniteConfiguration.linter === "ESLint");
-        // engineVariables.toggleDevDependency(["unitejs-plain-protractor-plugin"], uniteConfiguration.applicationFramework === "PlainApp" && uniteConfiguration.e2eTestRunner === "Protractor");
-
-        // engineVariables.toggleDevDependency(["unitejs-plain-webdriver-plugin"], uniteConfiguration.applicationFramework === "PlainApp" && uniteConfiguration.e2eTestRunner === "WebdriverIO");
 
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
         if (babelConfiguration) {
@@ -37,17 +34,6 @@ export class Angular extends SharedAppFramework {
         }
 
         if (uniteConfiguration.applicationFramework === "Angular") {
-            //     const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
-            //     if (protractorConfiguration) {
-            //         const plugin = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
-            //                                                                         fileSystem.pathCombine(engineVariables.www.packageFolder, "unitejs-plain-protractor-plugin")));
-            //         protractorConfiguration.plugins.push({ path: plugin });
-            //     }
-            //     const webdriverIoPlugins = engineVariables.getConfiguration<string[]>("WebdriverIO.Plugins");
-            //     if (webdriverIoPlugins) {
-            //         webdriverIoPlugins.push("unitejs-plain-webdriver-plugin");
-            //     }
-
             const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
             if (esLintConfiguration) {
                 esLintConfiguration.parser = "babel-eslint";
@@ -64,10 +50,14 @@ export class Angular extends SharedAppFramework {
                 ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app"]);
 
                 if (ret === 0) {
-                    ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper"]);
+                    ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, ["bootstrapper"], true);
 
                     if (ret === 0) {
-                        ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
+                        ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app.module"], false);
+
+                        if (ret === 0) {
+                            ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
+                        }
                     }
                 }
             }
@@ -81,14 +71,22 @@ export class Angular extends SharedAppFramework {
         const packages = ["core", "common", "compiler", "platform-browser", "platform-browser-dynamic", "http", "router", "forms"];
 
         packages.forEach(pkg => {
+            const testAdditions: { [id: string]: string } = {};
+            if (pkg !== "forms") {
+                testAdditions[`@angular/${pkg}/testing`] = `bundles/${pkg}-testing.umd.js`;
+            }
+
             engineVariables.toggleClientPackage(
                 `@angular/${pkg}`,
                 `bundles/${pkg}.umd.js`,
                 `bundles/${pkg}.umd.min.js`,
+                testAdditions,
                 false,
                 "both",
+                "none",
                 false,
-                false,
+                undefined,
+                undefined,
                 undefined,
                 uniteConfiguration.applicationFramework === "Angular");
         });
@@ -97,21 +95,27 @@ export class Angular extends SharedAppFramework {
             "rxjs",
             "*",
             undefined,
+            undefined,
             false,
             "both",
+            "none",
             false,
-            false,
+            undefined,
+            undefined,
             undefined,
             uniteConfiguration.applicationFramework === "Angular");
 
         engineVariables.toggleClientPackage(
             "core-js",
             "client/shim.js",
-            "client/shim.js",
+            undefined,
+            undefined,
             false,
             "both",
-            true,
+            "both",
             false,
+            undefined,
+            undefined,
             undefined,
             uniteConfiguration.applicationFramework === "Angular");
 
@@ -119,10 +123,20 @@ export class Angular extends SharedAppFramework {
             "zone.js",
             "dist/zone.js",
             "dist/zone.min.js",
+            {
+                "long-stack-trace-zone": "dist/long-stack-trace-zone.js",
+                proxy: "dist/proxy.js",
+                "sync-test": "dist/sync-test.js",
+                "runner-patch": uniteConfiguration.unitTestFramework === "Jasmine" ? "dist/jasmine-patch.js" : "dist/mocha-patch.js",
+                "async-test": "dist/async-test.js",
+                "fake-async-test": "dist/fake-async-test.js"
+            },
             false,
             "both",
-            true,
+            "both",
             false,
+            undefined,
+            undefined,
             undefined,
             uniteConfiguration.applicationFramework === "Angular");
 
@@ -130,10 +144,13 @@ export class Angular extends SharedAppFramework {
             "reflect-metadata",
             "Reflect.js",
             undefined,
+            undefined,
             false,
             "both",
-            true,
+            "both",
             false,
+            undefined,
+            undefined,
             undefined,
             uniteConfiguration.applicationFramework === "Angular");
     }

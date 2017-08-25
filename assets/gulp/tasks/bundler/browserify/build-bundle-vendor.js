@@ -22,7 +22,7 @@ gulp.task("build-bundle-vendor", async () => {
 
         const bVendor = browserify({"debug": buildConfiguration.sourcemaps});
 
-        const keys = clientPackages.getKeys(uniteConfig, ["app", "both"]);
+        const keys = clientPackages.getModuleIds(uniteConfig, ["app", "both"]);
 
         const idx = keys.indexOf("systemjs");
         if (idx >= 0) {

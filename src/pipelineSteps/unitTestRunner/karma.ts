@@ -121,20 +121,35 @@ export class Karma extends EnginePipelineStepBase {
         const testPackages = engineVariables.getTestClientPackages();
 
         Object.keys(testPackages).forEach(key => {
-            if (testPackages[key].main) {
-                const mainSplit = testPackages[key].main.split("/");
-                const main = mainSplit.pop();
+            const pkg = testPackages[key];
+            if (pkg.main) {
+                const mainSplit = pkg.main.split("/");
+                let main = mainSplit.pop();
                 let location = mainSplit.join("/");
 
-                if (testPackages[key].isPackage) {
-                    const keyInclude = fileSystem.pathToWeb(
+                let keyInclude;
+                if (pkg.isPackage) {
+                    keyInclude = fileSystem.pathToWeb(
                         fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, `${key}/${location}/**/*.{js,html,css}`)));
-                    this._configuration.files.push({ pattern: keyInclude, included: testPackages[key].scriptInclude });
                 } else {
                     location += location.length > 0 ? "/" : "";
-                    const keyInclude = fileSystem.pathToWeb(
+                    if (main === "*") {
+                        main = "**/*.{js,html,css}";
+                    }
+                    keyInclude = fileSystem.pathToWeb(
                         fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, `${key}/${location}${main}`)));
-                    this._configuration.files.push({ pattern: keyInclude, included: testPackages[key].scriptInclude });
+                }
+                this._configuration.files.push({ pattern: keyInclude, included: pkg.scriptIncludeMode === "notBundled" || pkg.scriptIncludeMode === "both" });
+
+                if (pkg.testingAdditions) {
+                    const additionKeys = Object.keys(pkg.testingAdditions);
+                    additionKeys.forEach(additionKey => {
+                        const additionKeyInclude = fileSystem.pathToWeb(
+                            fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
+                                                        fileSystem.pathCombine(engineVariables.www.packageFolder,
+                                                                               `${key}/${pkg.testingAdditions[additionKey]}`)));
+                        this._configuration.files.push({ pattern: additionKeyInclude, included: pkg.scriptIncludeMode === "notBundled" || pkg.scriptIncludeMode === "both" });
+                    });
                 }
             }
 

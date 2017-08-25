@@ -5,6 +5,7 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
 import { ISpdxLicense } from "../configuration/models/spdx/ISpdxLicense";
 import { IncludeMode } from "../configuration/models/unite/includeMode";
+import { ScriptIncludeMode } from "../configuration/models/unite/scriptIncludeMode";
 import { UniteClientPackage } from "../configuration/models/unite/uniteClientPackage";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { IPackageManager } from "../interfaces/IPackageManager";
@@ -94,21 +95,27 @@ export class EngineVariables {
     public toggleClientPackage(name: string,
                                main: string,
                                mainMinified: string,
+                               testingAdditions:  { [id: string]: string},
                                preload: boolean,
                                includeMode: IncludeMode,
-                               scriptInclude: boolean,
+                               scriptIncludeMode: ScriptIncludeMode,
                                isPackage: boolean,
                                assets: string,
+                               map: string,
+                               loaders: string[],
                                required: boolean): void {
         const clientPackage = new UniteClientPackage();
         clientPackage.includeMode = includeMode;
         clientPackage.preload = preload;
         clientPackage.main = main;
         clientPackage.mainMinified = mainMinified;
+        clientPackage.testingAdditions = testingAdditions;
         clientPackage.isPackage = isPackage;
         clientPackage.version = this.findDependencyVersion(name);
         clientPackage.assets = assets;
-        clientPackage.scriptInclude = scriptInclude;
+        clientPackage.map = map;
+        clientPackage.loaders = loaders;
+        clientPackage.scriptIncludeMode = scriptIncludeMode;
 
         let opArr: { [id: string]: UniteClientPackage };
         if (required) {

@@ -90,12 +90,15 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
                                      fileSystem: IFileSystem,
                                      uniteConfiguration: UniteConfiguration,
                                      engineVariables: EngineVariables,
-                                     specs: string[]): Promise<number> {
+                                     specs: string[],
+                                     isShared: boolean): Promise<number> {
         if (uniteConfiguration.unitTestRunner !== "None") {
             logger.info("Generating unit test scaffold shared", { unitTestSrcFolder: engineVariables.www.unitTestSrcFolder });
 
+            const appFramework = isShared ? "shared" : uniteConfiguration.applicationFramework.toLowerCase();
+
             const unitTestsScaffold = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
-                                                             `appFramework/shared/test/unit/src/sourceLanguage/${uniteConfiguration.sourceLanguage.toLowerCase()}/` +
+                                                             `appFramework/${appFramework}/test/unit/src/sourceLanguage/${uniteConfiguration.sourceLanguage.toLowerCase()}/` +
                                                                 `${uniteConfiguration.unitTestFramework.toLowerCase()}/`);
 
             const unitTestsScaffoldModuleType = fileSystem.pathCombine(engineVariables.engineAssetsFolder,

@@ -14,12 +14,13 @@ describe("App", () => {
 
     it("the root text is set", () => {
         return browser
-            .loadAndWaitForPlainPage("/")
-            .element("#root")
+            .url("/")
+            .waitForText("#root > ng-component > div", 20000)
+            .element("#root > ng-component > div")
             .getText()
-            .then((rootContent) => {
-                expect(rootContent).toEqual("Hello UniteJS World!");
-            });
+                .then((rootContent) => {
+                    expect(rootContent).toEqual("Hello UniteJS World!");
+                });
     });
 });
 

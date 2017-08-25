@@ -52,7 +52,7 @@ export class Aurelia extends SharedAppFramework {
                         ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app"]);
 
                         if (ret === 0) {
-                            ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper"]);
+                            ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper"], true);
 
                             if (ret === 0) {
                                 ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
@@ -113,12 +113,43 @@ export class Aurelia extends SharedAppFramework {
             "whatwg-fetch",
             "fetch.js",
             undefined,
+            undefined,
             false,
             "both",
-            false,
+            "none",
             false,
             undefined,
+            undefined,
+            undefined,
             uniteConfiguration.applicationFramework === "Aurelia");
+
+        engineVariables.toggleClientPackage(
+            "requirejs-text",
+            "text.js",
+            undefined,
+            undefined,
+            false,
+            "both",
+            "none",
+            false,
+            undefined,
+            "text",
+            undefined,
+            uniteConfiguration.applicationFramework === "Aurelia" && uniteConfiguration.moduleType === "AMD");
+
+        engineVariables.toggleClientPackage(
+            "systemjs-plugin-text",
+            "text.js",
+            undefined,
+            undefined,
+            false,
+            "both",
+            "none",
+            false,
+            undefined,
+            "text",
+            undefined,
+            uniteConfiguration.applicationFramework === "Aurelia" && uniteConfiguration.moduleType === "SystemJS");
     }
 
     private toggleClientPackages(uniteConfiguration: UniteConfiguration,
@@ -131,10 +162,13 @@ export class Aurelia extends SharedAppFramework {
                 clientPackage.name,
                 `${location}${clientPackage.name}.js`,
                 undefined,
+                undefined,
                 false,
                 "both",
-                false,
+                "none",
                 clientPackage.isPackage ? true : false,
+                undefined,
+                undefined,
                 undefined,
                 uniteConfiguration.applicationFramework === "Aurelia");
         });

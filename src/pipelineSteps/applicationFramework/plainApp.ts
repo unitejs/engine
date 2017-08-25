@@ -32,7 +32,7 @@ export class PlainApp extends SharedAppFramework {
                 ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app"]);
 
                 if (ret === 0) {
-                    ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper"]);
+                    ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper"], true);
 
                     if (ret === 0) {
                         ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);

@@ -1,13 +1,12 @@
 /**
  * Tests for Bootstrapper.
  */
-import Chai from "chai";
 import {bootstrap} from "../../../src/bootstrapper";
+import chai from "chai";
 
 describe("Bootstrapper", () => {
-    it("should contain bootstrap", (done) => {
-        Chai.should().exist(bootstrap);
-        done();
+    it("should contain bootstrap", () => {
+        chai.should().exist(bootstrap);
     });
 });
 

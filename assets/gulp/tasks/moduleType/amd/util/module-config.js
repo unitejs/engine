@@ -5,21 +5,19 @@ const os = require("os");
 const clientPackages = require("./client-packages");
 
 function create (uniteConfig, includeModes, isBundle) {
-    const moduleConfig = clientPackages.buildModuleConfig(uniteConfig, includeModes, false);
-
-    const configMap = {};
-    if (moduleConfig.paths.text) {
-        configMap.text = moduleConfig.paths.text;
-        delete moduleConfig.paths.text;
-    }
+    const moduleConfig = clientPackages.buildModuleConfig(uniteConfig, includeModes, isBundle);
 
     const rjsConfig = {
         "paths": moduleConfig.paths,
         "packages": moduleConfig.packages,
         "map": {
-            "*": configMap
+            "*": {}
         }
     };
+
+    Object.keys(moduleConfig.map).forEach(key => {
+        rjsConfig.map["*"][key] = moduleConfig.map[key];
+    });
 
     const jsonConfig = JSON.stringify(rjsConfig, undefined, "\t");
     const jsonPreload = JSON.stringify(moduleConfig.preload, undefined, "\t");

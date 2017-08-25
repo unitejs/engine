@@ -22,7 +22,7 @@ gulp.task("build-bundle-app", async () => {
         const entry = {};
         const plugins = [];
 
-        const keys = clientPackages.getKeys(uniteConfig, ["app", "both"]);
+        const keys = clientPackages.getModuleIds(uniteConfig, ["app", "both"]);
 
         const idx = keys.indexOf("systemjs");
         if (idx >= 0) {

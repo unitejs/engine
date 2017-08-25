@@ -8,6 +8,7 @@ import { PackageConfiguration } from "../configuration/models/packages/packageCo
 import { ISpdx } from "../configuration/models/spdx/ISpdx";
 import { ISpdxLicense } from "../configuration/models/spdx/ISpdxLicense";
 import { IncludeMode } from "../configuration/models/unite/includeMode";
+import { ScriptIncludeMode } from "../configuration/models/unite/scriptIncludeMode";
 import { UniteApplicationFramework } from "../configuration/models/unite/uniteApplicationFramework";
 import { UniteBuildConfiguration } from "../configuration/models/unite/uniteBuildConfiguration";
 import { UniteBundler } from "../configuration/models/unite/uniteBundler";
@@ -226,11 +227,14 @@ export class Engine implements IEngine {
                                version: string | undefined | null,
                                preload: boolean | undefined,
                                includeMode: IncludeMode | undefined | null,
-                               scriptInclude: boolean | undefined,
+                               scriptIncludeMode: ScriptIncludeMode | undefined | null,
                                main: string | undefined | null,
                                mainMinified: string | undefined | null,
+                               testingAdditions: string | undefined | null,
                                isPackage: boolean | undefined,
                                assets: string | undefined | null,
+                               map: string | undefined | null,
+                               loaders: string | undefined | null,
                                packageManager: UnitePackageManager | undefined | null,
                                outputDirectory: string | undefined | null): Promise<number> {
         outputDirectory = this.cleanupOutputDirectory(outputDirectory);
@@ -256,7 +260,8 @@ export class Engine implements IEngine {
         }
 
         if (operation === "add") {
-            return await this.clientPackageAdd(packageName, version, preload, includeMode, scriptInclude, main, mainMinified, isPackage, assets, outputDirectory, uniteConfiguration);
+            return await this.clientPackageAdd(packageName, version, preload, includeMode, scriptIncludeMode,
+                                               main, mainMinified, testingAdditions, isPackage, assets, map, loaders, outputDirectory, uniteConfiguration);
         } else {
             return await this.clientPackageRemove(packageName, outputDirectory, uniteConfiguration);
         }
@@ -435,11 +440,14 @@ export class Engine implements IEngine {
                                    version: string,
                                    preload: boolean | undefined,
                                    includeMode: IncludeMode,
-                                   scriptInclude: boolean | undefined,
+                                   scriptIncludeMode: ScriptIncludeMode | undefined,
                                    main: string | undefined | null,
                                    mainMinified: string | undefined | null,
+                                   testingAdditions: string | undefined | null,
                                    isPackage: boolean | undefined,
                                    assets: string | undefined | null,
+                                   map: string | undefined | null,
+                                   loaders: string | undefined | null,
                                    outputDirectory: string,
                                    uniteConfiguration: UniteConfiguration): Promise<number> {
 
@@ -447,8 +455,8 @@ export class Engine implements IEngine {
             includeMode = "both";
         }
 
-        if (scriptInclude === undefined) {
-            scriptInclude = false;
+        if (scriptIncludeMode === undefined) {
+            scriptIncludeMode = "none";
         }
 
         if (preload === undefined) {
@@ -495,16 +503,27 @@ export class Engine implements IEngine {
                 mainMinified = mainMinified.replace(/\\/g, "/");
                 mainMinified = mainMinified.replace(/\.\//, "/");
             }
-
             const clientPackage = new UniteClientPackage();
             clientPackage.version = version;
             clientPackage.preload = preload;
             clientPackage.main = main;
             clientPackage.mainMinified = mainMinified;
+            if (testingAdditions) {
+                clientPackage.testingAdditions = {};
+                const splitAdditions = testingAdditions.split(";");
+                splitAdditions.forEach(splitAddition => {
+                    const parts = splitAddition.split("=");
+                    if (parts.length === 2) {
+                        clientPackage.testingAdditions[parts[0]] = parts[1];
+                    }
+                });
+            }
             clientPackage.isPackage = isPackage;
             clientPackage.includeMode = includeMode;
-            clientPackage.scriptInclude = scriptInclude;
+            clientPackage.scriptIncludeMode = scriptIncludeMode;
             clientPackage.assets = assets;
+            clientPackage.map = map;
+            clientPackage.loaders = loaders ? loaders.split(";") : undefined;
 
             uniteConfiguration.clientPackages[packageName] = clientPackage;
 

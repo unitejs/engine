@@ -34,10 +34,13 @@ export class MochaChai extends EnginePipelineStepBase {
             "chai",
             "chai.js",
             undefined,
+            undefined,
             true,
             "test",
+            "none",
             false,
-            false,
+            undefined,
+            undefined,
             undefined,
             isEither);
 

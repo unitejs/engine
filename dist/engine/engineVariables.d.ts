@@ -5,6 +5,7 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
 import { ISpdxLicense } from "../configuration/models/spdx/ISpdxLicense";
 import { IncludeMode } from "../configuration/models/unite/includeMode";
+import { ScriptIncludeMode } from "../configuration/models/unite/scriptIncludeMode";
 import { UniteClientPackage } from "../configuration/models/unite/uniteClientPackage";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { IPackageManager } from "../interfaces/IPackageManager";
@@ -45,7 +46,9 @@ export declare class EngineVariables {
     setConfiguration(name: string, config: any): void;
     getConfiguration<T>(name: string): T;
     setupDirectories(fileSystem: IFileSystem, rootFolder: string): void;
-    toggleClientPackage(name: string, main: string, mainMinified: string, preload: boolean, includeMode: IncludeMode, scriptInclude: boolean, isPackage: boolean, assets: string, required: boolean): void;
+    toggleClientPackage(name: string, main: string, mainMinified: string, testingAdditions: {
+        [id: string]: string;
+    }, preload: boolean, includeMode: IncludeMode, scriptIncludeMode: ScriptIncludeMode, isPackage: boolean, assets: string, map: string, loaders: string[], required: boolean): void;
     getTestClientPackages(): {
         [id: string]: UniteClientPackage;
     };

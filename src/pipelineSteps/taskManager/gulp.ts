@@ -8,13 +8,11 @@ import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 
 export class Gulp extends EnginePipelineStepBase {
-    private static FILENAME: string = "gulpfile.js";
-
     private _buildFolder: string;
     private _tasksFolder: string;
     private _utilFolder: string;
 
-    private _files: { sourceFolder: string; sourceFile: string; destFolder: string; destFile: string }[];
+    private _files: { sourceFolder: string; sourceFile: string; destFolder: string; destFile: string; keep: boolean }[];
 
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         this._buildFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "build");
@@ -26,6 +24,8 @@ export class Gulp extends EnginePipelineStepBase {
     }
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        const isGulp = uniteConfiguration.taskManager === "Gulp";
+
         engineVariables.toggleDevDependency([
                                                 "gulp",
                                                 "bluebird",
@@ -37,12 +37,33 @@ export class Gulp extends EnginePipelineStepBase {
                                                 "uglify-js",
                                                 "mkdirp"
                                             ],
-                                            uniteConfiguration.taskManager === "Gulp");
+                                            isGulp);
 
-        if (uniteConfiguration.taskManager === "Gulp") {
-            const assetGulp = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp");
-            this.addFile(assetGulp, "gulpfile.js", engineVariables.wwwRootFolder, "gulpfile.js");
-        } else {
+        const assetGulp = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp");
+        this.toggleFile(assetGulp, "gulpfile.js", engineVariables.wwwRootFolder, "gulpfile.js", isGulp);
+
+        this.generateBuildTasks(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
+        this.generateUnitTasks(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
+        this.generateE2eTasks(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
+        this.generateServeTasks(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
+        this.generateThemeTasks(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
+        this.generateUtils(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
+
+        for (let i = 0; i < this._files.length; i++) {
+            let ret;
+
+            if (this._files[i].keep) {
+                ret = await super.copyFile(logger, fileSystem, this._files[i].sourceFolder, this._files[i].sourceFile, this._files[i].destFolder, this._files[i].destFile);
+            } else {
+                ret = await super.deleteFile(logger, fileSystem, this._files[i].destFolder, this._files[i].destFile);
+            }
+
+            if (ret !== 0) {
+                return ret;
+            }
+        }
+
+        if (!isGulp) {
             try {
                 logger.info("Deleting Gulp Build Directory", { gulpBuildFolder: this._buildFolder });
 
@@ -54,31 +75,12 @@ export class Gulp extends EnginePipelineStepBase {
                 logger.error("Deleting Gulp Build Directory failed", err, { gulpBuildFolder: this._buildFolder });
                 return 1;
             }
-
-            const ret = await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, Gulp.FILENAME);
-            if (ret !== 0) {
-                return ret;
-            }
-        }
-
-        this.generateBuildTasks(logger, fileSystem, uniteConfiguration, engineVariables);
-        this.generateUnitTasks(logger, fileSystem, uniteConfiguration, engineVariables);
-        this.generateE2eTasks(logger, fileSystem, uniteConfiguration, engineVariables);
-        this.generateServeTasks(logger, fileSystem, uniteConfiguration, engineVariables);
-        this.generateThemeTasks(logger, fileSystem, uniteConfiguration, engineVariables);
-        this.generateUtils(logger, fileSystem, uniteConfiguration, engineVariables);
-
-        for (let i = 0; i < this._files.length; i++) {
-            const ret = await super.copyFile(logger, fileSystem, this._files[i].sourceFolder, this._files[i].sourceFile, this._files[i].destFolder, this._files[i].destFile);
-            if (ret !== 0) {
-                return ret;
-            }
         }
 
         return 0;
     }
 
-    public generateBuildTasks(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void {
+    public generateBuildTasks(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, isGulp: boolean): void {
         engineVariables.toggleDevDependency([
                                                 "del",
                                                 "delete-empty",
@@ -90,137 +92,127 @@ export class Gulp extends EnginePipelineStepBase {
                                                 "html-minifier",
                                                 "node-glob"
                                             ],
-                                            uniteConfiguration.taskManager === "Gulp");
-        engineVariables.toggleDevDependency(["gulp-babel"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.sourceLanguage === "JavaScript");
-        engineVariables.toggleDevDependency(["gulp-typescript"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.sourceLanguage === "TypeScript");
-        engineVariables.toggleDevDependency(["gulp-eslint"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.linter === "ESLint");
-        engineVariables.toggleDevDependency(["gulp-tslint"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.linter === "TSLint");
-        engineVariables.toggleDevDependency(["webpack-stream"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.bundler === "Webpack");
-        engineVariables.toggleDevDependency(["vinyl-source-stream", "vinyl-buffer"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.bundler === "Browserify");
-        engineVariables.toggleDevDependency(["gulp-less"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPre === "Less");
-        engineVariables.toggleDevDependency(["gulp-sass"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPre === "Sass");
-        engineVariables.toggleDevDependency(["gulp-stylus"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPre === "Stylus");
-        engineVariables.toggleDevDependency(["gulp-postcss"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPost === "PostCss");
-        engineVariables.toggleDevDependency(["gulp-cssnano"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.cssPost === "None");
+                                            isGulp);
+        engineVariables.toggleDevDependency(["gulp-babel"], isGulp && uniteConfiguration.sourceLanguage === "JavaScript");
+        engineVariables.toggleDevDependency(["gulp-typescript"], isGulp && uniteConfiguration.sourceLanguage === "TypeScript");
+        engineVariables.toggleDevDependency(["gulp-eslint"], isGulp && uniteConfiguration.linter === "ESLint");
+        engineVariables.toggleDevDependency(["gulp-tslint"], isGulp && uniteConfiguration.linter === "TSLint");
+        engineVariables.toggleDevDependency(["webpack-stream"], isGulp && uniteConfiguration.bundler === "Webpack");
+        engineVariables.toggleDevDependency(["vinyl-source-stream", "vinyl-buffer"], isGulp && uniteConfiguration.bundler === "Browserify");
+        engineVariables.toggleDevDependency(["gulp-less"], isGulp && uniteConfiguration.cssPre === "Less");
+        engineVariables.toggleDevDependency(["gulp-sass"], isGulp && uniteConfiguration.cssPre === "Sass");
+        engineVariables.toggleDevDependency(["gulp-stylus"], isGulp && uniteConfiguration.cssPre === "Stylus");
+        engineVariables.toggleDevDependency(["gulp-postcss"], isGulp && uniteConfiguration.cssPost === "PostCss");
+        engineVariables.toggleDevDependency(["gulp-cssnano"], isGulp && uniteConfiguration.cssPost === "None");
 
-        if (uniteConfiguration.taskManager === "Gulp") {
-            logger.info("Generating gulp tasks for build in", { gulpTasksFolder: this._tasksFolder });
+        logger.info("Generating gulp tasks for build in", { gulpTasksFolder: this._tasksFolder });
 
-            const assetTasks = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/");
-            const assetTasksLanguage = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/sourceLanguage/${uniteConfiguration.sourceLanguage.toLowerCase()}/`);
-            const assetTasksBundler = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/bundler/${uniteConfiguration.bundler.toLowerCase()}/`);
-            const assetTasksLinter = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/linter/${uniteConfiguration.linter.toLowerCase()}/`);
-            const assetTasksCssPre = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/cssPre/${uniteConfiguration.cssPre.toLowerCase()}/`);
-            const assetTasksCssPost = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/cssPost/${uniteConfiguration.cssPost.toLowerCase()}/`);
+        const assetTasks = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/");
+        const assetTasksLanguage = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/sourceLanguage/${uniteConfiguration.sourceLanguage.toLowerCase()}/`);
+        const assetTasksBundler = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/bundler/${uniteConfiguration.bundler.toLowerCase()}/`);
+        const assetTasksLinter = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/linter/${uniteConfiguration.linter.toLowerCase()}/`);
+        const assetTasksCssPre = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/cssPre/${uniteConfiguration.cssPre.toLowerCase()}/`);
+        const assetTasksCssPost = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/cssPost/${uniteConfiguration.cssPost.toLowerCase()}/`);
 
-            this.addFile(assetTasksLanguage, "build-transpile.js", this._tasksFolder, "build-transpile.js");
-            this.addFile(assetTasksBundler, "build-bundle-app.js", this._tasksFolder, "build-bundle-app.js");
-            this.addFile(assetTasksBundler, "build-bundle-vendor.js", this._tasksFolder, "build-bundle-vendor.js");
-            this.addFile(assetTasksLinter, "build-lint.js", this._tasksFolder, "build-lint.js");
-            this.addFile(assetTasksCssPre, "build-css-app.js", this._tasksFolder, "build-css-app.js");
-            this.addFile(assetTasksCssPre, "build-css-components.js", this._tasksFolder, "build-css-components.js");
-            this.addFile(assetTasksCssPost, "build-css-post-app.js", this._tasksFolder, "build-css-post-app.js");
-            this.addFile(assetTasksCssPost, "build-css-post-components.js", this._tasksFolder, "build-css-post-components.js");
+        this.toggleFile(assetTasksLanguage, "build-transpile.js", this._tasksFolder, "build-transpile.js", isGulp);
+        this.toggleFile(assetTasksBundler, "build-bundle-app.js", this._tasksFolder, "build-bundle-app.js", isGulp);
+        this.toggleFile(assetTasksBundler, "build-bundle-vendor.js", this._tasksFolder, "build-bundle-vendor.js", isGulp);
+        this.toggleFile(assetTasksLinter, "build-lint.js", this._tasksFolder, "build-lint.js", isGulp);
+        this.toggleFile(assetTasksCssPre, "build-css-app.js", this._tasksFolder, "build-css-app.js", isGulp);
+        this.toggleFile(assetTasksCssPre, "build-css-components.js", this._tasksFolder, "build-css-components.js", isGulp);
+        this.toggleFile(assetTasksCssPost, "build-css-post-app.js", this._tasksFolder, "build-css-post-app.js", isGulp);
+        this.toggleFile(assetTasksCssPost, "build-css-post-components.js", this._tasksFolder, "build-css-post-components.js", isGulp);
 
-            this.addFile(assetTasks, "build.js", this._tasksFolder, "build.js");
-            this.addFile(assetTasks, "version.js", this._tasksFolder, "version.js");
-        }
+        this.toggleFile(assetTasks, "build.js", this._tasksFolder, "build.js", isGulp);
+        this.toggleFile(assetTasks, "version.js", this._tasksFolder, "version.js", isGulp);
     }
 
-    private generateUnitTasks(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void {
-        engineVariables.toggleDevDependency(["gulp-karma-runner"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.unitTestRunner === "Karma");
+    private generateUnitTasks(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, isGulp: boolean): void {
+        engineVariables.toggleDevDependency(["gulp-karma-runner"], isGulp && uniteConfiguration.unitTestRunner === "Karma");
 
-        if (uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.unitTestRunner !== "None") {
-            logger.info("Generating gulp tasks for unit in", { gulpTasksFolder: this._tasksFolder });
+        const hasUnit = uniteConfiguration.unitTestRunner !== "None";
+        logger.info("Generating gulp tasks for unit in", { gulpTasksFolder: this._tasksFolder });
 
-            const assetUnitTest = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/");
+        const assetUnitTest = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/");
 
-            const assetUnitTestLanguage = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
-                                                                 `gulp/tasks/sourceLanguage/${uniteConfiguration.sourceLanguage.toLowerCase()}/`);
+        const assetUnitTestLanguage = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
+                                                             `gulp/tasks/sourceLanguage/${uniteConfiguration.sourceLanguage.toLowerCase()}/`);
 
-            const assetLinter = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
-                                                       `gulp/tasks/linter/${uniteConfiguration.linter.toLowerCase()}/`);
+        const assetLinter = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
+                                                   `gulp/tasks/linter/${uniteConfiguration.linter.toLowerCase()}/`);
 
-            const assetUnitTestRunner = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
-                                                               `gulp/tasks/unitTestRunner/${uniteConfiguration.unitTestRunner.toLowerCase()}/`);
+        const assetUnitTestRunner = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
+                                                           `gulp/tasks/unitTestRunner/${uniteConfiguration.unitTestRunner.toLowerCase()}/`);
 
-            this.addFile(assetUnitTest, "unit.js", this._tasksFolder, "unit.js");
-            this.addFile(assetUnitTestLanguage, "unit-transpile.js", this._tasksFolder, "unit-transpile.js");
-            this.addFile(assetLinter, "unit-lint.js", this._tasksFolder, "unit-lint.js");
-            this.addFile(assetUnitTestRunner, "unit-runner.js", this._tasksFolder, "unit-runner.js");
-        }
+        this.toggleFile(assetUnitTest, "unit.js", this._tasksFolder, "unit.js", isGulp && hasUnit);
+        this.toggleFile(assetUnitTestLanguage, "unit-transpile.js", this._tasksFolder, "unit-transpile.js", isGulp && hasUnit);
+        this.toggleFile(assetLinter, "unit-lint.js", this._tasksFolder, "unit-lint.js", isGulp && hasUnit);
+        this.toggleFile(assetUnitTestRunner, "unit-runner.js", this._tasksFolder, "unit-runner.js", isGulp && hasUnit);
     }
 
-    private generateE2eTasks(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void {
-        engineVariables.toggleDevDependency(["gulp-webdriver", "browser-sync"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.e2eTestRunner === "WebdriverIO");
-        engineVariables.toggleDevDependency(["browser-sync"], uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.e2eTestRunner === "Protractor");
+    private generateE2eTasks(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, isGulp: boolean): void {
+        engineVariables.toggleDevDependency(["gulp-webdriver", "browser-sync"], isGulp && uniteConfiguration.e2eTestRunner === "WebdriverIO");
+        engineVariables.toggleDevDependency(["browser-sync"], isGulp && uniteConfiguration.e2eTestRunner === "Protractor");
 
-        if (uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.e2eTestRunner !== "None") {
-            logger.info("Generating gulp tasks for e2e in", { gulpTasksFolder: this._tasksFolder });
+        const hasE2e = uniteConfiguration.e2eTestRunner !== "None";
+        logger.info("Generating gulp tasks for e2e in", { gulpTasksFolder: this._tasksFolder });
 
-            const assetE2eTest = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/");
+        const assetE2eTest = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/");
 
-            const assetUnitTestLanguage = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
-                                                                 `gulp/tasks/sourceLanguage/${uniteConfiguration.sourceLanguage.toLowerCase()}/`);
+        const assetUnitTestLanguage = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
+                                                             `gulp/tasks/sourceLanguage/${uniteConfiguration.sourceLanguage.toLowerCase()}/`);
 
-            const assetLinter = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
-                                                       `gulp/tasks/linter/${uniteConfiguration.linter.toLowerCase()}/`);
+        const assetLinter = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
+                                                   `gulp/tasks/linter/${uniteConfiguration.linter.toLowerCase()}/`);
 
-            const assetE2eTestRunner = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
-                                                              `gulp/tasks/e2eTestRunner/${uniteConfiguration.e2eTestRunner.toLowerCase()}/`);
+        const assetE2eTestRunner = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
+                                                          `gulp/tasks/e2eTestRunner/${uniteConfiguration.e2eTestRunner.toLowerCase()}/`);
 
-            this.addFile(assetE2eTest, "e2e.js", this._tasksFolder, "e2e.js");
-            this.addFile(assetUnitTestLanguage, "e2e-transpile.js", this._tasksFolder, "e2e-transpile.js");
-            this.addFile(assetLinter, "e2e-lint.js", this._tasksFolder, "e2e-lint.js");
-            this.addFile(assetE2eTestRunner, "e2e-runner.js", this._tasksFolder, "e2e-runner.js");
-            this.addFile(assetE2eTestRunner, "e2e-install.js", this._tasksFolder, "e2e-install.js");
-        }
+        this.toggleFile(assetE2eTest, "e2e.js", this._tasksFolder, "e2e.js", isGulp && hasE2e);
+        this.toggleFile(assetUnitTestLanguage, "e2e-transpile.js", this._tasksFolder, "e2e-transpile.js", isGulp && hasE2e);
+        this.toggleFile(assetLinter, "e2e-lint.js", this._tasksFolder, "e2e-lint.js", isGulp && hasE2e);
+        this.toggleFile(assetE2eTestRunner, "e2e-runner.js", this._tasksFolder, "e2e-runner.js", isGulp && hasE2e);
+        this.toggleFile(assetE2eTestRunner, "e2e-install.js", this._tasksFolder, "e2e-install.js", isGulp && hasE2e);
     }
 
-    private generateServeTasks(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void {
-        if (uniteConfiguration.taskManager === "Gulp") {
-            logger.info("Generating gulp tasks serve in", { gulpTasksFolder: this._tasksFolder });
+    private generateServeTasks(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, isGulp: boolean): void {
+        logger.info("Generating gulp tasks serve in", { gulpTasksFolder: this._tasksFolder });
 
-            const assetTasksServer = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/server/${uniteConfiguration.server.toLowerCase()}`);
+        const assetTasksServer = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/server/${uniteConfiguration.server.toLowerCase()}`);
 
-            this.addFile(assetTasksServer, "serve.js", this._tasksFolder, "serve.js");
-        }
+        this.toggleFile(assetTasksServer, "serve.js", this._tasksFolder, "serve.js", isGulp);
     }
 
-    private generateThemeTasks(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void {
-        if (uniteConfiguration.taskManager === "Gulp") {
-            logger.info("Generating gulp tasks theme in", { gulpTasksFolder: this._tasksFolder });
+    private generateThemeTasks(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, isGulp: boolean): void {
+        logger.info("Generating gulp tasks theme in", { gulpTasksFolder: this._tasksFolder });
 
-            const assetTasksTheme = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/");
+        const assetTasksTheme = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/");
 
-            this.addFile(assetTasksTheme, "theme.js", this._tasksFolder, "theme.js");
-        }
+        this.toggleFile(assetTasksTheme, "theme.js", this._tasksFolder, "theme.js", isGulp);
     }
 
-    private generateUtils(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void {
-        engineVariables.toggleDevDependency(["gulp-util", "gulp-rename"], uniteConfiguration.taskManager === "Gulp");
+    private generateUtils(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, isGulp: boolean): void {
+        engineVariables.toggleDevDependency(["gulp-util", "gulp-rename"], isGulp);
 
-        if (uniteConfiguration.taskManager === "Gulp") {
-            logger.info("Generating gulp tasks utils in", { gulpUtilFolder: this._utilFolder });
+        logger.info("Generating gulp tasks utils in", { gulpUtilFolder: this._utilFolder });
 
-            const assetUtils = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/util/");
-            const assetUtilModuleType = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/moduleType/${uniteConfiguration.moduleType.toLowerCase()}/util/`);
+        const assetUtils = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/util/");
+        const assetUtilModuleType = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/moduleType/${uniteConfiguration.moduleType.toLowerCase()}/util/`);
 
-            this.addFile(assetUtils, "async-util.js", this._utilFolder, "async-util.js");
-            this.addFile(assetUtils, "bundle.js", this._utilFolder, "bundle.js");
-            this.addFile(assetUtils, "client-packages.js", this._utilFolder, "client-packages.js");
-            this.addFile(assetUtils, "display.js", this._utilFolder, "display.js");
-            this.addFile(assetUtils, "exec.js", this._utilFolder, "exec.js");
-            this.addFile(assetUtils, "package-config.js", this._utilFolder, "package-config.js");
-            this.addFile(assetUtils, "platform-utils.js", this._utilFolder, "platform-utils.js");
-            this.addFile(assetUtils, "theme-utils.js", this._utilFolder, "theme-utils.js");
-            this.addFile(assetUtils, "unite-config.js", this._utilFolder, "unite-config.js");
+        this.toggleFile(assetUtils, "async-util.js", this._utilFolder, "async-util.js", isGulp);
+        this.toggleFile(assetUtils, "bundle.js", this._utilFolder, "bundle.js", isGulp);
+        this.toggleFile(assetUtils, "client-packages.js", this._utilFolder, "client-packages.js", isGulp);
+        this.toggleFile(assetUtils, "display.js", this._utilFolder, "display.js", isGulp);
+        this.toggleFile(assetUtils, "exec.js", this._utilFolder, "exec.js", isGulp);
+        this.toggleFile(assetUtils, "package-config.js", this._utilFolder, "package-config.js", isGulp);
+        this.toggleFile(assetUtils, "platform-utils.js", this._utilFolder, "platform-utils.js", isGulp);
+        this.toggleFile(assetUtils, "theme-utils.js", this._utilFolder, "theme-utils.js", isGulp);
+        this.toggleFile(assetUtils, "unite-config.js", this._utilFolder, "unite-config.js", isGulp);
 
-            this.addFile(assetUtilModuleType, "module-config.js", this._utilFolder, "module-config.js");
-        }
+        this.toggleFile(assetUtilModuleType, "module-config.js", this._utilFolder, "module-config.js", isGulp);
     }
 
-    private addFile(sourceFolder: string, sourceFile: string, destFolder: string, destFile: string): void {
-        this._files.push({ sourceFolder, sourceFile, destFolder, destFile });
+    private toggleFile(sourceFolder: string, sourceFile: string, destFolder: string, destFile: string, keep: boolean): void {
+        this._files.push({ sourceFolder, sourceFile, destFolder, destFile, keep });
     }
 }

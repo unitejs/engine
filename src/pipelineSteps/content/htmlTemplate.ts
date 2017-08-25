@@ -48,7 +48,7 @@ export class HtmlTemplate extends EnginePipelineStepBase {
                                 engineVariables: EngineVariables,
                                 filename: string,
                                 engineVariablesHtml: HtmlTemplateConfiguration,
-                                useMinified: boolean): Promise<number> {
+                                isBundled: boolean): Promise<number> {
         try {
             const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, filename);
 
@@ -70,8 +70,9 @@ export class HtmlTemplate extends EnginePipelineStepBase {
                 const appClientPackages = engineVariables.getAppClientPackages();
 
                 for (const pkg in appClientPackages) {
-                    if (appClientPackages[pkg].scriptInclude) {
-                        const main = (useMinified && appClientPackages[pkg].mainMinified) ? appClientPackages[pkg].mainMinified : appClientPackages[pkg].main;
+                    if ((isBundled && (appClientPackages[pkg].scriptIncludeMode === "bundled" || appClientPackages[pkg].scriptIncludeMode === "both")) ||
+                        (!isBundled && (appClientPackages[pkg].scriptIncludeMode === "notBundled" || appClientPackages[pkg].scriptIncludeMode === "both"))) {
+                        const main = (isBundled && appClientPackages[pkg].mainMinified) ? appClientPackages[pkg].mainMinified : appClientPackages[pkg].main;
                         const script = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, `${pkg}/${main}`)));
 
                         this.addLine(indent, lines, `<script src="${script}"></script>`);

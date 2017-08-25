@@ -3,13 +3,13 @@
  */
 const path = require("path");
 
-function getKeys (uniteConfig, includeModes) {
+function getModuleIds (uniteConfig, includeModes) {
     const pathKeys = [];
     const keys = Object.keys(uniteConfig.clientPackages);
 
     for (let i = 0; i < keys.length; i++) {
         const pkg = uniteConfig.clientPackages[keys[i]];
-        if (includeModes.indexOf(pkg.includeMode) >= 0 && !pkg.scriptInclude) {
+        if (includeModes.indexOf(pkg.includeMode) >= 0 && pkg.scriptIncludeMode === "none") {
             if (pkg.main || pkg.mainMinified) {
                 pathKeys.push(keys[i]);
             }
@@ -25,9 +25,11 @@ function getFiles (uniteConfig, includeModes, isMinified) {
 
     for (let i = 0; i < keys.length; i++) {
         const pkg = uniteConfig.clientPackages[keys[i]];
-        if (includeModes.indexOf(pkg.includeMode) >= 0 && !pkg.scriptInclude) {
-            if (pkg.main || (isMinified && pkg.mainMinified)) {
-                const mainSplit = isMinified && pkg.mainMinified ? pkg.mainMinified.split("/") : pkg.main.split("/");
+        if (includeModes.indexOf(pkg.includeMode) >= 0 && pkg.scriptIncludeMode === "none") {
+            const pkgMain = isMinified && pkg.mainMinified ? pkg.mainMinified : pkg.main;
+
+            if (pkgMain) {
+                const mainSplit = pkgMain.split("/");
                 const main = mainSplit.pop();
                 const location = mainSplit.join("/");
                 if (pkg.isPackage) {
@@ -49,7 +51,7 @@ function getRequires (uniteConfig, includeModes, isMinified) {
 
     for (let i = 0; i < keys.length; i++) {
         const pkg = uniteConfig.clientPackages[keys[i]];
-        if (includeModes.indexOf(pkg.includeMode) >= 0 && !pkg.scriptInclude) {
+        if (includeModes.indexOf(pkg.includeMode) >= 0 && pkg.scriptIncludeMode === "none") {
             const pkgMain = isMinified && pkg.mainMinified ? pkg.mainMinified : pkg.main;
 
             if (pkgMain && pkgMain !== "*") {
@@ -82,18 +84,22 @@ function buildModuleConfig (uniteConfig, includeModes, isMinified) {
     const moduleConfig = {
         "paths": {},
         "packages": [],
-        "preload": []
+        "preload": [],
+        "map": {},
+        "loaders": {}
     };
+
+    const isTest = includeModes.indexOf("test") >= 0;
 
     const keys = Object.keys(uniteConfig.clientPackages);
     for (let i = 0; i < keys.length; i++) {
         const pkg = uniteConfig.clientPackages[keys[i]];
-        if (includeModes.indexOf(pkg.includeMode) >= 0 && !pkg.scriptInclude) {
+        if (includeModes.indexOf(pkg.includeMode) >= 0 && pkg.scriptIncludeMode === "none") {
             const pkgMain = isMinified && pkg.mainMinified ? pkg.mainMinified : pkg.main;
 
             if (pkgMain) {
-                if (pkgMain.indexOf("*") >= 0) {
-                    moduleConfig.paths[keys[i]] = `${uniteConfig.dirs.www.package}${keys[i]}/`;
+                if (pkgMain === "*") {
+                    moduleConfig.paths[keys[i]] = `${uniteConfig.dirs.www.package}${keys[i]}`;
                 } else {
                     const mainSplit = pkgMain.split("/");
                     const main = mainSplit.pop().replace(/(\.js)$/, "");
@@ -110,9 +116,29 @@ function buildModuleConfig (uniteConfig, includeModes, isMinified) {
                         moduleConfig.paths[keys[i]] = `${uniteConfig.dirs.www.package}${keys[i]}/${location}${main}`;
                     }
 
+                    if (pkg.testingAdditions && isTest) {
+                        const additionKeys = Object.keys(pkg.testingAdditions);
+                        additionKeys.forEach(additionKey => {
+                            moduleConfig.paths[additionKey] =
+                                `${uniteConfig.dirs.www.package}${keys[i]}/${pkg.testingAdditions[additionKey]}`;
+                        });
+                    }
+
                     if (pkg.preload) {
                         moduleConfig.preload.push(keys[i]);
                     }
+                }
+
+                let loaderKey = keys[i];
+                if (pkg.map) {
+                    moduleConfig.map[pkg.map] = keys[i];
+                    loaderKey = pkg.map;
+                }
+
+                if (pkg.loaders) {
+                    pkg.loaders.forEach(loader => {
+                        moduleConfig.loaders[loader] = loaderKey;
+                    });
                 }
             }
         }
@@ -125,7 +151,7 @@ module.exports = {
     buildModuleConfig,
     getAssets,
     getFiles,
-    getKeys,
+    getModuleIds,
     getRequires
 };
 
