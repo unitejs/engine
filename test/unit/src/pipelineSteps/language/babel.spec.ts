@@ -75,6 +75,33 @@ describe("Babel", () => {
                 env: {}
             });
         });
+
+        it("can setup the engine configuration from existing", async () => {
+            fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
+            fileSystemMock.fileReadJson = sandbox.stub().resolves({ plugins: [ "my-plugin"] });
+            const obj = new Babel();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration("Babel")).to.be.deep.equal({
+                presets: [],
+                plugins: ["my-plugin"],
+                env: {}
+            });
+        });
+
+        it("can setup the engine configuration from existing not forced", async () => {
+            fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
+            fileSystemMock.fileReadJson = sandbox.stub().resolves({ plugins: [ "my-plugin"] });
+            engineVariablesStub.force = true;
+            const obj = new Babel();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration("Babel")).to.be.deep.equal({
+                presets: [],
+                plugins: [],
+                env: {}
+            });
+        });
     });
 
     describe("process", () => {

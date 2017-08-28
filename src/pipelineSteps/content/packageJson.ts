@@ -20,14 +20,16 @@ export class PackageJson extends EnginePipelineStepBase {
                             engineVariables: EngineVariables): Promise<number> {
         logger.info(`Initialising ${PackageJson.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
-        try {
-            const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, PackageJson.FILENAME);
-            if (exists) {
-                this._configuration = await fileSystem.fileReadJson<PackageConfiguration>(engineVariables.wwwRootFolder, PackageJson.FILENAME);
+        if (!engineVariables.force) {
+                try {
+                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, PackageJson.FILENAME);
+                if (exists) {
+                    this._configuration = await fileSystem.fileReadJson<PackageConfiguration>(engineVariables.wwwRootFolder, PackageJson.FILENAME);
+                }
+            } catch (err) {
+                logger.error(`Reading existing ${PackageJson.FILENAME} failed`, err);
+                return 1;
             }
-        } catch (err) {
-            logger.error(`Reading existing ${PackageJson.FILENAME} failed`, err);
-            return 1;
         }
 
         this.configDefaults(uniteConfiguration, engineVariables);

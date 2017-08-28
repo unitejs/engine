@@ -65,7 +65,7 @@ describe("Css", () => {
 
     describe("process", () => {
         it("can fail if an exception is thrown", async () => {
-            sandbox.stub(fileSystemMock, "pathCombine").throws("error");
+            sandbox.stub(fileSystemMock, "directoryCreate").throws("error");
             const obj = new Css();
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
@@ -89,6 +89,7 @@ describe("Css", () => {
             await fileSystemMock.directoryCreate("./test/unit/temp/www/");
 
             const obj = new Css();
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
 

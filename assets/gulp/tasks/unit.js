@@ -31,7 +31,8 @@ gulp.task("unit-clean", async () => {
 gulp.task("unit-module-config", async () => {
     const uniteConfig = await uc.getUniteConfig();
 
-    const config = moduleConfig.create(uniteConfig, ["test", "both"], false);
+    const config = moduleConfig.create(uniteConfig, ["test", "both"], false,
+        uniteConfig.unitTestRunner === "Karma" ? "/base/" : "");
 
     try {
         await util.promisify(fs.writeFile)(

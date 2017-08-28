@@ -23,14 +23,16 @@ export class Babel extends EnginePipelineStepBase {
 
             logger.info(`Initialising ${Babel.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
-            try {
-                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, Babel.FILENAME);
-                if (exists) {
-                    this._configuration = await fileSystem.fileReadJson<BabelConfiguration>(engineVariables.wwwRootFolder, Babel.FILENAME);
+            if (!engineVariables.force) {
+                try {
+                    const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, Babel.FILENAME);
+                    if (exists) {
+                        this._configuration = await fileSystem.fileReadJson<BabelConfiguration>(engineVariables.wwwRootFolder, Babel.FILENAME);
+                    }
+                } catch (err) {
+                    logger.error(`Reading existing ${Babel.FILENAME} failed`, err);
+                    return 1;
                 }
-            } catch (err) {
-                logger.error(`Reading existing ${Babel.FILENAME} failed`, err);
-                return 1;
             }
 
             this.configDefaults(engineVariables);
@@ -52,7 +54,7 @@ export class Babel extends EnginePipelineStepBase {
                 return 1;
             }
         } else {
-            return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, Babel.FILENAME);
+            return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, Babel.FILENAME, engineVariables.force);
         }
     }
 

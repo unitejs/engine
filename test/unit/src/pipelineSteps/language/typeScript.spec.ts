@@ -5,7 +5,6 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { TypeScriptCompilerOptions } from "../../../../../dist/configuration/models/typeScript/typeScriptCompilerOptions";
 import { TypeScriptConfiguration } from "../../../../../dist/configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../../dist/engine/engineVariables";
@@ -72,6 +71,26 @@ describe("TypeScript", () => {
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration("TypeScript")).not.to.be.deep.equal(undefined);
         });
+
+        it("can setup the engine configuration from existing", async () => {
+            fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
+            fileSystemMock.fileReadJson = sandbox.stub().resolves({ exclude: [ "my-exclude"] });
+            const obj = new TypeScript();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").exclude).to.be.deep.equal(["my-exclude"]);
+        });
+
+        it("can setup the engine configuration from existing not force", async () => {
+            fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
+            fileSystemMock.fileReadJson = sandbox.stub().resolves({ exclude: [ "my-exclude"] });
+            engineVariablesStub.force = true;
+            const obj = new TypeScript();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").exclude).to.be.equal(undefined);
+        });
+
     });
 
     describe("process", () => {
@@ -114,23 +133,6 @@ describe("TypeScript", () => {
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
 
             Chai.expect(packageJsonDevDependencies.typescript).to.be.equal("1.2.3");
-        });
-
-        it("can combine with existing file", async () => {
-            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
-            const initjson = new TypeScriptConfiguration();
-            initjson.compilerOptions = new TypeScriptCompilerOptions();
-            initjson.compilerOptions.lib = [ "es7" ];
-            await fileSystemMock.fileWriteJson("./test/unit/temp/www/", "tsconfig.json", initjson);
-
-            const obj = new TypeScript();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(loggerInfoSpy.args[1][0]).contains("Generating");
-
-            const json = await fileSystemMock.fileReadJson<TypeScriptConfiguration>("./test/unit/temp/www/", "tsconfig.json");
-            Chai.expect(json.compilerOptions.lib).to.be.deep.equal(["dom", "es2015", "es7"]);
         });
     });
 });

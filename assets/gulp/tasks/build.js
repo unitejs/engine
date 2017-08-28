@@ -102,7 +102,7 @@ gulp.task("build-copy-components", async () => {
 gulp.task("build-module-config", async () => {
     const uniteConfig = await uc.getUniteConfig();
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
-    const config = moduleConfig.create(uniteConfig, ["app", "both"], buildConfiguration.bundle);
+    const config = moduleConfig.create(uniteConfig, ["app", "both"], buildConfiguration.bundle, "");
 
     try {
         await util.promisify(fs.writeFile)(path.join(uniteConfig.dirs.www.dist, "app-module-config.js"), config);

@@ -53,9 +53,9 @@ export class Gulp extends EnginePipelineStepBase {
             let ret;
 
             if (this._files[i].keep) {
-                ret = await super.copyFile(logger, fileSystem, this._files[i].sourceFolder, this._files[i].sourceFile, this._files[i].destFolder, this._files[i].destFile);
+                ret = await super.copyFile(logger, fileSystem, this._files[i].sourceFolder, this._files[i].sourceFile, this._files[i].destFolder, this._files[i].destFile, engineVariables.force);
             } else {
-                ret = await super.deleteFile(logger, fileSystem, this._files[i].destFolder, this._files[i].destFile);
+                ret = await super.deleteFile(logger, fileSystem, this._files[i].destFolder, this._files[i].destFile, engineVariables.force);
             }
 
             if (ret !== 0) {

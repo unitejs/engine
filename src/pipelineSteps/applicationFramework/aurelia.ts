@@ -133,7 +133,7 @@ export class Aurelia extends SharedAppFramework {
             "none",
             false,
             undefined,
-            "text",
+            { text: "requirejs-text" },
             undefined,
             uniteConfiguration.applicationFramework === "Aurelia" && uniteConfiguration.moduleType === "AMD");
 
@@ -147,7 +147,7 @@ export class Aurelia extends SharedAppFramework {
             "none",
             false,
             undefined,
-            "text",
+            { text: "systemjs-plugin-text" },
             undefined,
             uniteConfiguration.applicationFramework === "Aurelia" && uniteConfiguration.moduleType === "SystemJS");
     }

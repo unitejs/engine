@@ -29,24 +29,26 @@ export class EsLint extends EnginePipelineStepBase {
 
             logger.info(`Initialising ${EsLint.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
-            try {
-                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, EsLint.FILENAME);
-                if (exists) {
-                    this._configuration = await fileSystem.fileReadJson<EsLintConfiguration>(engineVariables.wwwRootFolder, EsLint.FILENAME);
+            if (!engineVariables.force) {
+                try {
+                    const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, EsLint.FILENAME);
+                    if (exists) {
+                        this._configuration = await fileSystem.fileReadJson<EsLintConfiguration>(engineVariables.wwwRootFolder, EsLint.FILENAME);
+                    }
+                } catch (err) {
+                    logger.error(`Reading existing ${EsLint.FILENAME} failed`, err);
+                    return 1;
                 }
-            } catch (err) {
-                logger.error(`Reading existing ${EsLint.FILENAME} failed`, err);
-                return 1;
-            }
 
-            try {
-                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, EsLint.FILENAME2);
-                if (exists) {
-                    this._ignore = await fileSystem.fileReadLines(engineVariables.wwwRootFolder, EsLint.FILENAME2);
+                try {
+                    const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, EsLint.FILENAME2);
+                    if (exists) {
+                        this._ignore = await fileSystem.fileReadLines(engineVariables.wwwRootFolder, EsLint.FILENAME2);
+                    }
+                } catch (err) {
+                    logger.error(`Reading existing ${EsLint.FILENAME} failed`, err);
+                    return 1;
                 }
-            } catch (err) {
-                logger.error(`Reading existing ${EsLint.FILENAME} failed`, err);
-                return 1;
             }
 
             this.configDefaults(engineVariables);
@@ -70,7 +72,7 @@ export class EsLint extends EnginePipelineStepBase {
             try {
                 const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, EsLint.FILENAME2);
 
-                if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker") {
+                if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker" || engineVariables.force) {
                     logger.info(`Generating ${EsLint.FILENAME2} Configuration`, { wwwFolder: engineVariables.wwwRootFolder });
 
                     this._ignore.push(super.wrapGeneratedMarker("# ", ""));
@@ -86,9 +88,9 @@ export class EsLint extends EnginePipelineStepBase {
                 return 1;
             }
         } else {
-            let ret = await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, EsLint.FILENAME);
+            let ret = await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, EsLint.FILENAME, engineVariables.force);
             if (ret === 0) {
-                ret = await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, EsLint.FILENAME2);
+                ret = await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, EsLint.FILENAME2, engineVariables.force);
             }
 
             return ret;
@@ -98,7 +100,7 @@ export class EsLint extends EnginePipelineStepBase {
     private configDefaults(engineVariables: EngineVariables): void {
         const defaultConfiguration = new EsLintConfiguration();
 
-        defaultConfiguration.parser = "esprima";
+        defaultConfiguration.parser = "espree";
         defaultConfiguration.parserOptions = new EsLintParserOptions();
         defaultConfiguration.parserOptions.ecmaVersion = 6;
         defaultConfiguration.parserOptions.sourceType = "module";
@@ -128,6 +130,11 @@ export class EsLint extends EnginePipelineStepBase {
         const idx = this._ignore.indexOf(markerLine);
         if (idx >= 0) {
             this._ignore.splice(idx, 1);
+        }
+        for (let i = this._ignore.length - 1; i >= 0; i--) {
+            if (this._ignore[i].trim().length === 0) {
+                this._ignore.splice(i, 1);
+            }
         }
 
         engineVariables.setConfiguration("ESLint", this._configuration);

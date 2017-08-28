@@ -18,9 +18,9 @@ export class PackageUtils {
             const spawnProcess = child.spawn(`${packageName}${isWin ? ".cmd" : ""}`, args, options);
 
             spawnProcess.stdout.on("data", (data) => {
-                data = (data ? data.toString() : "").replace(/\n/g, "");
-                finalData += data;
-                logger.info(data);
+                const infoData = (data ? data.toString() : "").replace(/\n/g, "");
+                finalData += infoData;
+                logger.info(infoData);
             });
 
             spawnProcess.stderr.on("data", (data) =>  {

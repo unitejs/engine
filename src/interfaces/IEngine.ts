@@ -17,6 +17,7 @@ export interface IEngine {
               cssPost: string | undefined | null,
               packageManager: string | undefined | null,
               applicationFramework: string | undefined | null,
+              force: boolean | undefined | null,
               outputDirectory: string | undefined | null): Promise<number>;
 
     clientPackage(operation: string | undefined | null,

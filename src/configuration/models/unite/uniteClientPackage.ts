@@ -13,7 +13,7 @@ export class UniteClientPackage {
     public includeMode: IncludeMode;
     public isPackage: boolean;
     public assets: string;
-    public map: string;
-    public loaders: string[];
+    public map: { [id: string]: string };
+    public loaders: { [id: string]: string };
     public scriptIncludeMode: ScriptIncludeMode;
 }

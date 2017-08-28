@@ -24,14 +24,16 @@ export class TypeScript extends EnginePipelineStepBase {
 
             logger.info(`Initialising ${TypeScript.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
-            try {
-                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, TypeScript.FILENAME);
-                if (exists) {
-                    this._configuration = await fileSystem.fileReadJson<TypeScriptConfiguration>(engineVariables.wwwRootFolder, TypeScript.FILENAME);
+            if (!engineVariables.force) {
+                try {
+                    const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, TypeScript.FILENAME);
+                    if (exists) {
+                        this._configuration = await fileSystem.fileReadJson<TypeScriptConfiguration>(engineVariables.wwwRootFolder, TypeScript.FILENAME);
+                    }
+                } catch (err) {
+                    logger.error(`Reading existing ${TypeScript.FILENAME} failed`, err);
+                    return 1;
                 }
-            } catch (err) {
-                logger.error(`Reading existing ${TypeScript.FILENAME} failed`, err);
-                return 1;
             }
 
             this.configDefaults(engineVariables);
@@ -54,7 +56,7 @@ export class TypeScript extends EnginePipelineStepBase {
                 return 1;
             }
         } else {
-            return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, TypeScript.FILENAME);
+            return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, TypeScript.FILENAME, engineVariables.force);
         }
     }
 

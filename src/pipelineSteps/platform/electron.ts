@@ -22,18 +22,18 @@ export class Electron extends EnginePipelineStepBase {
         const buildTasks = fileSystem.pathCombine(engineVariables.www.buildFolder, "/tasks/");
         if (uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.platforms[Electron.PLATFORM] !== undefined) {
             const assetTasksPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/platform/");
-            let ret = await this.copyFile(logger, fileSystem, assetTasksPlatform, Electron.FILENAME, buildTasks, Electron.FILENAME);
+            let ret = await this.copyFile(logger, fileSystem, assetTasksPlatform, Electron.FILENAME, buildTasks, Electron.FILENAME, engineVariables.force);
 
             if (ret === 0) {
                 const assetPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/assets/platform/electron/");
-                ret = await this.copyFile(logger, fileSystem, assetPlatform, Electron.FILENAME2, buildAssetPlatform, Electron.FILENAME2);
+                ret = await this.copyFile(logger, fileSystem, assetPlatform, Electron.FILENAME2, buildAssetPlatform, Electron.FILENAME2, engineVariables.force);
             }
 
             return ret;
         } else {
-            let ret = await super.deleteFile(logger, fileSystem, buildTasks, Electron.FILENAME);
+            let ret = await super.deleteFile(logger, fileSystem, buildTasks, Electron.FILENAME, engineVariables.force);
             if (ret === 0) {
-                ret = await super.deleteFile(logger, fileSystem, buildAssetPlatform, Electron.FILENAME2);
+                ret = await super.deleteFile(logger, fileSystem, buildAssetPlatform, Electron.FILENAME2, engineVariables.force);
             }
             return ret;
         }

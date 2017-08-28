@@ -4,7 +4,7 @@
 const os = require("os");
 const clientPackages = require("./client-packages");
 
-function create (uniteConfig, includeModes, isBundle) {
+function create (uniteConfig, includeModes, isBundle, mapBase) {
     /* We use the SystemJS loader for CommonJS modules when testing and unbundled, 
     we need to specify the module format as cjs for it to work */
     const moduleConfig = clientPackages.buildModuleConfig(uniteConfig, includeModes, isBundle);
@@ -24,6 +24,9 @@ function create (uniteConfig, includeModes, isBundle) {
 
     Object.keys(moduleConfig.paths).forEach(key => {
         moduleConfig.paths[key] = moduleConfig.paths[key].replace(/\.\//, "");
+    });
+    Object.keys(moduleConfig.map).forEach(key => {
+        moduleConfig.map[key] = moduleConfig.map[key].replace(/\.\//, mapBase);
     });
     moduleConfig.packages.forEach((pkg) => {
         moduleConfig.paths[pkg.name] = pkg.location.replace(/\.\//, "");

@@ -42,7 +42,7 @@ export class Karma extends EnginePipelineStepBase {
         if (uniteConfiguration.unitTestRunner === "Karma") {
             const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, Karma.FILENAME);
 
-            if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker") {
+            if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker" || engineVariables.force) {
                 logger.info(`Generating ${Karma.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
                 const lines: string[] = [];
@@ -54,7 +54,7 @@ export class Karma extends EnginePipelineStepBase {
 
             return 0;
         } else {
-            return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, Karma.FILENAME);
+            return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, Karma.FILENAME, engineVariables.force);
         }
     }
 
@@ -107,7 +107,7 @@ export class Karma extends EnginePipelineStepBase {
             included: false
         });
 
-        // Bluebird should only be necessary while we are using PhantomJS
+        // Bluebird should only be necessary while we are using PhantomJS to Polyfill Promise
         const bbInclude = fileSystem.pathToWeb(
             fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, "bluebird/js/browser/bluebird.js")));
         defaultConfiguration.files.push({ pattern: bbInclude, included: true });

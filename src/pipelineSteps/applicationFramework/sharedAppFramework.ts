@@ -28,7 +28,8 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
                                             scaffoldFolder,
                                             file,
                                             engineVariables.www.srcFolder,
-                                            file);
+                                            file,
+                                            engineVariables.force);
 
             if (ret !== 0) {
                 return ret;
@@ -53,7 +54,8 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
                                             scaffoldFolder,
                                             `${htmlFile}.html`,
                                             engineVariables.www.srcFolder,
-                                            `${htmlFile}.html`);
+                                            `${htmlFile}.html`,
+                                            engineVariables.force);
             if (ret !== 0) {
                 return ret;
             }
@@ -76,7 +78,8 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
                                             scaffoldFolder,
                                             `${cssFile}.${engineVariables.styleLanguageExt}`,
                                             engineVariables.www.srcFolder,
-                                            `${cssFile}.${engineVariables.styleLanguageExt}`);
+                                            `${cssFile}.${engineVariables.styleLanguageExt}`,
+                                            engineVariables.force);
 
             if (ret !== 0) {
                 return ret;
@@ -108,7 +111,8 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
                 const ret = await this.copyFile(logger, fileSystem, unitTestsScaffold,
                                                 `${spec}.spec.${engineVariables.sourceLanguageExt}`,
                                                 engineVariables.www.unitTestSrcFolder,
-                                                `${spec}.spec.${engineVariables.sourceLanguageExt}`);
+                                                `${spec}.spec.${engineVariables.sourceLanguageExt}`,
+                                                engineVariables.force);
                 if (ret !== 0) {
                     return ret;
                 }
@@ -117,7 +121,8 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
             return await this.copyFile(logger, fileSystem, unitTestsScaffoldModuleType,
                                        "unit-bootstrap.js",
                                        engineVariables.www.unitTestFolder,
-                                       "unit-bootstrap.js");
+                                       "unit-bootstrap.js",
+                                       engineVariables.force);
 
         } else {
             return 0;
@@ -141,7 +146,8 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
                 const ret = await this.copyFile(logger, fileSystem, e2eTestsScaffold,
                                                 `${spec}.spec.${engineVariables.sourceLanguageExt}`,
                                                 engineVariables.www.e2eTestSrcFolder,
-                                                `${spec}.spec.${engineVariables.sourceLanguageExt}`);
+                                                `${spec}.spec.${engineVariables.sourceLanguageExt}`,
+                                                engineVariables.force);
 
                 if (ret !== 0) {
                     return ret;
@@ -163,7 +169,8 @@ export abstract class SharedAppFramework extends EnginePipelineStepBase {
 
         for (const style of styles) {
             const ret = await super.copyFile(logger, fileSystem, assetCssFolder,
-                                             `${style}.${engineVariables.styleLanguageExt}`, engineVariables.www.cssSrcFolder, `${style}.${engineVariables.styleLanguageExt}`);
+                                             `${style}.${engineVariables.styleLanguageExt}`, engineVariables.www.cssSrcFolder, `${style}.${engineVariables.styleLanguageExt}`,
+                                             engineVariables.force);
 
             if (ret !== 0) {
                 return ret;

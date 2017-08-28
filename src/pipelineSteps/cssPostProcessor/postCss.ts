@@ -18,14 +18,16 @@ export class PostCss extends EnginePipelineStepBase {
         if (uniteConfiguration.cssPost === "PostCss") {
             logger.info(`Initialising ${PostCss.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
-            try {
-                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, PostCss.FILENAME);
-                if (exists) {
-                    this._configuration = await fileSystem.fileReadJson<PostCssConfiguration>(engineVariables.wwwRootFolder, PostCss.FILENAME);
+            if (!engineVariables.force) {
+                try {
+                    const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, PostCss.FILENAME);
+                    if (exists) {
+                        this._configuration = await fileSystem.fileReadJson<PostCssConfiguration>(engineVariables.wwwRootFolder, PostCss.FILENAME);
+                    }
+                } catch (err) {
+                    logger.error(`Reading existing ${PostCss.FILENAME} failed`, err);
+                    return 1;
                 }
-            } catch (err) {
-                logger.error(`Reading existing ${PostCss.FILENAME} failed`, err);
-                return 1;
             }
 
             this.configDefaults(engineVariables);
@@ -48,7 +50,7 @@ export class PostCss extends EnginePipelineStepBase {
                 return 1;
             }
         } else {
-            return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, PostCss.FILENAME);
+            return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, PostCss.FILENAME, engineVariables.force);
         }
     }
 

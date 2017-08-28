@@ -162,5 +162,71 @@ describe("Karma", () => {
             Chai.expect(config.files[5].pattern).contains("testPackage5/dist/**/*.{js,html,css}");
             Chai.expect(config.files[6].pattern).contains("testPackage5/assets/**/*.json");
         });
+
+        it("can succeed writing with packages that have test additions", async () => {
+            sandbox.stub(fileSystemMock, "fileWriteLines").resolves();
+            const stub = sandbox.stub(engineVariablesStub, "getTestClientPackages");
+            stub.callsFake(() => {
+                const testPackage1 = new UniteClientPackage();
+                testPackage1.isPackage = true;
+                testPackage1.includeMode = "app";
+
+                const testPackage2 = new UniteClientPackage();
+                testPackage2.main = "index.js";
+                testPackage2.isPackage = false;
+                testPackage2.includeMode = "test";
+                testPackage2.testingAdditions = {
+                    foo: "bar",
+                    bar: "foo"
+                };
+
+                return {
+                    testPackage1,
+                    testPackage2
+                };
+
+            });
+            const obj = new Karma();
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            const config = engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma");
+
+            Chai.expect(config.files.length).to.be.equal(9);
+            Chai.expect(config.files[2].pattern).contains("testPackage2/index.js");
+            Chai.expect(config.files[3].pattern).contains("testPackage2/bar");
+            Chai.expect(config.files[4].pattern).contains("testPackage2/foo");
+        });
+
+        it("can succeed writing with packages that have wildcard packages", async () => {
+            sandbox.stub(fileSystemMock, "fileWriteLines").resolves();
+            const stub = sandbox.stub(engineVariablesStub, "getTestClientPackages");
+            stub.callsFake(() => {
+                const testPackage1 = new UniteClientPackage();
+                testPackage1.isPackage = true;
+                testPackage1.includeMode = "app";
+
+                const testPackage2 = new UniteClientPackage();
+                testPackage2.main = "*";
+                testPackage2.isPackage = false;
+                testPackage2.includeMode = "test";
+
+                return {
+                    testPackage1,
+                    testPackage2
+                };
+
+            });
+            const obj = new Karma();
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            const config = engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma");
+
+            Chai.expect(config.files.length).to.be.equal(7);
+            Chai.expect(config.files[2].pattern).contains("testPackage2/**/*.{js,html,css}");
+        });
     });
 });

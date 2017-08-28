@@ -49,7 +49,7 @@ export class WebdriverIo extends EnginePipelineStepBase {
             try {
                 const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, WebdriverIo.FILENAME);
 
-                if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker") {
+                if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker" || engineVariables.force) {
                     logger.info(`Generating ${WebdriverIo.FILENAME}`);
 
                     const lines: string[] = this.finaliseConfig(fileSystem, uniteConfiguration, engineVariables);
@@ -64,7 +64,7 @@ export class WebdriverIo extends EnginePipelineStepBase {
                 return 1;
             }
         } else {
-            return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, WebdriverIo.FILENAME);
+            return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, WebdriverIo.FILENAME, engineVariables.force);
         }
     }
 

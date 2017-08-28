@@ -19,14 +19,16 @@ export class UniteThemeConfigurationJson extends EnginePipelineStepBase {
 
         const sourceThemeFolder = fileSystem.pathCombine(engineVariables.www.assetsSrcFolder, "theme/");
 
-        try {
-            const exists = await fileSystem.fileExists(sourceThemeFolder, UniteThemeConfigurationJson.FILENAME);
-            if (exists) {
-                this._configuration = await fileSystem.fileReadJson<UniteThemeConfiguration>(sourceThemeFolder, UniteThemeConfigurationJson.FILENAME);
+        if (!engineVariables.force) {
+            try {
+                const exists = await fileSystem.fileExists(sourceThemeFolder, UniteThemeConfigurationJson.FILENAME);
+                if (exists) {
+                    this._configuration = await fileSystem.fileReadJson<UniteThemeConfiguration>(sourceThemeFolder, UniteThemeConfigurationJson.FILENAME);
+                }
+            } catch (err) {
+                logger.error(`Reading existing ${UniteThemeConfigurationJson.FILENAME} failed`, err);
+                return 1;
             }
-        } catch (err) {
-            logger.error(`Reading existing ${UniteThemeConfigurationJson.FILENAME} failed`, err);
-            return 1;
         }
 
         this.configDefaults(uniteConfiguration, engineVariables);

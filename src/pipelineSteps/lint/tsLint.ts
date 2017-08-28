@@ -26,14 +26,16 @@ export class TsLint extends EnginePipelineStepBase {
 
             logger.info(`Initialising ${TsLint.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
-            try {
-                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, TsLint.FILENAME);
-                if (exists) {
-                    this._configuration = await fileSystem.fileReadJson<TsLintConfiguration>(engineVariables.wwwRootFolder, TsLint.FILENAME);
+            if (!engineVariables.force) {
+                try {
+                    const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, TsLint.FILENAME);
+                    if (exists) {
+                        this._configuration = await fileSystem.fileReadJson<TsLintConfiguration>(engineVariables.wwwRootFolder, TsLint.FILENAME);
+                    }
+                } catch (err) {
+                    logger.error(`Reading existing ${TsLint.FILENAME} failed`, err);
+                    return 1;
                 }
-            } catch (err) {
-                logger.error(`Reading existing ${TsLint.FILENAME} failed`, err);
-                return 1;
             }
 
             this.configDefaults(engineVariables);
@@ -56,7 +58,7 @@ export class TsLint extends EnginePipelineStepBase {
                 return 1;
             }
         } else {
-            return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, TsLint.FILENAME);
+            return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, TsLint.FILENAME, engineVariables.force);
         }
     }
 

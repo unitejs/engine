@@ -91,6 +91,16 @@ describe("TsLint", () => {
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<TsLintConfiguration>("TSLint").extends).to.be.equal("tslint:recommended2");
         });
+
+        it("can succeed when file does exist but forced", async () => {
+            fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
+            fileSystemMock.fileReadJson = sandbox.stub().resolves({ extends: "tslint:recommended2" });
+            engineVariablesStub.force = true;
+            const obj = new TsLint();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<TsLintConfiguration>("TSLint").extends).to.be.equal("tslint:recommended");
+        });
     });
 
     describe("process", () => {

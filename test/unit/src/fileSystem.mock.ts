@@ -15,9 +15,7 @@ export class FileSystemMock implements IFileSystem {
         } else if (additional === null || additional === undefined) {
             return this.cleanupSeparators(pathName);
         } else {
-            pathName = this.cleanupSeparators(pathName);
-            additional = this.cleanupSeparators(additional);
-            return path.join(pathName, additional);
+            return path.join(this.cleanupSeparators(pathName), this.cleanupSeparators(additional));
         }
     }
 
@@ -61,11 +59,11 @@ export class FileSystemMock implements IFileSystem {
         if (pathName === undefined || pathName === null) {
             return pathName;
         } else {
-            pathName = this.cleanupSeparators(pathName);
-            if (!/.*\.(.*)$/.test(pathName)) {
-                pathName = path.join(pathName, "dummy.file");
+            let newPathName = this.cleanupSeparators(pathName);
+            if (!/.*\.(.*)$/.test(newPathName)) {
+                newPathName = path.join(newPathName, "dummy.file");
             }
-            return path.dirname(pathName) + path.sep;
+            return path.dirname(newPathName) + path.sep;
         }
     }
 
@@ -73,11 +71,11 @@ export class FileSystemMock implements IFileSystem {
         if (pathName === undefined || pathName === null) {
             return pathName;
         } else {
-            pathName = this.cleanupSeparators(pathName);
-            if (/[\/\\]+$/.test(pathName)) {
+            const newPathName = this.cleanupSeparators(pathName);
+            if (/[\/\\]+$/.test(newPathName)) {
                 return undefined;
             } else {
-                return path.basename(pathName);
+                return path.basename(newPathName);
             }
         }
     }
@@ -86,10 +84,8 @@ export class FileSystemMock implements IFileSystem {
         if (directoryName === undefined || directoryName === null) {
             return false;
         } else {
-            directoryName = this.cleanupSeparators(directoryName);
-
             try {
-                const stats = await util.promisify(fs.lstat)(directoryName);
+                const stats = await util.promisify(fs.lstat)(this.cleanupSeparators(directoryName));
                 return stats.isDirectory();
             } catch (err) {
                 if (err.code === "ENOENT") {
@@ -103,9 +99,7 @@ export class FileSystemMock implements IFileSystem {
 
     public async directoryCreate(directoryName: string): Promise<void> {
         if (directoryName !== undefined && directoryName !== null) {
-            directoryName = this.cleanupSeparators(directoryName);
-
-            const parts = directoryName.split(path.sep);
+            const parts = this.cleanupSeparators(directoryName).split(path.sep);
             for (let i = 0; i < parts.length; i++) {
                 const dName = parts.slice(0, i + 1).join(path.sep);
                 const dirExists = await this.directoryExists(dName);
@@ -119,13 +113,13 @@ export class FileSystemMock implements IFileSystem {
 
     public async directoryDelete(directoryName: string): Promise<void> {
         if (directoryName !== undefined && directoryName !== null) {
-            directoryName = this.cleanupSeparators(directoryName);
+            const newDirectoryName = this.cleanupSeparators(directoryName);
 
-            const dirExists = await this.directoryExists(directoryName);
+            const dirExists = await this.directoryExists(newDirectoryName);
             if (dirExists) {
-                const files = await util.promisify(fs.readdir)(directoryName);
+                const files = await util.promisify(fs.readdir)(newDirectoryName);
                 for (let i = 0; i < files.length; i++) {
-                    const curPath = path.join(directoryName, files[i]);
+                    const curPath = path.join(newDirectoryName, files[i]);
 
                     const stat = await util.promisify(fs.lstat)(curPath);
 
@@ -136,7 +130,7 @@ export class FileSystemMock implements IFileSystem {
                     }
                 }
 
-                return util.promisify(fs.rmdir)(directoryName);
+                return util.promisify(fs.rmdir)(newDirectoryName);
             }
         }
     }
@@ -146,10 +140,8 @@ export class FileSystemMock implements IFileSystem {
             fileName === undefined || fileName === null) {
             return false;
         } else {
-            directoryName = this.cleanupSeparators(directoryName);
-
             try {
-                const stat = await util.promisify(fs.lstat)(path.join(directoryName, fileName));
+                const stat = await util.promisify(fs.lstat)(path.join(this.cleanupSeparators(directoryName), fileName));
                 return stat.isFile();
             } catch (err) {
                 if (err.code === "ENOENT") {
@@ -165,9 +157,7 @@ export class FileSystemMock implements IFileSystem {
         if (directoryName !== undefined && directoryName !== null &&
             fileName !== undefined && fileName !== null &&
             content !== undefined && content !== null) {
-            directoryName = this.cleanupSeparators(directoryName);
-
-            return util.promisify(append ? fs.appendFile : fs.writeFile)(path.join(directoryName, fileName), content);
+            return util.promisify(append ? fs.appendFile : fs.writeFile)(path.join(this.cleanupSeparators(directoryName), fileName), content);
         }
     }
 
@@ -175,9 +165,7 @@ export class FileSystemMock implements IFileSystem {
         if (directoryName !== undefined && directoryName !== null &&
             fileName !== undefined && fileName !== null &&
             lines !== undefined && lines !== null) {
-            directoryName = this.cleanupSeparators(directoryName);
-
-            return util.promisify(append ? fs.appendFile : fs.writeFile)(path.join(directoryName, fileName), lines.join(os.EOL) + os.EOL);
+            return util.promisify(append ? fs.appendFile : fs.writeFile)(path.join(this.cleanupSeparators(directoryName), fileName), lines.join(os.EOL) + os.EOL);
         }
     }
 
@@ -185,9 +173,7 @@ export class FileSystemMock implements IFileSystem {
         if (directoryName !== undefined && directoryName !== null &&
             fileName !== undefined && fileName !== null &&
             data !== undefined && data !== null) {
-            directoryName = this.cleanupSeparators(directoryName);
-
-            return util.promisify(append ? fs.appendFile : fs.writeFile)(path.join(directoryName, fileName), data);
+            return util.promisify(append ? fs.appendFile : fs.writeFile)(path.join(this.cleanupSeparators(directoryName), fileName), data);
         }
     }
 
@@ -195,9 +181,7 @@ export class FileSystemMock implements IFileSystem {
         if (directoryName !== undefined && directoryName !== null &&
             fileName !== undefined && fileName !== null &&
             object !== undefined && object !== null) {
-            directoryName = this.cleanupSeparators(directoryName);
-
-            return util.promisify(fs.writeFile)(path.join(directoryName, fileName), JsonHelper.stringify(object, "\t"));
+            return util.promisify(fs.writeFile)(path.join(this.cleanupSeparators(directoryName), fileName), JsonHelper.stringify(object, "\t"));
         }
     }
 
@@ -206,9 +190,7 @@ export class FileSystemMock implements IFileSystem {
             fileName === undefined || fileName === null) {
             return undefined;
         } else {
-            directoryName = this.cleanupSeparators(directoryName);
-
-            const data = await util.promisify(fs.readFile)(path.join(directoryName, fileName));
+            const data = await util.promisify(fs.readFile)(path.join(this.cleanupSeparators(directoryName), fileName));
             return data.toString();
         }
     }
@@ -218,9 +200,7 @@ export class FileSystemMock implements IFileSystem {
             fileName === undefined || fileName === null) {
             return undefined;
         } else {
-            directoryName = this.cleanupSeparators(directoryName);
-
-            const data = await util.promisify(fs.readFile)(path.join(directoryName, fileName));
+            const data = await util.promisify(fs.readFile)(path.join(this.cleanupSeparators(directoryName), fileName));
             return data.toString().replace(/\r/g, "").split("\n");
         }
     }
@@ -230,9 +210,7 @@ export class FileSystemMock implements IFileSystem {
             fileName === undefined || fileName === null) {
             return undefined;
         } else {
-            directoryName = this.cleanupSeparators(directoryName);
-
-            return util.promisify(fs.readFile)(path.join(directoryName, fileName));
+            return util.promisify(fs.readFile)(path.join(this.cleanupSeparators(directoryName), fileName));
         }
     }
 
@@ -241,9 +219,7 @@ export class FileSystemMock implements IFileSystem {
             fileName === undefined || fileName === null) {
             return undefined;
         } else {
-            directoryName = this.cleanupSeparators(directoryName);
-
-            const data = await util.promisify(fs.readFile)(path.join(directoryName, fileName));
+            const data = await util.promisify(fs.readFile)(path.join(this.cleanupSeparators(directoryName), fileName));
             return JSON.parse(data.toString());
         }
     }
@@ -253,9 +229,7 @@ export class FileSystemMock implements IFileSystem {
             fileName === undefined || fileName === null) {
             return undefined;
         } else {
-            directoryName = this.cleanupSeparators(directoryName);
-
-            return util.promisify(fs.unlink)(path.join(directoryName, fileName));
+            return util.promisify(fs.unlink)(path.join(this.cleanupSeparators(directoryName), fileName));
         }
     }
 

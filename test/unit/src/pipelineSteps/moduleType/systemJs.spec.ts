@@ -96,7 +96,6 @@ describe("SystemJs", () => {
 
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.module).to.be.equal("system");
             Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").presets[0][1].modules).to.be.equal("systemjs");
-            Chai.expect(engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle").scriptIncludes.length).to.be.equal(1);
             Chai.expect(engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle").body.length).to.be.equal(8);
             Chai.expect(engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLBundle").body.length).to.be.equal(3);
         });

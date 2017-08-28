@@ -10,6 +10,7 @@ import { UniteClientPackage } from "../configuration/models/unite/uniteClientPac
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { IPackageManager } from "../interfaces/IPackageManager";
 export declare class EngineVariables {
+    force: boolean;
     engineRootFolder: string;
     engineAssetsFolder: string;
     enginePackageJson: PackageConfiguration;
@@ -48,7 +49,11 @@ export declare class EngineVariables {
     setupDirectories(fileSystem: IFileSystem, rootFolder: string): void;
     toggleClientPackage(name: string, main: string, mainMinified: string, testingAdditions: {
         [id: string]: string;
-    }, preload: boolean, includeMode: IncludeMode, scriptIncludeMode: ScriptIncludeMode, isPackage: boolean, assets: string, map: string, loaders: string[], required: boolean): void;
+    }, preload: boolean, includeMode: IncludeMode, scriptIncludeMode: ScriptIncludeMode, isPackage: boolean, assets: string, map: {
+        [id: string]: string;
+    }, loaders: {
+        [id: string]: string;
+    }, required: boolean): void;
     getTestClientPackages(): {
         [id: string]: UniteClientPackage;
     };

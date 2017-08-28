@@ -14,7 +14,11 @@ export declare class UniteClientPackage {
     includeMode: IncludeMode;
     isPackage: boolean;
     assets: string;
-    map: string;
-    loaders: string[];
+    map: {
+        [id: string]: string;
+    };
+    loaders: {
+        [id: string]: string;
+    };
     scriptIncludeMode: ScriptIncludeMode;
 }

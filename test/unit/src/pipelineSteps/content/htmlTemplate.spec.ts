@@ -52,13 +52,11 @@ describe("HtmlTemplate", () => {
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration("HTMLBundle")).to.be.deep.equal({
                 head: [],
-                body: [],
-                scriptIncludes: []
+                body: []
             });
             Chai.expect(engineVariablesStub.getConfiguration("HTMLNoBundle")).to.be.deep.equal({
                 head: [],
-                body: [],
-                scriptIncludes: []
+                body: []
             });
         });
     });
@@ -106,7 +104,44 @@ describe("HtmlTemplate", () => {
             const htmlTemplateConfiguration = engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle");
             htmlTemplateConfiguration.head.push("head1");
             htmlTemplateConfiguration.body.push("body2");
-            htmlTemplateConfiguration.scriptIncludes.push("script3");
+
+            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(loggerInfoSpy.args[0][0]).contains("Generating");
+
+            const lines = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "index-no-bundle.html");
+            Chai.expect(lines.length).to.be.equal(16);
+            Chai.expect(lines.findIndex(line => line.indexOf("head1") > 0)).to.be.equal(7);
+            Chai.expect(lines.findIndex(line => line.indexOf("body2") > 0)).to.be.equal(11);
+        });
+
+        it("can write with not bundled script include", async () => {
+            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
+            const obj = new HtmlTemplate();
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+
+            engineVariablesStub.findDependencyVersion = sandbox.stub().returns("1.2.3");
+            engineVariablesStub.toggleClientPackage(
+                "requirejs-text",
+                "text.js",
+                undefined,
+                undefined,
+                false,
+                "both",
+                "notBundled",
+                false,
+                undefined,
+                { text: "requirejs-text" },
+                undefined,
+                true);
+
+            const htmlTemplateConfiguration = engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle");
+            htmlTemplateConfiguration.head.push("head1");
+            htmlTemplateConfiguration.body.push("body2");
+
+            const htmlBundleTemplateConfiguration = engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLBundle");
+            htmlBundleTemplateConfiguration.head.push("head3");
+            htmlBundleTemplateConfiguration.body.push("body4");
 
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
@@ -115,8 +150,104 @@ describe("HtmlTemplate", () => {
             const lines = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "index-no-bundle.html");
             Chai.expect(lines.length).to.be.equal(17);
             Chai.expect(lines.findIndex(line => line.indexOf("head1") > 0)).to.be.equal(8);
+            Chai.expect(lines.findIndex(line => line.indexOf("<script") > 0)).to.be.equal(7);
             Chai.expect(lines.findIndex(line => line.indexOf("body2") > 0)).to.be.equal(12);
-            Chai.expect(lines.findIndex(line => line.indexOf("script3") > 0)).to.be.equal(7);
+
+            const lines2 = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "index-bundle.html");
+            Chai.expect(lines2.length).to.be.equal(16);
+            Chai.expect(lines2.findIndex(line => line.indexOf("head3") > 0)).to.be.equal(7);
+            Chai.expect(lines2.findIndex(line => line.indexOf("text.js") > 0)).to.be.equal(-1);
+            Chai.expect(lines2.findIndex(line => line.indexOf("body4") > 0)).to.be.equal(11);
+        });
+
+        it("can write with bundled script include", async () => {
+            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
+            const obj = new HtmlTemplate();
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+
+            engineVariablesStub.findDependencyVersion = sandbox.stub().returns("1.2.3");
+            engineVariablesStub.toggleClientPackage(
+                "requirejs-text",
+                "text.js",
+                "text.min.js",
+                undefined,
+                false,
+                "both",
+                "bundled",
+                false,
+                undefined,
+                { text: "requirejs-text" },
+                undefined,
+                true);
+
+            const htmlTemplateConfiguration = engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle");
+            htmlTemplateConfiguration.head.push("head1");
+            htmlTemplateConfiguration.body.push("body2");
+
+            const htmlBundleTemplateConfiguration = engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLBundle");
+            htmlBundleTemplateConfiguration.head.push("head3");
+            htmlBundleTemplateConfiguration.body.push("body4");
+
+            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(loggerInfoSpy.args[0][0]).contains("Generating");
+
+            const lines = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "index-no-bundle.html");
+            Chai.expect(lines.length).to.be.equal(16);
+            Chai.expect(lines.findIndex(line => line.indexOf("head1") > 0)).to.be.equal(7);
+            Chai.expect(lines.findIndex(line => line.indexOf("<script") > 0)).to.be.equal(-1);
+            Chai.expect(lines.findIndex(line => line.indexOf("body2") > 0)).to.be.equal(11);
+
+            const lines2 = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "index-bundle.html");
+            Chai.expect(lines2.length).to.be.equal(17);
+            Chai.expect(lines2.findIndex(line => line.indexOf("head3") > 0)).to.be.equal(8);
+            Chai.expect(lines2.findIndex(line => line.indexOf("text.min.js") > 0)).to.be.equal(7);
+            Chai.expect(lines2.findIndex(line => line.indexOf("body4") > 0)).to.be.equal(12);
+        });
+
+        it("can write with both script include", async () => {
+            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
+            const obj = new HtmlTemplate();
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+
+            engineVariablesStub.findDependencyVersion = sandbox.stub().returns("1.2.3");
+            engineVariablesStub.toggleClientPackage(
+                "requirejs-text",
+                "text.js",
+                "text.min.js",
+                undefined,
+                false,
+                "both",
+                "both",
+                false,
+                undefined,
+                { text: "requirejs-text" },
+                undefined,
+                true);
+
+            const htmlTemplateConfiguration = engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle");
+            htmlTemplateConfiguration.head.push("head1");
+            htmlTemplateConfiguration.body.push("body2");
+
+            const htmlBundleTemplateConfiguration = engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLBundle");
+            htmlBundleTemplateConfiguration.head.push("head3");
+            htmlBundleTemplateConfiguration.body.push("body4");
+
+            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(loggerInfoSpy.args[0][0]).contains("Generating");
+
+            const lines = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "index-no-bundle.html");
+            Chai.expect(lines.length).to.be.equal(17);
+            Chai.expect(lines.findIndex(line => line.indexOf("head1") > 0)).to.be.equal(8);
+            Chai.expect(lines.findIndex(line => line.indexOf("text.js") > 0)).to.be.equal(7);
+            Chai.expect(lines.findIndex(line => line.indexOf("body2") > 0)).to.be.equal(12);
+
+            const lines2 = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "index-bundle.html");
+            Chai.expect(lines2.length).to.be.equal(17);
+            Chai.expect(lines2.findIndex(line => line.indexOf("head3") > 0)).to.be.equal(8);
+            Chai.expect(lines2.findIndex(line => line.indexOf("text.min.js") > 0)).to.be.equal(7);
+            Chai.expect(lines2.findIndex(line => line.indexOf("body4") > 0)).to.be.equal(12);
         });
     });
 });

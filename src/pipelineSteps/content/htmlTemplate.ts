@@ -52,7 +52,7 @@ export class HtmlTemplate extends EnginePipelineStepBase {
         try {
             const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, filename);
 
-            if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker") {
+            if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker" || engineVariables.force) {
                 logger.info(`Generating ${filename}`, { wwwFolder: engineVariables.wwwRootFolder });
 
                 const lines: string[] = [];

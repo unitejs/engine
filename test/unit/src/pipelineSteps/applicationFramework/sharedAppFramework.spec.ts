@@ -12,26 +12,34 @@ import { FileSystemMock } from "../../fileSystem.mock";
 
 class TestSharedAppFramework extends SharedAppFramework {
     public customSourceExtension: string;
+    public customUnitTests: boolean;
+    public appModuleName: string;
+    public htmlFiles: string[];
+    public appCssFiles: string[];
 
     constructor() {
         super();
         this.customSourceExtension = "";
+        this.customUnitTests = false;
+        this.appModuleName = "app";
+        this.htmlFiles = ["app"];
+        this.appCssFiles = ["child/child"];
     }
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [`app${this.customSourceExtension}`]);
+        let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [`${this.appModuleName}${this.customSourceExtension}`]);
 
         if (ret === 0) {
-            ret = await super.generateAppHtml(logger, fileSystem, uniteConfiguration, engineVariables, ["app"]);
+            ret = await super.generateAppHtml(logger, fileSystem, uniteConfiguration, engineVariables, this.htmlFiles);
 
             if (ret === 0) {
-                ret = await super.generateAppCss(logger, fileSystem, uniteConfiguration, engineVariables, ["child/child"]);
+                ret = await super.generateAppCss(logger, fileSystem, uniteConfiguration, engineVariables, this.appCssFiles);
 
                 if (ret === 0) {
                     ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app"]);
 
                     if (ret === 0) {
-                        ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app"]);
+                        ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [this.appModuleName], !this.customUnitTests);
 
                         if (ret === 0) {
                             ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
@@ -225,6 +233,20 @@ describe("SharedAppFramework", () => {
             Chai.expect(res).to.be.equal(0);
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/e2e/src/", "app.spec.js");
             Chai.expect(exists).to.be.equal(false);
+        });
+
+        it("can succeed with custom unit tests", async () => {
+            const obj = new TestSharedAppFramework();
+            obj.appModuleName = "app.module";
+            obj.htmlFiles = [];
+            obj.appCssFiles = [];
+            obj.customUnitTests = true;
+            uniteConfigurationStub.applicationFramework = "Angular";
+
+            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            const exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.module.js");
+            Chai.expect(exists).to.be.equal(true);
         });
 
         it("can succeed with custom source extension", async () => {

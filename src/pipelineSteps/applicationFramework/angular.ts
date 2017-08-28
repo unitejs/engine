@@ -15,7 +15,7 @@ export class Angular extends SharedAppFramework {
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         if (uniteConfiguration.applicationFramework === "Angular") {
             if (uniteConfiguration.bundler === "RequireJS") {
-                logger.error(`Aurelia does not currently support bundling with ${uniteConfiguration.bundler}`);
+                logger.error(`Angular does not currently support bundling with ${uniteConfiguration.bundler}`);
                 return 1;
             }
         }

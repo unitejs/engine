@@ -4,7 +4,7 @@
 const os = require("os");
 const clientPackages = require("./client-packages");
 
-function create (uniteConfig, includeModes, isBundle) {
+function create (uniteConfig, includeModes, isBundle, mapBase) {
     const moduleConfig = clientPackages.buildModuleConfig(uniteConfig, includeModes, isBundle);
 
     const rjsConfig = {

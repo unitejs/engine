@@ -38,7 +38,7 @@ export class Protractor extends EnginePipelineStepBase {
             try {
                 const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, Protractor.FILENAME);
 
-                if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker") {
+                if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker" || engineVariables.force) {
                     logger.info(`Generating ${Protractor.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
                     const lines: string[] = this.createConfig();
@@ -53,7 +53,7 @@ export class Protractor extends EnginePipelineStepBase {
                 return 1;
             }
         } else {
-            return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, Protractor.FILENAME);
+            return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, Protractor.FILENAME, engineVariables.force);
         }
     }
 

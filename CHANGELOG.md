@@ -10,6 +10,9 @@
 * Script Include Mode now allow for "none", "bundled", "notBundled", "both" instead of boolean
 * Gulp pipeline step removes tasks if options change
 * Karma includes and additional testing libs from client packages
+* Added default ESLint parser to espree
+* Fixed merging configuration could produce duplicate entries in arrays of objects
+* Added force parameter to engine to ignore any existing config files
 
 # v0.9.1
 

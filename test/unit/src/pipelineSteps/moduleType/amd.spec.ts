@@ -96,7 +96,6 @@ describe("Amd", () => {
 
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.module).to.be.equal("amd");
             Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").presets[0][1].modules).to.be.equal("amd");
-            Chai.expect(engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle").scriptIncludes.length).to.be.equal(1);
             Chai.expect(engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle").body.length).to.be.equal(7);
             Chai.expect(engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLBundle").body.length).to.be.equal(3);
         });

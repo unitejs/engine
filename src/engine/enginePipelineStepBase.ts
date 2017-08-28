@@ -28,13 +28,14 @@ export abstract class EnginePipelineStepBase implements IEnginePipelineStep {
                           sourceFolder: string,
                           sourceFilename: string,
                           destFolder: string,
-                          destFilename: string): Promise<number> {
+                          destFilename: string,
+                          force: boolean): Promise<number> {
         const sourceFileExists = await fileSystem.fileExists(sourceFolder, sourceFilename);
 
         if (sourceFileExists) {
             const hasGeneratedMarker = await this.fileHasGeneratedMarker(fileSystem, destFolder, destFilename);
 
-            if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker") {
+            if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker" || force) {
                 logger.info(`Copying ${sourceFilename}`, { from: sourceFolder, to: destFolder });
 
                 try {
@@ -65,10 +66,10 @@ export abstract class EnginePipelineStepBase implements IEnginePipelineStep {
     }
 
     public async deleteFile(logger: ILogger, fileSystem: IFileSystem,
-                            folder: string, filename: string): Promise<number> {
+                            folder: string, filename: string, force: boolean): Promise<number> {
         const hasGeneratedMarker = await this.fileHasGeneratedMarker(fileSystem, folder, filename);
 
-        if (hasGeneratedMarker === "HasMarker") {
+        if (hasGeneratedMarker === "HasMarker" || (hasGeneratedMarker !== "FileNotExist" && force)) {
             try {
                 logger.info(`Deleting ${filename}`, { from: folder });
                 await fileSystem.fileDelete(folder, filename);

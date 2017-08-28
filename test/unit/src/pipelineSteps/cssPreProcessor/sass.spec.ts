@@ -17,7 +17,7 @@ describe("Sass", () => {
     let loggerErrorSpy: Sinon.SinonSpy;
     let fileSystemMock: IFileSystem;
     let uniteConfigurationStub: UniteConfiguration;
-    let engineVariabSasstub: EngineVariables;
+    let engineVariablesStub: EngineVariables;
 
     beforeEach(() => {
         sandbox = Sinon.sandbox.create();
@@ -31,9 +31,9 @@ describe("Sass", () => {
         uniteConfigurationStub = new UniteConfiguration();
         uniteConfigurationStub.cssPre = "Sass";
 
-        engineVariabSasstub = new EngineVariables();
-        engineVariabSasstub.setupDirectories(fileSystemMock, "./test/unit/temp");
-        engineVariabSasstub.findDependencyVersion = sandbox.stub().returns("1.2.3");
+        engineVariablesStub = new EngineVariables();
+        engineVariablesStub.setupDirectories(fileSystemMock, "./test/unit/temp");
+        engineVariablesStub.findDependencyVersion = sandbox.stub().returns("1.2.3");
     });
 
     afterEach(async () => {
@@ -50,24 +50,24 @@ describe("Sass", () => {
         it("can not setup the engine configuration if not Sass", async () => {
             const obj = new Sass();
             uniteConfigurationStub.cssPre = "Less";
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariabSasstub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariabSasstub.styleLanguageExt).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.styleLanguageExt).to.be.equal(undefined);
         });
 
         it("can setup the engine configuration", async () => {
             const obj = new Sass();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariabSasstub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariabSasstub.styleLanguageExt).to.be.equal("scss");
+            Chai.expect(engineVariablesStub.styleLanguageExt).to.be.equal("scss");
         });
     });
 
     describe("process", () => {
         it("can fail if an exception is thrown", async () => {
-            sandbox.stub(fileSystemMock, "pathCombine").throws("error");
+            sandbox.stub(fileSystemMock, "directoryCreate").throws("error");
             const obj = new Sass();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariabSasstub);
+            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
         });
@@ -75,7 +75,7 @@ describe("Sass", () => {
         it("can skip not Sass", async () => {
             const obj = new Sass();
             uniteConfigurationStub.cssPre = "Less";
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariabSasstub);
+            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
 
             let exists = await fileSystemMock.directoryExists("./test/unit/temp/www/sass");
@@ -85,7 +85,7 @@ describe("Sass", () => {
             Chai.expect(exists).to.be.equal(false);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
-            engineVariabSasstub.buildDevDependencies(packageJsonDevDependencies);
+            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
             Chai.expect(packageJsonDevDependencies["node-sass"]).to.be.equal(undefined);
         });
 
@@ -93,7 +93,8 @@ describe("Sass", () => {
             await fileSystemMock.directoryCreate("./test/unit/temp/www/");
 
             const obj = new Sass();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariabSasstub);
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
 
             let exists = await fileSystemMock.directoryExists("./test/unit/temp/www/sass");
@@ -103,7 +104,7 @@ describe("Sass", () => {
             Chai.expect(exists).to.be.equal(true);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
-            engineVariabSasstub.buildDevDependencies(packageJsonDevDependencies);
+            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
             Chai.expect(packageJsonDevDependencies["node-sass"]).to.be.equal("1.2.3");
         });
     });

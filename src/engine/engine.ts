@@ -106,9 +106,11 @@ export class Engine implements IEngine {
                            cssPost: UniteCssPostProcessor | undefined | null,
                            packageManager: UnitePackageManager | undefined | null,
                            applicationFramework: UniteApplicationFramework | undefined | null,
+                           force: boolean | undefined | null,
                            outputDirectory: string | undefined | null): Promise<number> {
-        outputDirectory = this.cleanupOutputDirectory(outputDirectory);
-        let uniteConfiguration = await this.loadConfiguration(outputDirectory);
+        const newOutputDirectory = this.cleanupOutputDirectory(outputDirectory);
+        const newForce = force === undefined || force === null ? false : force;
+        let uniteConfiguration = await this.loadConfiguration(newOutputDirectory, !!force);
         if (uniteConfiguration === undefined) {
             uniteConfiguration = new UniteConfiguration();
         } else if (uniteConfiguration === null) {
@@ -217,9 +219,11 @@ export class Engine implements IEngine {
             return 1;
         }
 
+        this._logger.info("newForce", { newForce });
+
         this._logger.info("");
 
-        return this.configureRun(outputDirectory, uniteConfiguration, spdxLicense);
+        return this.configureRun(newOutputDirectory, uniteConfiguration, spdxLicense, newForce);
     }
 
     public async clientPackage(operation: ModuleOperation | undefined | null,
@@ -237,8 +241,8 @@ export class Engine implements IEngine {
                                loaders: string | undefined | null,
                                packageManager: UnitePackageManager | undefined | null,
                                outputDirectory: string | undefined | null): Promise<number> {
-        outputDirectory = this.cleanupOutputDirectory(outputDirectory);
-        const uniteConfiguration = await this.loadConfiguration(outputDirectory);
+        const newOutputDirectory = this.cleanupOutputDirectory(outputDirectory);
+        const uniteConfiguration = await this.loadConfiguration(newOutputDirectory, false);
 
         if (!uniteConfiguration) {
             this._logger.error("There is no unite.json to configure.");
@@ -261,9 +265,9 @@ export class Engine implements IEngine {
 
         if (operation === "add") {
             return await this.clientPackageAdd(packageName, version, preload, includeMode, scriptIncludeMode,
-                                               main, mainMinified, testingAdditions, isPackage, assets, map, loaders, outputDirectory, uniteConfiguration);
+                                               main, mainMinified, testingAdditions, isPackage, assets, map, loaders, newOutputDirectory, uniteConfiguration);
         } else {
-            return await this.clientPackageRemove(packageName, outputDirectory, uniteConfiguration);
+            return await this.clientPackageRemove(packageName, newOutputDirectory, uniteConfiguration);
         }
     }
 
@@ -273,8 +277,8 @@ export class Engine implements IEngine {
                                     minify: boolean | undefined,
                                     sourcemaps: boolean | undefined,
                                     outputDirectory: string | undefined | null): Promise<number> {
-        outputDirectory = this.cleanupOutputDirectory(outputDirectory);
-        const uniteConfiguration = await this.loadConfiguration(outputDirectory);
+        const newOutputDirectory = this.cleanupOutputDirectory(outputDirectory);
+        const uniteConfiguration = await this.loadConfiguration(newOutputDirectory, false);
 
         if (!uniteConfiguration) {
             this._logger.error("There is no unite.json to configure.");
@@ -293,17 +297,17 @@ export class Engine implements IEngine {
         this._logger.info("");
 
         if (operation === "add") {
-            return await this.buildConfigurationAdd(configurationName, bundle, minify, sourcemaps, outputDirectory, uniteConfiguration);
+            return await this.buildConfigurationAdd(configurationName, bundle, minify, sourcemaps, newOutputDirectory, uniteConfiguration);
         } else {
-            return await this.buildConfigurationRemove(configurationName, outputDirectory, uniteConfiguration);
+            return await this.buildConfigurationRemove(configurationName, newOutputDirectory, uniteConfiguration);
         }
     }
 
     public async platform(operation: PlatformOperation | undefined | null,
                           platformName: string | undefined | null,
                           outputDirectory: string | undefined | null): Promise<number> {
-        outputDirectory = this.cleanupOutputDirectory(outputDirectory);
-        const uniteConfiguration = await this.loadConfiguration(outputDirectory);
+        const newOutputDirectory = this.cleanupOutputDirectory(outputDirectory);
+        const uniteConfiguration = await this.loadConfiguration(newOutputDirectory, false);
 
         if (!uniteConfiguration) {
             this._logger.error("There is no unite.json to configure.");
@@ -322,45 +326,46 @@ export class Engine implements IEngine {
         this._logger.info("");
 
         if (operation === "add") {
-            return await this.platformAdd(platformName, outputDirectory, uniteConfiguration);
+            return await this.platformAdd(platformName, newOutputDirectory, uniteConfiguration);
         } else {
-            return await this.platformRemove(platformName, outputDirectory, uniteConfiguration);
+            return await this.platformRemove(platformName, newOutputDirectory, uniteConfiguration);
         }
     }
 
     private cleanupOutputDirectory(outputDirectory: string | null | undefined): string {
         if (outputDirectory === undefined || outputDirectory === null || outputDirectory.length === 0) {
             // no output directory specified so use current
-            outputDirectory = "./";
+            return "./";
         } else {
-            outputDirectory = this._fileSystem.pathAbsolute(outputDirectory);
+            return this._fileSystem.pathAbsolute(outputDirectory);
         }
-
-        return outputDirectory;
     }
 
-    private async loadConfiguration(outputDirectory: string): Promise<UniteConfiguration | undefined | null> {
+    private async loadConfiguration(outputDirectory: string, force: boolean): Promise<UniteConfiguration | undefined | null> {
         let uniteConfiguration: UniteConfiguration | undefined | null;
 
-        // check if there is a unite.json we can load for default options
-        try {
-            const exists = await this._fileSystem.fileExists(outputDirectory, "unite.json");
+        if (!force) {
+            // check if there is a unite.json we can load for default options
+            try {
+                const exists = await this._fileSystem.fileExists(outputDirectory, "unite.json");
 
-            if (exists) {
-                uniteConfiguration = await this._fileSystem.fileReadJson<UniteConfiguration>(outputDirectory, "unite.json");
+                if (exists) {
+                    uniteConfiguration = await this._fileSystem.fileReadJson<UniteConfiguration>(outputDirectory, "unite.json");
+                }
+            } catch (e) {
+                this._logger.error("Reading existing unite.json", e);
+                uniteConfiguration = null;
             }
-        } catch (e) {
-            this._logger.error("Reading existing unite.json", e);
-            uniteConfiguration = null;
         }
 
         return uniteConfiguration;
     }
 
-    private async configureRun(outputDirectory: string, uniteConfiguration: UniteConfiguration, license: ISpdxLicense): Promise<number> {
+    private async configureRun(outputDirectory: string, uniteConfiguration: UniteConfiguration, license: ISpdxLicense, force: boolean): Promise<number> {
         const engineVariables = new EngineVariables();
         let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration.packageManager, engineVariables);
         if (ret === 0) {
+            engineVariables.force = force;
             engineVariables.license = license;
 
             const pipelineSteps: IEnginePipelineStep[] = [];
@@ -450,24 +455,9 @@ export class Engine implements IEngine {
                                    loaders: string | undefined | null,
                                    outputDirectory: string,
                                    uniteConfiguration: UniteConfiguration): Promise<number> {
+        const newIncludeMode = includeMode === undefined || includeMode === null || includeMode.length === 0 ? "both" : includeMode;
 
-        if (includeMode === undefined || includeMode === null || includeMode.length === 0) {
-            includeMode = "both";
-        }
-
-        if (scriptIncludeMode === undefined) {
-            scriptIncludeMode = "none";
-        }
-
-        if (preload === undefined) {
-            preload = false;
-        }
-
-        if (isPackage === undefined) {
-            isPackage = false;
-        }
-
-        if (!ParameterValidation.checkOneOf<IncludeMode>(this._logger, "includeMode", includeMode, ["app", "test", "both"])) {
+        if (!ParameterValidation.checkOneOf<IncludeMode>(this._logger, "includeMode", newIncludeMode, ["app", "test", "both"])) {
             return 1;
         }
 
@@ -481,49 +471,47 @@ export class Engine implements IEngine {
         const engineVariables = new EngineVariables();
         let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration.packageManager, engineVariables);
         if (ret === 0) {
+            const clientPackage = new UniteClientPackage();
+            clientPackage.version = version;
+            clientPackage.main = main;
+            clientPackage.mainMinified = mainMinified;
+
             const missingVersion = version === null || version === undefined || version.length === 0;
             const missingMain = main === null || main === undefined || main.length === 0;
             if (missingVersion || missingMain) {
                 try {
                     const packageInfo = await engineVariables.packageManager.info(packageName);
 
-                    version = version || `^${packageInfo.version || "0.0.1"}`;
-                    main = main || packageInfo.main;
+                    clientPackage.version = clientPackage.version || `^${packageInfo.version || "0.0.1"}`;
+                    clientPackage.main = clientPackage.main || packageInfo.main;
                 } catch (err) {
                     this._logger.error("Reading Package Information", err);
                     return 1;
                 }
             }
 
-            if (main) {
-                main = main.replace(/\\/g, "/");
-                main = main.replace(/\.\//, "/");
+            if (clientPackage.main) {
+                clientPackage.main = clientPackage.main.replace(/\\/g, "/");
+                clientPackage.main = clientPackage.main.replace(/\.\//, "/");
             }
-            if (mainMinified) {
-                mainMinified = mainMinified.replace(/\\/g, "/");
-                mainMinified = mainMinified.replace(/\.\//, "/");
+            if (clientPackage.mainMinified) {
+                clientPackage.mainMinified = clientPackage.mainMinified.replace(/\\/g, "/");
+                clientPackage.mainMinified = clientPackage.mainMinified.replace(/\.\//, "/");
             }
-            const clientPackage = new UniteClientPackage();
-            clientPackage.version = version;
-            clientPackage.preload = preload;
-            clientPackage.main = main;
-            clientPackage.mainMinified = mainMinified;
-            if (testingAdditions) {
-                clientPackage.testingAdditions = {};
-                const splitAdditions = testingAdditions.split(";");
-                splitAdditions.forEach(splitAddition => {
-                    const parts = splitAddition.split("=");
-                    if (parts.length === 2) {
-                        clientPackage.testingAdditions[parts[0]] = parts[1];
-                    }
-                });
-            }
-            clientPackage.isPackage = isPackage;
-            clientPackage.includeMode = includeMode;
-            clientPackage.scriptIncludeMode = scriptIncludeMode;
+            clientPackage.preload = preload === undefined ? false : preload;
+            clientPackage.isPackage = isPackage === undefined ? false : isPackage;
+            clientPackage.includeMode = newIncludeMode;
+            clientPackage.scriptIncludeMode = scriptIncludeMode === undefined || scriptIncludeMode === null || scriptIncludeMode.length === 0 ? "none" : scriptIncludeMode;
             clientPackage.assets = assets;
-            clientPackage.map = map;
-            clientPackage.loaders = loaders ? loaders.split(";") : undefined;
+
+            try {
+                clientPackage.testingAdditions = this.mapParser(testingAdditions);
+                clientPackage.map = this.mapParser(map);
+                clientPackage.loaders = this.mapParser(loaders);
+            } catch (err) {
+                this._logger.error("Input failure", err);
+                return 1;
+            }
 
             uniteConfiguration.clientPackages[packageName] = clientPackage;
 
@@ -580,23 +568,11 @@ export class Engine implements IEngine {
         const engineVariables = new EngineVariables();
         let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration.packageManager, engineVariables);
         if (ret === 0) {
-            if (bundle === undefined) {
-                bundle = false;
-            }
-
-            if (minify === undefined) {
-                minify = false;
-            }
-
-            if (sourcemaps === undefined) {
-                sourcemaps = true;
-            }
-
             uniteConfiguration.buildConfigurations[configurationName] = uniteConfiguration.buildConfigurations[configurationName] || new UniteBuildConfiguration();
 
-            uniteConfiguration.buildConfigurations[configurationName].bundle = bundle;
-            uniteConfiguration.buildConfigurations[configurationName].minify = minify;
-            uniteConfiguration.buildConfigurations[configurationName].sourcemaps = sourcemaps;
+            uniteConfiguration.buildConfigurations[configurationName].bundle = bundle === undefined ? false : bundle;
+            uniteConfiguration.buildConfigurations[configurationName].minify = minify === undefined ? false : minify;
+            uniteConfiguration.buildConfigurations[configurationName].sourcemaps = sourcemaps === undefined ? true : sourcemaps;
             uniteConfiguration.buildConfigurations[configurationName].variables = uniteConfiguration.buildConfigurations[configurationName].variables || {};
 
             const pipelineSteps: IEnginePipelineStep[] = [];
@@ -706,6 +682,7 @@ export class Engine implements IEngine {
             return 1;
         }
 
+        engineVariables.force = false;
         engineVariables.engineRootFolder = this._engineRootFolder;
         engineVariables.engineAssetsFolder = this._engineAssetsFolder;
         engineVariables.setupDirectories(this._fileSystem, outputDirectory);
@@ -735,5 +712,25 @@ export class Engine implements IEngine {
         }
 
         return 0;
+    }
+
+    private mapParser(input: string): { [id: string]: string } {
+        let parsedMap: { [id: string]: string };
+
+        if (input !== undefined && input !== null && input.length > 0) {
+            parsedMap = {};
+            const splitAdditions = input.split(";");
+
+            splitAdditions.forEach(splitAddition => {
+                const parts = splitAddition.split("=");
+                if (parts.length === 2) {
+                    parsedMap[parts[0]] = parts[1];
+                } else {
+                    throw new Error(`The input is not formed correctly '${input}'`);
+                }
+            });
+        }
+
+        return parsedMap;
     }
 }

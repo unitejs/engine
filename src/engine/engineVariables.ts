@@ -11,6 +11,7 @@ import { UniteConfiguration } from "../configuration/models/unite/uniteConfigura
 import { IPackageManager } from "../interfaces/IPackageManager";
 
 export class EngineVariables {
+    public force: boolean;
     public engineRootFolder: string;
     public engineAssetsFolder: string;
     public enginePackageJson: PackageConfiguration;
@@ -101,8 +102,8 @@ export class EngineVariables {
                                scriptIncludeMode: ScriptIncludeMode,
                                isPackage: boolean,
                                assets: string,
-                               map: string,
-                               loaders: string[],
+                               map: { [id: string]: string},
+                               loaders: { [id: string]: string},
                                required: boolean): void {
         const clientPackage = new UniteClientPackage();
         clientPackage.includeMode = includeMode;

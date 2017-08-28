@@ -5,26 +5,24 @@ const path = require("path");
 
 function getModuleIds (uniteConfig, includeModes) {
     const pathKeys = [];
-    const keys = Object.keys(uniteConfig.clientPackages);
 
-    for (let i = 0; i < keys.length; i++) {
-        const pkg = uniteConfig.clientPackages[keys[i]];
+    Object.keys(uniteConfig.clientPackages).forEach(key => {
+        const pkg = uniteConfig.clientPackages[key];
         if (includeModes.indexOf(pkg.includeMode) >= 0 && pkg.scriptIncludeMode === "none") {
             if (pkg.main || pkg.mainMinified) {
-                pathKeys.push(keys[i]);
+                pathKeys.push(key);
             }
         }
-    }
+    });
 
     return pathKeys;
 }
 
 function getFiles (uniteConfig, includeModes, isMinified) {
     const files = {};
-    const keys = Object.keys(uniteConfig.clientPackages);
 
-    for (let i = 0; i < keys.length; i++) {
-        const pkg = uniteConfig.clientPackages[keys[i]];
+    Object.keys(uniteConfig.clientPackages).forEach(key => {
+        const pkg = uniteConfig.clientPackages[key];
         if (includeModes.indexOf(pkg.includeMode) >= 0 && pkg.scriptIncludeMode === "none") {
             const pkgMain = isMinified && pkg.mainMinified ? pkg.mainMinified : pkg.main;
 
@@ -33,49 +31,47 @@ function getFiles (uniteConfig, includeModes, isMinified) {
                 const main = mainSplit.pop();
                 const location = mainSplit.join("/");
                 if (pkg.isPackage) {
-                    files[keys[i]] = path.join(`${uniteConfig.dirs.www.package}${keys[i]}/${location}`,
+                    files[key] = path.join(`${uniteConfig.dirs.www.package}${key}/${location}`,
                         "**/*.{js,html,css}");
                 } else {
-                    files[keys[i]] = path.join(`${uniteConfig.dirs.www.package}${keys[i]}/${location}`, main);
+                    files[key] = path.join(`${uniteConfig.dirs.www.package}${key}/${location}`, main);
                 }
             }
         }
-    }
+    });
 
     return files;
 }
 
 function getRequires (uniteConfig, includeModes, isMinified) {
     const requires = [];
-    const keys = Object.keys(uniteConfig.clientPackages);
 
-    for (let i = 0; i < keys.length; i++) {
-        const pkg = uniteConfig.clientPackages[keys[i]];
+    Object.keys(uniteConfig.clientPackages).forEach(key => {
+        const pkg = uniteConfig.clientPackages[key];
         if (includeModes.indexOf(pkg.includeMode) >= 0 && pkg.scriptIncludeMode === "none") {
             const pkgMain = isMinified && pkg.mainMinified ? pkg.mainMinified : pkg.main;
 
             if (pkgMain && pkgMain !== "*") {
-                requires.push(keys[i]);
+                requires.push(key);
             }
         }
-    }
+    });
 
     return requires;
 }
 
 function getAssets (uniteConfig) {
     const assets = [];
-    const keys = Object.keys(uniteConfig.clientPackages);
 
-    for (let i = 0; i < keys.length; i++) {
-        const clientAssets = uniteConfig.clientPackages[keys[i]].assets;
+    Object.keys(uniteConfig.clientPackages).forEach(key => {
+        const clientAssets = uniteConfig.clientPackages[key].assets;
         if (clientAssets !== undefined && clientAssets !== null && clientAssets.length > 0) {
             const cas = clientAssets.split(",");
             cas.forEach((ca) => {
-                assets.push(path.join(`${uniteConfig.dirs.www.package}${keys[i]}/`, ca));
+                assets.push(path.join(`${uniteConfig.dirs.www.package}${key}/`, ca));
             });
         }
-    }
+    });
 
     return assets;
 }
@@ -91,15 +87,14 @@ function buildModuleConfig (uniteConfig, includeModes, isMinified) {
 
     const isTest = includeModes.indexOf("test") >= 0;
 
-    const keys = Object.keys(uniteConfig.clientPackages);
-    for (let i = 0; i < keys.length; i++) {
-        const pkg = uniteConfig.clientPackages[keys[i]];
+    Object.keys(uniteConfig.clientPackages).forEach(key => {
+        const pkg = uniteConfig.clientPackages[key];
         if (includeModes.indexOf(pkg.includeMode) >= 0 && pkg.scriptIncludeMode === "none") {
             const pkgMain = isMinified && pkg.mainMinified ? pkg.mainMinified : pkg.main;
 
             if (pkgMain) {
                 if (pkgMain === "*") {
-                    moduleConfig.paths[keys[i]] = `${uniteConfig.dirs.www.package}${keys[i]}`;
+                    moduleConfig.map[key] = `${uniteConfig.dirs.www.package}${key}`;
                 } else {
                     const mainSplit = pkgMain.split("/");
                     const main = mainSplit.pop().replace(/(\.js)$/, "");
@@ -107,42 +102,41 @@ function buildModuleConfig (uniteConfig, includeModes, isMinified) {
 
                     if (pkg.isPackage) {
                         moduleConfig.packages.push({
-                            "name": keys[i],
-                            "location": `${uniteConfig.dirs.www.package}${keys[i]}/${location}`,
+                            "name": key,
+                            "location": `${uniteConfig.dirs.www.package}${key}/${location}`,
                             main
                         });
                     } else {
                         location += location.length > 0 ? "/" : "";
-                        moduleConfig.paths[keys[i]] = `${uniteConfig.dirs.www.package}${keys[i]}/${location}${main}`;
+                        moduleConfig.paths[key] = `${uniteConfig.dirs.www.package}${key}/${location}${main}`;
                     }
 
                     if (pkg.testingAdditions && isTest) {
-                        const additionKeys = Object.keys(pkg.testingAdditions);
-                        additionKeys.forEach(additionKey => {
+                        Object.keys(pkg.testingAdditions).forEach(additionKey => {
                             moduleConfig.paths[additionKey] =
-                                `${uniteConfig.dirs.www.package}${keys[i]}/${pkg.testingAdditions[additionKey]}`;
+                                `${uniteConfig.dirs.www.package}${key}/${pkg.testingAdditions[additionKey]}`;
                         });
                     }
 
                     if (pkg.preload) {
-                        moduleConfig.preload.push(keys[i]);
+                        moduleConfig.preload.push(key);
                     }
                 }
 
-                let loaderKey = keys[i];
                 if (pkg.map) {
-                    moduleConfig.map[pkg.map] = keys[i];
-                    loaderKey = pkg.map;
+                    Object.keys(pkg.map).forEach(mapKey => {
+                        moduleConfig.map[mapKey] = pkg.map[mapKey];
+                    });
                 }
 
                 if (pkg.loaders) {
-                    pkg.loaders.forEach(loader => {
-                        moduleConfig.loaders[loader] = loaderKey;
+                    Object.keys(pkg.loaders).forEach(loaderKey => {
+                        moduleConfig.loaders[loaderKey] = pkg.loaders[loaderKey];
                     });
                 }
             }
         }
-    }
+    });
 
     return moduleConfig;
 }

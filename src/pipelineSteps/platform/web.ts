@@ -17,9 +17,9 @@ export class Web extends EnginePipelineStepBase {
         const buildTasks = fileSystem.pathCombine(engineVariables.www.buildFolder, "/tasks/");
         if (uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.platforms[Web.PLATFORM] !== undefined) {
             const assetTasksPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/platform/");
-            return await this.copyFile(logger, fileSystem, assetTasksPlatform, Web.FILENAME, buildTasks, Web.FILENAME);
+            return await this.copyFile(logger, fileSystem, assetTasksPlatform, Web.FILENAME, buildTasks, Web.FILENAME, engineVariables.force);
         } else {
-            return await super.deleteFile(logger, fileSystem, buildTasks, Web.FILENAME);
+            return await super.deleteFile(logger, fileSystem, buildTasks, Web.FILENAME, engineVariables.force);
         }
     }
 }
