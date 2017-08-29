@@ -6,14 +6,42 @@ const exec = require("./util/exec");
 const gulp = require("gulp");
 const util = require("util");
 const browserSync = require("browser-sync");
+const minimist = require("minimist");
 
 let browserSyncInstance = null;
 
 gulp.task("e2e-run-test", async () => {
     display.info("Running", "Protractor");
 
+    const knownOptions = {
+        "default": {
+            "browser": "chrome",
+            "secure": false,
+            "port": "9000"
+        },
+        "string": [
+            "browser",
+            "port"
+        ],
+        "boolean": [
+            "secure"
+        ]
+
+    };
+
+    const options = minimist(process.argv.slice(2), knownOptions);
+    if (options.browser === "ie") {
+        options.browser = "internet explorer";
+    } else if (options.browser === "edge") {
+        options.browser = "MicrosoftEdge";
+    }
+
+    let url = options.secure ? "https://" : "http://";
+    url += "localhost:";
+    url += options.port;
+
     try {
-        await exec.npmRun("protractor", ["protractor.conf.js"]);
+        await exec.npmRun("protractor", ["protractor.conf.js", `--browser=${options.browser}`, `--baseUrl=${url}`]);
         browserSyncInstance.exit();
     } catch (err) {
         display.error("Executing protractor", err);
@@ -25,15 +53,30 @@ gulp.task("e2e-run-test", async () => {
 gulp.task("e2e-serve", () => {
     display.info("Running", "BrowserSync");
 
+    const knownOptions = {
+        "default": {
+            "secure": false,
+            "port": "9000"
+        },
+        "boolean": [
+            "secure"
+        ],
+        "string": [
+            "port"
+        ]
+    };
+
+    const options = minimist(process.argv.slice(2), knownOptions);
+
     browserSyncInstance = browserSync.create();
 
     const initAsync = util.promisify(browserSyncInstance.init);
     return initAsync({
-        "https": false,
+        "https": options.secure,
         "notify": false,
         "online": true,
         "open": false,
-        "port": 9000,
+        "port": options.port,
         "server": {"baseDir": ["."]}
     });
 });

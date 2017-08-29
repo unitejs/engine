@@ -28,4 +28,7 @@ export declare class ProtractorConfiguration {
         invertGrep?: boolean;
     };
     onPrepare: any;
+    localSeleniumStandaloneOpts: {
+        jvmArgs: string[];
+    };
 }

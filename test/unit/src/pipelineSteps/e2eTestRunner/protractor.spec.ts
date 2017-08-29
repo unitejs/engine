@@ -122,7 +122,7 @@ describe("Protractor", () => {
             Chai.expect(loggerInfoSpy.args[0][0]).contains("Generating");
 
             const lines = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "protractor.conf.js");
-            Chai.expect(lines.length).to.be.equal(12);
+            Chai.expect(lines.length).to.be.equal(35);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);

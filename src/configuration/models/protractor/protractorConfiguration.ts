@@ -13,4 +13,5 @@ export class ProtractorConfiguration {
     public mochaOpts: { ui?: string; reporter?: string; timeout?: number; slow?: number; reporterOptions?: { [id: string]: any } };
     public jasmineNodeOpts: { showColors?: boolean; defaultTimeoutInterval?: number; print?: any; grep?: string; invertGrep?: boolean };
     public onPrepare: any;
+    public localSeleniumStandaloneOpts: { jvmArgs: string[]};
 }

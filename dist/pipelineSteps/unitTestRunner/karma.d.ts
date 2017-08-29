@@ -8,6 +8,6 @@ export declare class Karma extends EnginePipelineStepBase {
     private _configuration;
     initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
-    private configDefaults(fileSystem, engineVariables);
+    private configDefaults(fileSystem, uniteConfiguration, engineVariables);
     private generateConfig(fileSystem, uniteConfiguration, engineVariables, lines);
 }

@@ -16,6 +16,7 @@ import { UnitePackageManager } from "./unitePackageManager";
 import { UniteServer } from "./uniteServer";
 import { UniteSourceLanguage } from "./uniteSourceLanguage";
 import { UniteTaskManager } from "./uniteTaskManager";
+import { UniteUnitTestEngine } from "./uniteUnitTestEngine";
 import { UniteUnitTestFramework } from "./uniteUnitTestFramework";
 import { UniteUnitTestRunner } from "./uniteUnitTestRunner";
 export declare class UniteConfiguration {
@@ -31,6 +32,7 @@ export declare class UniteConfiguration {
     taskManager: UniteTaskManager;
     unitTestRunner: UniteUnitTestRunner;
     unitTestFramework: UniteUnitTestFramework;
+    unitTestEngine: UniteUnitTestEngine;
     e2eTestRunner: UniteE2eTestRunner;
     e2eTestFramework: UniteE2eTestFramework;
     server: UniteServer;

@@ -18,7 +18,7 @@ export class Karma extends EnginePipelineStepBase {
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
 
         if (uniteConfiguration.unitTestRunner === "Karma") {
-            this.configDefaults(fileSystem, engineVariables);
+            this.configDefaults(fileSystem, uniteConfiguration, engineVariables);
         }
 
         return 0;
@@ -26,8 +26,6 @@ export class Karma extends EnginePipelineStepBase {
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["karma",
-            "karma-chrome-launcher",
-            "karma-phantomjs-launcher",
             "karma-story-reporter",
             "karma-html-reporter",
             "karma-coverage",
@@ -38,6 +36,9 @@ export class Karma extends EnginePipelineStepBase {
             "bluebird"
         ],
                                             uniteConfiguration.unitTestRunner === "Karma");
+
+        engineVariables.toggleDevDependency(["karma-phantomjs-launcher"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.unitTestEngine === "PhantomJS");
+        engineVariables.toggleDevDependency(["karma-chrome-launcher"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.unitTestEngine === "ChromeHeadless");
 
         if (uniteConfiguration.unitTestRunner === "Karma") {
             const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, Karma.FILENAME);
@@ -58,7 +59,7 @@ export class Karma extends EnginePipelineStepBase {
         }
     }
 
-    private configDefaults(fileSystem: IFileSystem, engineVariables: EngineVariables): void {
+    private configDefaults(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void {
         const defaultConfiguration = new KarmaConfiguration();
 
         const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.reportsFolder));
@@ -67,7 +68,7 @@ export class Karma extends EnginePipelineStepBase {
         defaultConfiguration.singleRun = true;
         defaultConfiguration.frameworks = [];
         defaultConfiguration.reporters = ["story", "coverage-allsources", "coverage", "html", "karma-remap-istanbul"];
-        defaultConfiguration.browsers = ["PhantomJS"];
+        defaultConfiguration.browsers = [uniteConfiguration.unitTestEngine === "PhantomJS" ? "PhantomJS" : "ChromeHeadless"];
         defaultConfiguration.coverageReporter = {
             include: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.distFolder, "**/!(app-module-config|entryPoint).js"))),
             exclude: "",

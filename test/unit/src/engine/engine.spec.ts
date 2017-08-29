@@ -5,6 +5,8 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
+import { UniteBuildConfiguration } from "../../../../dist/configuration/models/unite/uniteBuildConfiguration";
+import { UniteClientPackage } from "../../../../dist/configuration/models/unite/uniteClientPackage";
 import { UniteConfiguration } from "../../../../dist/configuration/models/unite/uniteConfiguration";
 import { Engine } from "../../../../dist/engine/engine";
 import { PackageUtils } from "../../../../dist/packageManagers/packageUtils";
@@ -18,7 +20,7 @@ describe("Engine", () => {
     let loggerErrorSpy: Sinon.SinonSpy;
     let loggerWarningSpy: Sinon.SinonSpy;
     let loggerBannerSpy: Sinon.SinonSpy;
-    let uniteJson: any;
+    let uniteJson: UniteConfiguration;
     let uniteJsonWritten: UniteConfiguration;
     let packageJsonErrors: boolean;
     let spdxErrors: boolean;
@@ -102,6 +104,7 @@ describe("Engine", () => {
             bundler: "RequireJS",
             unitTestRunner: "Karma",
             unitTestFramework: "Jasmine",
+            unitTestEngine: "PhantomJS",
             e2eTestRunner: "Protractor",
             e2eTestFramework: "Mocha-Chai",
             cssPre: "Sass",
@@ -110,7 +113,14 @@ describe("Engine", () => {
             packageManager: "Yarn",
             taskManager: "Gulp",
             server: "BrowserSync",
-            applicationFramework: "PlainApp"
+            applicationFramework: "PlainApp",
+            uniteVersion: "0.0.0",
+            clientPackages: undefined,
+            dirs: undefined,
+            srcDistReplace: undefined,
+            srcDistReplaceWith: undefined,
+            buildConfigurations: undefined,
+            platforms: undefined
         };
     });
 
@@ -130,7 +140,7 @@ describe("Engine", () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.configure(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
-                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("packageName");
         });
@@ -139,7 +149,7 @@ describe("Engine", () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.configure("my-package", undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
-                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("title");
         });
@@ -150,7 +160,7 @@ describe("Engine", () => {
 
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.configure("my-package", "My App", undefined, undefined, undefined, undefined, undefined, undefined, undefined,
-                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("spdx-full.json");
         });
@@ -159,7 +169,7 @@ describe("Engine", () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.configure("my-package", "My App", undefined, undefined, undefined, undefined, undefined, undefined, undefined,
-                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("license");
         });
@@ -168,7 +178,7 @@ describe("Engine", () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.configure("my-package", "My App", "MIT", undefined, undefined, undefined, undefined, undefined, undefined,
-                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("sourceLanguage");
         });
@@ -177,7 +187,7 @@ describe("Engine", () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", undefined, undefined, undefined, undefined, undefined,
-                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("moduleType");
         });
@@ -186,7 +196,7 @@ describe("Engine", () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", undefined, undefined, undefined, undefined,
-                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("bundler");
         });
@@ -195,7 +205,7 @@ describe("Engine", () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", undefined, undefined, undefined,
-                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("unitTestRunner");
         });
@@ -204,7 +214,16 @@ describe("Engine", () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "None", "Jasmine", undefined,
-                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("is not valid");
+        });
+
+        it("can fail when calling with unitTestRunner None and unitTestEngine", async () => {
+            uniteJson = undefined;
+            const obj = new Engine(loggerStub, fileSystemStub);
+            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "None", undefined, "PhantomJS",
+                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("is not valid");
         });
@@ -213,16 +232,25 @@ describe("Engine", () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", undefined, undefined,
-                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("unitTestFramework");
+        });
+
+        it("can fail when calling with undefined unitTestEngine", async () => {
+            uniteJson = undefined;
+            const obj = new Engine(loggerStub, fileSystemStub);
+            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", undefined,
+                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("unitTestEngine");
         });
 
         it("can fail when calling with undefined e2eTestRunner", async () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
-            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", undefined,
-                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
+                                            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("e2eTestRunner");
         });
@@ -230,7 +258,7 @@ describe("Engine", () => {
         it("can fail when calling with e2eTestRunner None and e2eTestFramework", async () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
-            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine",
+            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
                                             "None", "Mocha-Chai", undefined, undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("is not valid");
@@ -239,7 +267,7 @@ describe("Engine", () => {
         it("can fail when calling with e2eTestRunner Protractor and missing e2eTestFramework", async () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
-            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine",
+            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
                                             "Protractor", undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("e2eTestFramework");
@@ -248,7 +276,7 @@ describe("Engine", () => {
         it("can fail when calling with undefined linter", async () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
-            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "None", undefined,
+            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "None", undefined, undefined,
                                             "None", undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("linter");
@@ -257,7 +285,7 @@ describe("Engine", () => {
         it("can fail when calling with undefined cssPre", async () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
-            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine",
+            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
                                             "Protractor", "Mocha-Chai", "ESLint", undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("cssPre");
@@ -266,7 +294,7 @@ describe("Engine", () => {
         it("can fail when calling with undefined cssPost", async () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
-            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine",
+            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
                                             "Protractor", "Mocha-Chai", "ESLint", "Sass", undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("cssPost");
@@ -275,7 +303,7 @@ describe("Engine", () => {
         it("can fail when calling with invalid packageManager", async () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
-            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine",
+            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
                                             "Protractor", "Mocha-Chai", "ESLint", "Sass", "None", <any>"blah", undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("packageManager");
@@ -284,7 +312,7 @@ describe("Engine", () => {
         it("can fail when calling with undefined applicationFramework", async () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
-            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine",
+            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
                                             "Protractor", "Mocha-Chai", "ESLint", "Sass", "None", "Npm", undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("applicationFramework");
@@ -294,7 +322,7 @@ describe("Engine", () => {
             uniteJson = undefined;
             packageJsonErrors = true;
             const obj = new Engine(loggerStub, fileSystemStub);
-            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine",
+            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
                                             "Protractor", "Mocha-Chai", "ESLint", "Sass", "None", "Npm", "PlainApp", undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("dependencies failed");
@@ -303,7 +331,7 @@ describe("Engine", () => {
         it("can fail when pipeline step fails", async () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
-            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine",
+            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
                                             "Protractor", "Mocha-Chai", "TSLint", "Sass", "None", "Npm", "PlainApp", undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("TSLint");
@@ -312,7 +340,7 @@ describe("Engine", () => {
         it("can succeed when calling with undefined outputDirectory", async () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
-            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine",
+            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
                                             "Protractor", "Mocha-Chai", "ESLint", "Sass", "None", "Npm", "PlainApp", undefined, undefined);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerWarningSpy.args[0][0]).to.contain("should probably");
@@ -322,7 +350,7 @@ describe("Engine", () => {
         it("can succeed when calling with defined outputDirectory", async () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
-            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine",
+            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
                                             "Protractor", "Mocha-Chai", "ESLint", "Sass", "None", "Npm", "PlainApp", undefined, "./test/unit/temp");
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerWarningSpy.args[0][0]).to.contain("should probably");
@@ -330,9 +358,9 @@ describe("Engine", () => {
         });
 
         it("can succeed with existing unite.json", async () => {
-            uniteJson.buildConfigurations = { dev: {} };
+            uniteJson.buildConfigurations = { dev: new UniteBuildConfiguration() };
             const obj = new Engine(loggerStub, fileSystemStub);
-            const res = await obj.configure(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+            const res = await obj.configure(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
                                             undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerWarningSpy.args[0][0]).to.contain("should probably");
@@ -342,16 +370,16 @@ describe("Engine", () => {
         it("can fail with invalid unite.json", async () => {
             uniteJson = null;
             const obj = new Engine(loggerStub, fileSystemStub);
-            const res = await obj.configure(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+            const res = await obj.configure(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
                                             undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("existing unite.json");
         });
 
         it("can succeed with force and existing unite.json", async () => {
-            uniteJson.buildConfigurations = { dev: {} };
+            uniteJson.buildConfigurations = { dev: new UniteBuildConfiguration() };
             const obj = new Engine(loggerStub, fileSystemStub);
-            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine",
+            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
                                             "Protractor", "Mocha-Chai", "ESLint", "Sass", "None", "Npm", "PlainApp", true, "./test/unit/temp");
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerWarningSpy.args[0][0]).to.contain("should probably");
@@ -395,7 +423,7 @@ describe("Engine", () => {
         });
 
         it("can fail if invalid includeMode", async () => {
-            uniteJson.clientPackages = { moment: {} };
+            uniteJson.clientPackages = { moment: new UniteClientPackage() };
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage("add", "moment", undefined, undefined, <any>"foo", undefined, undefined, undefined,
                                                 undefined, undefined, undefined, undefined, undefined, undefined, undefined);
@@ -404,7 +432,7 @@ describe("Engine", () => {
         });
 
         it("can fail if package already exists", async () => {
-            uniteJson.clientPackages = { moment: {} };
+            uniteJson.clientPackages = { moment: new UniteClientPackage() };
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage("add", "moment", undefined, undefined, undefined, undefined, undefined, undefined,
                                                 undefined, undefined, undefined, undefined, undefined, undefined, undefined);
@@ -588,7 +616,7 @@ describe("Engine", () => {
 
         it("can fail if package.json error", async () => {
             packageJsonErrors = true;
-            uniteJson.clientPackages = { moment: {} };
+            uniteJson.clientPackages = { moment: new UniteClientPackage() };
 
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage("remove", "moment", undefined, undefined, undefined, undefined, undefined, undefined,
@@ -599,7 +627,7 @@ describe("Engine", () => {
 
         it("can fail if pipeline step fails", async () => {
             fileWriteJsonErrors = true;
-            uniteJson.clientPackages = { moment: {} };
+            uniteJson.clientPackages = { moment: new UniteClientPackage() };
 
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage("remove", "moment", undefined, undefined, undefined, undefined, undefined, undefined,
@@ -609,7 +637,7 @@ describe("Engine", () => {
         });
 
         it("can succeed if all ok", async () => {
-            uniteJson.clientPackages = { moment: {} };
+            uniteJson.clientPackages = { moment: new UniteClientPackage() };
 
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage("remove", "moment", undefined, undefined, undefined, undefined, undefined, undefined,
@@ -706,7 +734,7 @@ describe("Engine", () => {
 
         it("can fail if package.json error", async () => {
             packageJsonErrors = true;
-            uniteJson.buildConfigurations = { myconfig: {} };
+            uniteJson.buildConfigurations = { myconfig: new UniteBuildConfiguration() };
 
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.buildConfiguration("remove", "myconfig", undefined, undefined, undefined, undefined);
@@ -716,7 +744,7 @@ describe("Engine", () => {
 
         it("can fail if pipeline step fails", async () => {
             fileWriteJsonErrors = true;
-            uniteJson.buildConfigurations = { myconfig: {} };
+            uniteJson.buildConfigurations = { myconfig: new UniteBuildConfiguration() };
 
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.buildConfiguration("remove", "myconfig", undefined, undefined, undefined, undefined);
@@ -732,7 +760,7 @@ describe("Engine", () => {
         });
 
         it("can succeed when calling with configurationName", async () => {
-            uniteJson.buildConfigurations = { myconfig: {} };
+            uniteJson.buildConfigurations = { myconfig: new UniteBuildConfiguration() };
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.buildConfiguration("remove", "myconfig", undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(0);
@@ -741,7 +769,7 @@ describe("Engine", () => {
         });
 
         it("can succeed when calling all params", async () => {
-            uniteJson.buildConfigurations = { myconfig: {} };
+            uniteJson.buildConfigurations = { myconfig: new UniteBuildConfiguration() };
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.buildConfiguration("remove", "myconfig", true, true, false, undefined);
             Chai.expect(res).to.be.equal(0);

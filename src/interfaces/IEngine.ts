@@ -10,6 +10,7 @@ export interface IEngine {
               bundler: string | undefined | null,
               unitTestRunner: string | undefined | null,
               unitTestFramework: string | undefined | null,
+              unitTestEngine: string | undefined | null,
               e2eTestRunner: string | undefined | null,
               e2eTestFramework: string | undefined | null,
               linter: string | undefined | null,

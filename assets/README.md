@@ -1,4 +1,3 @@
-
 The main contents of the application are in the www folder, it is created this way to allow for platform packaged versions at a higher level.
 
 The following pre-requisities are needed
@@ -58,8 +57,21 @@ You can run just a subset of tests by providing a source name as follows.
 
     gulp e2e --grep=app
 
+You can specify that the tests are run over https or on a different port using the switches
+
+    gulp e2e --secure --port=5000
+
+You can also run the tests on a different browser from the default chrome by using
+
+    gulp e2e --browser=[chrome/firefox/ie/edge]
+
+
 ### serve
 This will serve the app for you to view in a browser.
+
+You can specify that the content is served over https or on a different port using the switches
+
+    gulp serve --secure --port=5000
 
 ### version
 This will allow you to update the package version.

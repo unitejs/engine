@@ -22,6 +22,7 @@ import { UniteLinter } from "../configuration/models/unite/uniteLinter";
 import { UniteModuleType } from "../configuration/models/unite/uniteModuleType";
 import { UnitePackageManager } from "../configuration/models/unite/unitePackageManager";
 import { UniteSourceLanguage } from "../configuration/models/unite/uniteSourceLanguage";
+import { UniteUnitTestEngine } from "../configuration/models/unite/uniteUnitTestEngine";
 import { UniteUnitTestFramework } from "../configuration/models/unite/uniteUnitTestFramework";
 import { UniteUnitTestRunner } from "../configuration/models/unite/uniteUnitTestRunner";
 import { BuildConfigurationOperation } from "../interfaces/buildConfigurationOperation";
@@ -99,6 +100,7 @@ export class Engine implements IEngine {
                            bundler: UniteBundler | undefined | null,
                            unitTestRunner: UniteUnitTestRunner | undefined | null,
                            unitTestFramework: UniteUnitTestFramework | undefined | null,
+                           unitTestEngine: UniteUnitTestEngine | undefined | null,
                            e2eTestRunner: UniteE2eTestRunner | undefined | null,
                            e2eTestFramework: UniteE2eTestFramework | undefined | null,
                            linter: UniteLinter | undefined | null,
@@ -125,6 +127,7 @@ export class Engine implements IEngine {
         uniteConfiguration.bundler = bundler || uniteConfiguration.bundler;
         uniteConfiguration.unitTestRunner = unitTestRunner || uniteConfiguration.unitTestRunner;
         uniteConfiguration.unitTestFramework = unitTestFramework || uniteConfiguration.unitTestFramework;
+        uniteConfiguration.unitTestEngine = unitTestEngine || uniteConfiguration.unitTestEngine;
         uniteConfiguration.e2eTestRunner = e2eTestRunner || uniteConfiguration.e2eTestRunner;
         uniteConfiguration.e2eTestFramework = e2eTestFramework || uniteConfiguration.e2eTestFramework;
         uniteConfiguration.linter = linter || uniteConfiguration.linter;
@@ -185,8 +188,15 @@ export class Engine implements IEngine {
                 this._logger.error("unitTestFramework is not valid if unitTestRunner is None");
                 return 1;
             }
+            if (unitTestEngine !== null && unitTestEngine !== undefined) {
+                this._logger.error("unitTestEngine is not valid if unitTestRunner is None");
+                return 1;
+            }
         } else {
             if (!ParameterValidation.checkOneOf<UniteUnitTestFramework>(this._logger, "unitTestFramework", uniteConfiguration.unitTestFramework, ["Mocha-Chai", "Jasmine"])) {
+                return 1;
+            }
+            if (!ParameterValidation.checkOneOf<UniteUnitTestEngine>(this._logger, "unitTestEngine", uniteConfiguration.unitTestEngine, ["PhantomJS", "ChromeHeadless"])) {
                 return 1;
             }
         }
@@ -219,7 +229,7 @@ export class Engine implements IEngine {
             return 1;
         }
 
-        this._logger.info("newForce", { newForce });
+        this._logger.info("force", { newForce });
 
         this._logger.info("");
 

@@ -11,6 +11,7 @@ const webdriver = require("gulp-webdriver");
 const selenium = require("selenium-standalone");
 const browserSync = require("browser-sync");
 const asyncUtil = require("./util/async-util");
+const minimist = require("minimist");
 
 let seleniumInstance = null;
 let browserSyncInstance = null;
@@ -18,13 +19,47 @@ let browserSyncInstance = null;
 gulp.task("e2e-run-test", async () => {
     display.info("Running", "WebdriverIO");
 
+    const knownOptions = {
+        "default": {
+            "browser": "chrome",
+            "secure": false,
+            "port": "9000"
+        },
+        "string": [
+            "browser",
+            "port"
+        ],
+        "boolean": [
+            "secure"
+        ]
+
+    };
+
+    const options = minimist(process.argv.slice(2), knownOptions);
+    if (options.browser === "ie") {
+        options.browser = "internet explorer";
+    } else if (options.browser === "edge") {
+        options.browser = "MicrosoftEdge";
+    }
+
+    let url = options.secure ? "https://" : "http://";
+    url += "localhost:";
+    url += options.port;
+
     const uniteConfig = await uc.getUniteConfig();
     let hasError = false;
 
     try {
         await asyncUtil.stream(
             gulp.src("wdio.conf.js")
-                .pipe(webdriver()));
+                .pipe(webdriver({
+                    "baseUrl": url,
+                    "capabilities": [
+                        {
+                            "browserName": options.browser
+                        }
+                    ]
+                })));
     } catch (err) {
         hasError = true;
         display.error("Executing WebdriverIO", err);
@@ -63,15 +98,30 @@ gulp.task("e2e-run-test", async () => {
 gulp.task("e2e-serve", async () => {
     display.info("Running", "BrowserSync");
 
+    const knownOptions = {
+        "default": {
+            "secure": false,
+            "port": "9000"
+        },
+        "boolean": [
+            "secure"
+        ],
+        "string": [
+            "port"
+        ]
+    };
+
+    const options = minimist(process.argv.slice(2), knownOptions);
+
     browserSyncInstance = browserSync.create();
 
     const initAsync = util.promisify(browserSyncInstance.init);
     await initAsync({
-        "https": false,
+        "https": options.secure,
         "notify": false,
         "online": true,
         "open": false,
-        "port": 9000,
+        "port": options.port,
         "server": {"baseDir": ["."]}
     });
 

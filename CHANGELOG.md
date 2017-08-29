@@ -1,3 +1,13 @@
+# v0.9.3
+
+* Added UnitTestEngine which can be PhantomJS or ChromeHeadless
+* Added e2e tasks support --browser=[chrome/firefox/ir/edge]
+* Added e2e tasks support --secure to launch as https
+* Added e2e tasks support --port to launch on different port
+* Added serve tasks support --secure to launch as https
+* Added serve tasks support --port to launch on different port
+* Removed serve-secure task
+
 # v0.9.2
 
 * Added Angular as an App Framework
