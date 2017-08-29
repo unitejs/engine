@@ -32,13 +32,9 @@ export class Karma extends EnginePipelineStepBase {
             "karma-coverage-allsources",
             "karma-sourcemap-loader",
             "karma-remap-istanbul",
-            "remap-istanbul",
-            "bluebird"
+            "remap-istanbul"
         ],
                                             uniteConfiguration.unitTestRunner === "Karma");
-
-        engineVariables.toggleDevDependency(["karma-phantomjs-launcher"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.unitTestEngine === "PhantomJS");
-        engineVariables.toggleDevDependency(["karma-chrome-launcher"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.unitTestEngine === "ChromeHeadless");
 
         if (uniteConfiguration.unitTestRunner === "Karma") {
             const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, Karma.FILENAME);
@@ -68,7 +64,7 @@ export class Karma extends EnginePipelineStepBase {
         defaultConfiguration.singleRun = true;
         defaultConfiguration.frameworks = [];
         defaultConfiguration.reporters = ["story", "coverage-allsources", "coverage", "html", "karma-remap-istanbul"];
-        defaultConfiguration.browsers = [uniteConfiguration.unitTestEngine === "PhantomJS" ? "PhantomJS" : "ChromeHeadless"];
+        defaultConfiguration.browsers = [];
         defaultConfiguration.coverageReporter = {
             include: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.distFolder, "**/!(app-module-config|entryPoint).js"))),
             exclude: "",
@@ -107,11 +103,6 @@ export class Karma extends EnginePipelineStepBase {
             pattern: srcInclude,
             included: false
         });
-
-        // Bluebird should only be necessary while we are using PhantomJS to Polyfill Promise
-        const bbInclude = fileSystem.pathToWeb(
-            fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, "bluebird/js/browser/bluebird.js")));
-        defaultConfiguration.files.push({ pattern: bbInclude, included: true });
 
         this._configuration = ObjectHelper.merge(defaultConfiguration, this._configuration);
 

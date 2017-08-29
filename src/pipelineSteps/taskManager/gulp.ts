@@ -28,7 +28,6 @@ export class Gulp extends EnginePipelineStepBase {
 
         engineVariables.toggleDevDependency([
                                                 "gulp",
-                                                "bluebird",
                                                 "require-dir",
                                                 "gulp-rename",
                                                 "gulp-replace",

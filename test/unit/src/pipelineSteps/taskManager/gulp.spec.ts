@@ -164,7 +164,7 @@ describe("Gulp", () => {
             const packageJsonDevDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
             Chai.expect(packageJsonDevDependencies.del).to.be.equal("1.2.3");
-            Chai.expect(Object.keys(packageJsonDevDependencies).length).to.be.equal(22);
+            Chai.expect(Object.keys(packageJsonDevDependencies).length).to.be.equal(21);
         });
 
         it("can be called with unit runner and no e2e runner", async () => {
@@ -190,7 +190,7 @@ describe("Gulp", () => {
             const packageJsonDevDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
             Chai.expect(packageJsonDevDependencies.del).to.be.equal("1.2.3");
-            Chai.expect(Object.keys(packageJsonDevDependencies).length).to.be.equal(23);
+            Chai.expect(Object.keys(packageJsonDevDependencies).length).to.be.equal(22);
         });
 
         it("can be called with no unit runner and e2e runner", async () => {
@@ -216,7 +216,7 @@ describe("Gulp", () => {
             const packageJsonDevDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
             Chai.expect(packageJsonDevDependencies.del).to.be.equal("1.2.3");
-            Chai.expect(Object.keys(packageJsonDevDependencies).length).to.be.equal(23);
+            Chai.expect(Object.keys(packageJsonDevDependencies).length).to.be.equal(22);
         });
     });
 });

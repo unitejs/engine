@@ -76,6 +76,8 @@ import { BrowserSync } from "../pipelineSteps/server/browserSync";
 import { Gulp } from "../pipelineSteps/taskManager/gulp";
 import { Jasmine } from "../pipelineSteps/testFramework/jasmine";
 import { MochaChai } from "../pipelineSteps/testFramework/mochaChai";
+import { ChromeHeadless } from "../pipelineSteps/unitTestEngine/chromeHeadless";
+import { PhantomJs } from "../pipelineSteps/unitTestEngine/phantomJs";
 import { Karma } from "../pipelineSteps/unitTestRunner/karma";
 import { EngineVariables } from "./engineVariables";
 
@@ -418,6 +420,9 @@ export class Engine implements IEngine {
 
             pipelineSteps.push(new WebdriverIo());
             pipelineSteps.push(new Protractor());
+
+            pipelineSteps.push(new PhantomJs());
+            pipelineSteps.push(new ChromeHeadless());
 
             pipelineSteps.push(new EsLint());
             pipelineSteps.push(new TsLint());

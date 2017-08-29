@@ -155,12 +155,12 @@ describe("Karma", () => {
 
             const config = engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma");
 
-            Chai.expect(config.files.length).to.be.equal(11);
-            Chai.expect(config.files[2].pattern).contains("testPackage2/index.js");
-            Chai.expect(config.files[3].pattern).contains("testPackage3/dist/index.js");
-            Chai.expect(config.files[4].pattern).contains("testPackage4/**/*.{js,html,css}");
-            Chai.expect(config.files[5].pattern).contains("testPackage5/dist/**/*.{js,html,css}");
-            Chai.expect(config.files[6].pattern).contains("testPackage5/assets/**/*.json");
+            Chai.expect(config.files.length).to.be.equal(10);
+            Chai.expect(config.files[1].pattern).contains("testPackage2/index.js");
+            Chai.expect(config.files[2].pattern).contains("testPackage3/dist/index.js");
+            Chai.expect(config.files[3].pattern).contains("testPackage4/**/*.{js,html,css}");
+            Chai.expect(config.files[4].pattern).contains("testPackage5/dist/**/*.{js,html,css}");
+            Chai.expect(config.files[5].pattern).contains("testPackage5/assets/**/*.json");
         });
 
         it("can succeed writing with packages that have test additions", async () => {
@@ -193,10 +193,10 @@ describe("Karma", () => {
 
             const config = engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma");
 
-            Chai.expect(config.files.length).to.be.equal(9);
-            Chai.expect(config.files[2].pattern).contains("testPackage2/index.js");
-            Chai.expect(config.files[3].pattern).contains("testPackage2/bar");
-            Chai.expect(config.files[4].pattern).contains("testPackage2/foo");
+            Chai.expect(config.files.length).to.be.equal(8);
+            Chai.expect(config.files[1].pattern).contains("testPackage2/index.js");
+            Chai.expect(config.files[2].pattern).contains("testPackage2/bar");
+            Chai.expect(config.files[3].pattern).contains("testPackage2/foo");
         });
 
         it("can succeed writing with packages that have wildcard packages", async () => {
@@ -225,8 +225,8 @@ describe("Karma", () => {
 
             const config = engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma");
 
-            Chai.expect(config.files.length).to.be.equal(7);
-            Chai.expect(config.files[2].pattern).contains("testPackage2/**/*.{js,html,css}");
+            Chai.expect(config.files.length).to.be.equal(6);
+            Chai.expect(config.files[1].pattern).contains("testPackage2/**/*.{js,html,css}");
         });
     });
 });
