@@ -6,15 +6,17 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { SharedAppFramework } from "./sharedAppFramework";
+import { SharedAppFramework } from "../sharedAppFramework";
 
 export class PlainApp extends SharedAppFramework {
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["unitejs-plain-protractor-plugin"], uniteConfiguration.applicationFramework === "PlainApp" && uniteConfiguration.e2eTestRunner === "Protractor");
+        engineVariables.toggleDevDependency(["unitejs-plain-protractor-plugin"],
+                                            super.condition(uniteConfiguration.applicationFramework, "PlainApp") && super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
 
-        engineVariables.toggleDevDependency(["unitejs-plain-webdriver-plugin"], uniteConfiguration.applicationFramework === "PlainApp" && uniteConfiguration.e2eTestRunner === "WebdriverIO");
+        engineVariables.toggleDevDependency(["unitejs-plain-webdriver-plugin"],
+                                            super.condition(uniteConfiguration.applicationFramework, "PlainApp") && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
 
-        if (uniteConfiguration.applicationFramework === "PlainApp") {
+        if (super.condition(uniteConfiguration.applicationFramework, "PlainApp")) {
             const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
             if (protractorConfiguration) {
                 const plugin = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,

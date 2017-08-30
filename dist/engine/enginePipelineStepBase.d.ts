@@ -15,4 +15,6 @@ export declare abstract class EnginePipelineStepBase implements IEnginePipelineS
     deleteFile(logger: ILogger, fileSystem: IFileSystem, folder: string, filename: string, force: boolean): Promise<number>;
     wrapGeneratedMarker(before: string, after: string): string;
     fileHasGeneratedMarker(fileSystem: IFileSystem, folder: string, filename: string): Promise<MarkerState>;
+    condition(uniteConfigurationKey: string, value: string): boolean;
+    objectCondition(uniteConfigurationObject: any, value: string): boolean;
 }

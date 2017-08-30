@@ -19,7 +19,7 @@ export class Protractor extends EnginePipelineStepBase {
     private _scriptEnd: string[];
 
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        if (uniteConfiguration.e2eTestRunner === "Protractor") {
+        if (super.condition(uniteConfiguration.e2eTestRunner, "Protractor")) {
             this.configDefaults(fileSystem, engineVariables);
         }
 
@@ -27,14 +27,14 @@ export class Protractor extends EnginePipelineStepBase {
     }
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["protractor", "webdriver-manager", "browser-sync"], uniteConfiguration.e2eTestRunner === "Protractor");
+        engineVariables.toggleDevDependency(["protractor", "webdriver-manager", "browser-sync"], super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
-            ObjectHelper.addRemove(esLintConfiguration.env, "protractor", true, uniteConfiguration.e2eTestRunner === "Protractor");
+            ObjectHelper.addRemove(esLintConfiguration.env, "protractor", true, super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
         }
 
-        if (uniteConfiguration.e2eTestRunner === "Protractor") {
+        if (super.condition(uniteConfiguration.e2eTestRunner, "Protractor")) {
             try {
                 const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, Protractor.FILENAME);
 

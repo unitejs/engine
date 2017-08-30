@@ -19,7 +19,7 @@ export class TypeScript extends EnginePipelineStepBase {
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
-        if (uniteConfiguration.sourceLanguage === "TypeScript") {
+        if (super.condition(uniteConfiguration.sourceLanguage, "TypeScript")) {
             engineVariables.sourceLanguageExt = "ts";
 
             logger.info(`Initialising ${TypeScript.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
@@ -42,9 +42,9 @@ export class TypeScript extends EnginePipelineStepBase {
     }
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["typescript", "unitejs-types"], uniteConfiguration.sourceLanguage === "TypeScript");
+        engineVariables.toggleDevDependency(["typescript", "unitejs-types"], super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
 
-        if (uniteConfiguration.sourceLanguage === "TypeScript") {
+        if (super.condition(uniteConfiguration.sourceLanguage, "TypeScript")) {
             try {
                 logger.info(`Generating ${TypeScript.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 

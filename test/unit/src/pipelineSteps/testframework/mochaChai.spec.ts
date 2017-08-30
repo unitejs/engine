@@ -33,8 +33,8 @@ describe("MochaChai", () => {
 
         fileSystemMock = new FileSystemMock();
         uniteConfigurationStub = new UniteConfiguration();
-        uniteConfigurationStub.unitTestFramework = "Mocha-Chai";
-        uniteConfigurationStub.e2eTestFramework = "Mocha-Chai";
+        uniteConfigurationStub.unitTestFramework = "MochaChai";
+        uniteConfigurationStub.e2eTestFramework = "MochaChai";
 
         engineVariablesStub = new EngineVariables();
         engineVariablesStub.setupDirectories(fileSystemMock, "./test/unit/temp");
@@ -138,7 +138,7 @@ describe("MochaChai", () => {
         });
 
         it("can be called with e2e framework defined as webdriverio", async () => {
-            uniteConfigurationStub.unitTestFramework = "Mocha-Chai";
+            uniteConfigurationStub.unitTestFramework = "MochaChai";
             uniteConfigurationStub.e2eTestRunner = "WebdriverIO";
 
             engineVariablesStub.setConfiguration("ESLint", { env: {} });

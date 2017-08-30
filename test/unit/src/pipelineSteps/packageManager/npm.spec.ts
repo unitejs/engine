@@ -8,6 +8,7 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../../dist/engine/engineVariables";
 import { Npm } from "../../../../../dist/pipelineSteps/packageManager/npm";
+import { PackageUtils } from "../../../../../dist/pipelineSteps/packageUtils";
 import { FileSystemMock } from "../../fileSystem.mock";
 
 describe("Npm", () => {
@@ -65,6 +66,96 @@ describe("Npm", () => {
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration("GitIgnore")).to.be.deep.equal(["node_modules"]);
+        });
+    });
+
+    describe("info", () => {
+        it("can throw an error for an unknown package", async () => {
+            sandbox.stub(PackageUtils, "exec").rejects("error");
+            const obj = new Npm();
+            try {
+                await obj.info(loggerStub, fileSystemMock, "lkjdfglkjdfzsdf");
+            } catch (err) {
+                Chai.expect(err.message).to.contain("error");
+            }
+        });
+
+        it("can get the info for a package", async () => {
+            const stub = sandbox.stub(PackageUtils, "exec").resolves(JSON.stringify({ version: "1.2.3", main: "index.js"}));
+            const obj = new Npm();
+            const res = await obj.info(loggerStub, fileSystemMock, "package");
+            Chai.expect(stub.args[0][4]).to.contain("view");
+            Chai.expect(stub.args[0][4]).to.contain("package");
+            Chai.expect(stub.args[0][4]).to.contain("--json");
+            Chai.expect(stub.args[0][4]).to.contain("name");
+            Chai.expect(stub.args[0][4]).to.contain("version");
+            Chai.expect(stub.args[0][4]).to.contain("main");
+            Chai.expect(res.version).to.be.equal("1.2.3");
+            Chai.expect(res.main).to.be.equal("index.js");
+        });
+    });
+
+    describe("add", () => {
+        it("can throw an error for an unknown package", async () => {
+            sandbox.stub(PackageUtils, "exec").rejects("error");
+            const obj = new Npm();
+            try {
+                await obj.add(loggerStub, fileSystemMock, "/.", "lkjdfglkjdfzsdf", "1.2.3", true);
+            } catch (err) {
+                Chai.expect(err.message).to.contain("error");
+            }
+        });
+
+        it("can add a dev package", async () => {
+            const stub = sandbox.stub(PackageUtils, "exec").resolves();
+            const obj = new Npm();
+            const res = await obj.add(loggerStub, fileSystemMock, "/.", "package", "1.2.3", true);
+            Chai.expect(res).to.be.equal(undefined);
+            Chai.expect(stub.args[0][4]).to.contain("install");
+            Chai.expect(stub.args[0][4]).to.contain("package@1.2.3");
+            Chai.expect(stub.args[0][4]).to.contain("--save-dev");
+        });
+
+        it("can add a prod package", async () => {
+            const stub = sandbox.stub(PackageUtils, "exec").resolves();
+            const obj = new Npm();
+            const res = await obj.add(loggerStub, fileSystemMock, "/.", "package", "1.2.3", false);
+            Chai.expect(res).to.be.equal(undefined);
+            Chai.expect(stub.args[0][4]).to.contain("install");
+            Chai.expect(stub.args[0][4]).to.contain("package@1.2.3");
+            Chai.expect(stub.args[0][4]).to.contain("--save-prod");
+        });
+    });
+
+    describe("remove", () => {
+        it("can throw an error for an unknown package", async () => {
+            sandbox.stub(PackageUtils, "exec").rejects("error");
+            const obj = new Npm();
+            try {
+                await obj.remove(loggerStub, fileSystemMock, "/.", "lkjdfglkjdfzsdf", true);
+            } catch (err) {
+                Chai.expect(err.message).to.contain("error");
+            }
+        });
+
+        it("can remove a dev package", async () => {
+            const stub = sandbox.stub(PackageUtils, "exec").resolves();
+            const obj = new Npm();
+            const res = await obj.remove(loggerStub, fileSystemMock, "/.", "package", true);
+            Chai.expect(res).to.be.equal(undefined);
+            Chai.expect(stub.args[0][4]).to.contain("uninstall");
+            Chai.expect(stub.args[0][4]).to.contain("package");
+            Chai.expect(stub.args[0][4]).to.contain("--save-dev");
+        });
+
+        it("can remove a prod package", async () => {
+            const stub = sandbox.stub(PackageUtils, "exec").resolves();
+            const obj = new Npm();
+            const res = await obj.remove(loggerStub, fileSystemMock, "/.", "package", false);
+            Chai.expect(res).to.be.equal(undefined);
+            Chai.expect(stub.args[0][4]).to.contain("uninstall");
+            Chai.expect(stub.args[0][4]).to.contain("package");
+            Chai.expect(stub.args[0][4]).to.contain("--save");
         });
     });
 });

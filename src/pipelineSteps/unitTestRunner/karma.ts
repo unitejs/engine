@@ -17,7 +17,7 @@ export class Karma extends EnginePipelineStepBase {
 
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
 
-        if (uniteConfiguration.unitTestRunner === "Karma") {
+        if (super.condition(uniteConfiguration.unitTestRunner, "Karma")) {
             this.configDefaults(fileSystem, uniteConfiguration, engineVariables);
         }
 
@@ -34,9 +34,9 @@ export class Karma extends EnginePipelineStepBase {
             "karma-remap-istanbul",
             "remap-istanbul"
         ],
-                                            uniteConfiguration.unitTestRunner === "Karma");
+                                            super.condition(uniteConfiguration.unitTestRunner, "Karma"));
 
-        if (uniteConfiguration.unitTestRunner === "Karma") {
+        if (super.condition(uniteConfiguration.unitTestRunner, "Karma")) {
             const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, Karma.FILENAME);
 
             if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker" || engineVariables.force) {
@@ -146,7 +146,7 @@ export class Karma extends EnginePipelineStepBase {
             }
 
             if (testPackages[key].assets !== undefined && testPackages[key].assets !== null && testPackages[key].assets.length > 0) {
-                const cas = testPackages[key].assets.split(",");
+                const cas = testPackages[key].assets.split(";");
                 cas.forEach((ca) => {
                     const keyInclude = fileSystem.pathToWeb(
                         fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, `${key}/${ca}`)));

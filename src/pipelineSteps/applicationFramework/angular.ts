@@ -9,12 +9,12 @@ import { EsLintConfiguration } from "../../configuration/models/eslint/esLintCon
 import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { SharedAppFramework } from "./sharedAppFramework";
+import { SharedAppFramework } from "../sharedAppFramework";
 
 export class Angular extends SharedAppFramework {
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        if (uniteConfiguration.applicationFramework === "Angular") {
-            if (uniteConfiguration.bundler === "RequireJS") {
+        if (super.condition(uniteConfiguration.applicationFramework, "Angular")) {
+            if (super.condition(uniteConfiguration.bundler, "RequireJS")) {
                 logger.error(`Angular does not currently support bundling with ${uniteConfiguration.bundler}`);
                 return 1;
             }
@@ -25,15 +25,16 @@ export class Angular extends SharedAppFramework {
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         this.toggleDependencies(logger, fileSystem, uniteConfiguration, engineVariables);
 
-        engineVariables.toggleDevDependency(["babel-plugin-transform-decorators-legacy"], uniteConfiguration.applicationFramework === "Angular" && uniteConfiguration.sourceLanguage === "JavaScript");
-        engineVariables.toggleDevDependency(["babel-eslint"], uniteConfiguration.applicationFramework === "Angular" && uniteConfiguration.linter === "ESLint");
+        engineVariables.toggleDevDependency(["babel-plugin-transform-decorators-legacy"],
+                                            super.condition(uniteConfiguration.applicationFramework, "Angular") && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
+        engineVariables.toggleDevDependency(["babel-eslint"], super.condition(uniteConfiguration.applicationFramework, "Angular") && super.condition(uniteConfiguration.linter, "ESLint"));
 
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
         if (babelConfiguration) {
-            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", uniteConfiguration.applicationFramework === "Angular");
+            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", super.condition(uniteConfiguration.applicationFramework, "Angular"));
         }
 
-        if (uniteConfiguration.applicationFramework === "Angular") {
+        if (super.condition(uniteConfiguration.applicationFramework, "Angular")) {
             const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
             if (esLintConfiguration) {
                 esLintConfiguration.parser = "babel-eslint";
@@ -88,7 +89,7 @@ export class Angular extends SharedAppFramework {
                 undefined,
                 undefined,
                 undefined,
-                uniteConfiguration.applicationFramework === "Angular");
+                super.condition(uniteConfiguration.applicationFramework, "Angular"));
         });
 
         engineVariables.toggleClientPackage(
@@ -103,7 +104,7 @@ export class Angular extends SharedAppFramework {
             undefined,
             undefined,
             undefined,
-            uniteConfiguration.applicationFramework === "Angular");
+            super.condition(uniteConfiguration.applicationFramework, "Angular"));
 
         engineVariables.toggleClientPackage(
             "core-js",
@@ -117,7 +118,7 @@ export class Angular extends SharedAppFramework {
             undefined,
             undefined,
             undefined,
-            uniteConfiguration.applicationFramework === "Angular");
+            super.condition(uniteConfiguration.applicationFramework, "Angular"));
 
         engineVariables.toggleClientPackage(
             "zone.js",
@@ -127,7 +128,7 @@ export class Angular extends SharedAppFramework {
                 "long-stack-trace-zone": "dist/long-stack-trace-zone.js",
                 proxy: "dist/proxy.js",
                 "sync-test": "dist/sync-test.js",
-                "runner-patch": uniteConfiguration.unitTestFramework === "Jasmine" ? "dist/jasmine-patch.js" : "dist/mocha-patch.js",
+                "runner-patch": super.condition(uniteConfiguration.unitTestFramework, "Jasmine") ? "dist/jasmine-patch.js" : "dist/mocha-patch.js",
                 "async-test": "dist/async-test.js",
                 "fake-async-test": "dist/fake-async-test.js"
             },
@@ -138,7 +139,7 @@ export class Angular extends SharedAppFramework {
             undefined,
             undefined,
             undefined,
-            uniteConfiguration.applicationFramework === "Angular");
+            super.condition(uniteConfiguration.applicationFramework, "Angular"));
 
         engineVariables.toggleClientPackage(
             "reflect-metadata",
@@ -152,6 +153,6 @@ export class Angular extends SharedAppFramework {
             undefined,
             undefined,
             undefined,
-            uniteConfiguration.applicationFramework === "Angular");
+            super.condition(uniteConfiguration.applicationFramework, "Angular"));
     }
 }

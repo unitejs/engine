@@ -110,4 +110,20 @@ export abstract class EnginePipelineStepBase implements IEnginePipelineStep {
             return markerState;
         }
     }
+
+    public condition(uniteConfigurationKey: string, value: string): boolean {
+        return uniteConfigurationKey !== undefined &&
+            uniteConfigurationKey !== null &&
+            value !== undefined &&
+            value !== null &&
+            uniteConfigurationKey.toLowerCase() === value.toLowerCase();
+    }
+
+    public objectCondition(uniteConfigurationObject: any, value: string): boolean {
+        return uniteConfigurationObject !== undefined &&
+            uniteConfigurationObject !== null &&
+            value !== undefined &&
+            value !== null &&
+            Object.keys(uniteConfigurationObject).map(key => key.toLowerCase()).indexOf(value.toLowerCase()) >= 0;
+    }
 }

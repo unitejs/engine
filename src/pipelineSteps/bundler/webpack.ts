@@ -12,8 +12,8 @@ export class Webpack extends EnginePipelineStepBase {
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
-        if (uniteConfiguration.bundler === "Webpack") {
-            if (uniteConfiguration.moduleType !== "CommonJS") {
+        if (super.condition(uniteConfiguration.bundler, "Webpack")) {
+            if (!super.condition(uniteConfiguration.moduleType, "CommonJS")) {
                 logger.error("You can only use CommonJS modules with Webpack");
                 return 1;
             }
@@ -22,7 +22,7 @@ export class Webpack extends EnginePipelineStepBase {
     }
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["webpack", "source-map-loader", "uglifyjs-webpack-plugin"], uniteConfiguration.bundler === "Webpack");
+        engineVariables.toggleDevDependency(["webpack", "source-map-loader", "uglifyjs-webpack-plugin"], super.condition(uniteConfiguration.bundler, "Webpack"));
 
         return 0;
     }

@@ -8,7 +8,7 @@ import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 
 export class Electron extends EnginePipelineStepBase {
-    public static PLATFORM: string = "Electron";
+    private static PLATFORM: string = "Electron";
     private static FILENAME: string = "platform-electron.js";
     private static FILENAME2: string = "main.js";
 
@@ -16,11 +16,12 @@ export class Electron extends EnginePipelineStepBase {
         engineVariables.toggleDevDependency(["archiver",
                                             "electron-packager",
                                             "unitejs-image-cli"],
-                                            uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.platforms[Electron.PLATFORM] !== undefined);
+                                            super.condition(uniteConfiguration.taskManager, "Gulp") &&
+                                            super.objectCondition(uniteConfiguration.platforms, Electron.PLATFORM));
 
         const buildAssetPlatform = fileSystem.pathCombine(engineVariables.www.buildFolder, "/assets/platform/electron/");
         const buildTasks = fileSystem.pathCombine(engineVariables.www.buildFolder, "/tasks/");
-        if (uniteConfiguration.taskManager === "Gulp" && uniteConfiguration.platforms[Electron.PLATFORM] !== undefined) {
+        if (super.condition(uniteConfiguration.taskManager, "Gulp") && super.objectCondition(uniteConfiguration.platforms, Electron.PLATFORM)) {
             const assetTasksPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/platform/");
             let ret = await this.copyFile(logger, fileSystem, assetTasksPlatform, Electron.FILENAME, buildTasks, Electron.FILENAME, engineVariables.force);
 

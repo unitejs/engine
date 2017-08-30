@@ -23,7 +23,7 @@ export class UniteConfigurationDirectories extends EnginePipelineStepBase {
             uniteConfiguration.dirs.www.src = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.srcFolder));
             uniteConfiguration.dirs.www.dist = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.distFolder));
 
-            if (uniteConfiguration.unitTestRunner !== "None") {
+            if (!super.condition(uniteConfiguration.unitTestRunner, "None")) {
                 uniteConfiguration.dirs.www.unitTest = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.unitTestFolder));
                 uniteConfiguration.dirs.www.unitTestSrc = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.unitTestSrcFolder));
                 uniteConfiguration.dirs.www.unitTestDist = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.unitTestDistFolder));
@@ -32,7 +32,7 @@ export class UniteConfigurationDirectories extends EnginePipelineStepBase {
             uniteConfiguration.dirs.www.cssSrc = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.cssSrcFolder));
             uniteConfiguration.dirs.www.cssDist = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.cssDistFolder));
 
-            if (uniteConfiguration.e2eTestRunner !== "None") {
+            if (!super.condition(uniteConfiguration.e2eTestRunner, "None")) {
                 uniteConfiguration.dirs.www.e2eTest = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.e2eTestFolder));
                 uniteConfiguration.dirs.www.e2eTestSrc = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.e2eTestSrcFolder));
                 uniteConfiguration.dirs.www.e2eTestDist = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.e2eTestDistFolder));

@@ -12,7 +12,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 
 export class Amd extends EnginePipelineStepBase {
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["requirejs"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.moduleType === "AMD");
+        engineVariables.toggleDevDependency(["requirejs"], super.condition(uniteConfiguration.unitTestRunner, "Karma") && super.condition(uniteConfiguration.moduleType, "AMD"));
 
         engineVariables.toggleClientPackage(
             "requirejs",
@@ -26,9 +26,9 @@ export class Amd extends EnginePipelineStepBase {
             undefined,
             undefined,
             undefined,
-            uniteConfiguration.moduleType === "AMD");
+            super.condition(uniteConfiguration.moduleType, "AMD"));
 
-        if (uniteConfiguration.moduleType === "AMD") {
+        if (super.condition(uniteConfiguration.moduleType, "AMD")) {
             try {
                 logger.info("Generating Module Loader Scaffold", {});
 

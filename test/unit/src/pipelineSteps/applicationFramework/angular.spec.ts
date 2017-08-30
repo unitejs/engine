@@ -118,7 +118,7 @@ describe("Angular", () => {
             engineVariablesStub.setConfiguration("Babel", { plugins: []});
             engineVariablesStub.setConfiguration("ESLint", { parser: "espree"});
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {}});
-            uniteConfigurationStub.unitTestFramework = "Mocha-Chai";
+            uniteConfigurationStub.unitTestFramework = "MochaChai";
             const obj = new Angular();
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);

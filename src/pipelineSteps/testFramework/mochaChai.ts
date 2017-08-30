@@ -15,20 +15,20 @@ import { EngineVariables } from "../../engine/engineVariables";
 
 export class MochaChai extends EnginePipelineStepBase {
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        logger.info("Generating Mocha-Chai Configuration");
+        logger.info("Generating MochaChai Configuration");
 
-        const isUnit = uniteConfiguration.unitTestFramework === "Mocha-Chai";
-        const isE2E = uniteConfiguration.e2eTestFramework === "Mocha-Chai";
+        const isUnit = super.condition(uniteConfiguration.unitTestFramework, "MochaChai");
+        const isE2E = super.condition(uniteConfiguration.e2eTestFramework, "MochaChai");
         const isEither = isUnit || isE2E;
 
         engineVariables.toggleDevDependency(["mocha"], isEither);
-        engineVariables.toggleDevDependency(["@types/mocha", "@types/chai"], uniteConfiguration.sourceLanguage === "TypeScript" && isEither);
+        engineVariables.toggleDevDependency(["@types/mocha", "@types/chai"], super.condition(uniteConfiguration.sourceLanguage, "TypeScript") && isEither);
 
-        engineVariables.toggleDevDependency(["karma-mocha", "karma-chai"], uniteConfiguration.unitTestRunner === "Karma" && isUnit);
+        engineVariables.toggleDevDependency(["karma-mocha", "karma-chai"], super.condition(uniteConfiguration.unitTestRunner, "Karma") && isUnit);
 
-        engineVariables.toggleDevDependency(["mochawesome-screenshots"], uniteConfiguration.e2eTestRunner === "Protractor" && isE2E);
+        engineVariables.toggleDevDependency(["mochawesome-screenshots"], super.condition(uniteConfiguration.e2eTestRunner, "Protractor") && isE2E);
 
-        engineVariables.toggleDevDependency(["wdio-mocha-framework"], uniteConfiguration.e2eTestRunner === "WebdriverIO" && isE2E);
+        engineVariables.toggleDevDependency(["wdio-mocha-framework"], super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO") && isE2E);
 
         engineVariables.toggleClientPackage(
             "chai",

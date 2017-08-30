@@ -17,19 +17,19 @@ export class Jasmine extends EnginePipelineStepBase {
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         logger.info("Generating Jasmine Configuration");
 
-        const isUnit = uniteConfiguration.unitTestFramework === "Jasmine";
-        const isE2E = uniteConfiguration.e2eTestFramework === "Jasmine";
+        const isUnit = super.condition(uniteConfiguration.unitTestFramework, "Jasmine");
+        const isE2E = super.condition(uniteConfiguration.e2eTestFramework, "Jasmine");
         const isEither = isUnit || isE2E;
 
         engineVariables.toggleDevDependency(["jasmine-core"], isEither);
-        engineVariables.toggleDevDependency(["@types/jasmine"], uniteConfiguration.sourceLanguage === "TypeScript" && isEither);
+        engineVariables.toggleDevDependency(["@types/jasmine"], super.condition(uniteConfiguration.sourceLanguage, "TypeScript") && isEither);
 
-        engineVariables.toggleDevDependency(["karma-jasmine"], uniteConfiguration.unitTestRunner === "Karma" && isUnit);
+        engineVariables.toggleDevDependency(["karma-jasmine"], super.condition(uniteConfiguration.unitTestRunner, "Karma") && isUnit);
 
         engineVariables.toggleDevDependency(["protractor-jasmine2-html-reporter", "jasmine-spec-reporter"],
-                                            uniteConfiguration.e2eTestRunner === "Protractor" && isE2E);
+                                            super.condition(uniteConfiguration.e2eTestRunner, "Protractor") && isE2E);
 
-        engineVariables.toggleDevDependency(["wdio-jasmine-framework"], uniteConfiguration.e2eTestRunner === "WebdriverIO" && isE2E);
+        engineVariables.toggleDevDependency(["wdio-jasmine-framework"], super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO") && isE2E);
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {

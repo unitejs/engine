@@ -24,7 +24,7 @@ export class Gulp extends EnginePipelineStepBase {
     }
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        const isGulp = uniteConfiguration.taskManager === "Gulp";
+        const isGulp = super.condition(uniteConfiguration.taskManager, "Gulp");
 
         engineVariables.toggleDevDependency([
                                                 "gulp",
@@ -92,17 +92,17 @@ export class Gulp extends EnginePipelineStepBase {
                                                 "node-glob"
                                             ],
                                             isGulp);
-        engineVariables.toggleDevDependency(["gulp-babel"], isGulp && uniteConfiguration.sourceLanguage === "JavaScript");
-        engineVariables.toggleDevDependency(["gulp-typescript"], isGulp && uniteConfiguration.sourceLanguage === "TypeScript");
-        engineVariables.toggleDevDependency(["gulp-eslint"], isGulp && uniteConfiguration.linter === "ESLint");
-        engineVariables.toggleDevDependency(["gulp-tslint"], isGulp && uniteConfiguration.linter === "TSLint");
-        engineVariables.toggleDevDependency(["webpack-stream"], isGulp && uniteConfiguration.bundler === "Webpack");
-        engineVariables.toggleDevDependency(["vinyl-source-stream", "vinyl-buffer"], isGulp && uniteConfiguration.bundler === "Browserify");
-        engineVariables.toggleDevDependency(["gulp-less"], isGulp && uniteConfiguration.cssPre === "Less");
-        engineVariables.toggleDevDependency(["gulp-sass"], isGulp && uniteConfiguration.cssPre === "Sass");
-        engineVariables.toggleDevDependency(["gulp-stylus"], isGulp && uniteConfiguration.cssPre === "Stylus");
-        engineVariables.toggleDevDependency(["gulp-postcss"], isGulp && uniteConfiguration.cssPost === "PostCss");
-        engineVariables.toggleDevDependency(["gulp-cssnano"], isGulp && uniteConfiguration.cssPost === "None");
+        engineVariables.toggleDevDependency(["gulp-babel"], isGulp && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
+        engineVariables.toggleDevDependency(["gulp-typescript"], isGulp && super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
+        engineVariables.toggleDevDependency(["gulp-eslint"], isGulp && super.condition(uniteConfiguration.linter, "ESLint"));
+        engineVariables.toggleDevDependency(["gulp-tslint"], isGulp && super.condition(uniteConfiguration.linter, "TSLint"));
+        engineVariables.toggleDevDependency(["webpack-stream"], isGulp && super.condition(uniteConfiguration.bundler, "Webpack"));
+        engineVariables.toggleDevDependency(["vinyl-source-stream", "vinyl-buffer"], isGulp && super.condition(uniteConfiguration.bundler, "Browserify"));
+        engineVariables.toggleDevDependency(["gulp-less"], isGulp && super.condition(uniteConfiguration.cssPre, "Less"));
+        engineVariables.toggleDevDependency(["gulp-sass"], isGulp && super.condition(uniteConfiguration.cssPre, "Sass"));
+        engineVariables.toggleDevDependency(["gulp-stylus"], isGulp && super.condition(uniteConfiguration.cssPre, "Stylus"));
+        engineVariables.toggleDevDependency(["gulp-postcss"], isGulp && super.condition(uniteConfiguration.cssPost, "PostCss"));
+        engineVariables.toggleDevDependency(["gulp-cssnano"], isGulp && super.condition(uniteConfiguration.cssPost, "None"));
 
         logger.info("Generating gulp tasks for build in", { gulpTasksFolder: this._tasksFolder });
 
@@ -127,9 +127,9 @@ export class Gulp extends EnginePipelineStepBase {
     }
 
     private generateUnitTasks(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, isGulp: boolean): void {
-        engineVariables.toggleDevDependency(["gulp-karma-runner"], isGulp && uniteConfiguration.unitTestRunner === "Karma");
+        engineVariables.toggleDevDependency(["gulp-karma-runner"], isGulp && super.condition(uniteConfiguration.unitTestRunner, "Karma"));
 
-        const hasUnit = uniteConfiguration.unitTestRunner !== "None";
+        const hasUnit = !super.condition(uniteConfiguration.unitTestRunner, "None");
         logger.info("Generating gulp tasks for unit in", { gulpTasksFolder: this._tasksFolder });
 
         const assetUnitTest = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/");
@@ -150,10 +150,10 @@ export class Gulp extends EnginePipelineStepBase {
     }
 
     private generateE2eTasks(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, isGulp: boolean): void {
-        engineVariables.toggleDevDependency(["gulp-webdriver", "browser-sync"], isGulp && uniteConfiguration.e2eTestRunner === "WebdriverIO");
-        engineVariables.toggleDevDependency(["browser-sync"], isGulp && uniteConfiguration.e2eTestRunner === "Protractor");
+        engineVariables.toggleDevDependency(["gulp-webdriver", "browser-sync"], isGulp && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
+        engineVariables.toggleDevDependency(["browser-sync"], isGulp && super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
 
-        const hasE2e = uniteConfiguration.e2eTestRunner !== "None";
+        const hasE2e = !super.condition(uniteConfiguration.e2eTestRunner, "None");
         logger.info("Generating gulp tasks for e2e in", { gulpTasksFolder: this._tasksFolder });
 
         const assetE2eTest = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/");

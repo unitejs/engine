@@ -13,7 +13,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 export class CommonJs extends EnginePipelineStepBase {
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         // We use SystemJS to load cjs modules for the unbundled version of the project and unit testing
-        engineVariables.toggleDevDependency(["systemjs"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.moduleType === "CommonJS");
+        engineVariables.toggleDevDependency(["systemjs"], super.condition(uniteConfiguration.unitTestRunner, "Karma") && super.condition(uniteConfiguration.moduleType, "CommonJS"));
 
         engineVariables.toggleClientPackage(
             "systemjs",
@@ -27,9 +27,9 @@ export class CommonJs extends EnginePipelineStepBase {
             undefined,
             undefined,
             undefined,
-            uniteConfiguration.moduleType === "CommonJS");
+            super.condition(uniteConfiguration.moduleType, "CommonJS"));
 
-        if (uniteConfiguration.moduleType === "CommonJS") {
+        if (super.condition(uniteConfiguration.moduleType, "CommonJS")) {
             try {
                 logger.info("Generating Module Loader Scaffold");
 

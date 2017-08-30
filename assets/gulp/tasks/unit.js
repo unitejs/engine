@@ -32,7 +32,7 @@ gulp.task("unit-module-config", async () => {
     const uniteConfig = await uc.getUniteConfig();
 
     const config = moduleConfig.create(uniteConfig, ["test", "both"], false,
-        uniteConfig.unitTestRunner === "Karma" ? "/base/" : "");
+        uniteConfig.unitTestRunner.toLowerCase() === "karma" ? "/base/" : "");
 
     try {
         await util.promisify(fs.writeFile)(

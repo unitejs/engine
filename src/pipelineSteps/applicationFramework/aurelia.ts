@@ -6,15 +6,15 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { SharedAppFramework } from "./sharedAppFramework";
+import { SharedAppFramework } from "../sharedAppFramework";
 
 export class Aurelia extends SharedAppFramework {
     public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
-        if (uniteConfiguration.applicationFramework === "Aurelia") {
-            if (uniteConfiguration.bundler === "Browserify" || uniteConfiguration.bundler === "Webpack") {
+        if (super.condition(uniteConfiguration.applicationFramework, "Aurelia")) {
+            if (super.condition(uniteConfiguration.bundler, "Browserify") || super.condition(uniteConfiguration.bundler, "Webpack")) {
                 logger.error(`Aurelia does not currently support bundling with ${uniteConfiguration.bundler}`);
                 return 1;
             }
@@ -23,12 +23,16 @@ export class Aurelia extends SharedAppFramework {
     }
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["aurelia-protractor-plugin"], uniteConfiguration.applicationFramework === "Aurelia" && uniteConfiguration.e2eTestRunner === "Protractor");
-        engineVariables.toggleDevDependency(["unitejs-aurelia-webdriver-plugin"], uniteConfiguration.applicationFramework === "Aurelia" && uniteConfiguration.e2eTestRunner === "WebdriverIO");
+        engineVariables.toggleDevDependency(["aurelia-protractor-plugin"],
+                                            super.condition(uniteConfiguration.applicationFramework, "Aurelia") &&
+                                            super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
+        engineVariables.toggleDevDependency(["unitejs-aurelia-webdriver-plugin"],
+                                            super.condition(uniteConfiguration.applicationFramework, "Aurelia") &&
+                                            super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
 
         this.toggleAllPackages(uniteConfiguration, engineVariables);
 
-        if (uniteConfiguration.applicationFramework === "Aurelia") {
+        if (super.condition(uniteConfiguration.applicationFramework, "Aurelia")) {
             const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
             if (protractorConfiguration) {
                 const plugin = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
@@ -70,9 +74,9 @@ export class Aurelia extends SharedAppFramework {
     private toggleAllPackages(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void {
         let location = "dist/";
 
-        if (uniteConfiguration.moduleType === "AMD") {
+        if (super.condition(uniteConfiguration.moduleType, "AMD")) {
             location += "amd/";
-        } else if (uniteConfiguration.moduleType === "CommonJS") {
+        } else if (super.condition(uniteConfiguration.moduleType, "CommonJS")) {
             location += "commonjs/";
         } else {
             location += "system/";
@@ -121,7 +125,7 @@ export class Aurelia extends SharedAppFramework {
             undefined,
             undefined,
             undefined,
-            uniteConfiguration.applicationFramework === "Aurelia");
+            super.condition(uniteConfiguration.applicationFramework, "Aurelia"));
 
         engineVariables.toggleClientPackage(
             "requirejs-text",
@@ -135,7 +139,7 @@ export class Aurelia extends SharedAppFramework {
             undefined,
             { text: "requirejs-text" },
             undefined,
-            uniteConfiguration.applicationFramework === "Aurelia" && uniteConfiguration.moduleType === "AMD");
+            super.condition(uniteConfiguration.applicationFramework, "Aurelia") && super.condition(uniteConfiguration.moduleType, "AMD"));
 
         engineVariables.toggleClientPackage(
             "systemjs-plugin-text",
@@ -149,7 +153,7 @@ export class Aurelia extends SharedAppFramework {
             undefined,
             { text: "systemjs-plugin-text" },
             undefined,
-            uniteConfiguration.applicationFramework === "Aurelia" && uniteConfiguration.moduleType === "SystemJS");
+            super.condition(uniteConfiguration.applicationFramework, "Aurelia") && super.condition(uniteConfiguration.moduleType, "SystemJS"));
     }
 
     private toggleClientPackages(uniteConfiguration: UniteConfiguration,
@@ -170,7 +174,7 @@ export class Aurelia extends SharedAppFramework {
                 undefined,
                 undefined,
                 undefined,
-                uniteConfiguration.applicationFramework === "Aurelia");
+                super.condition(uniteConfiguration.applicationFramework, "Aurelia"));
         });
     }
 }

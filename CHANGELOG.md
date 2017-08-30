@@ -9,6 +9,11 @@
 * Added serve tasks support --secure to launch as https
 * Added serve tasks support --port to launch on different port
 * Removed serve-secure task
+* Pipeline steps are dynamically loaded
+* Option validation performed by looking for module, now case insensitive
+* Some pipeline steps renamed for clarity
+* Package managers merged with their pipeline steps
+* Client Package separator changed to ";" for consistency
 
 ## v0.9.2
 

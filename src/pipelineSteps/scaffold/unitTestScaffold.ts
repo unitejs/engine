@@ -9,7 +9,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 
 export class UnitTestScaffold extends EnginePipelineStepBase {
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        if (uniteConfiguration.unitTestRunner !== "None") {
+        if (!super.condition(uniteConfiguration.unitTestRunner, "None")) {
             try {
                 logger.info("Creating Unit Test Directory", { unitTestSrcFolder: engineVariables.www.unitTestSrcFolder });
                 await fileSystem.directoryCreate(engineVariables.www.unitTestSrcFolder);

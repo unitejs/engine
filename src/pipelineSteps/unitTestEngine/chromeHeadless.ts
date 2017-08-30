@@ -10,9 +10,11 @@ import { EngineVariables } from "../../engine/engineVariables";
 
 export class ChromeHeadless extends EnginePipelineStepBase {
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["karma-chrome-launcher"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.unitTestEngine === "ChromeHeadless");
+        engineVariables.toggleDevDependency(["karma-chrome-launcher"],
+                                            super.condition(uniteConfiguration.unitTestRunner, "Karma") &&
+                                            super.condition(uniteConfiguration.unitTestEngine, "ChromeHeadless"));
 
-        if (uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.unitTestEngine === "ChromeHeadless") {
+        if (super.condition(uniteConfiguration.unitTestRunner, "Karma") && super.condition(uniteConfiguration.unitTestEngine, "ChromeHeadless")) {
             const karmaConfiguration = engineVariables.getConfiguration<KarmaConfiguration>("Karma");
             if (karmaConfiguration) {
                 karmaConfiguration.browsers.push("ChromeHeadless");

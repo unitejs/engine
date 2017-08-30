@@ -11,18 +11,22 @@ import { ProtractorConfiguration } from "../../configuration/models/protractor/p
 import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { SharedAppFramework } from "./sharedAppFramework";
+import { SharedAppFramework } from "../sharedAppFramework";
 
 export class React extends SharedAppFramework {
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["babel-preset-react"], uniteConfiguration.applicationFramework === "React" && uniteConfiguration.sourceLanguage === "JavaScript");
-        engineVariables.toggleDevDependency(["eslint-plugin-react"], uniteConfiguration.applicationFramework === "React" && uniteConfiguration.linter === "ESLint");
+        engineVariables.toggleDevDependency(["babel-preset-react"],
+                                            super.condition(uniteConfiguration.applicationFramework, "React") && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
+        engineVariables.toggleDevDependency(["eslint-plugin-react"],
+                                            super.condition(uniteConfiguration.applicationFramework, "React") && super.condition(uniteConfiguration.linter, "ESLint"));
 
         engineVariables.toggleDevDependency(["@types/react", "@types/react-dom", "@types/react-router-dom"],
-                                            uniteConfiguration.applicationFramework === "React" && uniteConfiguration.sourceLanguage === "TypeScript");
+                                            super.condition(uniteConfiguration.applicationFramework, "React") && super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
 
-        engineVariables.toggleDevDependency(["unitejs-react-protractor-plugin"], uniteConfiguration.applicationFramework === "React" && uniteConfiguration.e2eTestRunner === "Protractor");
-        engineVariables.toggleDevDependency(["unitejs-react-webdriver-plugin"], uniteConfiguration.applicationFramework === "React" && uniteConfiguration.e2eTestRunner === "WebdriverIO");
+        engineVariables.toggleDevDependency(["unitejs-react-protractor-plugin"],
+                                            super.condition(uniteConfiguration.applicationFramework, "React") && super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
+        engineVariables.toggleDevDependency(["unitejs-react-webdriver-plugin"],
+                                            super.condition(uniteConfiguration.applicationFramework, "React") && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
 
         engineVariables.toggleClientPackage(
             "react",
@@ -36,7 +40,7 @@ export class React extends SharedAppFramework {
             undefined,
             undefined,
             undefined,
-            uniteConfiguration.applicationFramework === "React");
+            super.condition(uniteConfiguration.applicationFramework, "React"));
 
         engineVariables.toggleClientPackage(
             "react-dom",
@@ -50,7 +54,7 @@ export class React extends SharedAppFramework {
             undefined,
             undefined,
             undefined,
-            uniteConfiguration.applicationFramework === "React");
+            super.condition(uniteConfiguration.applicationFramework, "React"));
 
         engineVariables.toggleClientPackage(
             "react-router-dom",
@@ -64,26 +68,26 @@ export class React extends SharedAppFramework {
             undefined,
             undefined,
             undefined,
-            uniteConfiguration.applicationFramework === "React");
+            super.condition(uniteConfiguration.applicationFramework, "React"));
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
-            esLintConfiguration.parserOptions.ecmaFeatures.jsx = uniteConfiguration.applicationFramework === "React";
-            ArrayHelper.addRemove(esLintConfiguration.extends, "plugin:react/recommended", uniteConfiguration.applicationFramework === "React");
-            ArrayHelper.addRemove(esLintConfiguration.plugins, "react", uniteConfiguration.applicationFramework === "React");
+            esLintConfiguration.parserOptions.ecmaFeatures.jsx = super.condition(uniteConfiguration.applicationFramework, "React");
+            ArrayHelper.addRemove(esLintConfiguration.extends, "plugin:react/recommended", super.condition(uniteConfiguration.applicationFramework, "React"));
+            ArrayHelper.addRemove(esLintConfiguration.plugins, "react", super.condition(uniteConfiguration.applicationFramework, "React"));
         }
 
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
         if (babelConfiguration) {
-            ArrayHelper.addRemove(babelConfiguration.presets, "react", uniteConfiguration.applicationFramework === "React");
+            ArrayHelper.addRemove(babelConfiguration.presets, "react", super.condition(uniteConfiguration.applicationFramework, "React"));
         }
 
         const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
         if (typeScriptConfiguration) {
-            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "jsx", "react", uniteConfiguration.applicationFramework === "React");
+            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "jsx", "react", super.condition(uniteConfiguration.applicationFramework, "React"));
         }
 
-        if (uniteConfiguration.applicationFramework === "React") {
+        if (super.condition(uniteConfiguration.applicationFramework, "React")) {
             const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
             if (protractorConfiguration) {
                 const plugin = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,

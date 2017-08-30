@@ -12,8 +12,8 @@ export class SystemJsBuilder extends EnginePipelineStepBase {
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
-        if (uniteConfiguration.bundler === "SystemJSBuilder") {
-            if (uniteConfiguration.moduleType !== "SystemJS") {
+        if (super.condition(uniteConfiguration.bundler, "SystemJSBuilder")) {
+            if (!super.condition(uniteConfiguration.moduleType, "SystemJS")) {
                 logger.error("You can only use SystemJS modules with SystemJSBuilder");
                 return 1;
             }
@@ -22,7 +22,7 @@ export class SystemJsBuilder extends EnginePipelineStepBase {
     }
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["systemjs-builder"], uniteConfiguration.bundler === "SystemJSBuilder");
+        engineVariables.toggleDevDependency(["systemjs-builder"], super.condition(uniteConfiguration.bundler, "SystemJSBuilder"));
 
         return 0;
 

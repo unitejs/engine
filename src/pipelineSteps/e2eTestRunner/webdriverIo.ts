@@ -19,7 +19,7 @@ export class WebdriverIo extends EnginePipelineStepBase {
     private _plugins: string[];
 
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        if (uniteConfiguration.e2eTestRunner === "WebdriverIO") {
+        if (super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO")) {
             this.configDefaults(fileSystem, engineVariables);
         }
 
@@ -33,19 +33,20 @@ export class WebdriverIo extends EnginePipelineStepBase {
                                             "browser-sync",
                                             "selenium-standalone",
                                             "allure-commandline"],
-                                            uniteConfiguration.e2eTestRunner === "WebdriverIO");
+                                            super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
 
-        engineVariables.toggleDevDependency(["@types/webdriverio"], uniteConfiguration.e2eTestRunner === "WebdriverIO" && uniteConfiguration.sourceLanguage === "TypeScript");
+        engineVariables.toggleDevDependency(["@types/webdriverio"],
+                                            super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO") && super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
 
-        engineVariables.toggleDevDependency(["eslint-plugin-webdriverio"], uniteConfiguration.e2eTestRunner === "WebdriverIO" && uniteConfiguration.linter === "ESLint");
+        engineVariables.toggleDevDependency(["eslint-plugin-webdriverio"], super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO") && super.condition(uniteConfiguration.linter, "ESLint"));
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
-            ArrayHelper.addRemove(esLintConfiguration.plugins, "webdriverio", uniteConfiguration.e2eTestRunner === "WebdriverIO");
-            ObjectHelper.addRemove(esLintConfiguration.env, "webdriverio/wdio", true, uniteConfiguration.e2eTestRunner === "WebdriverIO");
+            ArrayHelper.addRemove(esLintConfiguration.plugins, "webdriverio", super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
+            ObjectHelper.addRemove(esLintConfiguration.env, "webdriverio/wdio", true, super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
         }
 
-        if (uniteConfiguration.e2eTestRunner === "WebdriverIO") {
+        if (super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO")) {
             try {
                 const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, WebdriverIo.FILENAME);
 

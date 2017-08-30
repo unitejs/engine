@@ -7,7 +7,7 @@ import { UniteConfiguration } from "../../configuration/models/unite/uniteConfig
 import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 export declare class Electron extends EnginePipelineStepBase {
-    static PLATFORM: string;
+    private static PLATFORM;
     private static FILENAME;
     private static FILENAME2;
     process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;

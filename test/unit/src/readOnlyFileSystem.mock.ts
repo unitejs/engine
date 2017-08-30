@@ -55,6 +55,46 @@ export class ReadOnlyFileSystemMock implements IFileSystem {
         return Promise.resolve();
     }
 
+    public async directoryGetFiles(directoryName: string): Promise<string[]> {
+        const dirFiles = [];
+        if (directoryName !== undefined && directoryName !== null) {
+            const dirExists = await this.directoryExists(directoryName);
+            if (dirExists) {
+                const files = await util.promisify(fs.readdir)(directoryName);
+                for (let i = 0; i < files.length; i++) {
+                    const curPath = path.join(directoryName, files[i]);
+
+                    const stat = await util.promisify(fs.lstat)(curPath);
+
+                    if (stat.isFile()) {
+                        dirFiles.push(files[i]);
+                    }
+                }
+            }
+        }
+        return dirFiles;
+    }
+
+    public async directoryGetFolders(directoryName: string): Promise<string[]> {
+        const dirFolders = [];
+        if (directoryName !== undefined && directoryName !== null) {
+            const dirExists = await this.directoryExists(directoryName);
+            if (dirExists) {
+                const files = await util.promisify(fs.readdir)(directoryName);
+                for (let i = 0; i < files.length; i++) {
+                    const curPath = path.join(directoryName, files[i]);
+
+                    const stat = await util.promisify(fs.lstat)(curPath);
+
+                    if (stat.isDirectory()) {
+                        dirFolders.push(files[i]);
+                    }
+                }
+            }
+        }
+        return dirFolders;
+    }
+
     public async fileExists(directoryName: string, fileName: string): Promise<boolean> {
         try {
             return (await util.promisify(fs.lstat)(path.join(directoryName, fileName))).isFile();

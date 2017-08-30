@@ -9,7 +9,7 @@ import { UniteBuildConfiguration } from "../../../../dist/configuration/models/u
 import { UniteClientPackage } from "../../../../dist/configuration/models/unite/uniteClientPackage";
 import { UniteConfiguration } from "../../../../dist/configuration/models/unite/uniteConfiguration";
 import { Engine } from "../../../../dist/engine/engine";
-import { PackageUtils } from "../../../../dist/packageManagers/packageUtils";
+import { PackageUtils } from "../../../../dist/pipelineSteps/packageUtils";
 import { FileSystemMock } from "../fileSystem.mock";
 import { ReadOnlyFileSystemMock } from "../readOnlyFileSystem.mock";
 
@@ -106,7 +106,7 @@ describe("Engine", () => {
             unitTestFramework: "Jasmine",
             unitTestEngine: "PhantomJS",
             e2eTestRunner: "Protractor",
-            e2eTestFramework: "Mocha-Chai",
+            e2eTestFramework: "MochaChai",
             cssPre: "Sass",
             cssPost: "None",
             linter: "ESLint",
@@ -259,7 +259,7 @@ describe("Engine", () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
-                                            "None", "Mocha-Chai", undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+                                            "None", "MochaChai", undefined, undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("is not valid");
         });
@@ -286,7 +286,7 @@ describe("Engine", () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
-                                            "Protractor", "Mocha-Chai", "ESLint", undefined, undefined, undefined, undefined, undefined, undefined);
+                                            "Protractor", "MochaChai", "ESLint", undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("cssPre");
         });
@@ -295,7 +295,7 @@ describe("Engine", () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
-                                            "Protractor", "Mocha-Chai", "ESLint", "Sass", undefined, undefined, undefined, undefined, undefined);
+                                            "Protractor", "MochaChai", "ESLint", "Sass", undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("cssPost");
         });
@@ -304,7 +304,7 @@ describe("Engine", () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
-                                            "Protractor", "Mocha-Chai", "ESLint", "Sass", "None", <any>"blah", undefined, undefined, undefined);
+                                            "Protractor", "MochaChai", "ESLint", "Sass", "None", <any>"blah", undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("packageManager");
         });
@@ -313,7 +313,7 @@ describe("Engine", () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
-                                            "Protractor", "Mocha-Chai", "ESLint", "Sass", "None", "Npm", undefined, undefined, undefined);
+                                            "Protractor", "MochaChai", "ESLint", "Sass", "None", "Npm", undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("applicationFramework");
         });
@@ -323,7 +323,7 @@ describe("Engine", () => {
             packageJsonErrors = true;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
-                                            "Protractor", "Mocha-Chai", "ESLint", "Sass", "None", "Npm", "PlainApp", undefined, undefined);
+                                            "Protractor", "MochaChai", "ESLint", "Sass", "None", "Npm", "PlainApp", undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("dependencies failed");
         });
@@ -332,16 +332,63 @@ describe("Engine", () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
-                                            "Protractor", "Mocha-Chai", "TSLint", "Sass", "None", "Npm", "PlainApp", undefined, undefined);
+                                            "Protractor", "MochaChai", "TSLint", "Sass", "None", "Npm", "PlainApp", undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("TSLint");
+        });
+
+        it("can fail when pipeline module does not exist", async () => {
+            uniteJson = undefined;
+            const stub = fileSystemStub.directoryGetFiles = sandbox.stub();
+            stub.callsFake(async (dir) => {
+                if (dir.indexOf("linter") >= 0) {
+                    return Promise.resolve([]);
+                } else {
+                    return new ReadOnlyFileSystemMock().directoryGetFiles(dir);
+                }
+            });
+            const obj = new Engine(loggerStub, fileSystemStub);
+            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
+                                            "Protractor", "MochaChai", "None", "Sass", "None", "Npm", "PlainApp", undefined, undefined);
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("could not be located");
+        });
+
+        it("can fail when pipeline module throws error with label", async () => {
+            uniteJson = undefined;
+            fileSystemStub.directoryGetFiles = sandbox.stub().rejects("error");
+            const obj = new Engine(loggerStub, fileSystemStub);
+            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
+                                            "Protractor", "MochaChai", "TSLint", "Sass", "None", "Npm", "PlainApp", undefined, undefined);
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("failed to load");
+        });
+
+        it("can fail when pipeline module throws error", async () => {
+            uniteJson = undefined;
+            fileSystemStub.directoryGetFiles = sandbox.stub().onSecondCall().rejects("error");
+            const obj = new Engine(loggerStub, fileSystemStub);
+            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
+                                            "Protractor", "MochaChai", "TSLint", "Sass", "None", "Npm", "PlainApp", undefined, undefined);
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("failed to load");
+        });
+
+        it("can succeed when calling with none linter", async () => {
+            uniteJson = undefined;
+            const obj = new Engine(loggerStub, fileSystemStub);
+            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
+                                            "Protractor", "MochaChai", "None", "Sass", "None", "Npm", "PlainApp", undefined, undefined);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(loggerWarningSpy.args[0][0]).to.contain("should probably");
+            Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
         });
 
         it("can succeed when calling with undefined outputDirectory", async () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
-                                            "Protractor", "Mocha-Chai", "ESLint", "Sass", "None", "Npm", "PlainApp", undefined, undefined);
+                                            "Protractor", "MochaChai", "ESLint", "Sass", "None", "Npm", "PlainApp", undefined, undefined);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerWarningSpy.args[0][0]).to.contain("should probably");
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
@@ -351,7 +398,7 @@ describe("Engine", () => {
             uniteJson = undefined;
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
-                                            "Protractor", "Mocha-Chai", "ESLint", "Sass", "None", "Npm", "PlainApp", undefined, "./test/unit/temp");
+                                            "Protractor", "MochaChai", "ESLint", "Sass", "None", "Npm", "PlainApp", undefined, "./test/unit/temp");
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerWarningSpy.args[0][0]).to.contain("should probably");
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
@@ -380,7 +427,7 @@ describe("Engine", () => {
             uniteJson.buildConfigurations = { dev: new UniteBuildConfiguration() };
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
-                                            "Protractor", "Mocha-Chai", "ESLint", "Sass", "None", "Npm", "PlainApp", true, "./test/unit/temp");
+                                            "Protractor", "MochaChai", "ESLint", "Sass", "None", "Npm", "PlainApp", true, "./test/unit/temp");
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerWarningSpy.args[0][0]).to.contain("should probably");
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");

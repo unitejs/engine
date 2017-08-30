@@ -135,6 +135,50 @@ export class FileSystemMock implements IFileSystem {
         }
     }
 
+    public async directoryGetFiles(directoryName: string): Promise<string[]> {
+        const dirFiles = [];
+        if (directoryName !== undefined && directoryName !== null) {
+            const newDirectoryName = this.cleanupSeparators(directoryName);
+
+            const dirExists = await this.directoryExists(newDirectoryName);
+            if (dirExists) {
+                const files = await util.promisify(fs.readdir)(newDirectoryName);
+                for (let i = 0; i < files.length; i++) {
+                    const curPath = path.join(newDirectoryName, files[i]);
+
+                    const stat = await util.promisify(fs.lstat)(curPath);
+
+                    if (stat.isFile()) {
+                        dirFiles.push(files[i]);
+                    }
+                }
+            }
+        }
+        return dirFiles;
+    }
+
+    public async directoryGetFolders(directoryName: string): Promise<string[]> {
+        const dirFolders = [];
+        if (directoryName !== undefined && directoryName !== null) {
+            const newDirectoryName = this.cleanupSeparators(directoryName);
+
+            const dirExists = await this.directoryExists(newDirectoryName);
+            if (dirExists) {
+                const files = await util.promisify(fs.readdir)(newDirectoryName);
+                for (let i = 0; i < files.length; i++) {
+                    const curPath = path.join(newDirectoryName, files[i]);
+
+                    const stat = await util.promisify(fs.lstat)(curPath);
+
+                    if (stat.isDirectory()) {
+                        dirFolders.push(files[i]);
+                    }
+                }
+            }
+        }
+        return dirFolders;
+    }
+
     public async fileExists(directoryName: string, fileName: string): Promise<boolean> {
         if (directoryName === undefined || directoryName === null ||
             fileName === undefined || fileName === null) {

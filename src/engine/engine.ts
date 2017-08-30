@@ -9,76 +9,14 @@ import { ISpdx } from "../configuration/models/spdx/ISpdx";
 import { ISpdxLicense } from "../configuration/models/spdx/ISpdxLicense";
 import { IncludeMode } from "../configuration/models/unite/includeMode";
 import { ScriptIncludeMode } from "../configuration/models/unite/scriptIncludeMode";
-import { UniteApplicationFramework } from "../configuration/models/unite/uniteApplicationFramework";
 import { UniteBuildConfiguration } from "../configuration/models/unite/uniteBuildConfiguration";
-import { UniteBundler } from "../configuration/models/unite/uniteBundler";
 import { UniteClientPackage } from "../configuration/models/unite/uniteClientPackage";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
-import { UniteCssPostProcessor } from "../configuration/models/unite/uniteCssPostProcessor";
-import { UniteCssPreProcessor } from "../configuration/models/unite/uniteCssPreProcessor";
-import { UniteE2eTestFramework } from "../configuration/models/unite/uniteE2eTestFramework";
-import { UniteE2eTestRunner } from "../configuration/models/unite/uniteE2eTestRunner";
-import { UniteLinter } from "../configuration/models/unite/uniteLinter";
-import { UniteModuleType } from "../configuration/models/unite/uniteModuleType";
-import { UnitePackageManager } from "../configuration/models/unite/unitePackageManager";
-import { UniteSourceLanguage } from "../configuration/models/unite/uniteSourceLanguage";
-import { UniteUnitTestEngine } from "../configuration/models/unite/uniteUnitTestEngine";
-import { UniteUnitTestFramework } from "../configuration/models/unite/uniteUnitTestFramework";
-import { UniteUnitTestRunner } from "../configuration/models/unite/uniteUnitTestRunner";
 import { BuildConfigurationOperation } from "../interfaces/buildConfigurationOperation";
 import { IEngine } from "../interfaces/IEngine";
 import { IEnginePipelineStep } from "../interfaces/IEnginePipelineStep";
 import { ModuleOperation } from "../interfaces/moduleOperation";
 import { PlatformOperation } from "../interfaces/platformOperation";
-import { NpmPackageManager } from "../packageManagers/npmPackageManager";
-import { YarnPackageManager } from "../packageManagers/yarnPackageManager";
-import { Angular } from "../pipelineSteps/applicationFramework/angular";
-import { Aurelia } from "../pipelineSteps/applicationFramework/aurelia";
-import { PlainApp } from "../pipelineSteps/applicationFramework/plainApp";
-import { React } from "../pipelineSteps/applicationFramework/react";
-import { Browserify } from "../pipelineSteps/bundler/browserify";
-import { RequireJs } from "../pipelineSteps/bundler/requireJs";
-import { SystemJsBuilder } from "../pipelineSteps/bundler/systemJsBuilder";
-import { Webpack } from "../pipelineSteps/bundler/webpack";
-import { Assets } from "../pipelineSteps/content/assets";
-import { GitIgnore } from "../pipelineSteps/content/gitIgnore";
-import { HtmlTemplate } from "../pipelineSteps/content/htmlTemplate";
-import { License } from "../pipelineSteps/content/license";
-import { PackageJson } from "../pipelineSteps/content/packageJson";
-import { ReadMe } from "../pipelineSteps/content/readMe";
-import { PostCss } from "../pipelineSteps/cssPostProcessor/postCss";
-import { PostCssNone } from "../pipelineSteps/cssPostProcessor/postCssNone";
-import { Css } from "../pipelineSteps/cssPreProcessor/css";
-import { Less } from "../pipelineSteps/cssPreProcessor/less";
-import { Sass } from "../pipelineSteps/cssPreProcessor/sass";
-import { Stylus } from "../pipelineSteps/cssPreProcessor/stylus";
-import { Protractor } from "../pipelineSteps/e2eTestRunner/protractor";
-import { WebdriverIo } from "../pipelineSteps/e2eTestRunner/webdriverIo";
-import { Babel } from "../pipelineSteps/language/babel";
-import { TypeScript } from "../pipelineSteps/language/typeScript";
-import { EsLint } from "../pipelineSteps/lint/esLint";
-import { TsLint } from "../pipelineSteps/lint/tsLint";
-import { Amd } from "../pipelineSteps/moduleType/amd";
-import { CommonJs } from "../pipelineSteps/moduleType/commonJs";
-import { SystemJs } from "../pipelineSteps/moduleType/systemJs";
-import { Npm } from "../pipelineSteps/packageManager/npm";
-import { Yarn } from "../pipelineSteps/packageManager/yarn";
-import { Electron } from "../pipelineSteps/platform/electron";
-import { Web } from "../pipelineSteps/platform/web";
-import { AppScaffold } from "../pipelineSteps/scaffold/appScaffold";
-import { E2eTestScaffold } from "../pipelineSteps/scaffold/e2eTestScaffold";
-import { OutputDirectory } from "../pipelineSteps/scaffold/outputDirectory";
-import { UniteConfigurationDirectories } from "../pipelineSteps/scaffold/uniteConfigurationDirectories";
-import { UniteConfigurationJson } from "../pipelineSteps/scaffold/uniteConfigurationJson";
-import { UniteThemeConfigurationJson } from "../pipelineSteps/scaffold/uniteThemeConfigurationJson";
-import { UnitTestScaffold } from "../pipelineSteps/scaffold/unitTestScaffold";
-import { BrowserSync } from "../pipelineSteps/server/browserSync";
-import { Gulp } from "../pipelineSteps/taskManager/gulp";
-import { Jasmine } from "../pipelineSteps/testFramework/jasmine";
-import { MochaChai } from "../pipelineSteps/testFramework/mochaChai";
-import { ChromeHeadless } from "../pipelineSteps/unitTestEngine/chromeHeadless";
-import { PhantomJs } from "../pipelineSteps/unitTestEngine/phantomJs";
-import { Karma } from "../pipelineSteps/unitTestRunner/karma";
 import { EngineVariables } from "./engineVariables";
 
 export class Engine implements IEngine {
@@ -86,30 +24,34 @@ export class Engine implements IEngine {
     private _fileSystem: IFileSystem;
     private _engineRootFolder: string;
     private _engineAssetsFolder: string;
+    private _moduleIdMap: { [id: string]: string};
+    private _pipelineStepCache: { [id: string]: IEnginePipelineStep};
 
     constructor(logger: ILogger, fileSystem: IFileSystem) {
         this._logger = logger;
         this._fileSystem = fileSystem;
         this._engineRootFolder = fileSystem.pathCombine(__dirname, "../../");
         this._engineAssetsFolder = fileSystem.pathCombine(this._engineRootFolder, "/assets/");
+        this._moduleIdMap = {};
+        this._pipelineStepCache = {};
     }
 
     public async configure(packageName: string | undefined | null,
                            title: string | undefined | null,
                            license: string | undefined | null,
-                           sourceLanguage: UniteSourceLanguage | undefined | null,
-                           moduleType: UniteModuleType | undefined | null,
-                           bundler: UniteBundler | undefined | null,
-                           unitTestRunner: UniteUnitTestRunner | undefined | null,
-                           unitTestFramework: UniteUnitTestFramework | undefined | null,
-                           unitTestEngine: UniteUnitTestEngine | undefined | null,
-                           e2eTestRunner: UniteE2eTestRunner | undefined | null,
-                           e2eTestFramework: UniteE2eTestFramework | undefined | null,
-                           linter: UniteLinter | undefined | null,
-                           cssPre: UniteCssPreProcessor | undefined | null,
-                           cssPost: UniteCssPostProcessor | undefined | null,
-                           packageManager: UnitePackageManager | undefined | null,
-                           applicationFramework: UniteApplicationFramework | undefined | null,
+                           sourceLanguage: string | undefined | null,
+                           moduleType: string | undefined | null,
+                           bundler: string | undefined | null,
+                           unitTestRunner: string | undefined | null,
+                           unitTestFramework: string | undefined | null,
+                           unitTestEngine: string | undefined | null,
+                           e2eTestRunner: string | undefined | null,
+                           e2eTestFramework: string | undefined | null,
+                           linter: string | undefined | null,
+                           cssPre: string | undefined | null,
+                           cssPost: string | undefined | null,
+                           packageManager: string | undefined | null,
+                           applicationFramework: string | undefined | null,
                            force: boolean | undefined | null,
                            outputDirectory: string | undefined | null): Promise<number> {
         const newOutputDirectory = this.cleanupOutputDirectory(outputDirectory);
@@ -173,16 +115,13 @@ export class Engine implements IEngine {
             return 1;
         }
 
-        if (!ParameterValidation.checkOneOf<UniteSourceLanguage>(this._logger, "sourceLanguage", uniteConfiguration.sourceLanguage, ["JavaScript", "TypeScript"])) {
+        if (!await this.tryLoadPipelineStep(uniteConfiguration, "language", uniteConfiguration.sourceLanguage, "sourceLanguage")) {
             return 1;
         }
-        if (!ParameterValidation.checkOneOf<UniteModuleType>(this._logger, "moduleType", uniteConfiguration.moduleType, ["AMD", "CommonJS", "SystemJS"])) {
+        if (!await this.tryLoadPipelineStep(uniteConfiguration, "moduleType", uniteConfiguration.moduleType)) {
             return 1;
         }
-        if (!ParameterValidation.checkOneOf<UniteBundler>(this._logger, "bundler", uniteConfiguration.bundler, ["Browserify", "RequireJS", "SystemJSBuilder", "Webpack"])) {
-            return 1;
-        }
-        if (!ParameterValidation.checkOneOf<UniteUnitTestRunner>(this._logger, "unitTestRunner", uniteConfiguration.unitTestRunner, ["None", "Karma"])) {
+        if (!await this.tryLoadPipelineStep(uniteConfiguration, "bundler", uniteConfiguration.bundler)) {
             return 1;
         }
         if (unitTestRunner === "None") {
@@ -195,15 +134,15 @@ export class Engine implements IEngine {
                 return 1;
             }
         } else {
-            if (!ParameterValidation.checkOneOf<UniteUnitTestFramework>(this._logger, "unitTestFramework", uniteConfiguration.unitTestFramework, ["Mocha-Chai", "Jasmine"])) {
+            if (!await this.tryLoadPipelineStep(uniteConfiguration, "unitTestRunner", uniteConfiguration.unitTestRunner)) {
                 return 1;
             }
-            if (!ParameterValidation.checkOneOf<UniteUnitTestEngine>(this._logger, "unitTestEngine", uniteConfiguration.unitTestEngine, ["PhantomJS", "ChromeHeadless"])) {
+            if (!await this.tryLoadPipelineStep(uniteConfiguration, "testFramework", uniteConfiguration.unitTestFramework, "unitTestFramework")) {
                 return 1;
             }
-        }
-        if (!ParameterValidation.checkOneOf<UniteE2eTestRunner>(this._logger, "e2eTestRunner", uniteConfiguration.e2eTestRunner, ["None", "WebdriverIO", "Protractor"])) {
-            return 1;
+            if (!await this.tryLoadPipelineStep(uniteConfiguration, "unitTestEngine", uniteConfiguration.unitTestEngine)) {
+                return 1;
+            }
         }
         if (e2eTestRunner === "None") {
             if (e2eTestFramework !== null && e2eTestFramework !== undefined) {
@@ -211,23 +150,28 @@ export class Engine implements IEngine {
                 return 1;
             }
         } else {
-            if (!ParameterValidation.checkOneOf<UniteE2eTestFramework>(this._logger, "e2eTestFramework", uniteConfiguration.e2eTestFramework, ["Mocha-Chai", "Jasmine"])) {
+            if (!await this.tryLoadPipelineStep(uniteConfiguration, "e2eTestRunner", uniteConfiguration.e2eTestRunner)) {
+                return 1;
+            }
+            if (!await this.tryLoadPipelineStep(uniteConfiguration, "testFramework", uniteConfiguration.e2eTestFramework, "e2eTestFramework")) {
                 return 1;
             }
         }
-        if (!ParameterValidation.checkOneOf<UniteLinter>(this._logger, "linter", uniteConfiguration.linter, ["None", "ESLint", "TSLint"])) {
+        if (linter !== "None") {
+            if (!await this.tryLoadPipelineStep(uniteConfiguration, "linter", uniteConfiguration.linter)) {
+                return 1;
+            }
+        }
+        if (!await this.tryLoadPipelineStep(uniteConfiguration, "cssPre", uniteConfiguration.cssPre)) {
             return 1;
         }
-        if (!ParameterValidation.checkOneOf<UniteCssPreProcessor>(this._logger, "cssPre", uniteConfiguration.cssPre, ["Css", "Less", "Sass", "Stylus"])) {
+        if (!await this.tryLoadPipelineStep(uniteConfiguration, "cssPost", uniteConfiguration.cssPost)) {
             return 1;
         }
-        if (!ParameterValidation.checkOneOf<UniteCssPostProcessor>(this._logger, "cssPost", uniteConfiguration.cssPost, ["None", "PostCss"])) {
+        if (!await this.tryLoadPipelineStep(uniteConfiguration, "packageManager", uniteConfiguration.packageManager)) {
             return 1;
         }
-        if (!ParameterValidation.checkOneOf<UnitePackageManager>(this._logger, "packageManager", uniteConfiguration.packageManager, ["Npm", "Yarn"])) {
-            return 1;
-        }
-        if (!ParameterValidation.checkOneOf<UniteApplicationFramework>(this._logger, "applicationFramework", uniteConfiguration.applicationFramework, ["PlainApp", "Angular", "Aurelia", "React"])) {
+        if (!await this.tryLoadPipelineStep(uniteConfiguration, "applicationFramework", uniteConfiguration.applicationFramework)) {
             return 1;
         }
 
@@ -251,7 +195,7 @@ export class Engine implements IEngine {
                                assets: string | undefined | null,
                                map: string | undefined | null,
                                loaders: string | undefined | null,
-                               packageManager: UnitePackageManager | undefined | null,
+                               packageManager: string | undefined | null,
                                outputDirectory: string | undefined | null): Promise<number> {
         const newOutputDirectory = this.cleanupOutputDirectory(outputDirectory);
         const uniteConfiguration = await this.loadConfiguration(newOutputDirectory, false);
@@ -271,7 +215,7 @@ export class Engine implements IEngine {
             return 1;
         }
 
-        if (!ParameterValidation.checkOneOf<UnitePackageManager>(this._logger, "packageManager", uniteConfiguration.packageManager, ["Npm", "Yarn"])) {
+        if (!await this.tryLoadPipelineStep(uniteConfiguration, "packageManager", uniteConfiguration.packageManager)) {
             return 1;
         }
 
@@ -331,7 +275,7 @@ export class Engine implements IEngine {
         if (!ParameterValidation.checkOneOf<PlatformOperation>(this._logger, "operation", operation, ["add", "remove"])) {
             return 1;
         }
-        if (!ParameterValidation.checkOneOf<string>(this._logger, "platformName", platformName, [Web.PLATFORM, Electron.PLATFORM])) {
+        if (!await this.tryLoadPipelineStep(uniteConfiguration, "platform", platformName, "platformName")) {
             return 1;
         }
 
@@ -380,70 +324,72 @@ export class Engine implements IEngine {
             engineVariables.force = force;
             engineVariables.license = license;
 
-            const pipelineSteps: IEnginePipelineStep[] = [];
-            pipelineSteps.push(new OutputDirectory());
-            pipelineSteps.push(new AppScaffold());
-            pipelineSteps.push(new UnitTestScaffold());
-            pipelineSteps.push(new E2eTestScaffold());
+            const pipelineSteps: string[][] = [];
 
-            pipelineSteps.push(new PlainApp());
-            pipelineSteps.push(new Angular());
-            pipelineSteps.push(new Aurelia());
-            pipelineSteps.push(new React());
+            pipelineSteps.push(["scaffold", "outputDirectory"]);
+            pipelineSteps.push(["scaffold", "appScaffold"]);
+            pipelineSteps.push(["scaffold", "unitTestScaffold"]);
+            pipelineSteps.push(["scaffold", "e2eTestScaffold"]);
 
-            pipelineSteps.push(new Gulp());
-            pipelineSteps.push(new Web());
-            pipelineSteps.push(new Electron());
+            pipelineSteps.push(["applicationFramework", "plainApp"]);
+            pipelineSteps.push(["applicationFramework", "angular"]);
+            pipelineSteps.push(["applicationFramework", "aurelia"]);
+            pipelineSteps.push(["applicationFramework", "react"]);
 
-            pipelineSteps.push(new Amd());
-            pipelineSteps.push(new CommonJs());
-            pipelineSteps.push(new SystemJs());
+            pipelineSteps.push(["taskManager", "gulp"]);
 
-            pipelineSteps.push(new Browserify());
-            pipelineSteps.push(new RequireJs());
-            pipelineSteps.push(new SystemJsBuilder());
-            pipelineSteps.push(new Webpack());
+            pipelineSteps.push(["platform", "web"]);
+            pipelineSteps.push(["platform", "electron"]);
 
-            pipelineSteps.push(new Css());
-            pipelineSteps.push(new Less());
-            pipelineSteps.push(new Sass());
-            pipelineSteps.push(new Stylus());
+            pipelineSteps.push(["moduleType", "amd"]);
+            pipelineSteps.push(["moduleType", "commonJs"]);
+            pipelineSteps.push(["moduleType", "systemJs"]);
 
-            pipelineSteps.push(new PostCss());
-            pipelineSteps.push(new PostCssNone());
+            pipelineSteps.push(["bundler", "browserify"]);
+            pipelineSteps.push(["bundler", "requireJs"]);
+            pipelineSteps.push(["bundler", "systemJsBuilder"]);
+            pipelineSteps.push(["bundler", "webpack"]);
 
-            pipelineSteps.push(new MochaChai());
-            pipelineSteps.push(new Jasmine());
+            pipelineSteps.push(["cssPre", "css"]);
+            pipelineSteps.push(["cssPre", "less"]);
+            pipelineSteps.push(["cssPre", "sass"]);
+            pipelineSteps.push(["cssPre", "stylus"]);
 
-            pipelineSteps.push(new Babel());
-            pipelineSteps.push(new TypeScript());
+            pipelineSteps.push(["cssPost", "postCss"]);
+            pipelineSteps.push(["cssPost", "none"]);
 
-            pipelineSteps.push(new WebdriverIo());
-            pipelineSteps.push(new Protractor());
+            pipelineSteps.push(["testFramework", "mochaChai"]);
+            pipelineSteps.push(["testFramework", "jasmine"]);
 
-            pipelineSteps.push(new PhantomJs());
-            pipelineSteps.push(new ChromeHeadless());
+            pipelineSteps.push(["language", "javaScript"]);
+            pipelineSteps.push(["language", "typeScript"]);
 
-            pipelineSteps.push(new EsLint());
-            pipelineSteps.push(new TsLint());
-            pipelineSteps.push(new Karma());
+            pipelineSteps.push(["e2eTestRunner", "webdriverIo"]);
+            pipelineSteps.push(["e2eTestRunner", "protractor"]);
 
-            pipelineSteps.push(new Npm());
-            pipelineSteps.push(new Yarn());
+            pipelineSteps.push(["unitTestEngine", "phantomJs"]);
+            pipelineSteps.push(["unitTestEngine", "chromeHeadless"]);
 
-            pipelineSteps.push(new BrowserSync());
+            pipelineSteps.push(["linter", "esLint"]);
+            pipelineSteps.push(["linter", "tsLint"]);
 
-            pipelineSteps.push(new HtmlTemplate());
+            pipelineSteps.push(["unitTestRunner", "karma"]);
 
-            pipelineSteps.push(new ReadMe());
-            pipelineSteps.push(new GitIgnore());
-            pipelineSteps.push(new License());
+            pipelineSteps.push(["packageManager", "npm"]);
+            pipelineSteps.push(["packageManager", "yarn"]);
 
-            pipelineSteps.push(new Assets());
-            pipelineSteps.push(new PackageJson());
-            pipelineSteps.push(new UniteConfigurationDirectories());
-            pipelineSteps.push(new UniteThemeConfigurationJson());
-            pipelineSteps.push(new UniteConfigurationJson());
+            pipelineSteps.push(["server", "browserSync"]);
+
+            pipelineSteps.push(["content", "htmlTemplate"]);
+            pipelineSteps.push(["content", "readMe"]);
+            pipelineSteps.push(["content", "gitIgnore"]);
+            pipelineSteps.push(["content", "license"]);
+            pipelineSteps.push(["content", "assets"]);
+            pipelineSteps.push(["content", "packageJson"]);
+
+            pipelineSteps.push(["scaffold", "uniteConfigurationDirectories"]);
+            pipelineSteps.push(["scaffold", "uniteThemeConfigurationJson"]);
+            pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
 
             ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
 
@@ -495,7 +441,7 @@ export class Engine implements IEngine {
             const missingMain = main === null || main === undefined || main.length === 0;
             if (missingVersion || missingMain) {
                 try {
-                    const packageInfo = await engineVariables.packageManager.info(packageName);
+                    const packageInfo = await engineVariables.packageManager.info(this._logger, this._fileSystem, packageName);
 
                     clientPackage.version = clientPackage.version || `^${packageInfo.version || "0.0.1"}`;
                     clientPackage.main = clientPackage.main || packageInfo.main;
@@ -530,11 +476,11 @@ export class Engine implements IEngine {
 
             uniteConfiguration.clientPackages[packageName] = clientPackage;
 
-            await engineVariables.packageManager.add(engineVariables.wwwRootFolder, packageName, version, false);
+            await engineVariables.packageManager.add(this._logger, this._fileSystem, engineVariables.wwwRootFolder, packageName, version, false);
 
-            const pipelineSteps: IEnginePipelineStep[] = [];
-            pipelineSteps.push(new Karma());
-            pipelineSteps.push(new UniteConfigurationJson());
+            const pipelineSteps: string[][] = [];
+            pipelineSteps.push(["unitTestRunner", "karma"]);
+            pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
 
             ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
 
@@ -555,14 +501,14 @@ export class Engine implements IEngine {
         const engineVariables = new EngineVariables();
         let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration.packageManager, engineVariables);
         if (ret === 0) {
-            await engineVariables.packageManager.remove(engineVariables.wwwRootFolder, packageName, false);
+            await engineVariables.packageManager.remove(this._logger, this._fileSystem, engineVariables.wwwRootFolder, packageName, false);
 
             delete uniteConfiguration.clientPackages[packageName];
 
-            const pipelineSteps: IEnginePipelineStep[] = [];
+            const pipelineSteps: string[][] = [];
 
-            pipelineSteps.push(new Karma());
-            pipelineSteps.push(new UniteConfigurationJson());
+            pipelineSteps.push(["unitTestRunner", "karma"]);
+            pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
 
             ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
 
@@ -590,8 +536,8 @@ export class Engine implements IEngine {
             uniteConfiguration.buildConfigurations[configurationName].sourcemaps = sourcemaps === undefined ? true : sourcemaps;
             uniteConfiguration.buildConfigurations[configurationName].variables = uniteConfiguration.buildConfigurations[configurationName].variables || {};
 
-            const pipelineSteps: IEnginePipelineStep[] = [];
-            pipelineSteps.push(new UniteConfigurationJson());
+            const pipelineSteps: string[][] = [];
+            pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
             ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
 
             if (ret === 0) {
@@ -615,8 +561,8 @@ export class Engine implements IEngine {
         if (ret === 0) {
             delete uniteConfiguration.buildConfigurations[configurationName];
 
-            const pipelineSteps: IEnginePipelineStep[] = [];
-            pipelineSteps.push(new UniteConfigurationJson());
+            const pipelineSteps: string[][] = [];
+            pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
             ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
 
             if (ret === 0) {
@@ -635,15 +581,10 @@ export class Engine implements IEngine {
         if (ret === 0) {
             uniteConfiguration.platforms[platformName] = uniteConfiguration.platforms[platformName] || {};
 
-            const pipelineSteps: IEnginePipelineStep[] = [];
-            if (platformName === Web.PLATFORM) {
-                pipelineSteps.push(new Web());
-            }
-            if (platformName === Electron.PLATFORM) {
-                pipelineSteps.push(new Electron());
-            }
-            pipelineSteps.push(new PackageJson());
-            pipelineSteps.push(new UniteConfigurationJson());
+            const pipelineSteps: string[][] = [];
+            pipelineSteps.push(["platform", platformName]);
+            pipelineSteps.push(["content", "packageJson"]);
+            pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
             ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
 
             if (ret === 0) {
@@ -668,15 +609,10 @@ export class Engine implements IEngine {
         if (ret === 0) {
             delete uniteConfiguration.platforms[platformName];
 
-            const pipelineSteps: IEnginePipelineStep[] = [];
-            if (platformName === Web.PLATFORM) {
-                pipelineSteps.push(new Web());
-            }
-            if (platformName === Electron.PLATFORM) {
-                pipelineSteps.push(new Electron());
-            }
-            pipelineSteps.push(new PackageJson());
-            pipelineSteps.push(new UniteConfigurationJson());
+            const pipelineSteps: string[][] = [];
+            pipelineSteps.push(["platform", platformName]);
+            pipelineSteps.push(["content", "packageJson"]);
+            pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
             ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
             if (ret === 0) {
                 this._logger.warning("You should probably run npm install / yarn install to remove any unnecessary packages.");
@@ -687,7 +623,7 @@ export class Engine implements IEngine {
         return ret;
     }
 
-    private async createEngineVariables(outputDirectory: string, packageManager: UnitePackageManager, engineVariables: EngineVariables): Promise<number> {
+    private async createEngineVariables(outputDirectory: string, packageManager: string, engineVariables: EngineVariables): Promise<number> {
         try {
             this._logger.info("Loading dependencies", { core: this._engineRootFolder, dependenciesFile: "package.json" });
 
@@ -702,24 +638,32 @@ export class Engine implements IEngine {
         engineVariables.engineAssetsFolder = this._engineAssetsFolder;
         engineVariables.setupDirectories(this._fileSystem, outputDirectory);
 
-        if (packageManager === "Yarn") {
-            engineVariables.packageManager = new YarnPackageManager(this._logger, this._fileSystem);
-        } else {
-            engineVariables.packageManager = new NpmPackageManager(this._logger, this._fileSystem);
-        }
+        engineVariables.packageManager = this.getPipelineStep("packageManager", packageManager);
 
         return 0;
     }
 
-    private async runPipeline(pipelineSteps: IEnginePipelineStep[], uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    private async runPipeline(pipelineSteps: string[][], uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        const pipeline: IEnginePipelineStep[] = [];
+
         for (const pipelineStep of pipelineSteps) {
+            const exists = await this.tryLoadPipelineStep(uniteConfiguration, pipelineStep[0], pipelineStep[1], undefined, false);
+
+            if (exists) {
+                pipeline.push(this.getPipelineStep(pipelineStep[0], pipelineStep[1]));
+            } else {
+                return 1;
+            }
+        }
+
+        for (const pipelineStep of pipeline) {
             const ret = await pipelineStep.initialise(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
             if (ret !== 0) {
                 return ret;
             }
         }
 
-        for (const pipelineStep of pipelineSteps) {
+        for (const pipelineStep of pipeline) {
             const ret = await pipelineStep.process(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
             if (ret !== 0) {
                 return ret;
@@ -727,6 +671,68 @@ export class Engine implements IEngine {
         }
 
         return 0;
+    }
+
+    private getPipelineStep<T extends IEnginePipelineStep>(moduleType: string, moduleId: string): T {
+        const className = this._moduleIdMap[`${moduleType}/${moduleId}`];
+        if (className !== undefined && this._pipelineStepCache[className] !== undefined) {
+            return <T>this._pipelineStepCache[className];
+        }
+
+        return undefined;
+    }
+
+    private async tryLoadPipelineStep(uniteConfiguration: UniteConfiguration, moduleType: string, moduleId: string, configurationType?: string, defineProperty: boolean = true): Promise<boolean> {
+        const moduleTypeId = `${moduleType}/${moduleId}`;
+        let className = this._moduleIdMap[moduleTypeId];
+
+        if (className === undefined) {
+            const modulePath = this._fileSystem.pathCombine(this._engineRootFolder, `dist/pipelineSteps`);
+            const moduleTypeFolder = this._fileSystem.pathCombine(modulePath, moduleType);
+            const actualType = configurationType ? configurationType : moduleType;
+
+            try {
+                let files = await this._fileSystem.directoryGetFiles(moduleTypeFolder);
+                files = files.filter(file => file.endsWith(".js")).map(file => file.replace(".js", ""));
+
+                if (moduleId !== undefined && module !== null && moduleId.length > 0) {
+                    const moduleIdLower = moduleId.toLowerCase();
+                    for (let i = 0; i < files.length; i++) {
+                        if (files[i].toLowerCase() === moduleIdLower) {
+                            // tslint:disable:no-require-imports
+                            // tslint:disable:non-literal-require
+                            const module = require(this._fileSystem.pathCombine(moduleTypeFolder, files[i]));
+                            // tslint:enable:no-require-imports
+                            // tslint:enable:non-literal-require
+
+                            className = Object.keys(module)[0];
+
+                            const instance = Object.create(module[className].prototype);
+
+                            if (defineProperty) {
+                                this._logger.info(actualType, { className });
+                                Object.defineProperty(uniteConfiguration, actualType, { value: className });
+                            }
+
+                            const moduleClassName = `${moduleType}/${className}`;
+                            this._pipelineStepCache[moduleClassName] = new instance.constructor();
+                            this._moduleIdMap[moduleTypeId] = moduleClassName;
+                            return true;
+                        }
+                    }
+                    this._logger.error(`Module ${moduleId} for arg ${actualType} could not be located, possible options could be [${files.join(", ")}]`);
+                    return false;
+                } else {
+                    this._logger.error(`${actualType} should not be blank, possible options could be [${files.join(", ")}]`);
+                    return false;
+                }
+            } catch (err) {
+                this._logger.error(`Module ${moduleId} for arg ${actualType} failed to load`, err);
+                return false;
+            }
+        } else {
+            return true;
+        }
     }
 
     private mapParser(input: string): { [id: string]: string } {

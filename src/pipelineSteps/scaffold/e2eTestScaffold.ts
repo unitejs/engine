@@ -9,7 +9,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 
 export class E2eTestScaffold extends EnginePipelineStepBase {
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        if (uniteConfiguration.e2eTestRunner !== "None") {
+        if (!super.condition(uniteConfiguration.e2eTestRunner, "None")) {
             try {
                 logger.info("Creating E2E Test Directory", { e2eTestSrcFolder: engineVariables.www.e2eTestSrcFolder });
                 await fileSystem.directoryCreate(engineVariables.www.e2eTestSrcFolder);

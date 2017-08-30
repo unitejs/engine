@@ -10,7 +10,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 export class BrowserSync extends EnginePipelineStepBase {
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         logger.info("Generating BrowserSync Configuration");
-        engineVariables.toggleDevDependency(["browser-sync"], uniteConfiguration.server === "BrowserSync");
+        engineVariables.toggleDevDependency(["browser-sync"], super.condition(uniteConfiguration.server, "BrowserSync"));
 
         return 0;
     }

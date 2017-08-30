@@ -10,9 +10,10 @@ import { EngineVariables } from "../../engine/engineVariables";
 
 export class PhantomJs extends EnginePipelineStepBase {
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["karma-phantomjs-launcher", "bluebird"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.unitTestEngine === "PhantomJS");
+        engineVariables.toggleDevDependency(["karma-phantomjs-launcher", "bluebird"],
+                                            super.condition(uniteConfiguration.unitTestRunner, "Karma") && super.condition(uniteConfiguration.unitTestEngine, "PhantomJS"));
 
-        if (uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.unitTestEngine === "PhantomJS") {
+        if (super.condition(uniteConfiguration.unitTestRunner, "Karma") && super.condition(uniteConfiguration.unitTestEngine, "PhantomJS")) {
             const karmaConfiguration = engineVariables.getConfiguration<KarmaConfiguration>("Karma");
             if (karmaConfiguration) {
                 karmaConfiguration.browsers.push("PhantomJS");

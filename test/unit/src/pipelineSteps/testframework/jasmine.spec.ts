@@ -53,8 +53,8 @@ describe("Jasmine", () => {
 
     describe("process", () => {
         it("can be called with undefined test frameworks", async () => {
-            uniteConfigurationStub.unitTestFramework = "Mocha-Chai";
-            uniteConfigurationStub.e2eTestFramework = "Mocha-Chai";
+            uniteConfigurationStub.unitTestFramework = "MochaChai";
+            uniteConfigurationStub.e2eTestFramework = "MochaChai";
             const obj = new Jasmine();
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
@@ -79,7 +79,7 @@ describe("Jasmine", () => {
         it("can be called with unit framework defined", async () => {
             uniteConfigurationStub.sourceLanguage = "TypeScript";
             uniteConfigurationStub.unitTestRunner = "Karma";
-            uniteConfigurationStub.e2eTestFramework = "Mocha-Chai";
+            uniteConfigurationStub.e2eTestFramework = "MochaChai";
 
             engineVariablesStub.setConfiguration("Karma", { frameworks: [] });
 
@@ -105,7 +105,7 @@ describe("Jasmine", () => {
         });
 
         it("can be called with e2e framework defined as protractor", async () => {
-            uniteConfigurationStub.unitTestFramework = "Mocha-Chai";
+            uniteConfigurationStub.unitTestFramework = "MochaChai";
             uniteConfigurationStub.e2eTestRunner = "Protractor";
 
             engineVariablesStub.setConfiguration("ESLint", { env: {} });
@@ -135,7 +135,7 @@ describe("Jasmine", () => {
         });
 
         it("can be called with e2e framework defined as webdriverio", async () => {
-            uniteConfigurationStub.unitTestFramework = "Mocha-Chai";
+            uniteConfigurationStub.unitTestFramework = "MochaChai";
             uniteConfigurationStub.e2eTestRunner = "WebdriverIO";
 
             engineVariablesStub.setConfiguration("ESLint", { env: {} });

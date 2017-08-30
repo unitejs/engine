@@ -12,7 +12,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 
 export class SystemJs extends EnginePipelineStepBase {
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["systemjs"], uniteConfiguration.unitTestRunner === "Karma" && uniteConfiguration.moduleType === "SystemJS");
+        engineVariables.toggleDevDependency(["systemjs"], super.condition(uniteConfiguration.unitTestRunner, "Karma") && super.condition(uniteConfiguration.moduleType, "SystemJS"));
 
         engineVariables.toggleClientPackage(
             "systemjs",
@@ -26,9 +26,9 @@ export class SystemJs extends EnginePipelineStepBase {
             undefined,
             undefined,
             undefined,
-            uniteConfiguration.moduleType === "SystemJS");
+            super.condition(uniteConfiguration.moduleType, "SystemJS"));
 
-        if (uniteConfiguration.moduleType === "SystemJS") {
+        if (super.condition(uniteConfiguration.moduleType, "SystemJS")) {
             try {
                 logger.info("Generating Module Loader Scaffold");
 
