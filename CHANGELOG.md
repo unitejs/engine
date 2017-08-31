@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.9.6
+
+* Fixed existing clientPackages removed from karma.config on clientPackage add/remove
+* Added missing validation for clientPackage scriptIncludeMode argument
+* Added missing parameter display for clientPackage add
+
 ## v0.9.5
 
 * Fixed client package add with supplied version retrieves correct main

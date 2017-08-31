@@ -93,6 +93,10 @@ export class EngineVariables {
         };
     }
 
+    public initialisePackages(clientPackages: { [id: string]: UniteClientPackage }): void {
+        this._requiredClientPackages = clientPackages;
+    }
+
     public toggleClientPackage(name: string,
                                main: string,
                                mainMinified: string,

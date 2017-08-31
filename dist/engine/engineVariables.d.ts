@@ -47,6 +47,9 @@ export declare class EngineVariables {
     setConfiguration(name: string, config: any): void;
     getConfiguration<T>(name: string): T;
     setupDirectories(fileSystem: IFileSystem, rootFolder: string): void;
+    initialisePackages(clientPackages: {
+        [id: string]: UniteClientPackage;
+    }): void;
     toggleClientPackage(name: string, main: string, mainMinified: string, testingAdditions: {
         [id: string]: string;
     }, preload: boolean, includeMode: IncludeMode, scriptIncludeMode: ScriptIncludeMode, isPackage: boolean, assets: string, map: {

@@ -319,7 +319,7 @@ export class Engine implements IEngine {
 
     private async configureRun(outputDirectory: string, uniteConfiguration: UniteConfiguration, license: ISpdxLicense, force: boolean): Promise<number> {
         const engineVariables = new EngineVariables();
-        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration.packageManager, engineVariables);
+        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
         if (ret === 0) {
             engineVariables.force = force;
             engineVariables.license = license;
@@ -417,9 +417,42 @@ export class Engine implements IEngine {
                                    outputDirectory: string,
                                    uniteConfiguration: UniteConfiguration): Promise<number> {
         const newIncludeMode = includeMode === undefined || includeMode === null || includeMode.length === 0 ? "both" : includeMode;
+        const newScriptIncludeMode = scriptIncludeMode === undefined || scriptIncludeMode === null || scriptIncludeMode.length === 0 ? "none" : scriptIncludeMode;
+
+        if (version) {
+            this._logger.info("version", { version });
+        }
+
+        this._logger.info("preload", { preload });
 
         if (!ParameterValidation.checkOneOf<IncludeMode>(this._logger, "includeMode", newIncludeMode, ["app", "test", "both"])) {
             return 1;
+        }
+
+        if (!ParameterValidation.checkOneOf<ScriptIncludeMode>(this._logger, "scriptIncludeMode", newScriptIncludeMode, ["none", "bundled", "notBundled", "both"])) {
+            return 1;
+        }
+
+        if (main) {
+            this._logger.info("main", { main });
+        }
+
+        if (mainMinified) {
+            this._logger.info("mainMinified", { mainMinified });
+        }
+
+        if (testingAdditions) {
+            this._logger.info("testingAdditions", { testingAdditions });
+        }
+        this._logger.info("isPackage", { isPackage });
+        if (assets) {
+            this._logger.info("assets", { assets });
+        }
+        if (map) {
+            this._logger.info("map", { map });
+        }
+        if (loaders) {
+            this._logger.info("loaders", { loaders });
         }
 
         this._logger.info("");
@@ -430,7 +463,7 @@ export class Engine implements IEngine {
         }
 
         const engineVariables = new EngineVariables();
-        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration.packageManager, engineVariables);
+        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
         if (ret === 0) {
             const clientPackage = new UniteClientPackage();
             clientPackage.version = version;
@@ -462,7 +495,7 @@ export class Engine implements IEngine {
             clientPackage.preload = preload === undefined ? false : preload;
             clientPackage.isPackage = isPackage === undefined ? false : isPackage;
             clientPackage.includeMode = newIncludeMode;
-            clientPackage.scriptIncludeMode = scriptIncludeMode === undefined || scriptIncludeMode === null || scriptIncludeMode.length === 0 ? "none" : scriptIncludeMode;
+            clientPackage.scriptIncludeMode = newScriptIncludeMode;
             clientPackage.assets = assets;
 
             try {
@@ -504,7 +537,7 @@ export class Engine implements IEngine {
         }
 
         const engineVariables = new EngineVariables();
-        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration.packageManager, engineVariables);
+        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
         if (ret === 0) {
             await engineVariables.packageManager.remove(this._logger, this._fileSystem, engineVariables.wwwRootFolder, packageName, false);
 
@@ -532,7 +565,7 @@ export class Engine implements IEngine {
                                         outputDirectory: string,
                                         uniteConfiguration: UniteConfiguration): Promise<number> {
         const engineVariables = new EngineVariables();
-        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration.packageManager, engineVariables);
+        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
         if (ret === 0) {
             uniteConfiguration.buildConfigurations[configurationName] = uniteConfiguration.buildConfigurations[configurationName] || new UniteBuildConfiguration();
 
@@ -562,7 +595,7 @@ export class Engine implements IEngine {
         }
 
         const engineVariables = new EngineVariables();
-        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration.packageManager, engineVariables);
+        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
         if (ret === 0) {
             delete uniteConfiguration.buildConfigurations[configurationName];
 
@@ -582,7 +615,7 @@ export class Engine implements IEngine {
                               outputDirectory: string,
                               uniteConfiguration: UniteConfiguration): Promise<number> {
         const engineVariables = new EngineVariables();
-        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration.packageManager, engineVariables);
+        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
         if (ret === 0) {
             uniteConfiguration.platforms[platformName] = uniteConfiguration.platforms[platformName] || {};
 
@@ -610,7 +643,7 @@ export class Engine implements IEngine {
         }
 
         const engineVariables = new EngineVariables();
-        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration.packageManager, engineVariables);
+        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
         if (ret === 0) {
             delete uniteConfiguration.platforms[platformName];
 
@@ -628,7 +661,7 @@ export class Engine implements IEngine {
         return ret;
     }
 
-    private async createEngineVariables(outputDirectory: string, packageManager: string, engineVariables: EngineVariables): Promise<number> {
+    private async createEngineVariables(outputDirectory: string, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
             this._logger.info("Loading dependencies", { core: this._engineRootFolder, dependenciesFile: "package.json" });
 
@@ -642,8 +675,9 @@ export class Engine implements IEngine {
         engineVariables.engineRootFolder = this._engineRootFolder;
         engineVariables.engineAssetsFolder = this._engineAssetsFolder;
         engineVariables.setupDirectories(this._fileSystem, outputDirectory);
+        engineVariables.initialisePackages(uniteConfiguration.clientPackages);
 
-        engineVariables.packageManager = this.getPipelineStep("packageManager", packageManager);
+        engineVariables.packageManager = this.getPipelineStep("packageManager", uniteConfiguration.packageManager);
 
         return 0;
     }

@@ -484,6 +484,15 @@ describe("Engine", () => {
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("includeMode");
         });
 
+        it("can fail if invalid scriptIncludeMode", async () => {
+            uniteJson.clientPackages = { moment: new UniteClientPackage() };
+            const obj = new Engine(loggerStub, fileSystemStub);
+            const res = await obj.clientPackage("add", "moment", undefined, undefined, undefined, <any>"foo", undefined, undefined,
+                                                undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("scriptIncludeMode");
+        });
+
         it("can fail if package already exists", async () => {
             uniteJson.clientPackages = { moment: new UniteClientPackage() };
             const obj = new Engine(loggerStub, fileSystemStub);

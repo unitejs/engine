@@ -27,7 +27,7 @@ export declare class Engine implements IEngine {
     private buildConfigurationRemove(configurationName, outputDirectory, uniteConfiguration);
     private platformAdd(platformName, outputDirectory, uniteConfiguration);
     private platformRemove(platformName, outputDirectory, uniteConfiguration);
-    private createEngineVariables(outputDirectory, packageManager, engineVariables);
+    private createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
     private runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
     private getPipelineStep<T>(moduleType, moduleId);
     private tryLoadPipelineStep(uniteConfiguration, moduleType, moduleId, configurationType?, defineProperty?);
