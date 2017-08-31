@@ -441,7 +441,7 @@ export class Engine implements IEngine {
             const missingMain = main === null || main === undefined || main.length === 0;
             if (missingVersion || missingMain) {
                 try {
-                    const packageInfo = await engineVariables.packageManager.info(this._logger, this._fileSystem, packageName);
+                    const packageInfo = await engineVariables.packageManager.info(this._logger, this._fileSystem, packageName, version);
 
                     clientPackage.version = clientPackage.version || `^${packageInfo.version || "0.0.1"}`;
                     clientPackage.main = clientPackage.main || packageInfo.main;

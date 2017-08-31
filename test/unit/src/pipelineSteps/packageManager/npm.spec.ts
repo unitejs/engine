@@ -74,18 +74,32 @@ describe("Npm", () => {
             sandbox.stub(PackageUtils, "exec").rejects("error");
             const obj = new Npm();
             try {
-                await obj.info(loggerStub, fileSystemMock, "lkjdfglkjdfzsdf");
+                await obj.info(loggerStub, fileSystemMock, "lkjdfglkjdfzsdf", undefined);
             } catch (err) {
                 Chai.expect(err.message).to.contain("error");
             }
         });
 
-        it("can get the info for a package", async () => {
+        it("can get the info for a package with no version", async () => {
             const stub = sandbox.stub(PackageUtils, "exec").resolves(JSON.stringify({ version: "1.2.3", main: "index.js"}));
             const obj = new Npm();
-            const res = await obj.info(loggerStub, fileSystemMock, "package");
+            const res = await obj.info(loggerStub, fileSystemMock, "package", undefined);
             Chai.expect(stub.args[0][4]).to.contain("view");
             Chai.expect(stub.args[0][4]).to.contain("package");
+            Chai.expect(stub.args[0][4]).to.contain("--json");
+            Chai.expect(stub.args[0][4]).to.contain("name");
+            Chai.expect(stub.args[0][4]).to.contain("version");
+            Chai.expect(stub.args[0][4]).to.contain("main");
+            Chai.expect(res.version).to.be.equal("1.2.3");
+            Chai.expect(res.main).to.be.equal("index.js");
+        });
+
+        it("can get the info for a package with version", async () => {
+            const stub = sandbox.stub(PackageUtils, "exec").resolves(JSON.stringify({ version: "1.2.3", main: "index.js"}));
+            const obj = new Npm();
+            const res = await obj.info(loggerStub, fileSystemMock, "package", "4.5.6");
+            Chai.expect(stub.args[0][4]).to.contain("view");
+            Chai.expect(stub.args[0][4]).to.contain("package@4.5.6");
             Chai.expect(stub.args[0][4]).to.contain("--json");
             Chai.expect(stub.args[0][4]).to.contain("name");
             Chai.expect(stub.args[0][4]).to.contain("version");

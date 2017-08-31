@@ -8,22 +8,20 @@ function log (text) {
 }
 
 function info (caption, args) {
-    if (args) {
-        if (Array.isArray(args)) {
-            args.forEach(arg => {
-                gutil.log(`[${gutil.colors.cyan(caption)}]`, arg);
-            });
-        } else {
-            gutil.log(`[${gutil.colors.cyan(caption)}]`, args);
-        }
-    } else {
+    if (args === undefined) {
         gutil.log(`[${gutil.colors.cyan(caption)}]`);
+    } else if (Array.isArray(args)) {
+        args.forEach(arg => {
+            gutil.log(`[${gutil.colors.cyan(caption)}]`, arg);
+        });
+    } else {
+        gutil.log(`[${gutil.colors.cyan(caption)}]`, args);
     }
 }
 
 function error (text, err) {
     gutil.log(gutil.colors.red(`[ERROR] ${text}`));
-    if (err) {
+    if (err !== undefined) {
         gutil.log(gutil.colors.red(`${err}`));
     }
 }

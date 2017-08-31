@@ -21,11 +21,11 @@ export class Yarn extends EnginePipelineStepBase implements IPackageManager {
         return 0;
     }
 
-    public async info(logger: ILogger, fileSystem: IFileSystem, packageName: string): Promise<PackageConfiguration> {
+    public async info(logger: ILogger, fileSystem: IFileSystem, packageName: string, version: string): Promise<PackageConfiguration> {
         // We still use NPM for this as yarn doesn't have this facility yet
         logger.info("Looking up package info...");
 
-        const args = ["view", packageName, "--json", "name", "version", "main"];
+        const args = ["view", `${packageName}${version !== null && version !== undefined ? `@${version}` : ""}`, "--json", "name", "version", "main"];
 
         return PackageUtils.exec(logger, fileSystem, "npm", undefined, args)
             .then(viewData => JSON.parse(viewData))

@@ -4,6 +4,7 @@
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
+import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
 import { SharedAppFramework } from "../sharedAppFramework";
@@ -42,6 +43,10 @@ export class Aurelia extends SharedAppFramework {
             const webdriverIoPlugins = engineVariables.getConfiguration<string[]>("WebdriverIO.Plugins");
             if (webdriverIoPlugins) {
                 webdriverIoPlugins.push("unitejs-aurelia-webdriver-plugin");
+            }
+            const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
+            if (typeScriptConfiguration) {
+                typeScriptConfiguration.compilerOptions.experimentalDecorators = true;
             }
 
             let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper", "entryPoint", "child/child"]);

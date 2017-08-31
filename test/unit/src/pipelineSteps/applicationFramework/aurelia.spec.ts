@@ -5,6 +5,7 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
+import { TypeScriptConfiguration } from "../../../../../dist/configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../../dist/engine/engineVariables";
 import { Aurelia } from "../../../../../dist/pipelineSteps/applicationFramework/aurelia";
@@ -101,16 +102,19 @@ describe("Aurelia", () => {
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(1);
             Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins")).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript")).to.be.equal(undefined);
         });
 
         it("can be called with application framework matching webdriverio", async () => {
             engineVariablesStub.setConfiguration("Protractor", undefined);
             engineVariablesStub.setConfiguration("WebdriverIO.Plugins", []);
+            engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {}});
             const obj = new Aurelia();
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor")).to.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins").length).to.be.equal(1);
+            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.experimentalDecorators).to.be.equal(true);
         });
 
         it("can be called with AMD module type", async () => {

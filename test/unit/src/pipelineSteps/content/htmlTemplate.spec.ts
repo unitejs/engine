@@ -91,7 +91,7 @@ describe("HtmlTemplate", () => {
             Chai.expect(loggerInfoSpy.args[0][0]).contains("Generating");
 
             const lines = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "index-no-bundle.html");
-            Chai.expect(lines.length).to.be.equal(14);
+            Chai.expect(lines.length).to.be.equal(15);
         });
 
         it("can write if file has a generated marker", async () => {
@@ -110,9 +110,9 @@ describe("HtmlTemplate", () => {
             Chai.expect(loggerInfoSpy.args[0][0]).contains("Generating");
 
             const lines = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "index-no-bundle.html");
-            Chai.expect(lines.length).to.be.equal(16);
-            Chai.expect(lines.findIndex(line => line.indexOf("head1") > 0)).to.be.equal(7);
-            Chai.expect(lines.findIndex(line => line.indexOf("body2") > 0)).to.be.equal(11);
+            Chai.expect(lines.length).to.be.equal(17);
+            Chai.expect(lines.findIndex(line => line.indexOf("head1") > 0)).to.be.equal(8);
+            Chai.expect(lines.findIndex(line => line.indexOf("body2") > 0)).to.be.equal(12);
         });
 
         it("can write with not bundled script include", async () => {
@@ -148,16 +148,16 @@ describe("HtmlTemplate", () => {
             Chai.expect(loggerInfoSpy.args[0][0]).contains("Generating");
 
             const lines = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "index-no-bundle.html");
-            Chai.expect(lines.length).to.be.equal(17);
-            Chai.expect(lines.findIndex(line => line.indexOf("head1") > 0)).to.be.equal(8);
-            Chai.expect(lines.findIndex(line => line.indexOf("<script") > 0)).to.be.equal(7);
-            Chai.expect(lines.findIndex(line => line.indexOf("body2") > 0)).to.be.equal(12);
+            Chai.expect(lines.length).to.be.equal(18);
+            Chai.expect(lines.findIndex(line => line.indexOf("head1") > 0)).to.be.equal(9);
+            Chai.expect(lines.findIndex(line => line.indexOf("<script") > 0)).to.be.equal(8);
+            Chai.expect(lines.findIndex(line => line.indexOf("body2") > 0)).to.be.equal(13);
 
             const lines2 = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "index-bundle.html");
-            Chai.expect(lines2.length).to.be.equal(16);
-            Chai.expect(lines2.findIndex(line => line.indexOf("head3") > 0)).to.be.equal(7);
+            Chai.expect(lines2.length).to.be.equal(17);
+            Chai.expect(lines2.findIndex(line => line.indexOf("head3") > 0)).to.be.equal(8);
             Chai.expect(lines2.findIndex(line => line.indexOf("text.js") > 0)).to.be.equal(-1);
-            Chai.expect(lines2.findIndex(line => line.indexOf("body4") > 0)).to.be.equal(11);
+            Chai.expect(lines2.findIndex(line => line.indexOf("body4") > 0)).to.be.equal(12);
         });
 
         it("can write with bundled script include", async () => {
@@ -193,16 +193,16 @@ describe("HtmlTemplate", () => {
             Chai.expect(loggerInfoSpy.args[0][0]).contains("Generating");
 
             const lines = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "index-no-bundle.html");
-            Chai.expect(lines.length).to.be.equal(16);
-            Chai.expect(lines.findIndex(line => line.indexOf("head1") > 0)).to.be.equal(7);
+            Chai.expect(lines.length).to.be.equal(17);
+            Chai.expect(lines.findIndex(line => line.indexOf("head1") > 0)).to.be.equal(8);
             Chai.expect(lines.findIndex(line => line.indexOf("<script") > 0)).to.be.equal(-1);
-            Chai.expect(lines.findIndex(line => line.indexOf("body2") > 0)).to.be.equal(11);
+            Chai.expect(lines.findIndex(line => line.indexOf("body2") > 0)).to.be.equal(12);
 
             const lines2 = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "index-bundle.html");
-            Chai.expect(lines2.length).to.be.equal(17);
-            Chai.expect(lines2.findIndex(line => line.indexOf("head3") > 0)).to.be.equal(8);
-            Chai.expect(lines2.findIndex(line => line.indexOf("text.min.js") > 0)).to.be.equal(7);
-            Chai.expect(lines2.findIndex(line => line.indexOf("body4") > 0)).to.be.equal(12);
+            Chai.expect(lines2.length).to.be.equal(18);
+            Chai.expect(lines2.findIndex(line => line.indexOf("head3") > 0)).to.be.equal(9);
+            Chai.expect(lines2.findIndex(line => line.indexOf("text.min.js") > 0)).to.be.equal(8);
+            Chai.expect(lines2.findIndex(line => line.indexOf("body4") > 0)).to.be.equal(13);
         });
 
         it("can write with both script include", async () => {
@@ -238,16 +238,16 @@ describe("HtmlTemplate", () => {
             Chai.expect(loggerInfoSpy.args[0][0]).contains("Generating");
 
             const lines = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "index-no-bundle.html");
-            Chai.expect(lines.length).to.be.equal(17);
-            Chai.expect(lines.findIndex(line => line.indexOf("head1") > 0)).to.be.equal(8);
-            Chai.expect(lines.findIndex(line => line.indexOf("text.js") > 0)).to.be.equal(7);
-            Chai.expect(lines.findIndex(line => line.indexOf("body2") > 0)).to.be.equal(12);
+            Chai.expect(lines.length).to.be.equal(18);
+            Chai.expect(lines.findIndex(line => line.indexOf("head1") > 0)).to.be.equal(9);
+            Chai.expect(lines.findIndex(line => line.indexOf("text.js") > 0)).to.be.equal(8);
+            Chai.expect(lines.findIndex(line => line.indexOf("body2") > 0)).to.be.equal(13);
 
             const lines2 = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "index-bundle.html");
-            Chai.expect(lines2.length).to.be.equal(17);
-            Chai.expect(lines2.findIndex(line => line.indexOf("head3") > 0)).to.be.equal(8);
-            Chai.expect(lines2.findIndex(line => line.indexOf("text.min.js") > 0)).to.be.equal(7);
-            Chai.expect(lines2.findIndex(line => line.indexOf("body4") > 0)).to.be.equal(12);
+            Chai.expect(lines2.length).to.be.equal(18);
+            Chai.expect(lines2.findIndex(line => line.indexOf("head3") > 0)).to.be.equal(9);
+            Chai.expect(lines2.findIndex(line => line.indexOf("text.min.js") > 0)).to.be.equal(8);
+            Chai.expect(lines2.findIndex(line => line.indexOf("body4") > 0)).to.be.equal(13);
         });
     });
 });

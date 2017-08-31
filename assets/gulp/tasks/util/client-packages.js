@@ -18,23 +18,26 @@ function getModuleIds (uniteConfig, includeModes) {
     return pathKeys;
 }
 
-function getFiles (uniteConfig, includeModes, isMinified) {
+function getDistFiles (uniteConfig, includeModes, isBundled, isMinified) {
     const files = {};
 
     Object.keys(uniteConfig.clientPackages).forEach(key => {
         const pkg = uniteConfig.clientPackages[key];
-        if (includeModes.indexOf(pkg.includeMode) >= 0 && pkg.scriptIncludeMode === "none") {
-            const pkgMain = isMinified && pkg.mainMinified ? pkg.mainMinified : pkg.main;
+        if (includeModes.indexOf(pkg.includeMode) >= 0) {
+            if (!isBundled ||
+                (isBundled && (pkg.scriptIncludeMode === "bundled" || pkg.scriptIncludeMode === "both"))) {
+                const pkgMain = isMinified && pkg.mainMinified ? pkg.mainMinified : pkg.main;
 
-            if (pkgMain) {
-                const mainSplit = pkgMain.split("/");
-                const main = mainSplit.pop();
-                const location = mainSplit.join("/");
-                if (pkg.isPackage) {
-                    files[key] = path.join(`${uniteConfig.dirs.www.package}${key}/${location}`,
-                        "**/*.{js,html,css}");
-                } else {
-                    files[key] = path.join(`${uniteConfig.dirs.www.package}${key}/${location}`, main);
+                if (pkgMain) {
+                    const mainSplit = pkgMain.split("/");
+                    const main = mainSplit.pop();
+                    const location = mainSplit.join("/");
+                    if (pkg.isPackage) {
+                        files[key] = path.join(`${uniteConfig.dirs.www.package}${key}/${location}`,
+                            "**/*.{js,html,css}");
+                    } else {
+                        files[key] = path.join(`${uniteConfig.dirs.www.package}${key}/${location}`, main);
+                    }
                 }
             }
         }
@@ -144,7 +147,7 @@ function buildModuleConfig (uniteConfig, includeModes, isMinified) {
 module.exports = {
     buildModuleConfig,
     getAssets,
-    getFiles,
+    getDistFiles,
     getModuleIds,
     getRequires
 };

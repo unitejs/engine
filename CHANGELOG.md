@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.9.5
+
+* Fixed client package add with supplied version retrieves correct main
+* Fixed platform packaging missing files included as scripts
+* Fixed gulp display logging didn't display false args
+* Added Aurelia app adds experimental decorators to TypeScript compiler options
+* Added lang=en to htmlTemplate
+* Added meta viewport to htmlTemplate
+
 ## v0.9.4
 
 * Fixed client package add with no version fails
