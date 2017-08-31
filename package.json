@@ -1,6 +1,6 @@
 {
   "name": "unitejs-engine",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "Engine of the UniteJS JavaScript framework management tool.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -80,7 +80,7 @@
   },
   "dependencies": {
     "npm": "^5.4.0",
-    "unitejs-framework": "^0.8.1",
+    "unitejs-framework": "^0.8.2",
     "yarn": "^0.27.5"
   },
   "peerDependencies": {
