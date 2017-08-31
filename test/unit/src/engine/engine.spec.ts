@@ -26,6 +26,7 @@ describe("Engine", () => {
     let spdxErrors: boolean;
     let fileWriteJsonErrors: boolean;
     let packageInfo: string;
+    let failPackageAdd: boolean;
 
     beforeEach(() => {
         sandbox = Sinon.sandbox.create();
@@ -47,6 +48,7 @@ describe("Engine", () => {
         fileWriteJsonErrors = false;
         packageInfo = undefined;
         uniteJsonWritten = undefined;
+        failPackageAdd = false;
 
         const originalFileExists = fileSystemStub.fileExists;
         const stubExists = sandbox.stub(fileSystemStub, "fileExists");
@@ -87,11 +89,15 @@ describe("Engine", () => {
         });
 
         const execStub = sandbox.stub(PackageUtils, "exec");
-        execStub.callsFake(async (folder, filename, obj) => {
-            if (packageInfo === null) {
-                return Promise.reject("package information");
+        execStub.callsFake(async (logger: ILogger, fileSystem: IFileSystem, packageName: string, workingDirectory: string, args: string[]) => {
+            if (args[0] === "view") {
+                if (packageInfo === null) {
+                    return Promise.reject("package information");
+                } else {
+                    return Promise.resolve(packageInfo);
+                }
             } else {
-                return Promise.resolve(packageInfo);
+                return failPackageAdd ?  Promise.reject("error") : Promise.resolve();
             }
         });
 
@@ -515,13 +521,23 @@ describe("Engine", () => {
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("failed");
         });
 
-        it("can fail width badly formed testAdditions", async () => {
+        it("can fail with badly formed testAdditions", async () => {
             packageInfo = "{ \"version\": \"1.2.3\", \"main\": \"index.js\"}";
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.clientPackage("add", "moment", undefined, undefined, undefined, undefined, undefined, undefined,
                                                 "skdh", undefined, undefined, undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("failure");
+        });
+
+        it("can fail when package add fails", async () => {
+            packageInfo = "{ \"version\": \"1.2.3\", \"main\": \"index.js\"}";
+            failPackageAdd = true;
+            const obj = new Engine(loggerStub, fileSystemStub);
+            const res = await obj.clientPackage("add", "moment", undefined, undefined, undefined, undefined, undefined, undefined,
+                                                undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("failed");
         });
 
         it("can succeed with no packageManager info", async () => {

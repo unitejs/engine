@@ -446,7 +446,7 @@ export class Engine implements IEngine {
                     clientPackage.version = clientPackage.version || `^${packageInfo.version || "0.0.1"}`;
                     clientPackage.main = clientPackage.main || packageInfo.main;
                 } catch (err) {
-                    this._logger.error("Reading Package Information", err);
+                    this._logger.error("Reading Package Information failed", err);
                     return 1;
                 }
             }
@@ -476,7 +476,12 @@ export class Engine implements IEngine {
 
             uniteConfiguration.clientPackages[packageName] = clientPackage;
 
-            await engineVariables.packageManager.add(this._logger, this._fileSystem, engineVariables.wwwRootFolder, packageName, version, false);
+            try {
+                await engineVariables.packageManager.add(this._logger, this._fileSystem, engineVariables.wwwRootFolder, packageName, clientPackage.version, false);
+            } catch (err) {
+                this._logger.error("Adding Package failed", err);
+                return 1;
+            }
 
             const pipelineSteps: string[][] = [];
             pipelineSteps.push(["unitTestRunner", "karma"]);

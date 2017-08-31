@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.9.4
+
+* Fixed client package add with no version fails
+
 ## v0.9.3
 
 * Added UnitTestEngine which can be PhantomJS or ChromeHeadless
