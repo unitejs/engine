@@ -24,16 +24,33 @@ export class Engine implements IEngine {
     private _fileSystem: IFileSystem;
     private _engineRootFolder: string;
     private _engineAssetsFolder: string;
+    private _enginePackageJson: PackageConfiguration;
     private _moduleIdMap: { [id: string]: string};
     private _pipelineStepCache: { [id: string]: IEnginePipelineStep};
 
-    constructor(logger: ILogger, fileSystem: IFileSystem) {
-        this._logger = logger;
-        this._fileSystem = fileSystem;
-        this._engineRootFolder = fileSystem.pathCombine(__dirname, "../../");
-        this._engineAssetsFolder = fileSystem.pathCombine(this._engineRootFolder, "/assets/");
+    constructor() {
         this._moduleIdMap = {};
         this._pipelineStepCache = {};
+    }
+
+    public async initialise(logger: ILogger, fileSystem: IFileSystem): Promise<number> {
+        try {
+            this._logger = logger;
+            this._fileSystem = fileSystem;
+            this._engineRootFolder = this._fileSystem.pathCombine(__dirname, "../../");
+            this._engineAssetsFolder = this._fileSystem.pathCombine(this._engineRootFolder, "/assets/");
+
+            this._enginePackageJson = await this._fileSystem.fileReadJson<PackageConfiguration>(this._engineRootFolder, "package.json");
+
+            return 0;
+        } catch (err) {
+            this._logger.error("Loading dependencies failed", err, { core: this._engineRootFolder, dependenciesFile: "package.json" });
+            return 1;
+        }
+    }
+
+    public version() : string {
+        return this._enginePackageJson ? this._enginePackageJson.version : "unknown";
     }
 
     public async configure(packageName: string | undefined | null,
@@ -319,84 +336,82 @@ export class Engine implements IEngine {
 
     private async configureRun(outputDirectory: string, uniteConfiguration: UniteConfiguration, license: ISpdxLicense, force: boolean): Promise<number> {
         const engineVariables = new EngineVariables();
-        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
+        this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
+        engineVariables.force = force;
+        engineVariables.license = license;
+
+        const pipelineSteps: string[][] = [];
+
+        pipelineSteps.push(["scaffold", "outputDirectory"]);
+        pipelineSteps.push(["scaffold", "appScaffold"]);
+        pipelineSteps.push(["scaffold", "unitTestScaffold"]);
+        pipelineSteps.push(["scaffold", "e2eTestScaffold"]);
+
+        pipelineSteps.push(["applicationFramework", "plainApp"]);
+        pipelineSteps.push(["applicationFramework", "angular"]);
+        pipelineSteps.push(["applicationFramework", "aurelia"]);
+        pipelineSteps.push(["applicationFramework", "react"]);
+
+        pipelineSteps.push(["taskManager", "gulp"]);
+
+        pipelineSteps.push(["platform", "web"]);
+        pipelineSteps.push(["platform", "electron"]);
+
+        pipelineSteps.push(["moduleType", "amd"]);
+        pipelineSteps.push(["moduleType", "commonJs"]);
+        pipelineSteps.push(["moduleType", "systemJs"]);
+
+        pipelineSteps.push(["bundler", "browserify"]);
+        pipelineSteps.push(["bundler", "requireJs"]);
+        pipelineSteps.push(["bundler", "systemJsBuilder"]);
+        pipelineSteps.push(["bundler", "webpack"]);
+
+        pipelineSteps.push(["cssPre", "css"]);
+        pipelineSteps.push(["cssPre", "less"]);
+        pipelineSteps.push(["cssPre", "sass"]);
+        pipelineSteps.push(["cssPre", "stylus"]);
+
+        pipelineSteps.push(["cssPost", "postCss"]);
+        pipelineSteps.push(["cssPost", "none"]);
+
+        pipelineSteps.push(["testFramework", "mochaChai"]);
+        pipelineSteps.push(["testFramework", "jasmine"]);
+
+        pipelineSteps.push(["language", "javaScript"]);
+        pipelineSteps.push(["language", "typeScript"]);
+
+        pipelineSteps.push(["e2eTestRunner", "webdriverIo"]);
+        pipelineSteps.push(["e2eTestRunner", "protractor"]);
+
+        pipelineSteps.push(["unitTestEngine", "phantomJs"]);
+        pipelineSteps.push(["unitTestEngine", "chromeHeadless"]);
+
+        pipelineSteps.push(["linter", "esLint"]);
+        pipelineSteps.push(["linter", "tsLint"]);
+
+        pipelineSteps.push(["unitTestRunner", "karma"]);
+
+        pipelineSteps.push(["packageManager", "npm"]);
+        pipelineSteps.push(["packageManager", "yarn"]);
+
+        pipelineSteps.push(["server", "browserSync"]);
+
+        pipelineSteps.push(["content", "htmlTemplate"]);
+        pipelineSteps.push(["content", "readMe"]);
+        pipelineSteps.push(["content", "gitIgnore"]);
+        pipelineSteps.push(["content", "license"]);
+        pipelineSteps.push(["content", "assets"]);
+        pipelineSteps.push(["content", "packageJson"]);
+
+        pipelineSteps.push(["scaffold", "uniteConfigurationDirectories"]);
+        pipelineSteps.push(["scaffold", "uniteThemeConfigurationJson"]);
+        pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
+
+        const ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
+
         if (ret === 0) {
-            engineVariables.force = force;
-            engineVariables.license = license;
-
-            const pipelineSteps: string[][] = [];
-
-            pipelineSteps.push(["scaffold", "outputDirectory"]);
-            pipelineSteps.push(["scaffold", "appScaffold"]);
-            pipelineSteps.push(["scaffold", "unitTestScaffold"]);
-            pipelineSteps.push(["scaffold", "e2eTestScaffold"]);
-
-            pipelineSteps.push(["applicationFramework", "plainApp"]);
-            pipelineSteps.push(["applicationFramework", "angular"]);
-            pipelineSteps.push(["applicationFramework", "aurelia"]);
-            pipelineSteps.push(["applicationFramework", "react"]);
-
-            pipelineSteps.push(["taskManager", "gulp"]);
-
-            pipelineSteps.push(["platform", "web"]);
-            pipelineSteps.push(["platform", "electron"]);
-
-            pipelineSteps.push(["moduleType", "amd"]);
-            pipelineSteps.push(["moduleType", "commonJs"]);
-            pipelineSteps.push(["moduleType", "systemJs"]);
-
-            pipelineSteps.push(["bundler", "browserify"]);
-            pipelineSteps.push(["bundler", "requireJs"]);
-            pipelineSteps.push(["bundler", "systemJsBuilder"]);
-            pipelineSteps.push(["bundler", "webpack"]);
-
-            pipelineSteps.push(["cssPre", "css"]);
-            pipelineSteps.push(["cssPre", "less"]);
-            pipelineSteps.push(["cssPre", "sass"]);
-            pipelineSteps.push(["cssPre", "stylus"]);
-
-            pipelineSteps.push(["cssPost", "postCss"]);
-            pipelineSteps.push(["cssPost", "none"]);
-
-            pipelineSteps.push(["testFramework", "mochaChai"]);
-            pipelineSteps.push(["testFramework", "jasmine"]);
-
-            pipelineSteps.push(["language", "javaScript"]);
-            pipelineSteps.push(["language", "typeScript"]);
-
-            pipelineSteps.push(["e2eTestRunner", "webdriverIo"]);
-            pipelineSteps.push(["e2eTestRunner", "protractor"]);
-
-            pipelineSteps.push(["unitTestEngine", "phantomJs"]);
-            pipelineSteps.push(["unitTestEngine", "chromeHeadless"]);
-
-            pipelineSteps.push(["linter", "esLint"]);
-            pipelineSteps.push(["linter", "tsLint"]);
-
-            pipelineSteps.push(["unitTestRunner", "karma"]);
-
-            pipelineSteps.push(["packageManager", "npm"]);
-            pipelineSteps.push(["packageManager", "yarn"]);
-
-            pipelineSteps.push(["server", "browserSync"]);
-
-            pipelineSteps.push(["content", "htmlTemplate"]);
-            pipelineSteps.push(["content", "readMe"]);
-            pipelineSteps.push(["content", "gitIgnore"]);
-            pipelineSteps.push(["content", "license"]);
-            pipelineSteps.push(["content", "assets"]);
-            pipelineSteps.push(["content", "packageJson"]);
-
-            pipelineSteps.push(["scaffold", "uniteConfigurationDirectories"]);
-            pipelineSteps.push(["scaffold", "uniteThemeConfigurationJson"]);
-            pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
-
-            ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
-
-            if (ret === 0) {
-                this._logger.warning("You should probably run npm install / yarn install before running any gulp commands.");
-                this._logger.banner("Successfully Completed.");
-            }
+            this._logger.warning("You should probably run npm install / yarn install before running any gulp commands.");
+            this._logger.banner("Successfully Completed.");
         }
 
         return ret;
@@ -463,68 +478,66 @@ export class Engine implements IEngine {
         }
 
         const engineVariables = new EngineVariables();
-        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
+        this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
+        const clientPackage = new UniteClientPackage();
+        clientPackage.version = version;
+        clientPackage.main = main;
+        clientPackage.mainMinified = mainMinified;
+
+        const missingVersion = version === null || version === undefined || version.length === 0;
+        const missingMain = main === null || main === undefined || main.length === 0;
+        if (missingVersion || missingMain) {
+            try {
+                const packageInfo = await engineVariables.packageManager.info(this._logger, this._fileSystem, packageName, version);
+
+                clientPackage.version = clientPackage.version || `^${packageInfo.version || "0.0.1"}`;
+                clientPackage.main = clientPackage.main || packageInfo.main;
+            } catch (err) {
+                this._logger.error("Reading Package Information failed", err);
+                return 1;
+            }
+        }
+
+        if (clientPackage.main) {
+            clientPackage.main = clientPackage.main.replace(/\\/g, "/");
+            clientPackage.main = clientPackage.main.replace(/\.\//, "/");
+        }
+        if (clientPackage.mainMinified) {
+            clientPackage.mainMinified = clientPackage.mainMinified.replace(/\\/g, "/");
+            clientPackage.mainMinified = clientPackage.mainMinified.replace(/\.\//, "/");
+        }
+        clientPackage.preload = preload === undefined ? false : preload;
+        clientPackage.isPackage = isPackage === undefined ? false : isPackage;
+        clientPackage.includeMode = newIncludeMode;
+        clientPackage.scriptIncludeMode = newScriptIncludeMode;
+        clientPackage.assets = assets;
+
+        try {
+            clientPackage.testingAdditions = this.mapParser(testingAdditions);
+            clientPackage.map = this.mapParser(map);
+            clientPackage.loaders = this.mapParser(loaders);
+        } catch (err) {
+            this._logger.error("Input failure", err);
+            return 1;
+        }
+
+        uniteConfiguration.clientPackages[packageName] = clientPackage;
+
+        try {
+            await engineVariables.packageManager.add(this._logger, this._fileSystem, engineVariables.wwwRootFolder, packageName, clientPackage.version, false);
+        } catch (err) {
+            this._logger.error("Adding Package failed", err);
+            return 1;
+        }
+
+        const pipelineSteps: string[][] = [];
+        pipelineSteps.push(["unitTestRunner", "karma"]);
+        pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
+
+        const ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
+
         if (ret === 0) {
-            const clientPackage = new UniteClientPackage();
-            clientPackage.version = version;
-            clientPackage.main = main;
-            clientPackage.mainMinified = mainMinified;
-
-            const missingVersion = version === null || version === undefined || version.length === 0;
-            const missingMain = main === null || main === undefined || main.length === 0;
-            if (missingVersion || missingMain) {
-                try {
-                    const packageInfo = await engineVariables.packageManager.info(this._logger, this._fileSystem, packageName, version);
-
-                    clientPackage.version = clientPackage.version || `^${packageInfo.version || "0.0.1"}`;
-                    clientPackage.main = clientPackage.main || packageInfo.main;
-                } catch (err) {
-                    this._logger.error("Reading Package Information failed", err);
-                    return 1;
-                }
-            }
-
-            if (clientPackage.main) {
-                clientPackage.main = clientPackage.main.replace(/\\/g, "/");
-                clientPackage.main = clientPackage.main.replace(/\.\//, "/");
-            }
-            if (clientPackage.mainMinified) {
-                clientPackage.mainMinified = clientPackage.mainMinified.replace(/\\/g, "/");
-                clientPackage.mainMinified = clientPackage.mainMinified.replace(/\.\//, "/");
-            }
-            clientPackage.preload = preload === undefined ? false : preload;
-            clientPackage.isPackage = isPackage === undefined ? false : isPackage;
-            clientPackage.includeMode = newIncludeMode;
-            clientPackage.scriptIncludeMode = newScriptIncludeMode;
-            clientPackage.assets = assets;
-
-            try {
-                clientPackage.testingAdditions = this.mapParser(testingAdditions);
-                clientPackage.map = this.mapParser(map);
-                clientPackage.loaders = this.mapParser(loaders);
-            } catch (err) {
-                this._logger.error("Input failure", err);
-                return 1;
-            }
-
-            uniteConfiguration.clientPackages[packageName] = clientPackage;
-
-            try {
-                await engineVariables.packageManager.add(this._logger, this._fileSystem, engineVariables.wwwRootFolder, packageName, clientPackage.version, false);
-            } catch (err) {
-                this._logger.error("Adding Package failed", err);
-                return 1;
-            }
-
-            const pipelineSteps: string[][] = [];
-            pipelineSteps.push(["unitTestRunner", "karma"]);
-            pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
-
-            ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
-
-            if (ret === 0) {
-                this._logger.banner("Successfully Completed.");
-            }
+            this._logger.banner("Successfully Completed.");
         }
 
         return ret;
@@ -537,22 +550,20 @@ export class Engine implements IEngine {
         }
 
         const engineVariables = new EngineVariables();
-        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
+        this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
+        await engineVariables.packageManager.remove(this._logger, this._fileSystem, engineVariables.wwwRootFolder, packageName, false);
+
+        delete uniteConfiguration.clientPackages[packageName];
+
+        const pipelineSteps: string[][] = [];
+
+        pipelineSteps.push(["unitTestRunner", "karma"]);
+        pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
+
+        const ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
+
         if (ret === 0) {
-            await engineVariables.packageManager.remove(this._logger, this._fileSystem, engineVariables.wwwRootFolder, packageName, false);
-
-            delete uniteConfiguration.clientPackages[packageName];
-
-            const pipelineSteps: string[][] = [];
-
-            pipelineSteps.push(["unitTestRunner", "karma"]);
-            pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
-
-            ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
-
-            if (ret === 0) {
-                this._logger.banner("Successfully Completed.");
-            }
+            this._logger.banner("Successfully Completed.");
         }
 
         return ret;
@@ -565,22 +576,20 @@ export class Engine implements IEngine {
                                         outputDirectory: string,
                                         uniteConfiguration: UniteConfiguration): Promise<number> {
         const engineVariables = new EngineVariables();
-        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
+        this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
+        uniteConfiguration.buildConfigurations[configurationName] = uniteConfiguration.buildConfigurations[configurationName] || new UniteBuildConfiguration();
+
+        uniteConfiguration.buildConfigurations[configurationName].bundle = bundle === undefined ? false : bundle;
+        uniteConfiguration.buildConfigurations[configurationName].minify = minify === undefined ? false : minify;
+        uniteConfiguration.buildConfigurations[configurationName].sourcemaps = sourcemaps === undefined ? true : sourcemaps;
+        uniteConfiguration.buildConfigurations[configurationName].variables = uniteConfiguration.buildConfigurations[configurationName].variables || {};
+
+        const pipelineSteps: string[][] = [];
+        pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
+        const ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
+
         if (ret === 0) {
-            uniteConfiguration.buildConfigurations[configurationName] = uniteConfiguration.buildConfigurations[configurationName] || new UniteBuildConfiguration();
-
-            uniteConfiguration.buildConfigurations[configurationName].bundle = bundle === undefined ? false : bundle;
-            uniteConfiguration.buildConfigurations[configurationName].minify = minify === undefined ? false : minify;
-            uniteConfiguration.buildConfigurations[configurationName].sourcemaps = sourcemaps === undefined ? true : sourcemaps;
-            uniteConfiguration.buildConfigurations[configurationName].variables = uniteConfiguration.buildConfigurations[configurationName].variables || {};
-
-            const pipelineSteps: string[][] = [];
-            pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
-            ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
-
-            if (ret === 0) {
-                this._logger.banner("Successfully Completed.");
-            }
+            this._logger.banner("Successfully Completed.");
         }
 
         return ret;
@@ -595,17 +604,15 @@ export class Engine implements IEngine {
         }
 
         const engineVariables = new EngineVariables();
-        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
+        this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
+        delete uniteConfiguration.buildConfigurations[configurationName];
+
+        const pipelineSteps: string[][] = [];
+        pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
+        const ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
+
         if (ret === 0) {
-            delete uniteConfiguration.buildConfigurations[configurationName];
-
-            const pipelineSteps: string[][] = [];
-            pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
-            ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
-
-            if (ret === 0) {
-                this._logger.banner("Successfully Completed.");
-            }
+            this._logger.banner("Successfully Completed.");
         }
 
         return ret;
@@ -615,20 +622,18 @@ export class Engine implements IEngine {
                               outputDirectory: string,
                               uniteConfiguration: UniteConfiguration): Promise<number> {
         const engineVariables = new EngineVariables();
-        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
+        this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
+        uniteConfiguration.platforms[platformName] = uniteConfiguration.platforms[platformName] || {};
+
+        const pipelineSteps: string[][] = [];
+        pipelineSteps.push(["platform", platformName]);
+        pipelineSteps.push(["content", "packageJson"]);
+        pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
+        const ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
+
         if (ret === 0) {
-            uniteConfiguration.platforms[platformName] = uniteConfiguration.platforms[platformName] || {};
-
-            const pipelineSteps: string[][] = [];
-            pipelineSteps.push(["platform", platformName]);
-            pipelineSteps.push(["content", "packageJson"]);
-            pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
-            ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
-
-            if (ret === 0) {
-                this._logger.warning("You should probably run npm install / yarn install before running any gulp packaging commands.");
-                this._logger.banner("Successfully Completed.");
-            }
+            this._logger.warning("You should probably run npm install / yarn install before running any gulp packaging commands.");
+            this._logger.banner("Successfully Completed.");
         }
 
         return ret;
@@ -643,43 +648,31 @@ export class Engine implements IEngine {
         }
 
         const engineVariables = new EngineVariables();
-        let ret = await this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
-        if (ret === 0) {
-            delete uniteConfiguration.platforms[platformName];
+        this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
+        delete uniteConfiguration.platforms[platformName];
 
-            const pipelineSteps: string[][] = [];
-            pipelineSteps.push(["platform", platformName]);
-            pipelineSteps.push(["content", "packageJson"]);
-            pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
-            ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
-            if (ret === 0) {
-                this._logger.warning("You should probably run npm install / yarn install to remove any unnecessary packages.");
-                this._logger.banner("Successfully Completed.");
-            }
+        const pipelineSteps: string[][] = [];
+        pipelineSteps.push(["platform", platformName]);
+        pipelineSteps.push(["content", "packageJson"]);
+        pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
+        const ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
+        if (ret === 0) {
+            this._logger.warning("You should probably run npm install / yarn install to remove any unnecessary packages.");
+            this._logger.banner("Successfully Completed.");
         }
 
         return ret;
     }
 
-    private async createEngineVariables(outputDirectory: string, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        try {
-            this._logger.info("Loading dependencies", { core: this._engineRootFolder, dependenciesFile: "package.json" });
-
-            engineVariables.enginePackageJson = await this._fileSystem.fileReadJson<PackageConfiguration>(this._engineRootFolder, "package.json");
-        } catch (err) {
-            this._logger.error("Loading dependencies failed", err, { core: this._engineRootFolder, dependenciesFile: "package.json" });
-            return 1;
-        }
-
+    private createEngineVariables(outputDirectory: string, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void {
         engineVariables.force = false;
         engineVariables.engineRootFolder = this._engineRootFolder;
         engineVariables.engineAssetsFolder = this._engineAssetsFolder;
+        engineVariables.enginePackageJson = this._enginePackageJson;
         engineVariables.setupDirectories(this._fileSystem, outputDirectory);
         engineVariables.initialisePackages(uniteConfiguration.clientPackages);
 
         engineVariables.packageManager = this.getPipelineStep("packageManager", uniteConfiguration.packageManager);
-
-        return 0;
     }
 
     private async runPipeline(pipelineSteps: string[][], uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {

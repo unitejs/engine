@@ -1,7 +1,14 @@
 /**
  * Interface for main engine.
  */
+import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
+import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
+
 export interface IEngine {
+    version(): string;
+
+    initialise(logger: ILogger, fileSystem: IFileSystem): Promise<number>;
+
     configure(packageName: string | undefined | null,
               title: string | undefined | null,
               license: string | undefined | null,

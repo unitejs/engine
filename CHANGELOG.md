@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.9.7
+
+* CLI version now shows engine as well
+
 ## v0.9.6
 
 * Fixed existing clientPackages removed from karma.config on clientPackage add/remove

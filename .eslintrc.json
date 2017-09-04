@@ -1,61 +1,184 @@
 {
-	"parserOptions": {
-		"ecmaVersion": 8,
-		"sourceType": "module"
-	},
-	"extends": [
-		"eslint:all",
-		"plugin:promise/recommended"
+	"objects": [
+		{
+			"package": {
+				"name": "unitejs-cli",
+				"scope": "unscoped",
+				"version": "0.9.3",
+				"description": "Command line interface to the UniteJS modern web app generation tool",
+				"keywords": [
+					"unite",
+					"unitejs",
+					"javascript",
+					"typescript",
+					"babel",
+					"browserify",
+					"webpack",
+					"requirejs",
+					"systemjs",
+					"karma",
+					"mocha",
+					"jasmine",
+					"chai",
+					"eslint",
+					"tslint",
+					"spdx",
+					"css",
+					"sass",
+					"less",
+					"stylus",
+					"postcss",
+					"protractor",
+					"webdriverio",
+					"selenium",
+					"aurelia",
+					"react",
+					"web",
+					"electron",
+					"scaffolding",
+					"boilerplate"
+				],
+				"date": "2017-08-31T06:04:54.859Z",
+				"links": {
+					"npm": "https://www.npmjs.com/package/unitejs-cli",
+					"homepage": "https://github.com/unitejs/cli#readme",
+					"repository": "https://github.com/unitejs/cli",
+					"bugs": "https://github.com/unitejs/cli/issues"
+				},
+				"author": {
+					"name": "martyn@unitejs.com"
+				},
+				"publisher": {
+					"username": "unitejs",
+					"email": "npm@unitejs.com"
+				},
+				"maintainers": [
+					{
+						"username": "martynjanes",
+						"email": "npm@obany.com"
+					},
+					{
+						"username": "unitejs",
+						"email": "npm@unitejs.com"
+					}
+				]
+			},
+			"flags": {
+				"unstable": true
+			},
+			"score": {
+				"final": 0.6215732758829282,
+				"detail": {
+					"quality": 0.8387075681217296,
+					"popularity": 0.05703144413259823,
+					"maintenance": 1
+				}
+			},
+			"searchScore": 100000.53
+		},
+		{
+			"package": {
+				"name": "unitejs-cli-core",
+				"scope": "unscoped",
+				"version": "0.8.2",
+				"description": "Common code for UniteJS CLI apps",
+				"keywords": [
+					"unite",
+					"unitejs",
+					"cli",
+					"framework",
+					"scaffolding",
+					"boilerplate"
+				],
+				"date": "2017-08-31T05:29:19.402Z",
+				"links": {
+					"npm": "https://www.npmjs.com/package/unitejs-cli-core",
+					"homepage": "https://github.com/unitejs/cli-core#readme",
+					"repository": "https://github.com/unitejs/cli-core",
+					"bugs": "https://github.com/unitejs/cli-core/issues"
+				},
+				"author": {
+					"name": "martyn@unitejs.com"
+				},
+				"publisher": {
+					"username": "unitejs",
+					"email": "npm@unitejs.com"
+				},
+				"maintainers": [
+					{
+						"username": "unitejs",
+						"email": "npm@unitejs.com"
+					}
+				]
+			},
+			"flags": {
+				"unstable": true
+			},
+			"score": {
+				"final": 0.6229634820705794,
+				"detail": {
+					"quality": 0.8387075681217296,
+					"popularity": 0.06701748532648961,
+					"maintenance": 0.993985976485112
+				}
+			},
+			"searchScore": 0.00016853449
+		},
+		{
+			"package": {
+				"name": "unitejs-image-cli",
+				"scope": "unscoped",
+				"version": "0.2.1",
+				"description": "Command line interface to the UniteJS image tool library",
+				"keywords": [
+					"unite",
+					"unitejs",
+					"image",
+					"cli",
+					"svg",
+					"ico",
+					"png",
+					"icns",
+					"mask",
+					"framework",
+					"scaffolding",
+					"boilerplate"
+				],
+				"date": "2017-08-28T11:30:13.594Z",
+				"links": {
+					"npm": "https://www.npmjs.com/package/unitejs-image-cli",
+					"homepage": "https://github.com/unitejs/image-cli#readme",
+					"repository": "https://github.com/unitejs/image-cli",
+					"bugs": "https://github.com/unitejs/image-cli/issues"
+				},
+				"author": {
+					"name": "martyn@unitejs.com"
+				},
+				"publisher": {
+					"username": "unitejs",
+					"email": "npm@unitejs.com"
+				},
+				"maintainers": [
+					{
+						"username": "unitejs",
+						"email": "npm@unitejs.com"
+					}
+				]
+			},
+			"flags": {
+				"unstable": true
+			},
+			"score": {
+				"final": 0.6185576658042473,
+				"detail": {
+					"quality": 0.8525776015135956,
+					"popularity": 0.03652948527421278,
+					"maintenance": 0.9999973300119833
+				}
+			},
+			"searchScore": 0.00013209839
+		}
 	],
-	"env": {
-		"browser": true,
-		"node": true,
-		"jasmine": true,
-		"protractor": true,
-		"es6": true
-	},
-	"globals": {},
-	"rules": {
-		"padded-blocks": "off",
-		"sort-keys": "off",
-		"object-curly-newline": "off",
-		"array-bracket-newline": "off",
-		"object-property-newline": "off",
-		"dot-location": "off",
-		"func-style": "off",
-		"global-require": "off",
-		"one-var": "off",
-		"multiline-ternary": "off",
-		"no-ternary": "off",
-		"no-nested-ternary": "off",
-		"no-process-exit": "off",
-		"no-magic-numbers": "off",
-		"arrow-parens": "off",
-		"guard-for-in": "off",
-		"callback-return": "off",
-		"max-len": [2, {"code": 120, "tabWidth": 4, "ignoreUrls": true}],
-		"max-statements": "off",
-		"no-plusplus": "off",
-		"id-length": "off",
-		"array-element-newline": "off",
-		"no-undefined": "off",
-		"arrow-body-style": "off",
-		"prefer-destructuring": "off",
-		"lines-around-comment": "off",
-		"no-else-return": "off",
-		"max-params": "off",
-		"require-jsdoc": "off",
-		"max-lines": "off",
-		"no-await-in-loop": "off",
-		"no-process-env": "off",
-		"no-empty-function": "off",
-		"consistent-return": "off",
-		"promise/avoid-new": "off",
-		"max-depth": "off",
-		"no-extra-parens": "off"
-	},
-	"plugins": [
-		"node",
-		"promise"
-	]
+	"total": 3,
+	"time": "Fri Sep 01 2017 05:28:16 GMT+0000 (UTC)"
 }
