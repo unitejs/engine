@@ -144,19 +144,7 @@ export class EngineVariables {
         return packages;
     }
 
-    public getAppClientPackages(): { [id: string] : UniteClientPackage } {
-        const packages: { [id: string] : UniteClientPackage } = {};
-
-        Object.keys(this._requiredClientPackages)
-            .filter(key => this._requiredClientPackages[key].includeMode === "app" || this._requiredClientPackages[key].includeMode === "both")
-            .forEach(key => {
-                packages[key] = this._requiredClientPackages[key];
-            });
-
-        return packages;
-    }
-
-    public toggleDevDependency(dependencies: string[], required: boolean): void {
+   public toggleDevDependency(dependencies: string[], required: boolean): void {
         let opArr: string[];
         if (required) {
             opArr = this._requiredDevDependencies;

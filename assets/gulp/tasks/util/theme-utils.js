@@ -11,12 +11,19 @@ const path = require("path");
 const os = require("os");
 const exec = require("./exec");
 const asyncUtil = require("./async-util");
+const clientPackages = require("./client-packages");
 const mkdirp = require("mkdirp");
 
-function writeIndex (templateName, cacheBust, config, headers) {
-    const formattedHeaders = headers.filter(header => header.trim().length > 0).join("\r\n        ");
+function writeIndex (templateName, cacheBust, config, headers, scriptIncludes) {
+    const formattedHeaders = headers
+        .filter(header => header.trim().length > 0)
+        .join("\r\n        ");
+    const formattedScriptIncludes = scriptIncludes
+        .filter(scriptInclude => scriptInclude.trim().length > 0)
+        .join("\r\n        ");
     return asyncUtil.stream(gulp.src(templateName)
         .pipe(replace("{THEME}", `        ${formattedHeaders}`))
+        .pipe(replace("{SCRIPTINCLUDE}", `        ${formattedScriptIncludes}`))
         .pipe(replace("{CACHEBUST}", cacheBust))
         .pipe(replace("{UNITECONFIG}", config))
         .pipe(rename("index.html"))
@@ -60,10 +67,13 @@ function buildIndex (uniteConfig, uniteThemeConfig, buildConfiguration, packageJ
         headers = headers.concat(uniteThemeConfig.customHeaders);
     }
 
+    const scriptIncludes = clientPackages.getScriptIncludes(uniteConfig, buildConfiguration.bundle);
+
     return writeIndex(buildConfiguration.bundle ? "./index-bundle.html" : "./index-no-bundle.html",
         cacheBust,
         config,
-        headers);
+        headers,
+        scriptIncludes.map(scriptInclude => `<script src="${scriptInclude}"></script>`));
 }
 
 async function buildBrowserConfig (uniteConfig, uniteThemeConfig) {

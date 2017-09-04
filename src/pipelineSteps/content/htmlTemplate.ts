@@ -67,18 +67,7 @@ export class HtmlTemplate extends EnginePipelineStepBase {
                 this.addLine(indent, lines, `<title>${uniteConfiguration.title}</title>`);
                 this.addLine(indent, lines, "<link rel=\"stylesheet\" href=\"./css/style.css{CACHEBUST}\">");
                 lines.push("{THEME}");
-
-                const appClientPackages = engineVariables.getAppClientPackages();
-
-                for (const pkg in appClientPackages) {
-                    if ((isBundled && (appClientPackages[pkg].scriptIncludeMode === "bundled" || appClientPackages[pkg].scriptIncludeMode === "both")) ||
-                        (!isBundled && (appClientPackages[pkg].scriptIncludeMode === "notBundled" || appClientPackages[pkg].scriptIncludeMode === "both"))) {
-                        const main = (isBundled && appClientPackages[pkg].mainMinified) ? appClientPackages[pkg].mainMinified : appClientPackages[pkg].main;
-                        const script = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, `${pkg}/${main}`)));
-
-                        this.addLine(indent, lines, `<script src="${script}"></script>`);
-                    }
-                }
+                lines.push("{SCRIPTINCLUDE}");
 
                 engineVariablesHtml.head.forEach(head => {
                     this.addLine(indent, lines, head);
