@@ -96,41 +96,6 @@ describe("EngineVariables", () => {
         });
     });
 
-    describe("getTestClientPackages", () => {
-        it("can succeed when there are no test client packages", async() => {
-            const obj = new EngineVariables();
-            const packages = obj.getTestClientPackages();
-            Chai.expect(Object.keys(packages).length).to.be.equal(0);
-        });
-
-        it("can succeed when app packages have been added", async() => {
-            const obj = new EngineVariables();
-            obj.enginePackageJson = <any>{ peerDependencies };
-            peerDependencies.package = "^1.2.3";
-            obj.toggleClientPackage("package", "main.js", "main.min.js", undefined, false, "app", "none", false, "**/*.css", undefined, undefined, true);
-            const packages = obj.getTestClientPackages();
-            Chai.expect(Object.keys(packages).length).to.be.equal(0);
-        });
-
-        it("can succeed when test packages have been added", async() => {
-            const obj = new EngineVariables();
-            obj.enginePackageJson = <any>{ peerDependencies };
-            peerDependencies.package = "^1.2.3";
-            obj.toggleClientPackage("package", "main.js", "main.min.js", undefined, false, "test", "none", false, "**/*.css", undefined, undefined, true);
-            const packages = obj.getTestClientPackages();
-            Chai.expect(Object.keys(packages).length).to.be.equal(1);
-        });
-
-        it("can succeed when both packages have been added", async() => {
-            const obj = new EngineVariables();
-            obj.enginePackageJson = <any>{ peerDependencies };
-            peerDependencies.package = "^1.2.3";
-            obj.toggleClientPackage("package", "main.js", "main.min.js", undefined, false, "both", "none", false, "**/*.css", undefined, undefined, true);
-            const packages = obj.getTestClientPackages();
-            Chai.expect(Object.keys(packages).length).to.be.equal(1);
-        });
-    });
-
     describe("toggleDevDependency", () => {
         it("can fail when there are no peer dependencies", async() => {
             const obj = new EngineVariables();

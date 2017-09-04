@@ -26,7 +26,7 @@ export class KarmaConfiguration {
     public detached: boolean;
     public exclude: string[];
     public failOnEmptyTestSuite: boolean;
-    public files: { pattern: string; watched?: boolean; included?: boolean; served?: true; nocache?: boolean }[];
+    public files: { pattern: string; watched?: boolean; included?: boolean; served?: true; nocache?: boolean; isPerm?: boolean }[];
     public forceJSONP: boolean;
     public formatError: any;
     public frameworks: string[];

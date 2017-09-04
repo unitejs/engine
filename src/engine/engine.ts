@@ -551,7 +551,6 @@ export class Engine implements IEngine {
         }
 
         const pipelineSteps: string[][] = [];
-        pipelineSteps.push(["unitTestRunner", "karma"]);
         pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
 
         const ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
@@ -576,8 +575,6 @@ export class Engine implements IEngine {
         delete uniteConfiguration.clientPackages[packageName];
 
         const pipelineSteps: string[][] = [];
-
-        pipelineSteps.push(["unitTestRunner", "karma"]);
         pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
 
         const ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
@@ -606,6 +603,7 @@ export class Engine implements IEngine {
 
         const pipelineSteps: string[][] = [];
         pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
+
         const ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
 
         if (ret === 0) {
@@ -629,6 +627,7 @@ export class Engine implements IEngine {
 
         const pipelineSteps: string[][] = [];
         pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
+
         const ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
 
         if (ret === 0) {
@@ -649,6 +648,7 @@ export class Engine implements IEngine {
         pipelineSteps.push(["platform", platformName]);
         pipelineSteps.push(["content", "packageJson"]);
         pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
+
         const ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
 
         if (ret === 0) {
@@ -675,6 +675,7 @@ export class Engine implements IEngine {
         pipelineSteps.push(["platform", platformName]);
         pipelineSteps.push(["content", "packageJson"]);
         pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
+
         const ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
         if (ret === 0) {
             this._logger.warning("You should probably run npm install / yarn install to remove any unnecessary packages.");

@@ -5,11 +5,10 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { UniteClientPackage } from "../../../../../dist/configuration/models/unite/uniteClientPackage";
+import { KarmaConfiguration } from "../../../../../dist/configuration/models/karma/karmaConfiguration";
 import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../../dist/engine/engineVariables";
 import { Karma } from "../../../../../dist/pipelineSteps/unitTestRunner/karma";
-import { KarmaConfiguration } from "../../../../../src/configuration/models/karma/karmaConfiguration";
 import { FileSystemMock } from "../../fileSystem.mock";
 
 describe("Karma", () => {
@@ -57,12 +56,61 @@ describe("Karma", () => {
             Chai.expect(engineVariablesStub.getConfiguration("Karma")).to.be.equal(undefined);
         });
 
-        it("can succeed", async () => {
+        it("can fail when exception is thrown on config", async () => {
+            fileSystemMock.fileExists = sandbox.stub().throws("error");
+            const obj = new Karma();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(engineVariablesStub.getConfiguration("Karma")).to.be.equal(undefined);
+            Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
+        });
+
+        it("can fail when regex does not match", async () => {
+            fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
+            fileSystemMock.fileReadText = sandbox.stub().resolves("{ reporters: [\"story2\"] }");
+            const obj = new Karma();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(engineVariablesStub.getConfiguration("Karma")).to.be.equal(undefined);
+            Chai.expect(loggerErrorSpy.args[0][0]).contains("failed to parse");
+        });
+
+        it("can succeed when file does not exist", async () => {
+            fileSystemMock.fileExists = sandbox.stub().resolves(false);
             const obj = new Karma();
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration("Karma")).not.to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma").reporters).to.contain("story");
         });
+
+        it("can succeed when file does exist", async () => {
+            fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
+            fileSystemMock.fileReadText = sandbox.stub().resolves("config.set({ reporters: [\"story2\"] });");
+            const obj = new Karma();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma").reporters).to.contain("story2");
+        });
+
+        it("can succeed when file does exist and has files", async () => {
+            fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
+            fileSystemMock.fileReadText = sandbox.stub().resolves("config.set({ files: [ { pattern: 'blah', isPerm: true } ] });");
+            const obj = new Karma();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma").files[0].pattern).to.be.equal("blah");
+        });
+
+        it("can succeed when file does exist but forced", async () => {
+            fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
+            fileSystemMock.fileReadText = sandbox.stub().resolves("config.set({ reporters: [\"story2\"] });");
+            engineVariablesStub.force = true;
+            const obj = new Karma();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma").reporters).to.contain("story");
+        });
+
     });
 
     describe("process", () => {
@@ -82,19 +130,6 @@ describe("Karma", () => {
             Chai.expect(packageJsonDevDependencies.karma).to.be.equal(undefined);
         });
 
-        it("can skip if has no marker", async () => {
-            sandbox.stub(fileSystemMock, "fileExists").resolves(true);
-            sandbox.stub(fileSystemMock, "fileReadLines").resolves([]);
-            const stub = sandbox.stub(fileSystemMock, "fileWriteJson").resolves();
-            const obj = new Karma();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-
-            Chai.expect(stub.called).to.be.equal(false);
-            Chai.expect(loggerInfoSpy.args[0][0]).contains("Skipping");
-        });
-
         it("can succeed writing", async () => {
             const stub = sandbox.stub(fileSystemMock, "fileWriteLines").resolves();
             const obj = new Karma();
@@ -103,130 +138,6 @@ describe("Karma", () => {
             Chai.expect(res).to.be.equal(0);
 
             Chai.expect(stub.called).to.be.equal(true);
-        });
-
-        it("can succeed writing with packages", async () => {
-            sandbox.stub(fileSystemMock, "fileWriteLines").resolves();
-            const stub = sandbox.stub(engineVariablesStub, "getTestClientPackages");
-            stub.callsFake(() => {
-                const testPackage1 = new UniteClientPackage();
-                testPackage1.isPackage = true;
-                testPackage1.includeMode = "app";
-
-                const testPackage2 = new UniteClientPackage();
-                testPackage2.main = "index.js";
-                testPackage2.isPackage = false;
-                testPackage2.includeMode = "test";
-
-                const testPackage3 = new UniteClientPackage();
-                testPackage3.main = "/dist/index.js";
-                testPackage3.isPackage = false;
-                testPackage3.includeMode = "both";
-
-                const testPackage4 = new UniteClientPackage();
-                testPackage4.main = "index.js";
-                testPackage4.isPackage = true;
-                testPackage4.includeMode = "both";
-
-                const testPackage5 = new UniteClientPackage();
-                testPackage5.main = "/dist/index.js";
-                testPackage5.isPackage = true;
-                testPackage5.includeMode = "both";
-                testPackage5.assets = "assets/**/*.json";
-
-                const testPackage6 = new UniteClientPackage();
-                testPackage6.isPackage = true;
-                testPackage6.includeMode = "both";
-
-                return {
-                    testPackage1,
-                    testPackage2,
-                    testPackage3,
-                    testPackage4,
-                    testPackage5,
-                    testPackage6
-                };
-
-            });
-            const obj = new Karma();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-
-            const config = engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma");
-
-            Chai.expect(config.files.length).to.be.equal(10);
-            Chai.expect(config.files[1].pattern).contains("testPackage2/index.js");
-            Chai.expect(config.files[2].pattern).contains("testPackage3/dist/index.js");
-            Chai.expect(config.files[3].pattern).contains("testPackage4/**/*.{js,html,css}");
-            Chai.expect(config.files[4].pattern).contains("testPackage5/dist/**/*.{js,html,css}");
-            Chai.expect(config.files[5].pattern).contains("testPackage5/assets/**/*.json");
-        });
-
-        it("can succeed writing with packages that have test additions", async () => {
-            sandbox.stub(fileSystemMock, "fileWriteLines").resolves();
-            const stub = sandbox.stub(engineVariablesStub, "getTestClientPackages");
-            stub.callsFake(() => {
-                const testPackage1 = new UniteClientPackage();
-                testPackage1.isPackage = true;
-                testPackage1.includeMode = "app";
-
-                const testPackage2 = new UniteClientPackage();
-                testPackage2.main = "index.js";
-                testPackage2.isPackage = false;
-                testPackage2.includeMode = "test";
-                testPackage2.testingAdditions = {
-                    foo: "bar",
-                    bar: "foo"
-                };
-
-                return {
-                    testPackage1,
-                    testPackage2
-                };
-
-            });
-            const obj = new Karma();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-
-            const config = engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma");
-
-            Chai.expect(config.files.length).to.be.equal(8);
-            Chai.expect(config.files[1].pattern).contains("testPackage2/index.js");
-            Chai.expect(config.files[2].pattern).contains("testPackage2/bar");
-            Chai.expect(config.files[3].pattern).contains("testPackage2/foo");
-        });
-
-        it("can succeed writing with packages that have wildcard packages", async () => {
-            sandbox.stub(fileSystemMock, "fileWriteLines").resolves();
-            const stub = sandbox.stub(engineVariablesStub, "getTestClientPackages");
-            stub.callsFake(() => {
-                const testPackage1 = new UniteClientPackage();
-                testPackage1.isPackage = true;
-                testPackage1.includeMode = "app";
-
-                const testPackage2 = new UniteClientPackage();
-                testPackage2.main = "*";
-                testPackage2.isPackage = false;
-                testPackage2.includeMode = "test";
-
-                return {
-                    testPackage1,
-                    testPackage2
-                };
-
-            });
-            const obj = new Karma();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-
-            const config = engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma");
-
-            Chai.expect(config.files.length).to.be.equal(6);
-            Chai.expect(config.files[1].pattern).contains("testPackage2/**/*.{js,html,css}");
         });
     });
 });

@@ -1,6 +1,7 @@
 /**
  * Pipeline step to generate karma configuration.
  */
+import { ArrayHelper } from "unitejs-framework/dist/helpers/arrayHelper";
 import { JsonHelper } from "unitejs-framework/dist/helpers/jsonHelper";
 import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
@@ -18,6 +19,31 @@ export class Karma extends EnginePipelineStepBase {
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
 
         if (super.condition(uniteConfiguration.unitTestRunner, "Karma")) {
+            logger.info(`Initialising ${Karma.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
+
+            if (!engineVariables.force) {
+                try {
+                    const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, Karma.FILENAME);
+                    if (exists) {
+                        const conf = await fileSystem.fileReadText(engineVariables.wwwRootFolder, Karma.FILENAME);
+
+                        const jsonMatches: RegExpExecArray = /config.set\(((.|\n|\r)*)\)/.exec(conf);
+                        if (jsonMatches && jsonMatches.length === 3) {
+                            this._configuration = JsonHelper.parseCode(jsonMatches[1]);
+                            if (this._configuration.files) {
+                                this._configuration.files = this._configuration.files.filter(item => item.isPerm);
+                            }
+                        } else {
+                            logger.error(`Reading existing ${Karma.FILENAME} regex failed to parse`);
+                            return 1;
+                        }
+                    }
+                } catch (err) {
+                    logger.error(`Reading existing ${Karma.FILENAME} failed`, err);
+                    return 1;
+                }
+            }
+
             this.configDefaults(fileSystem, uniteConfiguration, engineVariables);
         }
 
@@ -42,17 +68,11 @@ export class Karma extends EnginePipelineStepBase {
                                             super.condition(uniteConfiguration.unitTestRunner, "Karma"));
 
         if (super.condition(uniteConfiguration.unitTestRunner, "Karma")) {
-            const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, Karma.FILENAME);
+            logger.info(`Generating ${Karma.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
-            if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker" || engineVariables.force) {
-                logger.info(`Generating ${Karma.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
-
-                const lines: string[] = [];
-                this.generateConfig(fileSystem, uniteConfiguration, engineVariables, lines);
-                await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, Karma.FILENAME, lines);
-            } else {
-                logger.info(`Skipping ${Karma.FILENAME} as it has no generated marker`);
-            }
+            const lines: string[] = [];
+            this.generateConfig(fileSystem, uniteConfiguration, engineVariables, lines);
+            await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, Karma.FILENAME, lines);
 
             return 0;
         } else {
@@ -104,79 +124,60 @@ export class Karma extends EnginePipelineStepBase {
 
         defaultConfiguration.files = [];
 
-        defaultConfiguration.files.push({
-            pattern: srcInclude,
-            included: false
-        });
-
         this._configuration = ObjectHelper.merge(defaultConfiguration, this._configuration);
+
+        ArrayHelper.addRemove(this._configuration.files,
+                              {
+                                   pattern: srcInclude,
+                                   included: false,
+                                   isPerm: true
+                              },
+                              true,
+                              (object, item) => object.pattern === item.pattern);
+
+        ArrayHelper.addRemove(this._configuration.files,
+                              {
+                                   pattern: "../unite.json",
+                                   included: false,
+                                   isPerm: true
+                              },
+                              true,
+                              (object, item) => object.pattern === item.pattern);
+
+        ArrayHelper.addRemove(this._configuration.files,
+                              {
+                                   pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
+                                                                                             fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "../unit-module-config.js"))),
+                                   included: true,
+                                   isPerm: true
+                              },
+                              true,
+                              (object, item) => object.pattern === item.pattern);
+
+        ArrayHelper.addRemove(this._configuration.files,
+                              {
+                                   pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
+                                                                                             fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "../unit-bootstrap.js"))),
+                                   included: true,
+                                   isPerm: true
+                              },
+                              true,
+                              (object, item) => object.pattern === item.pattern);
+
+        ArrayHelper.addRemove(this._configuration.files,
+                              {
+                                   pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
+                                                                                             fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "**/*.spec.js"))),
+                                   included: false,
+                                   isPerm: true
+                              },
+                              true,
+                              (object, item) => object.pattern === item.pattern);
 
         engineVariables.setConfiguration("Karma", this._configuration);
     }
 
     private generateConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, lines: string[]): void {
-        const testPackages = engineVariables.getTestClientPackages();
-
-        Object.keys(testPackages).forEach(key => {
-            const pkg = testPackages[key];
-            if (pkg.main) {
-                const mainSplit = pkg.main.split("/");
-                let main = mainSplit.pop();
-                let location = mainSplit.join("/");
-
-                let keyInclude;
-                if (pkg.isPackage) {
-                    keyInclude = fileSystem.pathToWeb(
-                        fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, `${key}/${location}/**/*.{js,html,css}`)));
-                } else {
-                    location += location.length > 0 ? "/" : "";
-                    if (main === "*") {
-                        main = "**/*.{js,html,css}";
-                    }
-                    keyInclude = fileSystem.pathToWeb(
-                        fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, `${key}/${location}${main}`)));
-                }
-                this._configuration.files.push({ pattern: keyInclude, included: pkg.scriptIncludeMode === "notBundled" || pkg.scriptIncludeMode === "both" });
-
-                if (pkg.testingAdditions) {
-                    const additionKeys = Object.keys(pkg.testingAdditions);
-                    additionKeys.forEach(additionKey => {
-                        const additionKeyInclude = fileSystem.pathToWeb(
-                            fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
-                                                        fileSystem.pathCombine(engineVariables.www.packageFolder,
-                                                                               `${key}/${pkg.testingAdditions[additionKey]}`)));
-                        this._configuration.files.push({ pattern: additionKeyInclude, included: pkg.scriptIncludeMode === "notBundled" || pkg.scriptIncludeMode === "both" });
-                    });
-                }
-            }
-
-            if (testPackages[key].assets !== undefined && testPackages[key].assets !== null && testPackages[key].assets.length > 0) {
-                const cas = testPackages[key].assets.split(";");
-                cas.forEach((ca) => {
-                    const keyInclude = fileSystem.pathToWeb(
-                        fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, `${key}/${ca}`)));
-                    this._configuration.files.push({ pattern: keyInclude, included: false });
-                });
-            }
-        });
-
-        this._configuration.files.push({ pattern: "../unite.json", included: false });
-
-        this._configuration.files.push({
-            pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "../unit-module-config.js"))),
-            included: true
-        });
-
-        this._configuration.files.push({
-            pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "../unit-bootstrap.js"))),
-            included: true
-        });
-
-        this._configuration.files.push({
-            pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "**/*.spec.js"))),
-            included: false
-        });
-
         lines.push("module.exports = function(config) {");
         lines.push(`    config.set(${JsonHelper.codify(this._configuration)});`);
         lines.push("};");

@@ -57,9 +57,6 @@ export declare class EngineVariables {
     }, loaders: {
         [id: string]: string;
     }, required: boolean): void;
-    getTestClientPackages(): {
-        [id: string]: UniteClientPackage;
-    };
     toggleDevDependency(dependencies: string[], required: boolean): void;
     buildDependencies(uniteConfiguration: UniteConfiguration, packageJsonDependencies: {
         [id: string]: string;

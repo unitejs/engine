@@ -6,6 +6,83 @@ const gulp = require("gulp");
 const karma = require("karma");
 const minimist = require("minimist");
 const uc = require("./util/unite-config");
+const jsonHelper = require("./util/json-helper");
+const clientPackages = require("./util/client-packages");
+const util = require("util");
+const fs = require("fs");
+const path = require("path");
+
+function addClientPackageTestFiles (uniteConfig, files) {
+    const newFiles = [];
+
+    const testPackages = clientPackages.getTestPackages(uniteConfig);
+    Object.keys(testPackages).forEach(key => {
+        const pkg = testPackages[key];
+        if (pkg.main) {
+            const mainSplit = pkg.main.split("/");
+            let main = mainSplit.pop();
+            let location = mainSplit.join("/");
+
+            if (pkg.isPackage) {
+                newFiles.push({
+                    "pattern": `./${path.join(uniteConfig.dirs.www.package, `${key}/${location}/**/*.{js,html,css}`)
+                        .replace(/\\/g, "/")}`,
+                    "included": pkg.scriptIncludeMode === "notBundled" || pkg.scriptIncludeMode === "both"
+                });
+            } else {
+                location += location.length > 0 ? "/" : "";
+                if (main === "*") {
+                    main = "**/*.{js,html,css}";
+                }
+                newFiles.push({
+                    "pattern": `./${path.join(uniteConfig.dirs.www.package, `${key}/${location}${main}`)
+                        .replace(/\\/g, "/")}`,
+                    "included": pkg.scriptIncludeMode === "notBundled" || pkg.scriptIncludeMode === "both"
+                });
+            }
+
+            if (pkg.testingAdditions) {
+                const additionKeys = Object.keys(pkg.testingAdditions);
+                additionKeys.forEach(additionKey => {
+                    newFiles.push({
+                        "pattern": `./${path.join(uniteConfig.dirs.www.package,
+                            `${key}/${pkg.testingAdditions[additionKey]}`)
+                            .replace(/\\/g, "/")}`,
+                        "included": pkg.scriptIncludeMode === "notBundled" || pkg.scriptIncludeMode === "both"
+                    });
+                });
+            }
+        }
+
+        if (testPackages[key].assets !== undefined &&
+            testPackages[key].assets !== null &&
+            testPackages[key].assets.length > 0) {
+            const cas = testPackages[key].assets.split(";");
+            cas.forEach((ca) => {
+                newFiles.push({
+                    "pattern": `./${path.join(uniteConfig.dirs.www.package, `${key}/${ca}`)
+                        .replace(/\\/g, "/")}`,
+                    "included": false
+                });
+            });
+        }
+    });
+
+    if (files) {
+        files.forEach((file => {
+            if (file.isPerm) {
+                const idx = newFiles.findIndex((item => item.pattern === file.pattern));
+                if (idx === -1) {
+                    newFiles.push(file);
+                } else {
+                    newFiles[idx].isPerm = true;
+                }
+            }
+        }));
+    }
+
+    return newFiles;
+}
 
 gulp.task("unit-run-test", async () => {
     display.info("Running", "Karma");
@@ -25,6 +102,24 @@ gulp.task("unit-run-test", async () => {
 
     const uniteConfig = await uc.getUniteConfig();
 
+    try {
+        let conf = await util.promisify(fs.readFile)("./karma.conf.js");
+        conf = conf.toString();
+        const jsonMatches = (/config.set\(((.|\n|\r)*)\)/).exec(conf);
+        if (jsonMatches.length === 3) {
+            const configuration = jsonHelper.parseCode(jsonMatches[1]);
+            configuration.files = addClientPackageTestFiles(uniteConfig, configuration.files);
+            conf = conf.replace(jsonMatches[1], jsonHelper.codify(configuration));
+            await util.promisify(fs.writeFile)("./karma.conf.js", conf);
+        } else {
+            display.error("Parsing karma.conf.js failed");
+            process.exit(1);
+        }
+    } catch (err) {
+        display.error("Parsing karma.conf.js", err);
+        process.exit(1);
+    }
+
     const karmaConf = {
         "configFile": "../../../karma.conf.js",
         "coverageReporter": {
@@ -37,13 +132,17 @@ gulp.task("unit-run-test", async () => {
         karmaConf.browsers = options.browser.split(",");
     }
 
-    const server = new karma.Server(karmaConf, (exitCode) => {
-        if (exitCode !== 0) {
-            display.error(`Karma exited with code ${exitCode}`);
-            process.exit(exitCode);
-        }
-    });
+    return new Promise((resolve) => {
+        const server = new karma.Server(karmaConf, (exitCode) => {
+            if (exitCode === 0) {
+                resolve();
+            } else {
+                display.error(`Karma exited with code ${exitCode}`);
+                process.exit(exitCode);
+            }
+        });
 
-    server.start();
+        server.start();
+    });
 });
 /* Generated by UniteJS */

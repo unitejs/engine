@@ -111,7 +111,6 @@ describe("Angular", () => {
             Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins.length).to.be.equal(1);
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parser).to.be.equal("babel-eslint");
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.experimentalDecorators).to.be.equal(true);
-            Chai.expect(engineVariablesStub.getTestClientPackages()["zone.js"].testingAdditions["runner-patch"]).to.be.equal("dist/jasmine-patch.js");
         });
 
         it("can be called with application framework matching and mocha framework", async () => {
@@ -125,7 +124,6 @@ describe("Angular", () => {
             Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins.length).to.be.equal(1);
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parser).to.be.equal("babel-eslint");
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.experimentalDecorators).to.be.equal(true);
-            Chai.expect(engineVariablesStub.getTestClientPackages()["zone.js"].testingAdditions["runner-patch"]).to.be.equal("dist/mocha-patch.js");
         });
 
         it("can fail with no source", async () => {
