@@ -212,6 +212,7 @@ export class Engine implements IEngine {
                                assets: string | undefined | null,
                                map: string | undefined | null,
                                loaders: string | undefined | null,
+                               noScript: boolean | undefined,
                                packageManager: string | undefined | null,
                                outputDirectory: string | undefined | null): Promise<number> {
         const newOutputDirectory = this.cleanupOutputDirectory(outputDirectory);
@@ -238,7 +239,8 @@ export class Engine implements IEngine {
 
         if (operation === "add") {
             return await this.clientPackageAdd(packageName, version, preload, includeMode, scriptIncludeMode,
-                                               main, mainMinified, testingAdditions, isPackage, assets, map, loaders, newOutputDirectory, uniteConfiguration);
+                                               main, mainMinified, testingAdditions, isPackage, assets, map, loaders, noScript,
+                                               newOutputDirectory, uniteConfiguration);
         } else {
             return await this.clientPackageRemove(packageName, newOutputDirectory, uniteConfiguration);
         }
@@ -429,6 +431,7 @@ export class Engine implements IEngine {
                                    assets: string | undefined | null,
                                    map: string | undefined | null,
                                    loaders: string | undefined | null,
+                                   noScript: boolean | undefined,
                                    outputDirectory: string,
                                    uniteConfiguration: UniteConfiguration): Promise<number> {
         const newIncludeMode = includeMode === undefined || includeMode === null || includeMode.length === 0 ? "both" : includeMode;
@@ -449,11 +452,21 @@ export class Engine implements IEngine {
         }
 
         if (main) {
-            this._logger.info("main", { main });
+            if (noScript) {
+                this._logger.error("You cannot combine the main and noScript arguments");
+                return 1;
+            } else {
+                this._logger.info("main", { main });
+            }
         }
 
         if (mainMinified) {
-            this._logger.info("mainMinified", { mainMinified });
+            if (noScript) {
+                this._logger.error("You cannot combine the mainMinified and noScript arguments");
+                return 1;
+            } else {
+                this._logger.info("mainMinified", { mainMinified });
+            }
         }
 
         if (testingAdditions) {
@@ -468,6 +481,9 @@ export class Engine implements IEngine {
         }
         if (loaders) {
             this._logger.info("loaders", { loaders });
+        }
+        if (noScript) {
+            this._logger.info("noScript", { noScript });
         }
 
         this._logger.info("");
@@ -485,26 +501,30 @@ export class Engine implements IEngine {
         clientPackage.mainMinified = mainMinified;
 
         const missingVersion = version === null || version === undefined || version.length === 0;
-        const missingMain = main === null || main === undefined || main.length === 0;
+        const missingMain = (main === null || main === undefined || main.length === 0) && !noScript;
         if (missingVersion || missingMain) {
             try {
                 const packageInfo = await engineVariables.packageManager.info(this._logger, this._fileSystem, packageName, version);
 
                 clientPackage.version = clientPackage.version || `^${packageInfo.version || "0.0.1"}`;
-                clientPackage.main = clientPackage.main || packageInfo.main;
+                if (!noScript) {
+                    clientPackage.main = clientPackage.main || packageInfo.main;
+                }
             } catch (err) {
                 this._logger.error("Reading Package Information failed", err);
                 return 1;
             }
         }
 
-        if (clientPackage.main) {
-            clientPackage.main = clientPackage.main.replace(/\\/g, "/");
-            clientPackage.main = clientPackage.main.replace(/\.\//, "/");
-        }
-        if (clientPackage.mainMinified) {
-            clientPackage.mainMinified = clientPackage.mainMinified.replace(/\\/g, "/");
-            clientPackage.mainMinified = clientPackage.mainMinified.replace(/\.\//, "/");
+        if (!noScript) {
+            if (clientPackage.main) {
+                clientPackage.main = clientPackage.main.replace(/\\/g, "/");
+                clientPackage.main = clientPackage.main.replace(/\.\//, "/");
+            }
+            if (clientPackage.mainMinified) {
+                clientPackage.mainMinified = clientPackage.mainMinified.replace(/\\/g, "/");
+                clientPackage.mainMinified = clientPackage.mainMinified.replace(/\.\//, "/");
+            }
         }
         clientPackage.preload = preload === undefined ? false : preload;
         clientPackage.isPackage = isPackage === undefined ? false : isPackage;

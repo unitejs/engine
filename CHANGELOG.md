@@ -3,6 +3,7 @@
 ## v0.9.7
 
 * CLI version now shows engine as well
+* Added noScript option for clientPackages to exclude any main/mainMinified
 
 ## v0.9.6
 

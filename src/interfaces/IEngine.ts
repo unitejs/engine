@@ -41,6 +41,7 @@ export interface IEngine {
                   assets: string | undefined | null,
                   map: string | undefined | null,
                   loaders: string | undefined | null,
+                  noScript: boolean | undefined,
                   packageManager: string | undefined | null,
                   outputDirectory: string | undefined | null): Promise<number>;
 
