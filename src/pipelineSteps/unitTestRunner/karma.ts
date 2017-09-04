@@ -32,7 +32,12 @@ export class Karma extends EnginePipelineStepBase {
             "karma-coverage-allsources",
             "karma-sourcemap-loader",
             "karma-remap-istanbul",
-            "remap-istanbul"
+            "remap-istanbul",
+            "karma-chrome-launcher",
+            "karma-firefox-launcher",
+            "karma-phantomjs-launcher",
+            "karma-safari-launcher",
+            "karma-ie-launcher"
         ],
                                             super.condition(uniteConfiguration.unitTestRunner, "Karma"));
 

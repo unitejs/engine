@@ -5,6 +5,8 @@
 * CLI version now shows engine as well
 * Added noScript option for clientPackages to exclude any main/mainMinified
 * HTML Template Script includes are generated at build time not configure
+* Remove unit-ui gulp task added --browser args to gulp unit
+* Added Firefox, Safari, IE launchers for Karma
 
 ## v0.9.6
 

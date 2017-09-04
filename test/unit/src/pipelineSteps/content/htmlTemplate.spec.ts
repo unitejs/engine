@@ -91,7 +91,7 @@ describe("HtmlTemplate", () => {
             Chai.expect(loggerInfoSpy.args[0][0]).contains("Generating");
 
             const lines = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "index-no-bundle.html");
-            Chai.expect(lines.length).to.be.equal(15);
+            Chai.expect(lines.length).to.be.equal(16);
         });
 
         it("can write if file has a generated marker", async () => {
@@ -110,9 +110,9 @@ describe("HtmlTemplate", () => {
             Chai.expect(loggerInfoSpy.args[0][0]).contains("Generating");
 
             const lines = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "index-no-bundle.html");
-            Chai.expect(lines.length).to.be.equal(17);
-            Chai.expect(lines.findIndex(line => line.indexOf("head1") > 0)).to.be.equal(8);
-            Chai.expect(lines.findIndex(line => line.indexOf("body2") > 0)).to.be.equal(12);
+            Chai.expect(lines.length).to.be.equal(18);
+            Chai.expect(lines.findIndex(line => line.indexOf("head1") > 0)).to.be.equal(9);
+            Chai.expect(lines.findIndex(line => line.indexOf("body2") > 0)).to.be.equal(13);
         });
     });
 });
