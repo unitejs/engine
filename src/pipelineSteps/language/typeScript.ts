@@ -9,11 +9,19 @@ import { TypeScriptConfiguration } from "../../configuration/models/typeScript/t
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
+import { PipelineKey } from "../../engine/pipelineKey";
 
 export class TypeScript extends EnginePipelineStepBase {
     private static FILENAME: string = "tsconfig.json";
 
     private _configuration: TypeScriptConfiguration;
+
+    public influences(): PipelineKey[] {
+        return [
+            new PipelineKey("content", "packageJson"),
+            new PipelineKey("scaffold", "uniteConfigurationJson")
+        ];
+    }
 
     public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,

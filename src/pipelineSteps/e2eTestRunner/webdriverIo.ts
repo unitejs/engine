@@ -11,12 +11,21 @@ import { UniteConfiguration } from "../../configuration/models/unite/uniteConfig
 import { WebdriverIoConfiguration } from "../../configuration/models/webdriverIo/webdriverIoConfiguration";
 import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
+import { PipelineKey } from "../../engine/pipelineKey";
 
 export class WebdriverIo extends EnginePipelineStepBase {
     private static FILENAME: string = "wdio.conf.js";
 
     private _configuration: WebdriverIoConfiguration;
     private _plugins: string[];
+
+    public influences(): PipelineKey[] {
+        return [
+            new PipelineKey("content", "packageJson"),
+            new PipelineKey("scaffold", "uniteConfigurationJson"),
+            new PipelineKey("linter", "esLint")
+        ];
+    }
 
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         if (super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO")) {

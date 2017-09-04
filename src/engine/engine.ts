@@ -18,6 +18,7 @@ import { IEnginePipelineStep } from "../interfaces/IEnginePipelineStep";
 import { ModuleOperation } from "../interfaces/moduleOperation";
 import { PlatformOperation } from "../interfaces/platformOperation";
 import { EngineVariables } from "./engineVariables";
+import { PipelineKey } from "./pipelineKey";
 
 export class Engine implements IEngine {
     private _logger: ILogger;
@@ -132,13 +133,13 @@ export class Engine implements IEngine {
             return 1;
         }
 
-        if (!await this.tryLoadPipelineStep(uniteConfiguration, "language", uniteConfiguration.sourceLanguage, "sourceLanguage")) {
+        if (!await this.tryLoadPipelineStep(uniteConfiguration, new PipelineKey("language", uniteConfiguration.sourceLanguage), "sourceLanguage")) {
             return 1;
         }
-        if (!await this.tryLoadPipelineStep(uniteConfiguration, "moduleType", uniteConfiguration.moduleType)) {
+        if (!await this.tryLoadPipelineStep(uniteConfiguration, new PipelineKey("moduleType", uniteConfiguration.moduleType))) {
             return 1;
         }
-        if (!await this.tryLoadPipelineStep(uniteConfiguration, "bundler", uniteConfiguration.bundler)) {
+        if (!await this.tryLoadPipelineStep(uniteConfiguration, new PipelineKey("bundler", uniteConfiguration.bundler))) {
             return 1;
         }
         if (unitTestRunner === "None") {
@@ -151,13 +152,13 @@ export class Engine implements IEngine {
                 return 1;
             }
         } else {
-            if (!await this.tryLoadPipelineStep(uniteConfiguration, "unitTestRunner", uniteConfiguration.unitTestRunner)) {
+            if (!await this.tryLoadPipelineStep(uniteConfiguration, new PipelineKey("unitTestRunner", uniteConfiguration.unitTestRunner))) {
                 return 1;
             }
-            if (!await this.tryLoadPipelineStep(uniteConfiguration, "testFramework", uniteConfiguration.unitTestFramework, "unitTestFramework")) {
+            if (!await this.tryLoadPipelineStep(uniteConfiguration, new PipelineKey("testFramework", uniteConfiguration.unitTestFramework), "unitTestFramework")) {
                 return 1;
             }
-            if (!await this.tryLoadPipelineStep(uniteConfiguration, "unitTestEngine", uniteConfiguration.unitTestEngine)) {
+            if (!await this.tryLoadPipelineStep(uniteConfiguration, new PipelineKey("unitTestEngine", uniteConfiguration.unitTestEngine))) {
                 return 1;
             }
         }
@@ -167,28 +168,28 @@ export class Engine implements IEngine {
                 return 1;
             }
         } else {
-            if (!await this.tryLoadPipelineStep(uniteConfiguration, "e2eTestRunner", uniteConfiguration.e2eTestRunner)) {
+            if (!await this.tryLoadPipelineStep(uniteConfiguration, new PipelineKey("e2eTestRunner", uniteConfiguration.e2eTestRunner))) {
                 return 1;
             }
-            if (!await this.tryLoadPipelineStep(uniteConfiguration, "testFramework", uniteConfiguration.e2eTestFramework, "e2eTestFramework")) {
+            if (!await this.tryLoadPipelineStep(uniteConfiguration, new PipelineKey("testFramework", uniteConfiguration.e2eTestFramework), "e2eTestFramework")) {
                 return 1;
             }
         }
         if (linter !== "None") {
-            if (!await this.tryLoadPipelineStep(uniteConfiguration, "linter", uniteConfiguration.linter)) {
+            if (!await this.tryLoadPipelineStep(uniteConfiguration, new PipelineKey("linter", uniteConfiguration.linter))) {
                 return 1;
             }
         }
-        if (!await this.tryLoadPipelineStep(uniteConfiguration, "cssPre", uniteConfiguration.cssPre)) {
+        if (!await this.tryLoadPipelineStep(uniteConfiguration, new PipelineKey("cssPre", uniteConfiguration.cssPre))) {
             return 1;
         }
-        if (!await this.tryLoadPipelineStep(uniteConfiguration, "cssPost", uniteConfiguration.cssPost)) {
+        if (!await this.tryLoadPipelineStep(uniteConfiguration, new PipelineKey("cssPost", uniteConfiguration.cssPost))) {
             return 1;
         }
-        if (!await this.tryLoadPipelineStep(uniteConfiguration, "packageManager", uniteConfiguration.packageManager)) {
+        if (!await this.tryLoadPipelineStep(uniteConfiguration, new PipelineKey("packageManager", uniteConfiguration.packageManager))) {
             return 1;
         }
-        if (!await this.tryLoadPipelineStep(uniteConfiguration, "applicationFramework", uniteConfiguration.applicationFramework)) {
+        if (!await this.tryLoadPipelineStep(uniteConfiguration, new PipelineKey("applicationFramework", uniteConfiguration.applicationFramework))) {
             return 1;
         }
 
@@ -233,7 +234,7 @@ export class Engine implements IEngine {
             return 1;
         }
 
-        if (!await this.tryLoadPipelineStep(uniteConfiguration, "packageManager", uniteConfiguration.packageManager)) {
+        if (!await this.tryLoadPipelineStep(uniteConfiguration, new PipelineKey("packageManager", uniteConfiguration.packageManager))) {
             return 1;
         }
 
@@ -294,7 +295,7 @@ export class Engine implements IEngine {
         if (!ParameterValidation.checkOneOf<PlatformOperation>(this._logger, "operation", operation, ["add", "remove"])) {
             return 1;
         }
-        if (!await this.tryLoadPipelineStep(uniteConfiguration, "platform", platformName, "platformName")) {
+        if (!await this.tryLoadPipelineStep(uniteConfiguration, new PipelineKey("platform", platformName), "platformName")) {
             return 1;
         }
 
@@ -342,72 +343,72 @@ export class Engine implements IEngine {
         engineVariables.force = force;
         engineVariables.license = license;
 
-        const pipelineSteps: string[][] = [];
+        const pipelineSteps: PipelineKey[] = [];
 
-        pipelineSteps.push(["scaffold", "outputDirectory"]);
-        pipelineSteps.push(["scaffold", "appScaffold"]);
-        pipelineSteps.push(["scaffold", "unitTestScaffold"]);
-        pipelineSteps.push(["scaffold", "e2eTestScaffold"]);
+        pipelineSteps.push(new PipelineKey("scaffold", "outputDirectory"));
+        pipelineSteps.push(new PipelineKey("scaffold", "appScaffold"));
+        pipelineSteps.push(new PipelineKey("scaffold", "unitTestScaffold"));
+        pipelineSteps.push(new PipelineKey("scaffold", "e2eTestScaffold"));
 
-        pipelineSteps.push(["applicationFramework", "plainApp"]);
-        pipelineSteps.push(["applicationFramework", "angular"]);
-        pipelineSteps.push(["applicationFramework", "aurelia"]);
-        pipelineSteps.push(["applicationFramework", "react"]);
+        pipelineSteps.push(new PipelineKey("applicationFramework", "plainApp"));
+        pipelineSteps.push(new PipelineKey("applicationFramework", "angular"));
+        pipelineSteps.push(new PipelineKey("applicationFramework", "aurelia"));
+        pipelineSteps.push(new PipelineKey("applicationFramework", "react"));
 
-        pipelineSteps.push(["taskManager", "gulp"]);
+        pipelineSteps.push(new PipelineKey("taskManager", "gulp"));
 
-        pipelineSteps.push(["platform", "web"]);
-        pipelineSteps.push(["platform", "electron"]);
+        pipelineSteps.push(new PipelineKey("platform", "web"));
+        pipelineSteps.push(new PipelineKey("platform", "electron"));
 
-        pipelineSteps.push(["moduleType", "amd"]);
-        pipelineSteps.push(["moduleType", "commonJs"]);
-        pipelineSteps.push(["moduleType", "systemJs"]);
+        pipelineSteps.push(new PipelineKey("moduleType", "amd"));
+        pipelineSteps.push(new PipelineKey("moduleType", "commonJs"));
+        pipelineSteps.push(new PipelineKey("moduleType", "systemJs"));
 
-        pipelineSteps.push(["bundler", "browserify"]);
-        pipelineSteps.push(["bundler", "requireJs"]);
-        pipelineSteps.push(["bundler", "systemJsBuilder"]);
-        pipelineSteps.push(["bundler", "webpack"]);
+        pipelineSteps.push(new PipelineKey("bundler", "browserify"));
+        pipelineSteps.push(new PipelineKey("bundler", "requireJs"));
+        pipelineSteps.push(new PipelineKey("bundler", "systemJsBuilder"));
+        pipelineSteps.push(new PipelineKey("bundler", "webpack"));
 
-        pipelineSteps.push(["cssPre", "css"]);
-        pipelineSteps.push(["cssPre", "less"]);
-        pipelineSteps.push(["cssPre", "sass"]);
-        pipelineSteps.push(["cssPre", "stylus"]);
+        pipelineSteps.push(new PipelineKey("cssPre", "css"));
+        pipelineSteps.push(new PipelineKey("cssPre", "less"));
+        pipelineSteps.push(new PipelineKey("cssPre", "sass"));
+        pipelineSteps.push(new PipelineKey("cssPre", "stylus"));
 
-        pipelineSteps.push(["cssPost", "postCss"]);
-        pipelineSteps.push(["cssPost", "none"]);
+        pipelineSteps.push(new PipelineKey("cssPost", "postCss"));
+        pipelineSteps.push(new PipelineKey("cssPost", "none"));
 
-        pipelineSteps.push(["testFramework", "mochaChai"]);
-        pipelineSteps.push(["testFramework", "jasmine"]);
+        pipelineSteps.push(new PipelineKey("testFramework", "mochaChai"));
+        pipelineSteps.push(new PipelineKey("testFramework", "jasmine"));
 
-        pipelineSteps.push(["language", "javaScript"]);
-        pipelineSteps.push(["language", "typeScript"]);
+        pipelineSteps.push(new PipelineKey("language", "javaScript"));
+        pipelineSteps.push(new PipelineKey("language", "typeScript"));
 
-        pipelineSteps.push(["e2eTestRunner", "webdriverIo"]);
-        pipelineSteps.push(["e2eTestRunner", "protractor"]);
+        pipelineSteps.push(new PipelineKey("e2eTestRunner", "webdriverIo"));
+        pipelineSteps.push(new PipelineKey("e2eTestRunner", "protractor"));
 
-        pipelineSteps.push(["unitTestEngine", "phantomJs"]);
-        pipelineSteps.push(["unitTestEngine", "chromeHeadless"]);
+        pipelineSteps.push(new PipelineKey("unitTestEngine", "phantomJs"));
+        pipelineSteps.push(new PipelineKey("unitTestEngine", "chromeHeadless"));
 
-        pipelineSteps.push(["linter", "esLint"]);
-        pipelineSteps.push(["linter", "tsLint"]);
+        pipelineSteps.push(new PipelineKey("linter", "esLint"));
+        pipelineSteps.push(new PipelineKey("linter", "tsLint"));
 
-        pipelineSteps.push(["unitTestRunner", "karma"]);
+        pipelineSteps.push(new PipelineKey("unitTestRunner", "karma"));
 
-        pipelineSteps.push(["packageManager", "npm"]);
-        pipelineSteps.push(["packageManager", "yarn"]);
+        pipelineSteps.push(new PipelineKey("packageManager", "npm"));
+        pipelineSteps.push(new PipelineKey("packageManager", "yarn"));
 
-        pipelineSteps.push(["server", "browserSync"]);
+        pipelineSteps.push(new PipelineKey("server", "browserSync"));
 
-        pipelineSteps.push(["content", "htmlTemplate"]);
-        pipelineSteps.push(["content", "readMe"]);
-        pipelineSteps.push(["content", "gitIgnore"]);
-        pipelineSteps.push(["content", "license"]);
-        pipelineSteps.push(["content", "assets"]);
-        pipelineSteps.push(["content", "packageJson"]);
+        pipelineSteps.push(new PipelineKey("content", "htmlTemplate"));
+        pipelineSteps.push(new PipelineKey("content", "readMe"));
+        pipelineSteps.push(new PipelineKey("content", "gitIgnore"));
+        pipelineSteps.push(new PipelineKey("content", "license"));
+        pipelineSteps.push(new PipelineKey("content", "assets"));
+        pipelineSteps.push(new PipelineKey("content", "packageJson"));
 
-        pipelineSteps.push(["scaffold", "uniteConfigurationDirectories"]);
-        pipelineSteps.push(["scaffold", "uniteThemeConfigurationJson"]);
-        pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
+        pipelineSteps.push(new PipelineKey("scaffold", "uniteConfigurationDirectories"));
+        pipelineSteps.push(new PipelineKey("scaffold", "uniteThemeConfigurationJson"));
+        pipelineSteps.push(new PipelineKey("scaffold", "uniteConfigurationJson"));
 
         const ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
 
@@ -550,8 +551,8 @@ export class Engine implements IEngine {
             return 1;
         }
 
-        const pipelineSteps: string[][] = [];
-        pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
+        const pipelineSteps: PipelineKey[] = [];
+        pipelineSteps.push(new PipelineKey("scaffold", "uniteConfigurationJson"));
 
         const ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
 
@@ -574,8 +575,8 @@ export class Engine implements IEngine {
 
         delete uniteConfiguration.clientPackages[packageName];
 
-        const pipelineSteps: string[][] = [];
-        pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
+        const pipelineSteps: PipelineKey[] = [];
+        pipelineSteps.push(new PipelineKey("scaffold", "uniteConfigurationJson"));
 
         const ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
 
@@ -601,8 +602,8 @@ export class Engine implements IEngine {
         uniteConfiguration.buildConfigurations[configurationName].sourcemaps = sourcemaps === undefined ? true : sourcemaps;
         uniteConfiguration.buildConfigurations[configurationName].variables = uniteConfiguration.buildConfigurations[configurationName].variables || {};
 
-        const pipelineSteps: string[][] = [];
-        pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
+        const pipelineSteps: PipelineKey[] = [];
+        pipelineSteps.push(new PipelineKey("scaffold", "uniteConfigurationJson"));
 
         const ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
 
@@ -625,8 +626,8 @@ export class Engine implements IEngine {
         this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
         delete uniteConfiguration.buildConfigurations[configurationName];
 
-        const pipelineSteps: string[][] = [];
-        pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
+        const pipelineSteps: PipelineKey[] = [];
+        pipelineSteps.push(new PipelineKey("scaffold", "uniteConfigurationJson"));
 
         const ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
 
@@ -644,10 +645,10 @@ export class Engine implements IEngine {
         this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
         uniteConfiguration.platforms[platformName] = uniteConfiguration.platforms[platformName] || {};
 
-        const pipelineSteps: string[][] = [];
-        pipelineSteps.push(["platform", platformName]);
-        pipelineSteps.push(["content", "packageJson"]);
-        pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
+        const pipelineSteps: PipelineKey[] = [];
+        pipelineSteps.push(new PipelineKey("platform", platformName));
+        pipelineSteps.push(new PipelineKey("content", "packageJson"));
+        pipelineSteps.push(new PipelineKey("scaffold", "uniteConfigurationJson"));
 
         const ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
 
@@ -671,10 +672,10 @@ export class Engine implements IEngine {
         this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
         delete uniteConfiguration.platforms[platformName];
 
-        const pipelineSteps: string[][] = [];
-        pipelineSteps.push(["platform", platformName]);
-        pipelineSteps.push(["content", "packageJson"]);
-        pipelineSteps.push(["scaffold", "uniteConfigurationJson"]);
+        const pipelineSteps: PipelineKey[] = [];
+        pipelineSteps.push(new PipelineKey("platform", platformName));
+        pipelineSteps.push(new PipelineKey("content", "packageJson"));
+        pipelineSteps.push(new PipelineKey("scaffold", "uniteConfigurationJson"));
 
         const ret = await this.runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
         if (ret === 0) {
@@ -693,17 +694,17 @@ export class Engine implements IEngine {
         engineVariables.setupDirectories(this._fileSystem, outputDirectory);
         engineVariables.initialisePackages(uniteConfiguration.clientPackages);
 
-        engineVariables.packageManager = this.getPipelineStep("packageManager", uniteConfiguration.packageManager);
+        engineVariables.packageManager = this.getPipelineStep(new PipelineKey("packageManager", uniteConfiguration.packageManager));
     }
 
-    private async runPipeline(pipelineSteps: string[][], uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    private async runPipeline(pipelineSteps: PipelineKey[], uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         const pipeline: IEnginePipelineStep[] = [];
 
         for (const pipelineStep of pipelineSteps) {
-            const exists = await this.tryLoadPipelineStep(uniteConfiguration, pipelineStep[0], pipelineStep[1], undefined, false);
+            const exists = await this.tryLoadPipelineStep(uniteConfiguration, pipelineStep, undefined, false);
 
             if (exists) {
-                pipeline.push(this.getPipelineStep(pipelineStep[0], pipelineStep[1]));
+                pipeline.push(this.getPipelineStep(pipelineStep));
             } else {
                 return 1;
             }
@@ -726,8 +727,8 @@ export class Engine implements IEngine {
         return 0;
     }
 
-    private getPipelineStep<T extends IEnginePipelineStep>(moduleType: string, moduleId: string): T {
-        const className = this._moduleIdMap[`${moduleType}/${moduleId}`];
+    private getPipelineStep<T extends IEnginePipelineStep>(pipelineKey: PipelineKey): T {
+        const className = this._moduleIdMap[`${pipelineKey.category}/${pipelineKey.key}`];
         if (className !== undefined && this._pipelineStepCache[className] !== undefined) {
             return <T>this._pipelineStepCache[className];
         }
@@ -735,21 +736,21 @@ export class Engine implements IEngine {
         return undefined;
     }
 
-    private async tryLoadPipelineStep(uniteConfiguration: UniteConfiguration, moduleType: string, moduleId: string, configurationType?: string, defineProperty: boolean = true): Promise<boolean> {
-        const moduleTypeId = `${moduleType}/${moduleId}`;
+    private async tryLoadPipelineStep(uniteConfiguration: UniteConfiguration, pipelineKey: PipelineKey, configurationType?: string, defineProperty: boolean = true): Promise<boolean> {
+        const moduleTypeId = `${pipelineKey.category}/${pipelineKey.key}`;
         let className = this._moduleIdMap[moduleTypeId];
 
         if (className === undefined) {
             const modulePath = this._fileSystem.pathCombine(this._engineRootFolder, `dist/pipelineSteps`);
-            const moduleTypeFolder = this._fileSystem.pathCombine(modulePath, moduleType);
-            const actualType = configurationType ? configurationType : moduleType;
+            const moduleTypeFolder = this._fileSystem.pathCombine(modulePath, pipelineKey.category);
+            const actualType = configurationType ? configurationType : pipelineKey.category;
 
             try {
                 let files = await this._fileSystem.directoryGetFiles(moduleTypeFolder);
                 files = files.filter(file => file.endsWith(".js")).map(file => file.replace(".js", ""));
 
-                if (moduleId !== undefined && module !== null && moduleId.length > 0) {
-                    const moduleIdLower = moduleId.toLowerCase();
+                if (pipelineKey.key !== undefined && module !== null && pipelineKey.key.length > 0) {
+                    const moduleIdLower = pipelineKey.key.toLowerCase();
                     for (let i = 0; i < files.length; i++) {
                         if (files[i].toLowerCase() === moduleIdLower) {
                             // tslint:disable:no-require-imports
@@ -767,20 +768,20 @@ export class Engine implements IEngine {
                                 Object.defineProperty(uniteConfiguration, actualType, { value: className });
                             }
 
-                            const moduleClassName = `${moduleType}/${className}`;
+                            const moduleClassName = `${pipelineKey.category}/${className}`;
                             this._pipelineStepCache[moduleClassName] = new instance.constructor();
                             this._moduleIdMap[moduleTypeId] = moduleClassName;
                             return true;
                         }
                     }
-                    this._logger.error(`Module ${moduleId} for arg ${actualType} could not be located, possible options could be [${files.join(", ")}]`);
+                    this._logger.error(`Module ${pipelineKey.key} for arg ${actualType} could not be located, possible options could be [${files.join(", ")}]`);
                     return false;
                 } else {
                     this._logger.error(`${actualType} should not be blank, possible options could be [${files.join(", ")}]`);
                     return false;
                 }
             } catch (err) {
-                this._logger.error(`Module ${moduleId} for arg ${actualType} failed to load`, err);
+                this._logger.error(`Module ${pipelineKey.key} for arg ${actualType} failed to load`, err);
                 return false;
             }
         } else {

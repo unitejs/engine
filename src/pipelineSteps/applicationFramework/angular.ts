@@ -9,9 +9,20 @@ import { EsLintConfiguration } from "../../configuration/models/eslint/esLintCon
 import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
+import { PipelineKey } from "../../engine/pipelineKey";
 import { SharedAppFramework } from "../sharedAppFramework";
 
 export class Angular extends SharedAppFramework {
+    public influences(): PipelineKey[] {
+        return [
+            new PipelineKey("content", "packageJson"),
+            new PipelineKey("scaffold", "uniteConfigurationJson"),
+            new PipelineKey("language", "javaScript"),
+            new PipelineKey("language", "typeScript"),
+            new PipelineKey("linter", "esLint")
+        ];
+    }
+
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         if (super.condition(uniteConfiguration.applicationFramework, "Angular")) {
             if (super.condition(uniteConfiguration.bundler, "RequireJS")) {

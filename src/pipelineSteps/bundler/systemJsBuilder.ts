@@ -6,8 +6,16 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
+import { PipelineKey } from "../../engine/pipelineKey";
 
 export class SystemJsBuilder extends EnginePipelineStepBase {
+    public influences(): PipelineKey[] {
+        return [
+            new PipelineKey("content", "packageJson"),
+            new PipelineKey("scaffold", "uniteConfigurationJson")
+        ];
+    }
+
     public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,

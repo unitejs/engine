@@ -8,11 +8,18 @@ import { PackageConfiguration } from "../../configuration/models/packages/packag
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
+import { PipelineKey } from "../../engine/pipelineKey";
 
 export class PackageJson extends EnginePipelineStepBase {
     private static FILENAME: string = "package.json";
 
     private _configuration: PackageConfiguration;
+
+    public influences(): PipelineKey[] {
+        return [
+            new PipelineKey("scaffold", "uniteConfigurationJson")
+        ];
+    }
 
     public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,

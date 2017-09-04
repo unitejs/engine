@@ -6,10 +6,17 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
+import { PipelineKey } from "../../engine/pipelineKey";
 
 export class Assets extends EnginePipelineStepBase {
     private static FILENAME: string = "logo-tile.svg";
     private static FILENAME2: string = "logo-transparent.svg";
+
+    public influences(): PipelineKey[] {
+        return [
+            new PipelineKey("scaffold", "uniteConfigurationJson")
+        ];
+    }
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["unitejs-image-cli"], true);

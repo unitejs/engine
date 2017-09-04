@@ -8,11 +8,19 @@ import { BabelConfiguration } from "../../configuration/models/babel/babelConfig
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
+import { PipelineKey } from "../../engine/pipelineKey";
 
 export class JavaScript extends EnginePipelineStepBase {
     private static FILENAME: string = ".babelrc";
 
     private _configuration: BabelConfiguration;
+
+    public influences(): PipelineKey[] {
+        return [
+            new PipelineKey("content", "packageJson"),
+            new PipelineKey("scaffold", "uniteConfigurationJson")
+        ];
+    }
 
     public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,
