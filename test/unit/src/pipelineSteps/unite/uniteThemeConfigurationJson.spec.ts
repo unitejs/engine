@@ -8,7 +8,7 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
 import { UniteThemeConfiguration } from "../../../../../dist/configuration/models/uniteTheme/uniteThemeConfiguration";
 import { EngineVariables } from "../../../../../dist/engine/engineVariables";
-import { UniteThemeConfigurationJson } from "../../../../../dist/pipelineSteps/scaffold/uniteThemeConfigurationJson";
+import { UniteThemeConfigurationJson } from "../../../../../dist/pipelineSteps/unite/uniteThemeConfigurationJson";
 import { FileSystemMock } from "../../fileSystem.mock";
 
 describe("UniteThemeConfigurationJson", () => {
@@ -41,9 +41,17 @@ describe("UniteThemeConfigurationJson", () => {
         await fileSystemMock.directoryDelete("./test/unit/temp");
     });
 
-    it("can be created", async () => {
+    it("can be created", () => {
         const obj = new UniteThemeConfigurationJson();
         Chai.should().exist(obj);
+    });
+
+    describe("influences", () => {
+        it("can be called and return influences", async () => {
+            const obj = new UniteThemeConfigurationJson();
+            const res = obj.influences();
+            Chai.expect(res.length).to.be.equal(0);
+        });
     });
 
     describe("intitialise", () => {

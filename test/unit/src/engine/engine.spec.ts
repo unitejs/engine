@@ -136,7 +136,7 @@ describe("Engine", () => {
         await obj.directoryDelete("./test/unit/temp");
     });
 
-    it("can be created", async () => {
+    it("can be created", () => {
         const obj = new Engine();
         Chai.should().exist(obj);
     });
@@ -437,6 +437,17 @@ describe("Engine", () => {
             await obj.initialise(loggerStub, fileSystemStub);
             const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
                                             "Protractor", "MochaChai", "ESLint", "Sass", "None", "Npm", "PlainApp", undefined, undefined);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(loggerWarningSpy.args[0][0]).to.contain("should probably");
+            Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
+        });
+
+        it("can succeed when calling with www outputDirectory", async () => {
+            uniteJson = undefined;
+            const obj = new Engine();
+            await obj.initialise(loggerStub, fileSystemStub);
+            const res = await obj.configure("my-package", "My App", "MIT", "JavaScript", "AMD", "RequireJS", "Karma", "Jasmine", "PhantomJS",
+                                            "Protractor", "MochaChai", "ESLint", "Sass", "None", "Npm", "PlainApp", undefined, "./test/unit/temp/www");
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerWarningSpy.args[0][0]).to.contain("should probably");
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");

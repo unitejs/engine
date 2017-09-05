@@ -7,6 +7,7 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../../../dist/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../dist/engine/engineVariables";
+import { PipelineKey } from "../../../../dist/engine/pipelineKey";
 import { SharedAppFramework } from "../../../../dist/pipelineSteps/sharedAppFramework";
 import { FileSystemMock } from "../fileSystem.mock";
 
@@ -24,6 +25,10 @@ class TestSharedAppFramework extends SharedAppFramework {
         this.appModuleName = "app";
         this.htmlFiles = ["app"];
         this.appCssFiles = ["child/child"];
+    }
+
+    public influences(): PipelineKey[] {
+        return [];
     }
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {

@@ -10,10 +10,22 @@ import { KarmaConfiguration } from "../../configuration/models/karma/karmaConfig
 import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { WebdriverIoConfiguration } from "../../configuration/models/webdriverIo/webdriverIoConfiguration";
-import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
+import { PipelineKey } from "../../engine/pipelineKey";
+import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
-export class MochaChai extends EnginePipelineStepBase {
+export class MochaChai extends PipelineStepBase {
+    public influences(): PipelineKey[] {
+        return [
+            new PipelineKey("unite", "uniteConfigurationJson"),
+            new PipelineKey("content", "packageJson"),
+            new PipelineKey("linter", "esLint"),
+            new PipelineKey("unitTestRunner", "karma"),
+            new PipelineKey("e2eTestRunner", "protractor"),
+            new PipelineKey("e2eTestRunner", "webdriverIo")
+        ];
+    }
+
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         logger.info("Generating MochaChai Configuration");
 

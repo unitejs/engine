@@ -5,19 +5,17 @@ import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
-import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineKey } from "../../engine/pipelineKey";
+import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
-export class GitIgnore extends EnginePipelineStepBase {
+export class GitIgnore extends PipelineStepBase {
     private static FILENAME: string = ".gitignore";
 
     private _ignore: string[];
 
     public influences(): PipelineKey[] {
-        return [
-            new PipelineKey("scaffold", "uniteConfigurationJson")
-        ];
+        return [];
     }
 
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {

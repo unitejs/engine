@@ -40,9 +40,17 @@ describe("E2eTestScaffold", () => {
         await fileSystemMock.directoryDelete("./test/unit/temp");
     });
 
-    it("can be created", async () => {
+    it("can be created", () => {
         const obj = new E2eTestScaffold();
         Chai.should().exist(obj);
+    });
+
+    describe("influences", () => {
+        it("can be called and return influences", async () => {
+            const obj = new E2eTestScaffold();
+            const res = obj.influences();
+            Chai.expect(res.length).to.be.equal(1);
+        });
     });
 
     describe("process", () => {

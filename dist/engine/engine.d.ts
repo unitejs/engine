@@ -12,9 +12,7 @@ export declare class Engine implements IEngine {
     private _engineRootFolder;
     private _engineAssetsFolder;
     private _enginePackageJson;
-    private _moduleIdMap;
-    private _pipelineStepCache;
-    constructor();
+    private _pipeline;
     initialise(logger: ILogger, fileSystem: IFileSystem): Promise<number>;
     version(): string;
     configure(packageName: string | undefined | null, title: string | undefined | null, license: string | undefined | null, sourceLanguage: string | undefined | null, moduleType: string | undefined | null, bundler: string | undefined | null, unitTestRunner: string | undefined | null, unitTestFramework: string | undefined | null, unitTestEngine: string | undefined | null, e2eTestRunner: string | undefined | null, e2eTestFramework: string | undefined | null, linter: string | undefined | null, cssPre: string | undefined | null, cssPost: string | undefined | null, packageManager: string | undefined | null, applicationFramework: string | undefined | null, force: boolean | undefined | null, outputDirectory: string | undefined | null): Promise<number>;
@@ -31,8 +29,5 @@ export declare class Engine implements IEngine {
     private platformAdd(platformName, outputDirectory, uniteConfiguration);
     private platformRemove(platformName, outputDirectory, uniteConfiguration);
     private createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
-    private runPipeline(pipelineSteps, uniteConfiguration, engineVariables);
-    private getPipelineStep<T>(moduleType, moduleId);
-    private tryLoadPipelineStep(uniteConfiguration, moduleType, moduleId, configurationType?, defineProperty?);
     private mapParser(input);
 }

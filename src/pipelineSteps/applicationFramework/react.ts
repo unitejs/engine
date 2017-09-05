@@ -2,7 +2,6 @@
  * Pipeline step to generate scaffolding for React application.
  */
 import { ArrayHelper } from "unitejs-framework/dist/helpers/arrayHelper";
-import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { BabelConfiguration } from "../../configuration/models/babel/babelConfiguration";
@@ -17,8 +16,8 @@ import { SharedAppFramework } from "../sharedAppFramework";
 export class React extends SharedAppFramework {
     public influences(): PipelineKey[] {
         return [
+            new PipelineKey("unite", "uniteConfigurationJson"),
             new PipelineKey("content", "packageJson"),
-            new PipelineKey("scaffold", "uniteConfigurationJson"),
             new PipelineKey("language", "javaScript"),
             new PipelineKey("language", "typeScript"),
             new PipelineKey("linter", "esLint"),
@@ -97,11 +96,6 @@ export class React extends SharedAppFramework {
             ArrayHelper.addRemove(babelConfiguration.presets, "react", cond);
         }
 
-        const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
-        if (typeScriptConfiguration) {
-            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "jsx", "react", cond);
-        }
-
         const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
         if (protractorConfiguration) {
             const plugin = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
@@ -114,6 +108,11 @@ export class React extends SharedAppFramework {
         }
 
         if (cond) {
+            const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
+            if (typeScriptConfiguration) {
+                typeScriptConfiguration.compilerOptions.jsx = "react";
+            }
+
             const codeExtension = `!${engineVariables.sourceLanguageExt}x`;
             let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [
                 `app${codeExtension}`,

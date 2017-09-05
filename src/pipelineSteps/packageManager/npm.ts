@@ -6,12 +6,20 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { PackageConfiguration } from "../../configuration/models/packages/packageConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
-import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
+import { PipelineKey } from "../../engine/pipelineKey";
+import { PipelineStepBase } from "../../engine/pipelineStepBase";
 import { IPackageManager } from "../../interfaces/IPackageManager";
 import { PackageUtils } from "../packageUtils";
 
-export class Npm extends EnginePipelineStepBase implements IPackageManager {
+export class Npm extends PipelineStepBase implements IPackageManager {
+    public influences(): PipelineKey[] {
+        return [
+            new PipelineKey("unite", "uniteConfigurationJson"),
+            new PipelineKey("content", "gitIgnore")
+        ];
+    }
+
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         const gitIgnoreConfiguration = engineVariables.getConfiguration<string[]>("GitIgnore");
         if (gitIgnoreConfiguration) {

@@ -45,9 +45,17 @@ describe("SystemJs", () => {
         await fileSystemMock.directoryDelete("./test/unit/temp");
     });
 
-    it("can be created", async () => {
+    it("can be created", () => {
         const obj = new SystemJs();
         Chai.should().exist(obj);
+    });
+
+    describe("influences", () => {
+        it("can be called and return influences", async () => {
+            const obj = new SystemJs();
+            const res = obj.influences();
+            Chai.expect(res.length).to.be.equal(5);
+        });
     });
 
     describe("process", () => {

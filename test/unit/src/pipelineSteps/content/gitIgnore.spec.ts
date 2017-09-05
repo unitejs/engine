@@ -39,9 +39,17 @@ describe("GitIgnore", () => {
         await fileSystemMock.directoryDelete("./test/unit/temp");
     });
 
-    it("can be created", async () => {
+    it("can be created", () => {
         const obj = new GitIgnore();
         Chai.should().exist(obj);
+    });
+
+    describe("influences", () => {
+        it("can be called and return influences", async () => {
+            const obj = new GitIgnore();
+            const res = obj.influences();
+            Chai.expect(res.length).to.be.equal(0);
+        });
     });
 
     describe("initialise", () => {

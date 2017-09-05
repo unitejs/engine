@@ -4,12 +4,14 @@
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
-import { IEnginePipelineStep } from "../interfaces/IEnginePipelineStep";
+import { IPipelineStep } from "../interfaces/IPipelineStep";
 import { EngineVariables } from "./engineVariables";
 import { MarkerState } from "./markerState";
-export declare abstract class EnginePipelineStepBase implements IEnginePipelineStep {
+import { PipelineKey } from "./pipelineKey";
+export declare abstract class PipelineStepBase implements IPipelineStep {
     static MARKER: string;
     initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
+    abstract influences(): PipelineKey[];
     abstract process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     copyFile(logger: ILogger, fileSystem: IFileSystem, sourceFolder: string, sourceFilename: string, destFolder: string, destFilename: string, force: boolean): Promise<number>;
     deleteFile(logger: ILogger, fileSystem: IFileSystem, folder: string, filename: string, force: boolean): Promise<number>;

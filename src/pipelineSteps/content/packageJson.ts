@@ -6,19 +6,17 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { PackageConfiguration } from "../../configuration/models/packages/packageConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
-import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineKey } from "../../engine/pipelineKey";
+import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
-export class PackageJson extends EnginePipelineStepBase {
+export class PackageJson extends PipelineStepBase {
     private static FILENAME: string = "package.json";
 
     private _configuration: PackageConfiguration;
 
     public influences(): PipelineKey[] {
-        return [
-            new PipelineKey("scaffold", "uniteConfigurationJson")
-        ];
+        return [];
     }
 
     public async initialise(logger: ILogger,

@@ -46,9 +46,17 @@ describe("MochaChai", () => {
         await fileSystemMock.directoryDelete("./test/unit/temp");
     });
 
-    it("can be created", async () => {
+    it("can be created", () => {
         const obj = new MochaChai();
         Chai.should().exist(obj);
+    });
+
+    describe("influences", () => {
+        it("can be called and return influences", async () => {
+            const obj = new MochaChai();
+            const res = obj.influences();
+            Chai.expect(res.length).to.be.equal(6);
+        });
     });
 
     describe("process", () => {

@@ -2,7 +2,6 @@
  * Pipeline step to generate scaffolding for plain application.
  */
 import { ArrayHelper } from "unitejs-framework/dist/helpers/arrayHelper";
-import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
@@ -14,8 +13,8 @@ import { SharedAppFramework } from "../sharedAppFramework";
 export class PlainApp extends SharedAppFramework {
     public influences(): PipelineKey[] {
         return [
+            new PipelineKey("unite", "uniteConfigurationJson"),
             new PipelineKey("content", "packageJson"),
-            new PipelineKey("scaffold", "uniteConfigurationJson"),
             new PipelineKey("e2eTestRunner", "webdriverIo"),
             new PipelineKey("e2eTestRunner", "protractor")
         ];

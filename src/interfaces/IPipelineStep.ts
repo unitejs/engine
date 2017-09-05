@@ -7,7 +7,7 @@ import { UniteConfiguration } from "../configuration/models/unite/uniteConfigura
 import { EngineVariables } from "../engine/engineVariables";
 import { PipelineKey } from "../engine/pipelineKey";
 
-export interface IEnginePipelineStep {
+export interface IPipelineStep {
     influences(): PipelineKey[];
 
     initialise(logger: ILogger,

@@ -45,7 +45,7 @@ describe("PackageUtils", () => {
         sandbox.restore();
     });
 
-    it("can be created", async () => {
+    it("can be created", () => {
         const obj = new PackageUtils();
         Chai.should().exist(obj);
     });

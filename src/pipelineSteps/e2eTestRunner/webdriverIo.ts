@@ -9,11 +9,11 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { EsLintConfiguration } from "../../configuration/models/eslint/esLintConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { WebdriverIoConfiguration } from "../../configuration/models/webdriverIo/webdriverIoConfiguration";
-import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineKey } from "../../engine/pipelineKey";
+import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
-export class WebdriverIo extends EnginePipelineStepBase {
+export class WebdriverIo extends PipelineStepBase {
     private static FILENAME: string = "wdio.conf.js";
 
     private _configuration: WebdriverIoConfiguration;
@@ -21,8 +21,8 @@ export class WebdriverIo extends EnginePipelineStepBase {
 
     public influences(): PipelineKey[] {
         return [
+            new PipelineKey("unite", "uniteConfigurationJson"),
             new PipelineKey("content", "packageJson"),
-            new PipelineKey("scaffold", "uniteConfigurationJson"),
             new PipelineKey("linter", "esLint")
         ];
     }

@@ -15,8 +15,8 @@ import { SharedAppFramework } from "../sharedAppFramework";
 export class Angular extends SharedAppFramework {
     public influences(): PipelineKey[] {
         return [
+            new PipelineKey("unite", "uniteConfigurationJson"),
             new PipelineKey("content", "packageJson"),
-            new PipelineKey("scaffold", "uniteConfigurationJson"),
             new PipelineKey("language", "javaScript"),
             new PipelineKey("language", "typeScript"),
             new PipelineKey("linter", "esLint")

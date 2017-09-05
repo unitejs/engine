@@ -57,9 +57,17 @@ describe("PlainApp", () => {
         await fileSystemMock.directoryDelete("./test/unit/temp");
     });
 
-    it("can be created", async () => {
+    it("can be created", () => {
         const obj = new PlainApp();
         Chai.should().exist(obj);
+    });
+
+    describe("influences", () => {
+        it("can be called and return influences", async () => {
+            const obj = new PlainApp();
+            const res = obj.influences();
+            Chai.expect(res.length).to.be.equal(4);
+        });
     });
 
     describe("process", () => {
@@ -74,9 +82,10 @@ describe("PlainApp", () => {
 
         it("can be called with application framework matching", async () => {
             const obj = new PlainApp();
+            engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.push({ path: "aaa" });
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(1);
+            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(2);
             Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins")).to.be.equal(undefined);
         });
 

@@ -7,10 +7,21 @@ import { BabelConfiguration } from "../../configuration/models/babel/babelConfig
 import { HtmlTemplateConfiguration } from "../../configuration/models/htmlTemplate/htmlTemplateConfiguration";
 import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
-import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
+import { PipelineKey } from "../../engine/pipelineKey";
+import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
-export class CommonJs extends EnginePipelineStepBase {
+export class CommonJs extends PipelineStepBase {
+    public influences(): PipelineKey[] {
+        return [
+            new PipelineKey("unite", "uniteConfigurationJson"),
+            new PipelineKey("content", "packageJson"),
+            new PipelineKey("content", "htmlTemplate"),
+            new PipelineKey("language", "javaScript"),
+            new PipelineKey("language", "typeScript")
+        ];
+    }
+
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         // We use SystemJS to load cjs modules for the unbundled version of the project and unit testing
         engineVariables.toggleDevDependency(["systemjs"], super.condition(uniteConfiguration.unitTestRunner, "Karma") && super.condition(uniteConfiguration.moduleType, "CommonJS"));

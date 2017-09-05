@@ -6,10 +6,19 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { KarmaConfiguration } from "../../configuration/models/karma/karmaConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
-import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
+import { PipelineKey } from "../../engine/pipelineKey";
+import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
-export class PhantomJs extends EnginePipelineStepBase {
+export class PhantomJs extends PipelineStepBase {
+    public influences(): PipelineKey[] {
+        return [
+            new PipelineKey("unite", "uniteConfigurationJson"),
+            new PipelineKey("content", "packageJson"),
+            new PipelineKey("unitTestRunner", "karma")
+        ];
+    }
+
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["karma-phantomjs-launcher", "bluebird"],
                                             super.condition(uniteConfiguration.unitTestRunner, "Karma") && super.condition(uniteConfiguration.unitTestEngine, "PhantomJS"));

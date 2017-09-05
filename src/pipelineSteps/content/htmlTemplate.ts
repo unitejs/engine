@@ -5,11 +5,11 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { HtmlTemplateConfiguration } from "../../configuration/models/htmlTemplate/htmlTemplateConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
-import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineKey } from "../../engine/pipelineKey";
+import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
-export class HtmlTemplate extends EnginePipelineStepBase {
+export class HtmlTemplate extends PipelineStepBase {
     private static FILENAME_NO_BUNDLE: string = "index-no-bundle.html";
     private static FILENAME_BUNDLE: string = "index-bundle.html";
 
@@ -17,9 +17,7 @@ export class HtmlTemplate extends EnginePipelineStepBase {
     private _htmlBundle: HtmlTemplateConfiguration;
 
     public influences(): PipelineKey[] {
-        return [
-            new PipelineKey("scaffold", "uniteConfigurationJson")
-        ];
+        return [];
     }
 
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {

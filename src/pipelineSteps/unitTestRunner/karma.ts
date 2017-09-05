@@ -8,13 +8,21 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { KarmaConfiguration } from "../../configuration/models/karma/karmaConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
-import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
+import { PipelineKey } from "../../engine/pipelineKey";
+import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
-export class Karma extends EnginePipelineStepBase {
+export class Karma extends PipelineStepBase {
     private static FILENAME: string = "karma.conf.js";
 
     private _configuration: KarmaConfiguration;
+
+    public influences(): PipelineKey[] {
+        return [
+            new PipelineKey("unite", "uniteConfigurationJson"),
+            new PipelineKey("content", "packageJson")
+        ];
+    }
 
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
 

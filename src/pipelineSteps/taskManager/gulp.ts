@@ -4,15 +4,23 @@
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
-import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
+import { PipelineKey } from "../../engine/pipelineKey";
+import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
-export class Gulp extends EnginePipelineStepBase {
+export class Gulp extends PipelineStepBase {
     private _buildFolder: string;
     private _tasksFolder: string;
     private _utilFolder: string;
 
     private _files: { sourceFolder: string; sourceFile: string; destFolder: string; destFile: string; keep: boolean }[];
+
+    public influences(): PipelineKey[] {
+        return [
+            new PipelineKey("unite", "uniteConfigurationJson"),
+            new PipelineKey("content", "packageJson")
+        ];
+    }
 
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         this._buildFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "build");

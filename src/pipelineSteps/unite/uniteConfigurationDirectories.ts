@@ -6,10 +6,17 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { UniteDirectories } from "../../configuration/models/unite/uniteDirectories";
 import { UniteWwwDirectories } from "../../configuration/models/unite/uniteWwwDirectories";
-import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
+import { PipelineKey } from "../../engine/pipelineKey";
+import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
-export class UniteConfigurationDirectories extends EnginePipelineStepBase {
+export class UniteConfigurationDirectories extends PipelineStepBase {
+    public influences(): PipelineKey[] {
+        return [
+            new PipelineKey("unite", "uniteConfigurationJson")
+        ];
+    }
+
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
             logger.info("Generating directories configuration", { wwwFolder: engineVariables.wwwRootFolder });

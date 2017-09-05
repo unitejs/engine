@@ -6,13 +6,21 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { TsLintConfiguration } from "../../configuration/models/tslint/tsLintConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
-import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
+import { PipelineKey } from "../../engine/pipelineKey";
+import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
-export class TsLint extends EnginePipelineStepBase {
+export class TsLint extends PipelineStepBase {
     private static FILENAME: string = "tslint.json";
 
     private _configuration: TsLintConfiguration;
+
+    public influences(): PipelineKey[] {
+        return [
+            new PipelineKey("unite", "uniteConfigurationJson"),
+            new PipelineKey("content", "packageJson")
+        ];
+    }
 
     public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,

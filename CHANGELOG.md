@@ -10,6 +10,7 @@
 * Karma read current config and modify not overwrite
 * Karma generates include files at unit test time not configure
 * Removed karma pipeline step during clientConfiguration commands
+* Pipeline built using influences so dependenies are always ordered correctly
 
 ## v0.9.6
 

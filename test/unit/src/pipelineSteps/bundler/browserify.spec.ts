@@ -40,9 +40,17 @@ describe("Browserify", () => {
         sandbox.restore();
     });
 
-    it("can be created", async () => {
+    it("can be created", () => {
         const obj = new Browserify();
         Chai.should().exist(obj);
+    });
+
+    describe("influences", () => {
+        it("can be called and return influences", async () => {
+            const obj = new Browserify();
+            const res = obj.influences();
+            Chai.expect(res.length).to.be.equal(2);
+        });
     });
 
     describe("initialise", () => {

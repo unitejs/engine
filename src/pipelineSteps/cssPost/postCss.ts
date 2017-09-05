@@ -6,19 +6,19 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { PostCssConfiguration } from "../../configuration/models/postcss/postCssConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
-import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineKey } from "../../engine/pipelineKey";
+import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
-export class PostCss extends EnginePipelineStepBase {
+export class PostCss extends PipelineStepBase {
     private static FILENAME: string = ".postcssrc.json";
 
     private _configuration: PostCssConfiguration;
 
     public influences(): PipelineKey[] {
         return [
-            new PipelineKey("content", "packageJson"),
-            new PipelineKey("scaffold", "uniteConfigurationJson")
+            new PipelineKey("unite", "uniteConfigurationJson"),
+            new PipelineKey("content", "packageJson")
         ];
     }
 

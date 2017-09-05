@@ -8,11 +8,11 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { EsLintConfiguration } from "../../configuration/models/eslint/esLintConfiguration";
 import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
-import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineKey } from "../../engine/pipelineKey";
+import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
-export class Protractor extends EnginePipelineStepBase {
+export class Protractor extends PipelineStepBase {
     private static FILENAME: string = "protractor.conf.js";
 
     private _configuration: ProtractorConfiguration;
@@ -21,8 +21,8 @@ export class Protractor extends EnginePipelineStepBase {
 
     public influences(): PipelineKey[] {
         return [
+            new PipelineKey("unite", "uniteConfigurationJson"),
             new PipelineKey("content", "packageJson"),
-            new PipelineKey("scaffold", "uniteConfigurationJson"),
             new PipelineKey("linter", "esLint")
         ];
     }

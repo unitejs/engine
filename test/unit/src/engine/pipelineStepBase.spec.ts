@@ -6,17 +6,22 @@ import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../../../dist/configuration/models/unite/uniteConfiguration";
-import { EnginePipelineStepBase } from "../../../../dist/engine/enginePipelineStepBase";
 import { EngineVariables } from "../../../../dist/engine/engineVariables";
+import { PipelineKey } from "../../../../dist/engine/pipelineKey";
+import { PipelineStepBase } from "../../../../dist/engine/pipelineStepBase";
 import { FileSystemMock } from "../fileSystem.mock";
 
-class TestPipelineStep extends EnginePipelineStepBase {
+class TestPipelineStep extends PipelineStepBase {
+    public influences(): PipelineKey[] {
+        return [];
+    }
+
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         return Promise.resolve(0);
     }
 }
 
-describe("EnginePipelineStepBase", () => {
+describe("PipelineStepBase", () => {
     let sandbox: Sinon.SinonSandbox;
     let loggerStub: ILogger;
     let fileSystemStub: IFileSystem;
@@ -46,7 +51,7 @@ describe("EnginePipelineStepBase", () => {
         await fileSystemStub.directoryDelete("./test/unit/temp");
     });
 
-    it("can be created", async () => {
+    it("can be created", () => {
         const obj = new TestPipelineStep();
         Chai.should().exist(obj);
     });

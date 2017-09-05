@@ -46,9 +46,17 @@ describe("Jasmine", () => {
         await fileSystemMock.directoryDelete("./test/unit/temp");
     });
 
-    it("can be created", async () => {
+    it("can be created", () => {
         const obj = new Jasmine();
         Chai.should().exist(obj);
+    });
+
+    describe("influences", () => {
+        it("can be called and return influences", async () => {
+            const obj = new Jasmine();
+            const res = obj.influences();
+            Chai.expect(res.length).to.be.equal(6);
+        });
     });
 
     describe("process", () => {

@@ -2,7 +2,6 @@
  * Pipeline step to generate scaffolding for Aurelia application.
  */
 import { ArrayHelper } from "unitejs-framework/dist/helpers/arrayHelper";
-import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
@@ -15,8 +14,8 @@ import { SharedAppFramework } from "../sharedAppFramework";
 export class Aurelia extends SharedAppFramework {
     public influences(): PipelineKey[] {
         return [
+            new PipelineKey("unite", "uniteConfigurationJson"),
             new PipelineKey("content", "packageJson"),
-            new PipelineKey("scaffold", "uniteConfigurationJson"),
             new PipelineKey("e2eTestRunner", "webdriverIo"),
             new PipelineKey("e2eTestRunner", "protractor"),
             new PipelineKey("language", "typeScript")
@@ -57,12 +56,13 @@ export class Aurelia extends SharedAppFramework {
         if (webdriverIoPlugins) {
             ArrayHelper.addRemove(webdriverIoPlugins, "unitejs-aurelia-webdriver-plugin", cond);
         }
-        const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
-        if (typeScriptConfiguration) {
-            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "experimentalDecorators", true, cond);
-        }
 
         if (cond) {
+            const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
+            if (typeScriptConfiguration) {
+                typeScriptConfiguration.compilerOptions.experimentalDecorators = true;
+            }
+
             let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper", "entryPoint", "child/child"]);
 
             if (ret === 0) {

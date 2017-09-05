@@ -42,9 +42,17 @@ describe("PackageJson", () => {
         await fileSystemMock.directoryDelete("./test/unit/temp");
     });
 
-    it("can be created", async () => {
+    it("can be created", () => {
         const obj = new PackageJson();
         Chai.should().exist(obj);
+    });
+
+    describe("influences", () => {
+        it("can be called and return influences", async () => {
+            const obj = new PackageJson();
+            const res = obj.influences();
+            Chai.expect(res.length).to.be.equal(0);
+        });
     });
 
     describe("initialise", () => {

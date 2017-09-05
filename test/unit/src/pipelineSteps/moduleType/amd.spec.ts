@@ -45,9 +45,17 @@ describe("Amd", () => {
         await fileSystemMock.directoryDelete("./test/unit/temp");
     });
 
-    it("can be created", async () => {
+    it("can be created", () => {
         const obj = new Amd();
         Chai.should().exist(obj);
+    });
+
+    describe("influences", () => {
+        it("can be called and return influences", async () => {
+            const obj = new Amd();
+            const res = obj.influences();
+            Chai.expect(res.length).to.be.equal(5);
+        });
     });
 
     describe("process", () => {

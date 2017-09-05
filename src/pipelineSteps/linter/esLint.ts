@@ -7,15 +7,23 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { EsLintConfiguration } from "../../configuration/models/eslint/esLintConfiguration";
 import { EsLintParserOptions } from "../../configuration/models/eslint/esLintParserOptions";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
-import { EnginePipelineStepBase } from "../../engine/enginePipelineStepBase";
 import { EngineVariables } from "../../engine/engineVariables";
+import { PipelineKey } from "../../engine/pipelineKey";
+import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
-export class EsLint extends EnginePipelineStepBase {
+export class EsLint extends PipelineStepBase {
     private static FILENAME: string = ".eslintrc.json";
     private static FILENAME2: string = ".eslintignore";
 
     private _configuration: EsLintConfiguration;
     private _ignore: string[];
+
+    public influences(): PipelineKey[] {
+        return [
+            new PipelineKey("unite", "uniteConfigurationJson"),
+            new PipelineKey("content", "packageJson")
+        ];
+    }
 
     public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,

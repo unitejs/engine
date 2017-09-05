@@ -40,9 +40,17 @@ describe("Webpack", () => {
         sandbox.restore();
     });
 
-    it("can be created", async () => {
+    it("can be created", () => {
         const obj = new Webpack();
         Chai.should().exist(obj);
+    });
+
+    describe("influences", () => {
+        it("can be called and return influences", async () => {
+            const obj = new Webpack();
+            const res = obj.influences();
+            Chai.expect(res.length).to.be.equal(2);
+        });
     });
 
     describe("initialise", () => {

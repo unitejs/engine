@@ -8,7 +8,7 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { PackageConfiguration } from "../../../../../dist/configuration/models/packages/packageConfiguration";
 import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../../dist/engine/engineVariables";
-import { UniteConfigurationJson } from "../../../../../dist/pipelineSteps/scaffold/uniteConfigurationJson";
+import { UniteConfigurationJson } from "../../../../../dist/pipelineSteps/unite/uniteConfigurationJson";
 import { FileSystemMock } from "../../fileSystem.mock";
 
 describe("UniteConfigurationJson", () => {
@@ -43,9 +43,17 @@ describe("UniteConfigurationJson", () => {
         await fileSystemMock.directoryDelete("./test/unit/temp");
     });
 
-    it("can be created", async () => {
+    it("can be created", () => {
         const obj = new UniteConfigurationJson();
         Chai.should().exist(obj);
+    });
+
+    describe("influences", () => {
+        it("can be called and return influences", async () => {
+            const obj = new UniteConfigurationJson();
+            const res = obj.influences();
+            Chai.expect(res.length).to.be.equal(0);
+        });
     });
 
     describe("process", () => {
