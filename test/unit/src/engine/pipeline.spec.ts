@@ -8,7 +8,7 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../../../dist/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../dist/engine/engineVariables";
 import { Pipeline } from "../../../../dist/engine/pipeline";
-import { PipelineKey } from "../../../../dist/engine/PipelineKey";
+import { PipelineKey } from "../../../../dist/engine/pipelineKey";
 import { PipelineStepBase } from "../../../../dist/engine/pipelineStepBase";
 import { IPipelineStep } from "../../../../dist/interfaces/IPipelineStep";
 import { FileSystemMock } from "../fileSystem.mock";
