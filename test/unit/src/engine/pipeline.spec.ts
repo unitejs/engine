@@ -564,6 +564,7 @@ describe("Pipeline", () => {
             const ret = obj.orderByInfluence(keyMap);
             Chai.expect(ret.map(step => step.constructor.name)).to.be.deep.equal([
                 "OutputDirectory",
+                "Assets",
                 "UniteThemeConfigurationJson",
                 "AppScaffold",
                 "E2eTestScaffold",
@@ -605,7 +606,6 @@ describe("Pipeline", () => {
                 "UniteConfigurationDirectories",
                 "UniteConfigurationJson",
                 "ReadMe",
-                "Assets",
                 "PackageJson",
                 "License",
                 "HtmlTemplate",
@@ -698,6 +698,7 @@ describe("Pipeline", () => {
             const ret = obj.orderByInfluence(keyMap);
             Chai.expect(ret.map(step => step.constructor.name)).to.be.deep.equal([
                 "OutputDirectory",
+                "Assets",
                 "UniteThemeConfigurationJson",
                 "AppScaffold",
                 "E2eTestScaffold",
@@ -739,7 +740,6 @@ describe("Pipeline", () => {
                 "UniteConfigurationDirectories",
                 "UniteConfigurationJson",
                 "ReadMe",
-                "Assets",
                 "PackageJson",
                 "License",
                 "HtmlTemplate",

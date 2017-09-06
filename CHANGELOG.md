@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.9.8
+
+* Fixed missing assets folder when creating theme
+
 ## v0.9.7
 
 * CLI version now shows engine as well

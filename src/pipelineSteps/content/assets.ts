@@ -14,7 +14,8 @@ export class Assets extends PipelineStepBase {
 
     public influences(): PipelineKey[] {
         return [
-            new PipelineKey("content", "packageJson")
+            new PipelineKey("applicationFramework", "*"),
+            new PipelineKey("unite", "uniteThemeConfigurationJson")
         ];
     }
 

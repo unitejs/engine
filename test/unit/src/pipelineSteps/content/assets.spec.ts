@@ -49,7 +49,7 @@ describe("Assets", () => {
         it("can be called and return influences", async () => {
             const obj = new Assets();
             const res = obj.influences();
-            Chai.expect(res.length).to.be.equal(1);
+            Chai.expect(res.length).to.be.equal(2);
         });
     });
 
