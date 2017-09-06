@@ -32,7 +32,7 @@ export class PhantomJs extends PipelineStepBase {
             const bbInclude = fileSystem.pathToWeb(
                 fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, "bluebird/js/browser/bluebird.js")));
 
-            ArrayHelper.addRemove(karmaConfiguration.files, { pattern: bbInclude, included: true, isPerm: true }, addCond, (obj, item) => obj.pattern === item.pattern);
+            ArrayHelper.addRemove(karmaConfiguration.files, { pattern: bbInclude, included: true, includeType: "polyfill" }, addCond, (obj, item) => obj.pattern === item.pattern);
         }
 
         return 0;

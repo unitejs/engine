@@ -16,4 +16,5 @@ export class UniteClientPackage {
     public map: { [id: string]: string };
     public loaders: { [id: string]: string };
     public scriptIncludeMode: ScriptIncludeMode;
+    public isModuleLoader: boolean;
 }

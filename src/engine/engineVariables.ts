@@ -108,6 +108,7 @@ export class EngineVariables {
                                assets: string,
                                map: { [id: string]: string},
                                loaders: { [id: string]: string},
+                               isModuleLoader: boolean,
                                required: boolean): void {
         const clientPackage = new UniteClientPackage();
         clientPackage.includeMode = includeMode;
@@ -121,6 +122,7 @@ export class EngineVariables {
         clientPackage.map = map;
         clientPackage.loaders = loaders;
         clientPackage.scriptIncludeMode = scriptIncludeMode;
+        clientPackage.isModuleLoader = isModuleLoader;
 
         let opArr: { [id: string]: UniteClientPackage };
         if (required) {

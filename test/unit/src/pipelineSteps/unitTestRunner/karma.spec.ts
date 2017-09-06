@@ -3,6 +3,7 @@
  */
 import * as Chai from "chai";
 import * as Sinon from "sinon";
+import { JsonHelper } from "unitejs-framework/dist/helpers/jsonHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { KarmaConfiguration } from "../../../../../dist/configuration/models/karma/karmaConfiguration";
@@ -102,11 +103,18 @@ describe("Karma", () => {
 
         it("can succeed when file does exist and has files", async () => {
             fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
-            fileSystemMock.fileReadText = sandbox.stub().resolves("config.set({ files: [ { pattern: 'blah', isPerm: true } ] });");
+            const data = [
+                { pattern: "blah", includeType: "polyfill" },
+                { pattern: "foo", includeType: "clientPackage" },
+                { pattern: "bing", includeType: "moduleLoader" },
+                { pattern: "doh", includeType: "fixed" }
+            ];
+            fileSystemMock.fileReadText = sandbox.stub().resolves(`config.set({ files: ${JsonHelper.codify(data)} });`);
             const obj = new Karma();
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma").files[0].pattern).to.be.equal("blah");
+            Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma").files[1].pattern).to.be.equal("doh");
         });
 
         it("can succeed when file does exist but forced", async () => {

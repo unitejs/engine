@@ -54,6 +54,7 @@ export class MochaChai extends PipelineStepBase {
             undefined,
             undefined,
             undefined,
+            undefined,
             isEither);
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");

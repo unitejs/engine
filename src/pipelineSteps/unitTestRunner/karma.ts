@@ -39,7 +39,9 @@ export class Karma extends PipelineStepBase {
                         if (jsonMatches && jsonMatches.length === 3) {
                             this._configuration = JsonHelper.parseCode(jsonMatches[1]);
                             if (this._configuration.files) {
-                                this._configuration.files = this._configuration.files.filter(item => item.isPerm);
+                                let keepFiles = this._configuration.files.filter(item => item.includeType === "polyfill");
+                                keepFiles = keepFiles.concat(this._configuration.files.filter(item => item.includeType === "fixed"));
+                                this._configuration.files = keepFiles;
                             }
                         } else {
                             logger.error(`Reading existing ${Karma.FILENAME} regex failed to parse`);
@@ -138,7 +140,7 @@ export class Karma extends PipelineStepBase {
                               {
                                    pattern: srcInclude,
                                    included: false,
-                                   isPerm: true
+                                   includeType: "fixed"
                               },
                               true,
                               (object, item) => object.pattern === item.pattern);
@@ -147,7 +149,7 @@ export class Karma extends PipelineStepBase {
                               {
                                    pattern: "../unite.json",
                                    included: false,
-                                   isPerm: true
+                                   includeType: "fixed"
                               },
                               true,
                               (object, item) => object.pattern === item.pattern);
@@ -157,7 +159,7 @@ export class Karma extends PipelineStepBase {
                                    pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
                                                                                              fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "../unit-module-config.js"))),
                                    included: true,
-                                   isPerm: true
+                                   includeType: "fixed"
                               },
                               true,
                               (object, item) => object.pattern === item.pattern);
@@ -167,7 +169,7 @@ export class Karma extends PipelineStepBase {
                                    pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
                                                                                              fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "../unit-bootstrap.js"))),
                                    included: true,
-                                   isPerm: true
+                                   includeType: "fixed"
                               },
                               true,
                               (object, item) => object.pattern === item.pattern);
@@ -177,7 +179,7 @@ export class Karma extends PipelineStepBase {
                                    pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
                                                                                              fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "**/*.spec.js"))),
                                    included: false,
-                                   isPerm: true
+                                   includeType: "fixed"
                               },
                               true,
                               (object, item) => object.pattern === item.pattern);

@@ -54,6 +54,7 @@ export class React extends SharedAppFramework {
             undefined,
             undefined,
             undefined,
+            undefined,
             cond);
 
         engineVariables.toggleClientPackage(
@@ -68,6 +69,7 @@ export class React extends SharedAppFramework {
             undefined,
             undefined,
             undefined,
+            undefined,
             cond);
 
         engineVariables.toggleClientPackage(
@@ -79,6 +81,7 @@ export class React extends SharedAppFramework {
             "both",
             "none",
             false,
+            undefined,
             undefined,
             undefined,
             undefined,

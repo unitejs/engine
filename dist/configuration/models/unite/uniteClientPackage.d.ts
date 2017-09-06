@@ -21,4 +21,5 @@ export declare class UniteClientPackage {
         [id: string]: string;
     };
     scriptIncludeMode: ScriptIncludeMode;
+    isModuleLoader: boolean;
 }

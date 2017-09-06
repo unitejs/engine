@@ -100,6 +100,7 @@ export class Angular extends SharedAppFramework {
                 undefined,
                 undefined,
                 undefined,
+                undefined,
                 super.condition(uniteConfiguration.applicationFramework, "Angular"));
         });
 
@@ -115,6 +116,7 @@ export class Angular extends SharedAppFramework {
             undefined,
             undefined,
             undefined,
+            undefined,
             super.condition(uniteConfiguration.applicationFramework, "Angular"));
 
         engineVariables.toggleClientPackage(
@@ -126,6 +128,7 @@ export class Angular extends SharedAppFramework {
             "both",
             "both",
             false,
+            undefined,
             undefined,
             undefined,
             undefined,
@@ -150,6 +153,7 @@ export class Angular extends SharedAppFramework {
             undefined,
             undefined,
             undefined,
+            undefined,
             super.condition(uniteConfiguration.applicationFramework, "Angular"));
 
         engineVariables.toggleClientPackage(
@@ -161,6 +165,7 @@ export class Angular extends SharedAppFramework {
             "both",
             "both",
             false,
+            undefined,
             undefined,
             undefined,
             undefined,

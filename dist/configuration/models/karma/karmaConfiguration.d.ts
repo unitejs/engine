@@ -41,7 +41,7 @@ export declare class KarmaConfiguration {
         included?: boolean;
         served?: true;
         nocache?: boolean;
-        isPerm?: boolean;
+        includeType?: string;
     }[];
     forceJSONP: boolean;
     formatError: any;

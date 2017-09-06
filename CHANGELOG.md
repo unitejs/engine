@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.0.0
+
+* Release
+* Fixed Ordering of karma include files can now be specified to help polyfills and module loaders
+
 ## v0.9.9
 
 * Fixed missing bluebird when running karma with phantomjs

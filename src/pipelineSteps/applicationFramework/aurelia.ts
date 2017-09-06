@@ -144,6 +144,7 @@ export class Aurelia extends SharedAppFramework {
             undefined,
             undefined,
             undefined,
+            undefined,
             super.condition(uniteConfiguration.applicationFramework, "Aurelia"));
 
         engineVariables.toggleClientPackage(
@@ -158,6 +159,7 @@ export class Aurelia extends SharedAppFramework {
             undefined,
             { text: "requirejs-text" },
             undefined,
+            undefined,
             super.condition(uniteConfiguration.applicationFramework, "Aurelia") && super.condition(uniteConfiguration.moduleType, "AMD"));
 
         engineVariables.toggleClientPackage(
@@ -171,6 +173,7 @@ export class Aurelia extends SharedAppFramework {
             false,
             undefined,
             { text: "systemjs-plugin-text" },
+            undefined,
             undefined,
             super.condition(uniteConfiguration.applicationFramework, "Aurelia") && super.condition(uniteConfiguration.moduleType, "SystemJS"));
     }
@@ -190,6 +193,7 @@ export class Aurelia extends SharedAppFramework {
                 "both",
                 "none",
                 clientPackage.isPackage ? true : false,
+                undefined,
                 undefined,
                 undefined,
                 undefined,

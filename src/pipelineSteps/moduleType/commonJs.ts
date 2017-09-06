@@ -38,6 +38,7 @@ export class CommonJs extends PipelineStepBase {
             undefined,
             undefined,
             undefined,
+            true,
             super.condition(uniteConfiguration.moduleType, "CommonJS"));
 
         if (super.condition(uniteConfiguration.moduleType, "CommonJS")) {

@@ -37,6 +37,7 @@ export class Amd extends PipelineStepBase {
             undefined,
             undefined,
             undefined,
+            true,
             super.condition(uniteConfiguration.moduleType, "AMD"));
 
         if (super.condition(uniteConfiguration.moduleType, "AMD")) {

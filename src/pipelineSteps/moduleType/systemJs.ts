@@ -37,6 +37,7 @@ export class SystemJs extends PipelineStepBase {
             undefined,
             undefined,
             undefined,
+            true,
             super.condition(uniteConfiguration.moduleType, "SystemJS"));
 
         if (super.condition(uniteConfiguration.moduleType, "SystemJS")) {

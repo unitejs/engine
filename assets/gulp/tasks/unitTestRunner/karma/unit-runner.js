@@ -13,42 +13,57 @@ const fs = require("fs");
 const path = require("path");
 
 function addClientPackageTestFiles (uniteConfig, files) {
-    const newFiles = [];
+    let newFiles = [];
+    const newModuleLoaders = [];
+
+    if (files) {
+        files.forEach((file => {
+            if (file.includeType === "polyfill") {
+                newFiles.push(file);
+            }
+        }));
+    }
 
     const testPackages = clientPackages.getTestPackages(uniteConfig);
     Object.keys(testPackages).forEach(key => {
         const pkg = testPackages[key];
+        const addArray = pkg.isModuleLoader ? newModuleLoaders : newFiles;
+        const includeType = pkg.isModuleLoader ? "moduleLoader" : "clientPackage";
         if (pkg.main) {
             const mainSplit = pkg.main.split("/");
             let main = mainSplit.pop();
             let location = mainSplit.join("/");
 
             if (pkg.isPackage) {
-                newFiles.push({
+                addArray.push({
                     "pattern": `./${path.join(uniteConfig.dirs.www.package, `${key}/${location}/**/*.{js,html,css}`)
                         .replace(/\\/g, "/")}`,
-                    "included": pkg.scriptIncludeMode === "notBundled" || pkg.scriptIncludeMode === "both"
+                    "included": pkg.scriptIncludeMode === "notBundled" || pkg.scriptIncludeMode === "both",
+                    includeType
                 });
             } else {
                 location += location.length > 0 ? "/" : "";
                 if (main === "*") {
                     main = "**/*.{js,html,css}";
                 }
-                newFiles.push({
+                addArray.push({
                     "pattern": `./${path.join(uniteConfig.dirs.www.package, `${key}/${location}${main}`)
                         .replace(/\\/g, "/")}`,
-                    "included": pkg.scriptIncludeMode === "notBundled" || pkg.scriptIncludeMode === "both"
+                    "included": pkg.scriptIncludeMode === "notBundled" || pkg.scriptIncludeMode === "both",
+                    includeType
                 });
             }
 
             if (pkg.testingAdditions) {
                 const additionKeys = Object.keys(pkg.testingAdditions);
                 additionKeys.forEach(additionKey => {
-                    newFiles.push({
-                        "pattern": `./${path.join(uniteConfig.dirs.www.package,
-                            `${key}/${pkg.testingAdditions[additionKey]}`)
-                            .replace(/\\/g, "/")}`,
-                        "included": pkg.scriptIncludeMode === "notBundled" || pkg.scriptIncludeMode === "both"
+                    addArray.push({
+                        "pattern": `./${path.join(
+                            uniteConfig.dirs.www.package,
+                            `${key}/${pkg.testingAdditions[additionKey]}`
+                        ).replace(/\\/g, "/")}`,
+                        "included": pkg.scriptIncludeMode === "notBundled" || pkg.scriptIncludeMode === "both",
+                        includeType
                     });
                 });
             }
@@ -59,24 +74,22 @@ function addClientPackageTestFiles (uniteConfig, files) {
             testPackages[key].assets.length > 0) {
             const cas = testPackages[key].assets.split(";");
             cas.forEach((ca) => {
-                newFiles.push({
+                addArray.push({
                     "pattern": `./${path.join(uniteConfig.dirs.www.package, `${key}/${ca}`)
                         .replace(/\\/g, "/")}`,
-                    "included": false
+                    "included": false,
+                    includeType
                 });
             });
         }
     });
 
+    newFiles = newFiles.concat(newModuleLoaders);
+
     if (files) {
         files.forEach((file => {
-            if (file.isPerm) {
-                const idx = newFiles.findIndex((item => item.pattern === file.pattern));
-                if (idx === -1) {
-                    newFiles.push(file);
-                } else {
-                    newFiles[idx].isPerm = true;
-                }
+            if (file.includeType === "fixed") {
+                newFiles.push(file);
             }
         }));
     }
