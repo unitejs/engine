@@ -33,8 +33,10 @@ function getDistFiles (uniteConfig, includeModes, isBundled, isMinified) {
                     const main = mainSplit.pop();
                     const location = mainSplit.join("/");
                     if (pkg.isPackage) {
-                        files[key] = path.join(`${uniteConfig.dirs.www.package}${key}/${location}`,
-                            "**/*.{js,html,css}");
+                        files[key] = path.join(
+                            `${uniteConfig.dirs.www.package}${key}/${location}`,
+                            "**/*.{js,html,css}"
+                        );
                     } else {
                         files[key] = path.join(`${uniteConfig.dirs.www.package}${key}/${location}`, main);
                     }
@@ -65,6 +67,7 @@ function getRequires (uniteConfig, includeModes, isMinified) {
 
 function getScriptIncludes (uniteConfig, isBundled) {
     const scriptIncludes = [];
+    const scriptIncludes2 = [];
 
     Object.keys(uniteConfig.clientPackages).forEach(key => {
         const pkg = uniteConfig.clientPackages[key];
@@ -74,11 +77,15 @@ function getScriptIncludes (uniteConfig, isBundled) {
             const main = (isBundled && pkg.mainMinified) ? pkg.mainMinified : pkg.main;
             const script = `./${path.join(uniteConfig.dirs.www.package, `${key}/${main}`).replace(/\\/g, "/")}`;
 
-            scriptIncludes.push(script);
+            if (pkg.isModuleLoader) {
+                scriptIncludes2.push(script);
+            } else {
+                scriptIncludes.push(script);
+            }
         }
     });
 
-    return scriptIncludes;
+    return scriptIncludes.concat(scriptIncludes2);
 }
 
 function getTestPackages (uniteConfig) {
