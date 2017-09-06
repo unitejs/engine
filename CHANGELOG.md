@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.9.9
+
+* Fixed missing bluebird when running karma with phantomjs
+
 ## v0.9.8
 
 * Fixed missing assets folder when creating theme
