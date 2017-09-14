@@ -40,7 +40,8 @@ gulp.task("e2e", async () => {
             "e2e-transpile",
             "e2e-serve",
             "e2e-run-test",
-            "e2e-post-clean");
+            "e2e-post-clean"
+        );
     } catch (err) {
         display.error("Unhandled error during task", err);
         process.exit(1);

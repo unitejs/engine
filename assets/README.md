@@ -1,3 +1,4 @@
+
 The main contents of the application are in the www folder, it is created this way to allow for platform packaged versions at a higher level.
 
 The following pre-requisities are needed
@@ -30,6 +31,10 @@ You can specify a buildConfiguration with the following syntax:
 
     gulp build --buildConfiguration=prod
 
+If you don't want to keep running the build command you can add the watch switch, this will monitor for changes in source/views/styling and build whatever is required. This will perform an initial complete build, but only run some of the sub tasks for changes, so you should run a full build before performing other tasks:
+
+    gulp build --watch
+
 ### theme-build
 
 You will probably need to run this task at least once to generate the necessary favicon images and meta tags. See [Theme Assets](#themeassets) for more details.
@@ -45,6 +50,10 @@ You can run just a subset of tests by providing a source name as follows.
 Or run in a browser using
 
     gulp unit --browser=[chrome/firefox/ie/safari]
+
+If you don't want to keep running the full unit command you can add the watch switch, this will monitor for changes in source/views/styling and build whatever is required.
+
+    gulp unit --watch
 
 ### e2e-install
 
@@ -73,6 +82,8 @@ This will serve the app for you to view in a browser.
 You can specify that the content is served over https or on a different port using the switches
 
     gulp serve --secure --port=5000
+
+This command will also watch for changes in the files being served and reload the browser when necessary.
 
 ### version
 
@@ -144,9 +155,9 @@ There are currently no other options for this platform.
 
 For more information about the options see the [Electron Documentation](https://github.com/electron-userland/electron-packager#readme)
 
-You can choose to use a specific version of the Electron runtime, if not specified it default to the most recent stable version see [Electron Releases](https://github.com/electron/electron/releases).
+You can choose to use a specific version of the Electron runtime, if not specified it defaults to the most recent stable version see [Electron Releases](https://github.com/electron/electron/releases).
 
-You can specify one or more of the platform architecture combinations, if this is not specified it defaults to win32/ia32:
+You can specify one or more of the platform architecture combinations, if this is not specified it defaults to win32/ia32.
 
 Any others keys in the Electron settings will be converted into -- params and passed to the packager, this allows for other options like those specific to the darwin/mas or win32 targets [Electron Usage](https://github.com/electron-userland/electron-packager/blob/master/usage.txt) to be used.
 

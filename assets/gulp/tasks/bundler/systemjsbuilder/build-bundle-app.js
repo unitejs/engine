@@ -44,14 +44,13 @@ async function addBootstrap (uniteConfig, buildConfiguration) {
         process.exit(1);
     }
 
-    return asyncUtil.stream(
-        gulp.src(path.join(uniteConfig.dirs.www.dist, "app-bundle.js"))
-            .pipe(buildConfiguration.sourcemaps
-                ? sourcemaps.init({"loadMaps": true}) : gutil.noop())
-            .pipe(insert.append(bootstrap2))
-            .pipe(buildConfiguration.sourcemaps
-                ? sourcemaps.write({"includeContent": true}) : gutil.noop())
-            .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
+    return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.dist, "app-bundle.js"))
+        .pipe(buildConfiguration.sourcemaps
+            ? sourcemaps.init({"loadMaps": true}) : gutil.noop())
+        .pipe(insert.append(bootstrap2))
+        .pipe(buildConfiguration.sourcemaps
+            ? sourcemaps.write({"includeContent": true}) : gutil.noop())
+        .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
 }
 
 gulp.task("build-bundle-app", async () => {
@@ -72,8 +71,8 @@ gulp.task("build-bundle-app", async () => {
         ];
 
         if (hasText) {
-            packageFiles.push(` + ${dist}**/*.html!text`);
-            packageFiles.push(` + ${dist}**/*.css!text`);
+            packageFiles.push(` + ${dist}**/*.${uc.extensionMap(uniteConfig.viewExtensions)}!text`);
+            packageFiles.push(` + ${dist}**/*.${uniteConfig.styleExtension}!text`);
         }
 
         packageFiles.push(` - ${dist}vendor-bundle.js`);
@@ -83,12 +82,14 @@ gulp.task("build-bundle-app", async () => {
         const sourceMapsFlag = buildConfiguration.sourcemaps ? "inline" : false;
 
         try {
-            await builder.bundle(packageFiles.join(""),
+            await builder.bundle(
+                packageFiles.join(""),
                 path.join(uniteConfig.dirs.www.dist, "app-bundle.js"),
                 {
                     "minify": buildConfiguration.minify,
                     "sourceMaps": sourceMapsFlag
-                });
+                }
+            );
 
             return addBootstrap(uniteConfig, buildConfiguration);
         } catch (err) {

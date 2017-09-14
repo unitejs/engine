@@ -100,6 +100,8 @@ export class Engine implements IEngine {
         uniteConfiguration.cssPre = cssPre || uniteConfiguration.cssPre;
         uniteConfiguration.cssPost = cssPost || uniteConfiguration.cssPost;
         uniteConfiguration.buildConfigurations = uniteConfiguration.buildConfigurations || {};
+        uniteConfiguration.sourceExtensions = [];
+        uniteConfiguration.viewExtensions = [];
 
         if (Object.keys(uniteConfiguration.buildConfigurations).length === 0) {
             uniteConfiguration.buildConfigurations.dev = { bundle: false, minify: false, sourcemaps: true, variables: {} };

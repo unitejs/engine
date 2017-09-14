@@ -69,11 +69,13 @@ function buildIndex (uniteConfig, uniteThemeConfig, buildConfiguration, packageJ
 
     const scriptIncludes = clientPackages.getScriptIncludes(uniteConfig, buildConfiguration.bundle);
 
-    return writeIndex(buildConfiguration.bundle ? "./index-bundle.html" : "./index-no-bundle.html",
+    return writeIndex(
+        buildConfiguration.bundle ? "./index-bundle.html" : "./index-no-bundle.html",
         cacheBust,
         config,
         headers,
-        scriptIncludes.map(scriptInclude => `<script src="${scriptInclude}"></script>`));
+        scriptIncludes.map(scriptInclude => `<script src="${scriptInclude}"></script>`)
+    );
 }
 
 async function buildBrowserConfig (uniteConfig, uniteThemeConfig) {
@@ -121,9 +123,11 @@ async function buildManifestJson (uniteConfig, uniteThemeConfig) {
     const sizes = [192, 512];
 
     for (let i = 0; i < sizes.length; i++) {
-        const fname = path.join(uniteConfig.dirs.www.assets,
+        const fname = path.join(
+            uniteConfig.dirs.www.assets,
             "favicon/",
-            `android-chrome-${sizes[i]}x${sizes[i]}.png`);
+            `android-chrome-${sizes[i]}x${sizes[i]}.png`
+        );
 
         const imageExists = await asyncUtil.fileExists(fname);
         if (imageExists) {

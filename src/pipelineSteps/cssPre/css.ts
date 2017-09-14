@@ -21,7 +21,7 @@ export class Css extends PipelineStepBase {
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
         if (super.condition(uniteConfiguration.cssPre, "Css")) {
-            engineVariables.styleLanguageExt = "css";
+            uniteConfiguration.styleExtension = "css";
             engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "cssSrc");
         }
         return 0;

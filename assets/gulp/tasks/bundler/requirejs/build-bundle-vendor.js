@@ -63,8 +63,10 @@ gulp.task("build-bundle-vendor", async () => {
         });
 
         try {
-            await util.promisify(fs.writeFile)(path.join(uniteConfig.dirs.www.dist, "vendor-bundle-init.js"),
-                `define(${JSON.stringify(keys)}, function () {});`);
+            await util.promisify(fs.writeFile)(
+                path.join(uniteConfig.dirs.www.dist, "vendor-bundle-init.js"),
+                `define(${JSON.stringify(keys)}, function () {});`
+            );
 
             await performVendorOptimize(uniteConfig, buildConfiguration, modulesConfig);
         } catch (err) {

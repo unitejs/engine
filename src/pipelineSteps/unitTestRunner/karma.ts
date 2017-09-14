@@ -126,11 +126,14 @@ export class Karma extends PipelineStepBase {
             }
         };
 
+        const srcPreProcess = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
+                                                                               fileSystem.pathCombine(engineVariables.www.distFolder, "**/!(*-bundle|app-module-config|entryPoint).js")));
+
         const srcInclude = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
-                                                                            fileSystem.pathCombine(engineVariables.www.distFolder, "**/!(*-bundle|app-module-config|entryPoint).js")));
+                                                                            fileSystem.pathCombine(engineVariables.www.distFolder, "**/*")));
 
         defaultConfiguration.preprocessors = {};
-        defaultConfiguration.preprocessors[srcInclude] = ["sourcemap", "coverage"];
+        defaultConfiguration.preprocessors[srcPreProcess] = ["sourcemap", "coverage"];
 
         defaultConfiguration.files = [];
 
@@ -140,6 +143,7 @@ export class Karma extends PipelineStepBase {
                               {
                                    pattern: srcInclude,
                                    included: false,
+                                   watched: true,
                                    includeType: "fixed"
                               },
                               true,
@@ -149,6 +153,7 @@ export class Karma extends PipelineStepBase {
                               {
                                    pattern: "../unite.json",
                                    included: false,
+                                   watched: true,
                                    includeType: "fixed"
                               },
                               true,
@@ -159,6 +164,7 @@ export class Karma extends PipelineStepBase {
                                    pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
                                                                                              fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "../unit-module-config.js"))),
                                    included: true,
+                                   watched: true,
                                    includeType: "fixed"
                               },
                               true,
@@ -169,6 +175,7 @@ export class Karma extends PipelineStepBase {
                                    pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
                                                                                              fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "../unit-bootstrap.js"))),
                                    included: true,
+                                   watched: true,
                                    includeType: "fixed"
                               },
                               true,
@@ -179,6 +186,7 @@ export class Karma extends PipelineStepBase {
                                    pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
                                                                                              fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "**/*.spec.js"))),
                                    included: false,
+                                   watched: true,
                                    includeType: "fixed"
                               },
                               true,

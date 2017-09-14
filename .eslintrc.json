@@ -1,11 +1,16 @@
 {
+    "parser": "babel-eslint",
 	"parserOptions": {
 		"ecmaVersion": 8,
-		"sourceType": "module"
+        "sourceType": "module",
+		"ecmaFeatures": {
+			"jsx": true
+		}
 	},
 	"extends": [
 		"eslint:all",
-		"plugin:promise/recommended"
+        "plugin:promise/recommended",
+		"plugin:react/recommended"
 	],
 	"env": {
 		"browser": true,
@@ -56,6 +61,7 @@
 	},
 	"plugins": [
 		"node",
-		"promise"
+        "promise",
+        "react"
 	]
 }

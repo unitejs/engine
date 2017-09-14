@@ -12,7 +12,6 @@ import { SharedAppFramework } from "../../../../dist/pipelineSteps/sharedAppFram
 import { FileSystemMock } from "../fileSystem.mock";
 
 class TestSharedAppFramework extends SharedAppFramework {
-    public customSourceExtension: string;
     public customUnitTests: boolean;
     public appModuleName: string;
     public htmlFiles: string[];
@@ -20,10 +19,9 @@ class TestSharedAppFramework extends SharedAppFramework {
 
     constructor() {
         super();
-        this.customSourceExtension = "";
         this.customUnitTests = false;
         this.appModuleName = "app";
-        this.htmlFiles = ["app"];
+        this.htmlFiles = ["app.html"];
         this.appCssFiles = ["child/child"];
     }
 
@@ -32,7 +30,7 @@ class TestSharedAppFramework extends SharedAppFramework {
     }
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [`${this.appModuleName}${this.customSourceExtension}`]);
+        let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [`${this.appModuleName}.js`]);
 
         if (ret === 0) {
             ret = await super.generateAppHtml(logger, fileSystem, uniteConfiguration, engineVariables, this.htmlFiles);
@@ -41,10 +39,10 @@ class TestSharedAppFramework extends SharedAppFramework {
                 ret = await super.generateAppCss(logger, fileSystem, uniteConfiguration, engineVariables, this.appCssFiles);
 
                 if (ret === 0) {
-                    ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app"]);
+                    ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app.spec.js"]);
 
                     if (ret === 0) {
-                        ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [this.appModuleName], !this.customUnitTests);
+                        ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`${this.appModuleName}.spec.js`], !this.customUnitTests);
 
                         if (ret === 0) {
                             ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
@@ -89,10 +87,10 @@ describe("SharedAppFramework", () => {
         uniteConfigurationStub.cssPre = "Css";
         uniteConfigurationStub.cssPost = "None";
         uniteConfigurationStub.clientPackages = {};
+        uniteConfigurationStub.sourceExtensions = ["js"];
+        uniteConfigurationStub.styleExtension = "css";
 
         engineVariablesStub = new EngineVariables();
-        engineVariablesStub.sourceLanguageExt = "js";
-        engineVariablesStub.styleLanguageExt = "css";
         engineVariablesStub.engineAssetsFolder = "./assets/";
         engineVariablesStub.setupDirectories(fileSystemMock, "./test/unit/temp");
         engineVariablesStub.findDependencyVersion = sandbox.stub().returns("1.2.3");
@@ -251,15 +249,6 @@ describe("SharedAppFramework", () => {
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.module.js");
-            Chai.expect(exists).to.be.equal(true);
-        });
-
-        it("can succeed with custom source extension", async () => {
-            const obj = new TestSharedAppFramework();
-            obj.customSourceExtension = "!js";
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-            const exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.js");
             Chai.expect(exists).to.be.equal(true);
         });
 

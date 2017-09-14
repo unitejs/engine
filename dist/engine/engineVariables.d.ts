@@ -34,8 +34,6 @@ export declare class EngineVariables {
         assetsFolder: string;
         assetsSrcFolder: string;
     };
-    sourceLanguageExt: string;
-    styleLanguageExt: string;
     license: ISpdxLicense;
     packageManager: IPackageManager;
     private _configuration;

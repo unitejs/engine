@@ -31,13 +31,16 @@ gulp.task("unit-clean", async () => {
 gulp.task("unit-module-config", async () => {
     const uniteConfig = await uc.getUniteConfig();
 
-    const config = moduleConfig.create(uniteConfig, ["test", "both"], false,
-        uniteConfig.unitTestRunner.toLowerCase() === "karma" ? "/base/" : "");
+    const config = moduleConfig.create(
+        uniteConfig, ["test", "both"], false,
+        uniteConfig.unitTestRunner.toLowerCase() === "karma" ? "/base/" : ""
+    );
 
     try {
         await util.promisify(fs.writeFile)(
             path.join(uniteConfig.dirs.www.unitTest, "unit-module-config.js"),
-            config);
+            config
+        );
     } catch (err) {
         display.error("Writing unit-module-config.js", err);
         process.exit(1);
@@ -51,7 +54,8 @@ gulp.task("unit", async () => {
             "unit-lint",
             "unit-transpile",
             "unit-module-config",
-            "unit-run-test");
+            "unit-run-test"
+        );
     } catch (err) {
         display.error("Unhandled error during task", err);
         process.exit(1);

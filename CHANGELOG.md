@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.0.2
+
+* Improved error handling in gulp tasks
+* Added watches on source when running gulp serve task
+* Added watches on views when running gulp serve task
+* Added watches on styles when running gulp serve task
+* Added --watch option for unit tests to multirun and watch for changes
+* Source, view, style file extensions can be configuered by application frameworks
+* Fixed transpile tasks not returning async
+* Changed Aurelia JavaScript linter to babel-eslint
+* Changed Aurelia JavaScript transpiler to include "transform-decorators-legacy plugin
+
 ## v1.0.1
 
 * Fixed script includes in index.html now uses isModuleLoader flag for ordering

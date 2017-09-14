@@ -67,7 +67,8 @@ gulp.task("theme-build", async () => {
             "theme-favicons",
             "theme-browser-config",
             "theme-manifest-json",
-            "theme-headers");
+            "theme-headers"
+        );
     } catch (err) {
         display.error("Unhandled error during task", err);
         process.exit(1);

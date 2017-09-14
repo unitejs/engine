@@ -211,6 +211,8 @@ export class Gulp extends PipelineStepBase {
         this.toggleFile(assetUtils, "client-packages.js", this._utilFolder, "client-packages.js", isGulp);
         this.toggleFile(assetUtils, "display.js", this._utilFolder, "display.js", isGulp);
         this.toggleFile(assetUtils, "exec.js", this._utilFolder, "exec.js", isGulp);
+        this.toggleFile(assetUtils, "env-util.js", this._utilFolder, "env-util.js", isGulp);
+        this.toggleFile(assetUtils, "error-util.js", this._utilFolder, "error-util.js", isGulp);
         this.toggleFile(assetUtils, "json-helper.js", this._utilFolder, "json-helper.js", isGulp);
         this.toggleFile(assetUtils, "package-config.js", this._utilFolder, "package-config.js", isGulp);
         this.toggleFile(assetUtils, "platform-utils.js", this._utilFolder, "platform-utils.js", isGulp);

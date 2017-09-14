@@ -1,27 +1,25 @@
 /**
  * Main Application Module class.
  */
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { RouterModule } from '@angular/router';
-import { AppComponent } from './app.component';
-import { ChildComponent } from './child/child.component';
+import {AppComponent} from "./app.component";
+import {BrowserModule} from "@angular/platform-browser";
+import {ChildComponent} from "./child/child.component";
+import {NgModule} from "@angular/core";
+import {RouterModule} from "@angular/router";
 
 const appRoutes = [
-  { path: '', component: ChildComponent }
+    {"path": "", "component": ChildComponent}
 ];
 
 @NgModule({
-  imports: [BrowserModule,
-    RouterModule.forRoot(
-      appRoutes
-    )
-  ],
-  declarations: [
-    AppComponent,
-    ChildComponent
-  ],
-  bootstrap: [AppComponent]
+    "imports": [BrowserModule,
+        RouterModule.forRoot(appRoutes)
+    ],
+    "declarations": [
+        AppComponent,
+        ChildComponent
+    ],
+    "bootstrap": [AppComponent]
 })
 
 export class AppModule {

@@ -26,7 +26,10 @@ gulp.task("unit-lint", async () => {
     const uniteConfig = await uc.getUniteConfig();
 
     let localResolve = null;
-    return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.unitTestSrc, `**/${options.grep}.{js,jsx}`))
+    return asyncUtil.stream(gulp.src(path.join(
+        uniteConfig.dirs.www.unitTestSrc,
+        `**/${options.grep}.${uc.extensionMap(uniteConfig.sourceExtensions)}`
+    ))
         .pipe(eslint())
         .pipe(eslint.format())
         .pipe(eslint.results(result => {

@@ -48,14 +48,13 @@ function performAppOptimize (uniteConfig, buildConfiguration, moduleConfig, path
                     bootstrap += "});";
                 }
 
-                await asyncUtil.stream(
-                    gulp.src(path.join(uniteConfig.dirs.www.dist, "app-bundle.js"))
-                        .pipe(buildConfiguration.sourcemaps
-                            ? sourcemaps.init({"loadMaps": true}) : gutil.noop())
-                        .pipe(insert.append(bootstrap))
-                        .pipe(buildConfiguration.sourcemaps
-                            ? sourcemaps.write({"includeContent": true}) : gutil.noop())
-                        .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
+                await asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.dist, "app-bundle.js"))
+                    .pipe(buildConfiguration.sourcemaps
+                        ? sourcemaps.init({"loadMaps": true}) : gutil.noop())
+                    .pipe(insert.append(bootstrap))
+                    .pipe(buildConfiguration.sourcemaps
+                        ? sourcemaps.write({"includeContent": true}) : gutil.noop())
+                    .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
 
                 resolve();
             }, (err) => {
@@ -86,7 +85,8 @@ gulp.task("build-bundle-app", async () => {
         try {
             await util.promisify(fs.writeFile)(
                 path.join(uniteConfig.dirs.www.dist, "app-bundle-init.js"),
-                `define(${JSON.stringify(files)}, function () {});`);
+                `define(${JSON.stringify(files)}, function () {});`
+            );
         } catch (err) {
             display.error("Writing app-bundle-init.js", err);
             process.exit(1);

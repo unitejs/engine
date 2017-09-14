@@ -4,10 +4,12 @@
 const display = require("./util/display");
 const uc = require("./util/unite-config");
 const gulp = require("gulp");
+const path = require("path");
 const babel = require("gulp-babel");
 const sourcemaps = require("gulp-sourcemaps");
 const asyncUtil = require("./util/async-util");
 const minimist = require("minimist");
+const errorUtil = require("./util/error-util");
 
 gulp.task("e2e-transpile", async () => {
     display.info("Running", "Babel");
@@ -27,7 +29,10 @@ gulp.task("e2e-transpile", async () => {
 
     let errorCount = 0;
 
-    return asyncUtil.stream(gulp.src(`${uniteConfig.dirs.www.e2eTestSrc}**/${options.grep}.spec.{js,jsx}`)
+    return asyncUtil.stream(gulp.src(path.join(
+        uniteConfig.dirs.www.e2eTestSrc,
+        `**/${options.grep}.spec.${uc.extensionMap(uniteConfig.sourceExtensions)}`
+    ))
         .pipe(sourcemaps.init())
         .pipe(babel({
             "babelrc": false,
@@ -39,16 +44,15 @@ gulp.task("e2e-transpile", async () => {
             ]
         }))
         .on("error", (err) => {
-            display.error(`error: ${err.message}\n`);
-            display.error(err.codeFrame);
+            display.error(err.message);
+            display.error(`\n${err.codeFrame}`);
             errorCount++;
         })
+        .on("error", errorUtil.handleErrorEvent)
         .pipe(sourcemaps.write({"includeContent": true}))
         .pipe(gulp.dest(uniteConfig.dirs.www.e2eTestDist))
         .on("end", () => {
-            if (errorCount > 0) {
-                process.exit();
-            }
+            errorUtil.handleErrorCount(errorCount);
         }));
 });
 

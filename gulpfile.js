@@ -208,13 +208,15 @@ gulp.task("unit-post-remap", () => {
 
 
 gulp.task("unit", (cb) => {
-    runSequence("unit-clean",
+    runSequence(
+        "unit-clean",
         "unit-transpile",
         "unit-lint",
         "unit-pre-coverage",
         "unit-runner",
         "unit-remap",
-        "unit-post-remap", cb);
+        "unit-post-remap", cb
+    );
 });
 
 gulp.task("coveralls", () => {

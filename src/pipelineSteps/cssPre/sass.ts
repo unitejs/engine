@@ -21,7 +21,7 @@ export class Sass extends PipelineStepBase {
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
         if (super.condition(uniteConfiguration.cssPre, "Sass")) {
-            engineVariables.styleLanguageExt = "scss";
+            uniteConfiguration.styleExtension = "scss";
             engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "sass");
         }
         return 0;

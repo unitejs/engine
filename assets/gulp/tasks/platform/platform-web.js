@@ -50,9 +50,11 @@ gulp.task("platform-web-compress", async () => {
     display.info("To File", zipName);
 
     return asyncUtil.zipFolder(
-        path.join("../",
+        path.join(
+            "../",
             uniteConfig.dirs.packagedRoot,
-            `/${packageJson.version}/web/`),
+            `/${packageJson.version}/web/`
+        ),
         path.join("../", uniteConfig.dirs.packagedRoot, zipName)
     );
 });

@@ -11,6 +11,7 @@ const clientPackages = require("./util/client-packages");
 const util = require("util");
 const fs = require("fs");
 const path = require("path");
+const envUtil = require("./util/env-util");
 
 function addClientPackageTestFiles (uniteConfig, files) {
     let newFiles = [];
@@ -103,11 +104,15 @@ gulp.task("unit-run-test", async () => {
     const knownOptions = {
         "default": {
             "grep": "!(*-bundle|app-module-config|entryPoint)",
-            "browser": undefined
+            "browser": undefined,
+            "watch": false
         },
         "string": [
             "grep",
             "browser"
+        ],
+        "boolean": [
+            "watch"
         ]
     };
 
@@ -143,6 +148,33 @@ gulp.task("unit-run-test", async () => {
     if (options.browser) {
         karmaConf.singleRun = false;
         karmaConf.browsers = options.browser.split(",");
+    }
+
+    if (options.watch) {
+        karmaConf.singleRun = false;
+        envUtil.set("transpileContinueOnError", true);
+
+        gulp.watch(path.join(
+            uniteConfig.dirs.www.unitTestSrc,
+            `**/*.${uc.extensionMap(uniteConfig.sourceExtensions)}`
+        ), ["unit-transpile"]);
+
+        gulp.watch(
+            path.join(uniteConfig.dirs.www.src, `**/*.${uc.extensionMap(uniteConfig.sourceExtensions)}`),
+            ["build-src-all"]
+        );
+        gulp.watch(
+            path.join(uniteConfig.dirs.www.src, `**/*.${uc.extensionMap(uniteConfig.viewExtensions)}`),
+            ["build-src-view-all"]
+        );
+        gulp.watch(
+            path.join(uniteConfig.dirs.www.src, `**/*.${uniteConfig.styleExtension}`),
+            ["build-src-style-all"]
+        );
+        gulp.watch(
+            path.join(uniteConfig.dirs.www.cssSrc, `**/*.${uniteConfig.styleExtension}`),
+            ["build-css-all"]
+        );
     }
 
     return new Promise((resolve) => {

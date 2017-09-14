@@ -13,7 +13,10 @@ gulp.task("build-lint", async () => {
 
     const uniteConfig = await uc.getUniteConfig();
 
-    return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.src, "**/*.{ts,tsx}"))
+    return asyncUtil.stream(gulp.src(path.join(
+        uniteConfig.dirs.www.src,
+        `**/*.${uc.extensionMap(uniteConfig.sourceExtensions)}`
+    ))
         .pipe(tslint({"formatter": "verbose"}))
         .pipe(tslint.report())
         .on("error", () => {

@@ -21,7 +21,7 @@ export class Stylus extends PipelineStepBase {
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
         if (super.condition(uniteConfiguration.cssPre, "Stylus")) {
-            engineVariables.styleLanguageExt = "styl";
+            uniteConfiguration.styleExtension = "styl";
             engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "stylus");
         }
         return 0;

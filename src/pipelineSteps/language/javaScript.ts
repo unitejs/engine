@@ -1,6 +1,7 @@
 /**
  * Pipeline step to generate babel configuration.
  */
+import { ArrayHelper } from "unitejs-framework/dist/helpers/arrayHelper";
 import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
@@ -26,9 +27,9 @@ export class JavaScript extends PipelineStepBase {
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
-        if (super.condition(uniteConfiguration.sourceLanguage, "JavaScript")) {
-            engineVariables.sourceLanguageExt = "js";
-
+        const isJavaScript = super.condition(uniteConfiguration.sourceLanguage, "JavaScript");
+        ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "js", isJavaScript);
+        if (isJavaScript) {
             logger.info(`Initialising ${JavaScript.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
             if (!engineVariables.force) {

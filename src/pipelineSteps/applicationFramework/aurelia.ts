@@ -4,6 +4,8 @@
 import { ArrayHelper } from "unitejs-framework/dist/helpers/arrayHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
+import { BabelConfiguration } from "../../configuration/models/babel/babelConfiguration";
+import { EsLintConfiguration } from "../../configuration/models/eslint/esLintConfiguration";
 import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
 import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
@@ -31,6 +33,7 @@ export class Aurelia extends SharedAppFramework {
                 logger.error(`Aurelia does not currently support bundling with ${uniteConfiguration.bundler}`);
                 return 1;
             }
+            ArrayHelper.addRemove(uniteConfiguration.viewExtensions, "html", true);
         }
         return 0;
     }
@@ -39,10 +42,15 @@ export class Aurelia extends SharedAppFramework {
         const cond = super.condition(uniteConfiguration.applicationFramework, "Aurelia");
         engineVariables.toggleDevDependency(["aurelia-protractor-plugin"],
                                             cond &&
-                                            super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
+            super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
         engineVariables.toggleDevDependency(["unitejs-aurelia-webdriver-plugin"],
                                             cond &&
-                                            super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
+            super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
+
+        engineVariables.toggleDevDependency(["babel-plugin-transform-decorators-legacy"],
+                                            cond && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
+
+        engineVariables.toggleDevDependency(["babel-eslint"], cond && super.condition(uniteConfiguration.linter, "ESLint"));
 
         this.toggleAllPackages(uniteConfiguration, engineVariables);
 
@@ -57,25 +65,43 @@ export class Aurelia extends SharedAppFramework {
             ArrayHelper.addRemove(webdriverIoPlugins, "unitejs-aurelia-webdriver-plugin", cond);
         }
 
+        const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
+        if (babelConfiguration) {
+            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", super.condition(uniteConfiguration.applicationFramework, "Angular"));
+        }
+
         if (cond) {
+            const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
+            if (esLintConfiguration) {
+                esLintConfiguration.parser = "babel-eslint";
+            }
+
             const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
             if (typeScriptConfiguration) {
                 typeScriptConfiguration.compilerOptions.experimentalDecorators = true;
             }
 
-            let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper", "entryPoint", "child/child"]);
+            const sourceExtension = uniteConfiguration.sourceLanguage === "TypeScript" ? ".ts" : ".js";
+
+            let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables,
+                                                   [
+                                                        `app${sourceExtension}`,
+                                                        `bootstrapper${sourceExtension}`,
+                                                        `entryPoint${sourceExtension}`,
+                                                        `child/child${sourceExtension}`
+                                                    ]);
 
             if (ret === 0) {
-                ret = await super.generateAppHtml(logger, fileSystem, uniteConfiguration, engineVariables, ["app", "child/child"]);
+                ret = await super.generateAppHtml(logger, fileSystem, uniteConfiguration, engineVariables, ["app.html", "child/child.html"]);
 
                 if (ret === 0) {
                     ret = await super.generateAppCss(logger, fileSystem, uniteConfiguration, engineVariables, ["child/child"]);
 
                     if (ret === 0) {
-                        ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app"]);
+                        ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
 
                         if (ret === 0) {
-                            ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper"], true);
+                            ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`, `bootstrapper.spec${sourceExtension}`], true);
 
                             if (ret === 0) {
                                 ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);

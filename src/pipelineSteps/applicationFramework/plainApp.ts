@@ -20,6 +20,13 @@ export class PlainApp extends SharedAppFramework {
         ];
     }
 
+    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        if (super.condition(uniteConfiguration.applicationFramework, "PlainApp")) {
+            ArrayHelper.addRemove(uniteConfiguration.viewExtensions, "html", true);
+        }
+        return 0;
+    }
+
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         const cond = super.condition(uniteConfiguration.applicationFramework, "PlainApp");
 
@@ -43,13 +50,19 @@ export class PlainApp extends SharedAppFramework {
         }
 
         if (cond) {
-            let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper", "entryPoint"]);
+            const sourceExtension = uniteConfiguration.sourceLanguage === "TypeScript" ? ".ts" : ".js";
+
+            let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [
+                `app${sourceExtension}`,
+                `bootstrapper${sourceExtension}`,
+                `entryPoint${sourceExtension}`
+            ]);
 
             if (ret === 0) {
-                ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app"]);
+                ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
 
                 if (ret === 0) {
-                    ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper"], true);
+                    ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`, `bootstrapper.spec${sourceExtension}`], true);
 
                     if (ret === 0) {
                         ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);

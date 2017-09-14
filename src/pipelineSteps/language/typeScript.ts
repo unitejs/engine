@@ -1,6 +1,7 @@
 /**
  * Pipeline step to generate TypeScript configuration.
  */
+import { ArrayHelper } from "unitejs-framework/dist/helpers/arrayHelper";
 import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
@@ -27,9 +28,9 @@ export class TypeScript extends PipelineStepBase {
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
-        if (super.condition(uniteConfiguration.sourceLanguage, "TypeScript")) {
-            engineVariables.sourceLanguageExt = "ts";
-
+        const isTypeScript = super.condition(uniteConfiguration.sourceLanguage, "TypeScript");
+        ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "ts", isTypeScript);
+        if (isTypeScript) {
             logger.info(`Initialising ${TypeScript.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
             if (!engineVariables.force) {

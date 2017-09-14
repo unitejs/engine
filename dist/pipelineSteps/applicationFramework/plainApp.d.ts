@@ -6,5 +6,6 @@ import { PipelineKey } from "../../engine/pipelineKey";
 import { SharedAppFramework } from "../sharedAppFramework";
 export declare class PlainApp extends SharedAppFramework {
     influences(): PipelineKey[];
+    initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
 }

@@ -29,6 +29,7 @@ export class Angular extends SharedAppFramework {
                 logger.error(`Angular does not currently support bundling with ${uniteConfiguration.bundler}`);
                 return 1;
             }
+            ArrayHelper.addRemove(uniteConfiguration.viewExtensions, "html", true);
         }
         return 0;
     }
@@ -56,16 +57,24 @@ export class Angular extends SharedAppFramework {
                 typeScriptConfiguration.compilerOptions.experimentalDecorators = true;
             }
 
-            let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, ["app.component", "app.module", "child/child.component", "bootstrapper", "entryPoint"]);
+            const sourceExtension = uniteConfiguration.sourceLanguage === "TypeScript" ? ".ts" : ".js";
+
+            let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [
+                `app.component${sourceExtension}`,
+                `app.module${sourceExtension}`,
+                `child/child.component${sourceExtension}`,
+                `bootstrapper${sourceExtension}`,
+                `entryPoint${sourceExtension}`
+            ]);
 
             if (ret === 0) {
-                ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app"]);
+                ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
 
                 if (ret === 0) {
-                    ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, ["bootstrapper"], true);
+                    ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`bootstrapper.spec${sourceExtension}`], true);
 
                     if (ret === 0) {
-                        ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app.module"], false);
+                        ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.module.spec${sourceExtension}`], false);
 
                         if (ret === 0) {
                             ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);

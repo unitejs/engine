@@ -50,16 +50,15 @@ gulp.task("e2e-run-test", async () => {
     let hasError = false;
 
     try {
-        await asyncUtil.stream(
-            gulp.src("wdio.conf.js")
-                .pipe(webdriver({
-                    "baseUrl": url,
-                    "capabilities": [
-                        {
-                            "browserName": options.browser
-                        }
-                    ]
-                })));
+        await asyncUtil.stream(gulp.src("wdio.conf.js")
+            .pipe(webdriver({
+                "baseUrl": url,
+                "capabilities": [
+                    {
+                        "browserName": options.browser
+                    }
+                ]
+            })));
     } catch (err) {
         hasError = true;
         display.error("Executing WebdriverIO", err);

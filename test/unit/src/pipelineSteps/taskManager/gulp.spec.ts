@@ -167,7 +167,7 @@ describe("Gulp", () => {
 
             Chai.expect(res).to.be.equal(0);
 
-            Chai.expect(stub.callCount).to.be.equal(24);
+            Chai.expect(stub.callCount).to.be.equal(26);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
@@ -193,7 +193,7 @@ describe("Gulp", () => {
 
             Chai.expect(res).to.be.equal(0);
 
-            Chai.expect(stub.callCount).to.be.equal(28);
+            Chai.expect(stub.callCount).to.be.equal(30);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
@@ -219,7 +219,7 @@ describe("Gulp", () => {
 
             Chai.expect(res).to.be.equal(0);
 
-            Chai.expect(stub.callCount).to.be.equal(29);
+            Chai.expect(stub.callCount).to.be.equal(31);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);

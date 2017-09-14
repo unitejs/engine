@@ -12,6 +12,7 @@
         "noImplicitThis": true,
         "noImplicitReturns": true,
         "strictNullChecks": false,
+        "jsx": "react",
         "outDir": "./dist",
         "baseUrl": "."
     },

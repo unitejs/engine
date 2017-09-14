@@ -60,14 +60,14 @@ describe("Css", () => {
             uniteConfigurationStub.cssPre = "Sass";
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.styleLanguageExt).to.be.equal(undefined);
+            Chai.expect(uniteConfigurationStub.styleExtension).to.be.equal(undefined);
         });
 
         it("can setup the engine configuration", async () => {
             const obj = new Css();
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.styleLanguageExt).to.be.equal("css");
+            Chai.expect(uniteConfigurationStub.styleExtension).to.be.equal("css");
         });
     });
 

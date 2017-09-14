@@ -32,26 +32,32 @@ async function gatherFiles (platformName) {
         path.join(uniteConfig.dirs.www.assets, "**/*")
     ];
 
-    const packageFiles = clientPackages.getDistFiles(uniteConfig,
+    const packageFiles = clientPackages.getDistFiles(
+        uniteConfig,
         ["app", "both"],
         buildConfiguration.bundle,
-        buildConfiguration.minify);
+        buildConfiguration.minify
+    );
     Object.keys(packageFiles).forEach((key) => {
         files = files.concat(packageFiles[key]);
     });
 
     files = files.concat(clientPackages.getAssets(uniteConfig));
 
-    const dest = path.join("../",
+    const dest = path.join(
+        "../",
         uniteConfig.dirs.packagedRoot,
-        `/${packageJson.version}/${platformName.toLowerCase()}/`);
+        `/${packageJson.version}/${platformName.toLowerCase()}/`
+    );
 
     display.info("Gathering Files", platformName);
     display.info("Destination", dest);
 
     for (let i = 0; i < files.length; i++) {
-        const fileDest = path.join(dest,
-            files[i].indexOf("**") > 0 ? files[i].replace(/\*\*[/\\]\*(.*)/, "") : path.dirname(files[i]));
+        const fileDest = path.join(
+            dest,
+            files[i].indexOf("**") > 0 ? files[i].replace(/\*\*[/\\]\*(.*)/, "") : path.dirname(files[i])
+        );
 
         display.info("Copying Files", files[i]);
         display.info("To", fileDest);

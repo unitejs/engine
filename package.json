@@ -1,7 +1,7 @@
 {
   "name": "unitejs-engine",
-  "version": "1.0.1",
-  "description": "Engine for the UniteJS zero configuration web app generation tool.",
+  "version": "1.0.2",
+  "description": "Engine for the UniteJS zero configuration web app creation tool.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "repository": {
@@ -55,12 +55,14 @@
     "@types/mocha": "^2.2.42",
     "@types/node": "^8.0.26",
     "@types/sinon": "^2.3.3",
+    "babel-eslint": "^8.0.0",
     "chai": "^4.1.2",
     "coveralls": "^2.13.1",
     "del": "^3.0.0",
     "eslint": "^4.6.1",
     "eslint-plugin-node": "^5.1.1",
     "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-react": "^7.3.0",
     "gulp": "^3.9.1",
     "gulp-coveralls": "^0.1.4",
     "gulp-istanbul": "^1.1.2",
@@ -76,7 +78,8 @@
     "sinon": "^3.2.1",
     "tslint": "^5.7.0",
     "tslint-microsoft-contrib": "^5.0.1",
-    "typescript": "^2.5.2"
+    "typescript": "^2.5.2",
+    "unitejs-types": "^1.0.0"
   },
   "dependencies": {
     "npm": "^5.4.0",

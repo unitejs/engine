@@ -40,31 +40,40 @@ gulp.task("platform-electron-clean", async () => {
     const platformArchs = platformSettings.platformArch || DEF_PLATFORM_ARCH;
 
     const toClean = [
-        path.join("../",
+        path.join(
+            "../",
             uniteConfig.dirs.packagedRoot,
-            `/${packageJson.version}/electron/**/*`)
+            `/${packageJson.version}/electron/**/*`
+        )
     ];
 
     platformArchs.forEach(platformArch => {
         const parts = platformArch.split("/");
         if (parts.length === 2) {
-            toClean.push(path.join("../",
+            toClean.push(path.join(
+                "../",
                 uniteConfig.dirs.packagedRoot,
-                `/${packageJson.version}/electron_${parts[0]}_${parts[1]}/**/*`));
-            toClean.push(path.join("../",
+                `/${packageJson.version}/electron_${parts[0]}_${parts[1]}/**/*`
+            ));
+            toClean.push(path.join(
+                "../",
                 uniteConfig.dirs.packagedRoot,
-                `/${packageJson.version}_electron_${parts[0]}_${parts[1]}.zip`));
+                `/${packageJson.version}_electron_${parts[0]}_${parts[1]}.zip`
+            ));
         }
     });
 
     display.info("Cleaning", toClean);
     try {
         await del(toClean, {"force": true});
-        await util.promisify(deleteEmpty)(path.join(
-            "../",
-            uniteConfig.dirs.packagedRoot,
-            `/${packageJson.version}/`),
-        {"verbose": false});
+        await util.promisify(deleteEmpty)(
+            path.join(
+                "../",
+                uniteConfig.dirs.packagedRoot,
+                `/${packageJson.version}/`
+            ),
+            {"verbose": false}
+        );
     } catch (err) {
         display.error(err);
         process.exit(1);
@@ -119,9 +128,11 @@ gulp.task("platform-electron-gather", async () => {
     }
 
     await asyncUtil.stream(gulp.src(path.join(platformSrc, "index.html"))
-        .pipe(replace("<head>",
+        .pipe(replace(
+            "<head>",
             "<head>" +
-            "<script>if (window.require) { window.nodeRequire = window.require; delete window.require; }</script>"))
+            "<script>if (window.require) { window.nodeRequire = window.require; delete window.require; }</script>"
+        ))
         .pipe(gulp.dest(platformSrc)));
 
     return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.build, "/assets/platform/electron/main.js"))
@@ -137,9 +148,11 @@ gulp.task("platform-electron-bundle", async () => {
     const platformArchs = platformSettings.platformArch || DEF_PLATFORM_ARCH;
     const runtimeVersion = platformSettings.runtimeVersion || DEF_RUNTIME_VERSION;
 
-    const srcFolder = path.join("../",
+    const srcFolder = path.join(
+        "../",
         uniteConfig.dirs.packagedRoot,
-        `/${packageJson.version}/electron/`);
+        `/${packageJson.version}/electron/`
+    );
 
     const electronPackageVersion = {
         "name": packageJson.name,
@@ -148,8 +161,10 @@ gulp.task("platform-electron-bundle", async () => {
     };
 
     try {
-        await util.promisify(fs.writeFile)(path.join(srcFolder, "package.json"),
-            JSON.stringify(electronPackageVersion, undefined, "\t"));
+        await util.promisify(fs.writeFile)(
+            path.join(srcFolder, "package.json"),
+            JSON.stringify(electronPackageVersion, undefined, "\t")
+        );
     } catch (err) {
         display.error("Writing package.json", err);
         process.exit(1);
@@ -163,9 +178,11 @@ gulp.task("platform-electron-bundle", async () => {
             const platform = parts[0];
             const architecture = parts[1];
 
-            const bundleFolder = path.join("../",
+            const bundleFolder = path.join(
+                "../",
                 uniteConfig.dirs.packagedRoot,
-                `/${packageJson.version}/`);
+                `/${packageJson.version}/`
+            );
             const args = [
                 srcFolder,
                 packageJson.name,
@@ -208,7 +225,8 @@ gulp.task("platform-electron-bundle", async () => {
             try {
                 await util.promisify(fs.rename)(
                     path.join(bundleFolder, `${packageJson.name}-${platform}-${architecture}`),
-                    path.join(bundleFolder, `electron_${platform}_${architecture}`));
+                    path.join(bundleFolder, `electron_${platform}_${architecture}`)
+                );
             } catch (err) {
                 display.error("Renaming folder", err);
                 process.exit(1);
@@ -237,9 +255,11 @@ gulp.task("platform-electron-compress", async () => {
 
             display.info("To File", zipName);
             await asyncUtil.zipFolder(
-                path.join("../",
+                path.join(
+                    "../",
                     uniteConfig.dirs.packagedRoot,
-                    `/${packageJson.version}/electron_${platform}_${architecture}/`),
+                    `/${packageJson.version}/electron_${platform}_${architecture}/`
+                ),
                 path.join("../", uniteConfig.dirs.packagedRoot, zipName)
             );
         } else {

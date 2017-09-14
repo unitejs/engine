@@ -13,8 +13,10 @@ const fs = require("fs");
 const util = require("util");
 const del = require("del");
 const runSequence = require("run-sequence");
+const minimist = require("minimist");
 const htmlMin = require("gulp-htmlmin");
 const deleteEmpty = require("delete-empty");
+const envUtil = require("./util/env-util");
 require("./build-transpile");
 require("./build-bundle-app");
 require("./build-bundle-vendor");
@@ -86,7 +88,10 @@ gulp.task("build-html-min", async () => {
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     if (buildConfiguration.minify) {
-        return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.dist, "**/*.html"))
+        return asyncUtil.stream(gulp.src(path.join(
+            uniteConfig.dirs.www.dist,
+            `**/*.${uc.extensionMap(uniteConfig.viewExtensions)}`
+        ))
             .pipe(htmlMin({"collapseWhitespace": true, "removeComments": true}))
             .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
     }
@@ -95,7 +100,10 @@ gulp.task("build-html-min", async () => {
 gulp.task("build-copy-components", async () => {
     const uniteConfig = await uc.getUniteConfig();
 
-    return asyncUtil.stream(gulp.src([path.join(uniteConfig.dirs.www.src, "**/*.html")])
+    return asyncUtil.stream(gulp.src([path.join(
+        uniteConfig.dirs.www.src,
+        `**/*.${uc.extensionMap(uniteConfig.viewExtensions)}`
+    )])
         .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
 });
 
@@ -112,9 +120,65 @@ gulp.task("build-module-config", async () => {
     }
 });
 
-gulp.task("build", async () => {
+gulp.task("build-css-all", async () => {
     try {
-        await util.promisify(runSequence)("build-clean",
+        await util.promisify(runSequence)(
+            "build-css-app",
+            "build-css-post-app"
+        );
+    } catch (err) {
+        display.error("Unhandled error during task", err);
+        process.exit(1);
+    }
+});
+
+gulp.task("build-src-all", async () => {
+    try {
+        await util.promisify(runSequence)("build-transpile");
+    } catch (err) {
+        display.error("Unhandled error during task", err);
+        process.exit(1);
+    }
+});
+
+gulp.task("build-src-view-all", async () => {
+    try {
+        await util.promisify(runSequence)("build-copy-components");
+    } catch (err) {
+        display.error("Unhandled error during task", err);
+        process.exit(1);
+    }
+});
+
+gulp.task("build-src-style-all", async () => {
+    try {
+        await util.promisify(runSequence)(
+            "build-css-components",
+            "build-css-post-components",
+        );
+    } catch (err) {
+        display.error("Unhandled error during task", err);
+        process.exit(1);
+    }
+});
+
+gulp.task("build", async () => {
+    const knownOptions = {
+        "default": {
+            "watch": false
+        },
+        "boolean": [
+            "watch"
+        ]
+    };
+
+    const options = minimist(process.argv.slice(2), knownOptions);
+
+    envUtil.set("transpileContinueOnError", false);
+
+    try {
+        await util.promisify(runSequence)(
+            "build-clean",
             "build-transpile",
             "build-lint",
             "build-css-app",
@@ -128,7 +192,34 @@ gulp.task("build", async () => {
             "build-bundle-app",
             "build-copy-index",
             "build-index-min",
-            "build-post-clean");
+            "build-post-clean"
+        );
+
+        if (options.watch) {
+            display.info("Watching for changes");
+
+            envUtil.set("transpileContinueOnError", true);
+
+            const uniteConfig = await uc.getUniteConfig();
+
+            gulp.watch(
+                path.join(uniteConfig.dirs.www.src, `**/*.${uc.extensionMap(uniteConfig.sourceExtensions)}`),
+                ["build-src-all"]
+            );
+            gulp.watch(
+                path.join(uniteConfig.dirs.www.src, `**/*.${uc.extensionMap(uniteConfig.viewExtensions)}`),
+                ["build-src-view-all"]
+            );
+            gulp.watch(
+                path.join(uniteConfig.dirs.www.src, `**/*.${uniteConfig.styleExtension}`),
+                ["build-src-style-all"]
+            );
+            gulp.watch(
+                path.join(uniteConfig.dirs.www.cssSrc, `**/*.${uniteConfig.styleExtension}`),
+                ["build-css-all"]
+            );
+        }
+
     } catch (err) {
         display.error("Unhandled error during task", err);
         process.exit(1);

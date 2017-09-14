@@ -10,6 +10,7 @@ const sourcemaps = require("gulp-sourcemaps");
 const path = require("path");
 const uglify = require("gulp-uglify");
 const gutil = require("gulp-util");
+const errorUtil = require("./util/error-util");
 
 gulp.task("build-transpile", async () => {
     display.info("Running", "TypeScript");
@@ -21,12 +22,17 @@ gulp.task("build-transpile", async () => {
     const tsProject = typescript.createProject("tsconfig.json");
     let errorCount = 0;
 
-    return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.src, "**/*.{ts,tsx}"))
+    return asyncUtil.stream(gulp.src(path.join(
+        uniteConfig.dirs.www.src,
+        `**/*.${uc.extensionMap(uniteConfig.sourceExtensions)}`
+    ))
         .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : gutil.noop())
-        .pipe(tsProject())
-        .on("error", () => {
+        .pipe(tsProject(typescript.reporter.nullReporter()))
+        .on("error", (err) => {
+            display.error(err.message);
             errorCount++;
         })
+        .on("error", errorUtil.handleErrorEvent)
         .js
         .pipe(buildConfiguration.minify ? uglify()
             .on("error", (err) => {
@@ -40,9 +46,7 @@ gulp.task("build-transpile", async () => {
         }) : gutil.noop())
         .pipe(gulp.dest(uniteConfig.dirs.www.dist))
         .on("end", () => {
-            if (errorCount > 0) {
-                process.exit();
-            }
+            errorUtil.handleErrorCount(errorCount);
         }));
 });
 

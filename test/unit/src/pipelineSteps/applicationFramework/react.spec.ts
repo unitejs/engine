@@ -45,10 +45,11 @@ describe("React", () => {
         uniteConfigurationStub.cssPre = "Css";
         uniteConfigurationStub.cssPost = "None";
         uniteConfigurationStub.clientPackages = {};
+        uniteConfigurationStub.sourceExtensions = ["js"];
+        uniteConfigurationStub.viewExtensions = [];
+        uniteConfigurationStub.styleExtension = "css";
 
         engineVariablesStub = new EngineVariables();
-        engineVariablesStub.sourceLanguageExt = "js";
-        engineVariablesStub.styleLanguageExt = "css";
         engineVariablesStub.engineAssetsFolder = "./assets/";
         engineVariablesStub.setupDirectories(fileSystemMock, "./test/unit/temp");
         engineVariablesStub.findDependencyVersion = sandbox.stub().returns("1.2.3");
@@ -72,6 +73,32 @@ describe("React", () => {
             const obj = new React();
             const res = obj.influences();
             Chai.expect(res.length).to.be.equal(7);
+        });
+    });
+
+    describe("initialise", () => {
+        it("can be called with application framework not matching", async () => {
+            const obj = new React();
+            uniteConfigurationStub.applicationFramework = "Aurelia";
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+        });
+
+        it("can be called with application framework matching and javascript", async () => {
+            const obj = new React();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(uniteConfigurationStub.sourceExtensions).to.contain("jsx");
+            Chai.expect(uniteConfigurationStub.viewExtensions.length).to.be.equal(1);
+        });
+
+        it("can be called with application framework matching and typescript", async () => {
+            uniteConfigurationStub.sourceLanguage = "TypeScript";
+            const obj = new React();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(uniteConfigurationStub.sourceExtensions).to.contain("tsx");
+            Chai.expect(uniteConfigurationStub.viewExtensions.length).to.be.equal(1);
         });
     });
 
@@ -134,7 +161,7 @@ describe("React", () => {
             const obj = new React();
             uniteConfigurationStub.sourceLanguage = "TypeScript";
             uniteConfigurationStub.linter = "TSLint";
-            engineVariablesStub.sourceLanguageExt = "ts";
+            uniteConfigurationStub.sourceExtensions = ["ts"];
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(1);

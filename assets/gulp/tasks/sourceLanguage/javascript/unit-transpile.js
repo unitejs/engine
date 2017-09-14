@@ -4,11 +4,13 @@
 const display = require("./util/display");
 const uc = require("./util/unite-config");
 const gulp = require("gulp");
+const path = require("path");
 const asyncUtil = require("./util/async-util");
 const replace = require("gulp-replace");
 const babel = require("gulp-babel");
 const sourcemaps = require("gulp-sourcemaps");
 const minimist = require("minimist");
+const errorUtil = require("./util/error-util");
 
 gulp.task("unit-transpile", async () => {
     display.info("Running", "Babel");
@@ -30,21 +32,23 @@ gulp.task("unit-transpile", async () => {
 
     const regEx = new RegExp(uniteConfig.srcDistReplace, "g");
 
-    return asyncUtil.stream(gulp.src(`${uniteConfig.dirs.www.unitTestSrc}**/${options.grep}.spec.{js,jsx}`)
+    return asyncUtil.stream(gulp.src(path.join(
+        uniteConfig.dirs.www.unitTestSrc,
+        `**/${options.grep}.spec.${uc.extensionMap(uniteConfig.sourceExtensions)}`
+    ))
         .pipe(sourcemaps.init())
         .pipe(babel())
         .on("error", (err) => {
-            display.error(`error: ${err.message}\n`);
-            display.error(err.codeFrame);
+            display.error(err.message);
+            display.error(`\n${err.codeFrame}`);
             errorCount++;
         })
+        .on("error", errorUtil.handleErrorEvent)
         .pipe(replace(regEx, uniteConfig.srcDistReplaceWith))
         .pipe(sourcemaps.write({"includeContent": true}))
         .pipe(gulp.dest(uniteConfig.dirs.www.unitTestDist))
         .on("end", () => {
-            if (errorCount > 0) {
-                process.exit();
-            }
+            errorUtil.handleErrorCount(errorCount);
         }));
 });
 

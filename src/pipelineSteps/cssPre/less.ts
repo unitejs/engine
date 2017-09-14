@@ -21,7 +21,7 @@ export class Less extends PipelineStepBase {
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
         if (super.condition(uniteConfiguration.cssPre, "Less")) {
-            engineVariables.styleLanguageExt = "less";
+            uniteConfiguration.styleExtension = "less";
             engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "less");
         }
         return 0;

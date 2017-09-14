@@ -18,12 +18,7 @@ export abstract class SharedAppFramework extends PipelineStepBase {
 
         logger.info("Generating App Source in", { appSourceFolder: engineVariables.www.srcFolder });
 
-        for (let file of files) {
-            if (file.indexOf("!") >= 0) {
-                file = file.replace("!", ".");
-            } else {
-                file += `.${engineVariables.sourceLanguageExt}`;
-            }
+        for (const file of files) {
             const ret = await this.copyFile(logger, fileSystem,
                                             scaffoldFolder,
                                             file,
@@ -52,9 +47,9 @@ export abstract class SharedAppFramework extends PipelineStepBase {
         for (const htmlFile of htmlFiles) {
             const ret = await this.copyFile(logger, fileSystem,
                                             scaffoldFolder,
-                                            `${htmlFile}.html`,
+                                            `${htmlFile}`,
                                             engineVariables.www.srcFolder,
-                                            `${htmlFile}.html`,
+                                            `${htmlFile}`,
                                             engineVariables.force);
             if (ret !== 0) {
                 return ret;
@@ -76,9 +71,9 @@ export abstract class SharedAppFramework extends PipelineStepBase {
         for (const cssFile of cssFiles) {
             const ret = await this.copyFile(logger, fileSystem,
                                             scaffoldFolder,
-                                            `${cssFile}.${engineVariables.styleLanguageExt}`,
+                                            `${cssFile}.${uniteConfiguration.styleExtension}`,
                                             engineVariables.www.srcFolder,
-                                            `${cssFile}.${engineVariables.styleLanguageExt}`,
+                                            `${cssFile}.${uniteConfiguration.styleExtension}`,
                                             engineVariables.force);
 
             if (ret !== 0) {
@@ -109,9 +104,9 @@ export abstract class SharedAppFramework extends PipelineStepBase {
 
             for (const spec of specs) {
                 const ret = await this.copyFile(logger, fileSystem, unitTestsScaffold,
-                                                `${spec}.spec.${engineVariables.sourceLanguageExt}`,
+                                                `${spec}`,
                                                 engineVariables.www.unitTestSrcFolder,
-                                                `${spec}.spec.${engineVariables.sourceLanguageExt}`,
+                                                `${spec}`,
                                                 engineVariables.force);
                 if (ret !== 0) {
                     return ret;
@@ -144,9 +139,9 @@ export abstract class SharedAppFramework extends PipelineStepBase {
 
             for (const spec of specs) {
                 const ret = await this.copyFile(logger, fileSystem, e2eTestsScaffold,
-                                                `${spec}.spec.${engineVariables.sourceLanguageExt}`,
+                                                `${spec}`,
                                                 engineVariables.www.e2eTestSrcFolder,
-                                                `${spec}.spec.${engineVariables.sourceLanguageExt}`,
+                                                `${spec}`,
                                                 engineVariables.force);
 
                 if (ret !== 0) {
@@ -169,7 +164,7 @@ export abstract class SharedAppFramework extends PipelineStepBase {
 
         for (const style of styles) {
             const ret = await super.copyFile(logger, fileSystem, assetCssFolder,
-                                             `${style}.${engineVariables.styleLanguageExt}`, engineVariables.www.cssSrcFolder, `${style}.${engineVariables.styleLanguageExt}`,
+                                             `${style}.${uniteConfiguration.styleExtension}`, engineVariables.www.cssSrcFolder, `${style}.${uniteConfiguration.styleExtension}`,
                                              engineVariables.force);
 
             if (ret !== 0) {

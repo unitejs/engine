@@ -23,7 +23,8 @@ gulp.task("build-bundle-vendor", async () => {
         try {
             await util.promisify(fs.writeFile)(
                 path.join(uniteConfig.dirs.www.dist, "vendor-bundle-init.js"),
-                `System.register(${JSON.stringify(keys)}, function () {});`);
+                `System.register(${JSON.stringify(keys)}, function () {});`
+            );
         } catch (err) {
             display.error("Writing vendor-bundle-init.js", err);
             process.exit(1);
@@ -32,13 +33,16 @@ gulp.task("build-bundle-vendor", async () => {
         try {
             const builder = new Builder(
                 "./",
-                `${uniteConfig.dirs.www.dist}app-module-config.js`);
+                `${uniteConfig.dirs.www.dist}app-module-config.js`
+            );
 
-            await builder.bundle(path.join(uniteConfig.dirs.www.dist, "vendor-bundle-init.js"),
+            await builder.bundle(
+                path.join(uniteConfig.dirs.www.dist, "vendor-bundle-init.js"),
                 path.join(uniteConfig.dirs.www.dist, "vendor-bundle.js"),
                 {
                     "minify": buildConfiguration.minify
-                });
+                }
+            );
         } catch (err) {
             display.error("Running bundler", err);
             process.exit(1);

@@ -26,6 +26,22 @@ export class React extends SharedAppFramework {
         ];
     }
 
+    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        const cond = super.condition(uniteConfiguration.applicationFramework, "React");
+
+        if (cond) {
+            ArrayHelper.addRemove(uniteConfiguration.viewExtensions, "html", true);
+        }
+
+        const isTypeScript = super.condition(uniteConfiguration.sourceLanguage, "TypeScript");
+        ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "tsx", isTypeScript && cond);
+
+        const isJavaScript = super.condition(uniteConfiguration.sourceLanguage, "JavaScript");
+        ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "jsx", isJavaScript && cond);
+
+        return 0;
+    }
+
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         const cond = super.condition(uniteConfiguration.applicationFramework, "React");
 
@@ -116,18 +132,19 @@ export class React extends SharedAppFramework {
                 typeScriptConfiguration.compilerOptions.jsx = "react";
             }
 
-            const codeExtension = `!${engineVariables.sourceLanguageExt}x`;
+            const sourceExtension = uniteConfiguration.sourceLanguage === "TypeScript" ? ".ts" : ".js";
             let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [
-                `app${codeExtension}`,
-                `child/child${codeExtension}`,
-                "bootstrapper",
-                "entryPoint"]);
+                `app${sourceExtension}x`,
+                `child/child${sourceExtension}x`,
+                `bootstrapper${sourceExtension}`,
+                `entryPoint${sourceExtension}`
+            ]);
 
             if (ret === 0) {
-                ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app"]);
+                ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
 
                 if (ret === 0) {
-                    ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app", "bootstrapper"], true);
+                    ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`, `bootstrapper.spec${sourceExtension}`], true);
 
                     if (ret === 0) {
                         ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
