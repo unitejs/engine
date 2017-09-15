@@ -24,6 +24,8 @@ export declare class UniteConfiguration {
     server: string;
     taskManager: string;
     packageManager: string;
+    bundledLoader: string;
+    notBundledLoader: string;
     sourceExtensions: string[];
     viewExtensions: string[];
     styleExtension: string;

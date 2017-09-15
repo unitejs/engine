@@ -5,6 +5,7 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
+import { EsLintConfiguration } from "../../../../../dist/configuration/models/eslint/esLintConfiguration";
 import { TypeScriptConfiguration } from "../../../../../dist/configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../../dist/engine/engineVariables";
@@ -46,6 +47,8 @@ describe("Aurelia", () => {
         uniteConfigurationStub.sourceExtensions = ["js"];
         uniteConfigurationStub.viewExtensions = [];
         uniteConfigurationStub.styleExtension = "css";
+        uniteConfigurationStub.notBundledLoader = "rjs";
+        uniteConfigurationStub.bundledLoader = "rjs";
 
         engineVariablesStub = new EngineVariables();
         engineVariablesStub.engineAssetsFolder = "./assets/";
@@ -108,6 +111,7 @@ describe("Aurelia", () => {
         });
 
         it("can be called with application framework matching javascript", async () => {
+            engineVariablesStub.setConfiguration("ESLint", { });
             engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.push({ path: "aaa" });
             const obj = new Aurelia();
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
@@ -115,6 +119,7 @@ describe("Aurelia", () => {
             Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(2);
             Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins")).to.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript")).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parser).to.be.equal("babel-eslint");
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.js");
             Chai.expect(exists).to.be.equal(true);
         });

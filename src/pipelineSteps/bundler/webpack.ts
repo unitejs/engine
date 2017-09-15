@@ -22,15 +22,18 @@ export class Webpack extends PipelineStepBase {
                             engineVariables: EngineVariables): Promise<number> {
         if (super.condition(uniteConfiguration.bundler, "Webpack")) {
             if (!super.condition(uniteConfiguration.moduleType, "CommonJS")) {
-                logger.error("You can only use CommonJS modules with Webpack");
+                logger.error("You can only use Webpack with CommonJS modules");
                 return 1;
             }
+
+            uniteConfiguration.notBundledLoader = "SJS";
+            uniteConfiguration.bundledLoader = "WPK";
         }
         return 0;
     }
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["webpack", "source-map-loader", "uglifyjs-webpack-plugin"], super.condition(uniteConfiguration.bundler, "Webpack"));
+        engineVariables.toggleDevDependency(["webpack", "source-map-loader", "uglifyjs-webpack-plugin"], super.condition(uniteConfiguration.bundledLoader, "WPK"));
 
         return 0;
     }

@@ -59,6 +59,8 @@ describe("Browserify", () => {
             uniteConfigurationStub.bundler = "Webpack";
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
+            Chai.expect(uniteConfigurationStub.notBundledLoader).to.be.equal(undefined);
+            Chai.expect(uniteConfigurationStub.bundledLoader).to.be.equal(undefined);
         });
 
         it("can be called with bundler matching but failing moduleType", async () => {
@@ -67,12 +69,16 @@ describe("Browserify", () => {
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("can only use");
+            Chai.expect(uniteConfigurationStub.notBundledLoader).to.be.equal(undefined);
+            Chai.expect(uniteConfigurationStub.bundledLoader).to.be.equal(undefined);
         });
 
         it("can be called with bundler matching and working moduleType", async () => {
             const obj = new Browserify();
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
+            Chai.expect(uniteConfigurationStub.notBundledLoader).to.be.equal("SJS");
+            Chai.expect(uniteConfigurationStub.bundledLoader).to.be.equal("BFY");
         });
     });
 
@@ -90,6 +96,8 @@ describe("Browserify", () => {
         });
 
         it("can be called with matching bundler", async () => {
+            uniteConfigurationStub.bundledLoader = "BFY";
+
             const obj = new Browserify();
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);

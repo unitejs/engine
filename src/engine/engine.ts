@@ -373,6 +373,9 @@ export class Engine implements IEngine {
         this._pipeline.add("moduleType", "commonJs");
         this._pipeline.add("moduleType", "systemJs");
 
+        this._pipeline.add("loader", "sjs");
+        this._pipeline.add("loader", "rjs");
+
         this._pipeline.add("bundler", "browserify");
         this._pipeline.add("bundler", "requireJs");
         this._pipeline.add("bundler", "systemJsBuilder");

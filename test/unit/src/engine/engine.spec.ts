@@ -124,6 +124,8 @@ describe("Engine", () => {
             sourceExtensions: [],
             viewExtensions: [],
             styleExtension: "",
+            bundledLoader: "",
+            notBundledLoader: "",
             clientPackages: undefined,
             dirs: undefined,
             srcDistReplace: undefined,

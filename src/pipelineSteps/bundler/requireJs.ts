@@ -22,15 +22,18 @@ export class RequireJs extends PipelineStepBase {
                             engineVariables: EngineVariables): Promise<number> {
         if (super.condition(uniteConfiguration.bundler, "RequireJS")) {
             if (!super.condition(uniteConfiguration.moduleType, "AMD")) {
-                logger.error("You can only use AMD modules with RequireJS");
+                logger.error("You can only use RequireJS with AMD modules");
                 return 1;
             }
+
+            uniteConfiguration.notBundledLoader = "RJS";
+            uniteConfiguration.bundledLoader = "RJS";
         }
         return 0;
     }
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["requirejs"], super.condition(uniteConfiguration.bundler, "RequireJS"));
+        engineVariables.toggleDevDependency(["requirejs"], super.condition(uniteConfiguration.bundledLoader, "RJS"));
 
         return 0;
     }

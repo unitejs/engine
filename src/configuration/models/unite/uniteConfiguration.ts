@@ -26,6 +26,9 @@ export class UniteConfiguration {
     public taskManager: string;
     public packageManager: string;
 
+    public bundledLoader: string;
+    public notBundledLoader: string;
+
     public sourceExtensions: string[];
     public viewExtensions: string[];
     public styleExtension: string;

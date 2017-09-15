@@ -13,7 +13,7 @@ export class Gulp extends PipelineStepBase {
     private _tasksFolder: string;
     private _utilFolder: string;
 
-    private _files: { sourceFolder: string; sourceFile: string; destFolder: string; destFile: string; keep: boolean }[];
+    private _files: { sourceFolder: string; sourceFile: string; destFolder: string; destFile: string; keep: boolean; replacements: { [id: string]: string[]} }[];
 
     public influences(): PipelineKey[] {
         return [
@@ -60,7 +60,14 @@ export class Gulp extends PipelineStepBase {
             let ret;
 
             if (this._files[i].keep) {
-                ret = await super.copyFile(logger, fileSystem, this._files[i].sourceFolder, this._files[i].sourceFile, this._files[i].destFolder, this._files[i].destFile, engineVariables.force);
+                ret = await super.copyFile(logger,
+                                           fileSystem,
+                                           this._files[i].sourceFolder,
+                                           this._files[i].sourceFile,
+                                           this._files[i].destFolder,
+                                           this._files[i].destFile,
+                                           engineVariables.force,
+                                           this._files[i].replacements);
             } else {
                 ret = await super.deleteFile(logger, fileSystem, this._files[i].destFolder, this._files[i].destFile, engineVariables.force);
             }
@@ -121,7 +128,11 @@ export class Gulp extends PipelineStepBase {
         const assetTasksCssPre = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/cssPre/${uniteConfiguration.cssPre.toLowerCase()}/`);
         const assetTasksCssPost = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/cssPost/${uniteConfiguration.cssPost.toLowerCase()}/`);
 
-        this.toggleFile(assetTasksLanguage, "build-transpile.js", this._tasksFolder, "build-transpile.js", isGulp);
+        this.toggleFile(assetTasksLanguage, "build-transpile.js", this._tasksFolder, "build-transpile.js", isGulp, {
+            TRANSPILEINCLUDE: engineVariables.buildTranspileInclude,
+            TRANSPILEPREBUILD: engineVariables.buildTranspilePreBuild,
+            TRANSPILEPOSTBUILD: engineVariables.buildTranspilePostBuild
+        });
         this.toggleFile(assetTasksBundler, "build-bundle-app.js", this._tasksFolder, "build-bundle-app.js", isGulp);
         this.toggleFile(assetTasksBundler, "build-bundle-vendor.js", this._tasksFolder, "build-bundle-vendor.js", isGulp);
         this.toggleFile(assetTasksLinter, "build-lint.js", this._tasksFolder, "build-lint.js", isGulp);
@@ -204,7 +215,6 @@ export class Gulp extends PipelineStepBase {
         logger.info("Generating gulp tasks utils in", { gulpUtilFolder: this._utilFolder });
 
         const assetUtils = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/util/");
-        const assetUtilModuleType = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/moduleType/${uniteConfiguration.moduleType.toLowerCase()}/util/`);
 
         this.toggleFile(assetUtils, "async-util.js", this._utilFolder, "async-util.js", isGulp);
         this.toggleFile(assetUtils, "bundle.js", this._utilFolder, "bundle.js", isGulp);
@@ -214,15 +224,14 @@ export class Gulp extends PipelineStepBase {
         this.toggleFile(assetUtils, "env-util.js", this._utilFolder, "env-util.js", isGulp);
         this.toggleFile(assetUtils, "error-util.js", this._utilFolder, "error-util.js", isGulp);
         this.toggleFile(assetUtils, "json-helper.js", this._utilFolder, "json-helper.js", isGulp);
+        this.toggleFile(assetUtils, "module-config.js", this._utilFolder, "module-config.js", isGulp);
         this.toggleFile(assetUtils, "package-config.js", this._utilFolder, "package-config.js", isGulp);
         this.toggleFile(assetUtils, "platform-utils.js", this._utilFolder, "platform-utils.js", isGulp);
         this.toggleFile(assetUtils, "theme-utils.js", this._utilFolder, "theme-utils.js", isGulp);
         this.toggleFile(assetUtils, "unite-config.js", this._utilFolder, "unite-config.js", isGulp);
-
-        this.toggleFile(assetUtilModuleType, "module-config.js", this._utilFolder, "module-config.js", isGulp);
     }
 
-    private toggleFile(sourceFolder: string, sourceFile: string, destFolder: string, destFile: string, keep: boolean): void {
-        this._files.push({ sourceFolder, sourceFile, destFolder, destFile, keep });
+    private toggleFile(sourceFolder: string, sourceFile: string, destFolder: string, destFile: string, keep: boolean, replacements?: { [id: string]: string[]}): void {
+        this._files.push({ sourceFolder, sourceFile, destFolder, destFile, keep, replacements });
     }
 }

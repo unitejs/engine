@@ -32,7 +32,8 @@ export abstract class PipelineStepBase implements IPipelineStep {
                           sourceFilename: string,
                           destFolder: string,
                           destFilename: string,
-                          force: boolean): Promise<number> {
+                          force: boolean,
+                          replacements?: { [id: string]: string[]}): Promise<number> {
         const sourceFileExists = await fileSystem.fileExists(sourceFolder, sourceFilename);
 
         if (sourceFileExists) {
@@ -50,8 +51,13 @@ export abstract class PipelineStepBase implements IPipelineStep {
                         await fileSystem.directoryCreate(folderOnly);
                     }
 
-                    const buffer = await fileSystem.fileReadBinary(sourceFolder, sourceFilename);
-                    await fileSystem.fileWriteBinary(destFolder, destFilename, buffer);
+                    let txt = await fileSystem.fileReadText(sourceFolder, sourceFilename);
+                    if (replacements) {
+                        Object.keys(replacements).forEach(replacementKey => {
+                            txt = txt.replace(`{${replacementKey}}`, replacements[replacementKey].join("\r\n"));
+                        });
+                    }
+                    await fileSystem.fileWriteText(destFolder, destFilename, txt);
                 } catch (err) {
                     logger.error(`Copying ${sourceFilename} failed`, err, { from: sourceFolder, to: destFolder });
                     return 1;

@@ -35,6 +35,9 @@ export declare class EngineVariables {
         assetsSrcFolder: string;
     };
     license: ISpdxLicense;
+    buildTranspileInclude: string[];
+    buildTranspilePreBuild: string[];
+    buildTranspilePostBuild: string[];
     packageManager: IPackageManager;
     private _configuration;
     private _requiredDevDependencies;

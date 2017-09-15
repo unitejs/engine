@@ -22,15 +22,18 @@ export class Browserify extends PipelineStepBase {
                             engineVariables: EngineVariables): Promise<number> {
         if (super.condition(uniteConfiguration.bundler, "Browserify")) {
             if (!super.condition(uniteConfiguration.moduleType, "CommonJS")) {
-                logger.error("You can only use CommonJS modules with Browserify");
+                logger.error("You can only use Browserify with CommonJS modules");
                 return 1;
             }
+
+            uniteConfiguration.notBundledLoader = "SJS";
+            uniteConfiguration.bundledLoader = "BFY";
         }
         return 0;
     }
 
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["browserify"], super.condition(uniteConfiguration.bundler, "Browserify"));
+        engineVariables.toggleDevDependency(["browserify"], super.condition(uniteConfiguration.bundledLoader, "BFY"));
 
         return 0;
     }

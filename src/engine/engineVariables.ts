@@ -41,6 +41,10 @@ export class EngineVariables {
 
     public license: ISpdxLicense;
 
+    public buildTranspileInclude: string[];
+    public buildTranspilePreBuild: string[];
+    public buildTranspilePostBuild: string[];
+
     public packageManager: IPackageManager;
 
     private _configuration: { [id: string]: any };
@@ -52,6 +56,10 @@ export class EngineVariables {
 
     constructor() {
         this._configuration = {};
+
+        this.buildTranspileInclude = [];
+        this.buildTranspilePreBuild = [];
+        this.buildTranspilePostBuild = [];
 
         this._requiredDevDependencies = [];
         this._removedDevDependencies = [];

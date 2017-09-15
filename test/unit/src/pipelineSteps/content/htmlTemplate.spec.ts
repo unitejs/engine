@@ -58,14 +58,10 @@ describe("HtmlTemplate", () => {
             const obj = new HtmlTemplate();
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration("HTMLBundle")).to.be.deep.equal({
-                head: [],
-                body: []
-            });
-            Chai.expect(engineVariablesStub.getConfiguration("HTMLNoBundle")).to.be.deep.equal({
-                head: [],
-                body: []
-            });
+            Chai.expect(engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLBundle").head.length).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLBundle").body.length).to.be.equal(3);
+            Chai.expect(engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle").head.length).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle").body.length).to.be.equal(0);
         });
     });
 

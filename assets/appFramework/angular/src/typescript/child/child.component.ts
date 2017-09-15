@@ -4,14 +4,9 @@
 import { Component } from "@angular/core";
 
 @Component({
-  template: `
-    <div class="child-style">
-      {{ message }}
-    </div>
-  `,
-  styles: [`
-    .child-style { font-size: 20px; }
-  `]
+    moduleId: __moduleName || module.id,
+    templateUrl: "./child.component.html",
+    styleUrls: ["./child.component.css"]
 })
 
 export class ChildComponent {

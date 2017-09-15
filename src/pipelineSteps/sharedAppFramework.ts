@@ -99,8 +99,8 @@ export abstract class SharedAppFramework extends PipelineStepBase {
                                                              `appFramework/${appFramework}/test/unit/src/sourceLanguage/${uniteConfiguration.sourceLanguage.toLowerCase()}/` +
                                                                 `${uniteConfiguration.unitTestFramework.toLowerCase()}/`);
 
-            const unitTestsScaffoldModuleType = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
-                                                                       `appFramework/shared/test/unit/moduleType/${uniteConfiguration.moduleType.toLowerCase()}/`);
+            const unitTestsScaffoldLoaderType = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
+                                                                       `appFramework/shared/test/unit/loader/${uniteConfiguration.notBundledLoader.toLowerCase()}/`);
 
             for (const spec of specs) {
                 const ret = await this.copyFile(logger, fileSystem, unitTestsScaffold,
@@ -113,7 +113,7 @@ export abstract class SharedAppFramework extends PipelineStepBase {
                 }
             }
 
-            return await this.copyFile(logger, fileSystem, unitTestsScaffoldModuleType,
+            return await this.copyFile(logger, fileSystem, unitTestsScaffoldLoaderType,
                                        "unit-bootstrap.js",
                                        engineVariables.www.unitTestFolder,
                                        "unit-bootstrap.js",

@@ -6,7 +6,6 @@ import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { BabelConfiguration } from "../../../../../dist/configuration/models/babel/babelConfiguration";
-import { HtmlTemplateConfiguration } from "../../../../../dist/configuration/models/htmlTemplate/htmlTemplateConfiguration";
 import { TypeScriptConfiguration } from "../../../../../dist/configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../../dist/engine/engineVariables";
@@ -76,10 +75,6 @@ describe("CommonJs", () => {
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
 
-            const packageJsonDevDependencies: { [id: string]: string } = {};
-            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
-
-            Chai.expect(packageJsonDevDependencies.systemjs).to.be.equal("1.2.3");
             Chai.expect(uniteConfigurationStub.srcDistReplaceWith).to.be.equal("../dist/");
         });
 
@@ -95,8 +90,6 @@ describe("CommonJs", () => {
         it("can be called with matching module type and engine configuration", async () => {
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {}});
             engineVariablesStub.setConfiguration("Babel", { presets: []});
-            engineVariablesStub.setConfiguration("HTMLNoBundle", { scriptIncludes: [], body: []});
-            engineVariablesStub.setConfiguration("HTMLBundle", { body: []});
 
             const obj = new CommonJs();
             const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
@@ -104,8 +97,6 @@ describe("CommonJs", () => {
 
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.module).to.be.equal("commonjs");
             Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").presets[0][1].modules).to.be.equal("commonjs");
-            Chai.expect(engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle").body.length).to.be.equal(8);
-            Chai.expect(engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLBundle").body.length).to.be.equal(3);
         });
 
         it("can be called with matching module type and engine configuration, existing babel", async () => {

@@ -28,7 +28,11 @@ export class HtmlTemplate extends PipelineStepBase {
 
         this._htmlBundle = {
             head: [],
-            body: []
+            body: [
+                "<script src=\"./dist/vendor-bundle.js{CACHEBUST}\"></script>",
+                "<script>{UNITECONFIG}</script>",
+                "<script src=\"./dist/app-bundle.js{CACHEBUST}\"></script>"
+            ]
         };
 
         engineVariables.setConfiguration("HTMLBundle", this._htmlBundle);

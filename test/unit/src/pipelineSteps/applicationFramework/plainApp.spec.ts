@@ -45,6 +45,8 @@ describe("PlainApp", () => {
         uniteConfigurationStub.sourceExtensions = ["js"];
         uniteConfigurationStub.viewExtensions = [];
         uniteConfigurationStub.styleExtension = "css";
+        uniteConfigurationStub.notBundledLoader = "rjs";
+        uniteConfigurationStub.bundledLoader = "rjs";
 
         engineVariablesStub = new EngineVariables();
         engineVariablesStub.engineAssetsFolder = "./assets/";

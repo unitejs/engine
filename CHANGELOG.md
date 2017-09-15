@@ -11,6 +11,8 @@
 * Fixed transpile tasks not returning async
 * Changed Aurelia JavaScript linter to babel-eslint
 * Changed Aurelia JavaScript transpiler to include "transform-decorators-legacy plugin
+* SystemJS bundling now also handles commonjs and amd modules
+* Angular now supports templateUrl and styleUrls in components
 
 ## v1.0.1
 

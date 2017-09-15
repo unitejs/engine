@@ -110,13 +110,16 @@ gulp.task("build-copy-components", async () => {
 gulp.task("build-module-config", async () => {
     const uniteConfig = await uc.getUniteConfig();
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
+
     const config = moduleConfig.create(uniteConfig, ["app", "both"], buildConfiguration.bundle, "");
 
-    try {
-        await util.promisify(fs.writeFile)(path.join(uniteConfig.dirs.www.dist, "app-module-config.js"), config);
-    } catch (err) {
-        display.error("Writing app-module-config.js", err);
-        process.exit(1);
+    if (config) {
+        try {
+            await util.promisify(fs.writeFile)(path.join(uniteConfig.dirs.www.dist, "app-module-config.js"), config);
+        } catch (err) {
+            display.error("Writing app-module-config.js", err);
+            process.exit(1);
+        }
     }
 });
 

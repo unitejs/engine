@@ -2,19 +2,28 @@
  * Gulp utils for unite configuration.
  */
 const display = require("./display");
+const envUtil = require("./env-util");
 const minimist = require("minimist");
 const fs = require("fs");
 const util = require("util");
 const path = require("path");
 
 async function getUniteConfig () {
-    try {
-        const data = await util.promisify(fs.readFile)("../unite.json");
-        return JSON.parse(data.toString());
-    } catch (err) {
-        display.error("Reading unite.json", err);
-        process.exit(1);
-        return undefined;
+    let uc = envUtil.get("uniteConfig");
+
+    if (uc) {
+        return uc;
+    } else {
+        try {
+            const data = await util.promisify(fs.readFile)("../unite.json");
+            uc = JSON.parse(data.toString());
+            envUtil.set("uniteConfig", uc);
+            return uc;
+        } catch (err) {
+            display.error("Reading unite.json", err);
+            process.exit(1);
+            return undefined;
+        }
     }
 }
 

@@ -11,6 +11,7 @@ const path = require("path");
 const uglify = require("gulp-uglify");
 const gutil = require("gulp-util");
 const errorUtil = require("./util/error-util");
+{TRANSPILEINCLUDE}
 
 gulp.task("build-transpile", async () => {
     display.info("Running", "TypeScript");
@@ -27,7 +28,9 @@ gulp.task("build-transpile", async () => {
         `**/*.${uc.extensionMap(uniteConfig.sourceExtensions)}`
     ))
         .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : gutil.noop())
+        {TRANSPILEPREBUILD}
         .pipe(tsProject(typescript.reporter.nullReporter()))
+        {TRANSPILEPOSTBUILD}
         .on("error", (err) => {
             display.error(err.message);
             errorCount++;

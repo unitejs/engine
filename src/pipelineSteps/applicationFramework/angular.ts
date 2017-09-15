@@ -2,6 +2,7 @@
  * Pipeline step to generate scaffolding for angular application.
  */
 import { ArrayHelper } from "unitejs-framework/dist/helpers/arrayHelper";
+import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { BabelConfiguration } from "../../configuration/models/babel/babelConfiguration";
@@ -19,7 +20,8 @@ export class Angular extends SharedAppFramework {
             new PipelineKey("content", "packageJson"),
             new PipelineKey("language", "javaScript"),
             new PipelineKey("language", "typeScript"),
-            new PipelineKey("linter", "esLint")
+            new PipelineKey("linter", "esLint"),
+            new PipelineKey("taskManager", "gulp")
         ];
     }
 
@@ -37,17 +39,34 @@ export class Angular extends SharedAppFramework {
     public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         this.toggleDependencies(logger, fileSystem, uniteConfiguration, engineVariables);
 
+        const cond = super.condition(uniteConfiguration.applicationFramework, "Angular");
+
+        const usingGulp = cond && super.condition(uniteConfiguration.taskManager, "Gulp");
+        if (usingGulp) {
+            engineVariables.buildTranspileInclude.push("const inline = require(\"gulp-inline-ng2-template\");");
+            engineVariables.buildTranspilePreBuild.push(".pipe(buildConfiguration.bundle ? inline({ useRelativePaths: true }) : gutil.noop())");
+        }
+
+        engineVariables.toggleDevDependency(["gulp-inline-ng2-template"], usingGulp);
+
         engineVariables.toggleDevDependency(["babel-plugin-transform-decorators-legacy"],
-                                            super.condition(uniteConfiguration.applicationFramework, "Angular") && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
-        engineVariables.toggleDevDependency(["babel-eslint"], super.condition(uniteConfiguration.applicationFramework, "Angular") && super.condition(uniteConfiguration.linter, "ESLint"));
+                                            cond && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
+        engineVariables.toggleDevDependency(["babel-eslint"], cond && super.condition(uniteConfiguration.linter, "ESLint"));
+        engineVariables.toggleDevDependency(["@types/systemjs"],
+                                            cond && super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
 
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
         if (babelConfiguration) {
-            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", super.condition(uniteConfiguration.applicationFramework, "Angular"));
+            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", cond);
+        }
+
+        const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
+        if (esLintConfiguration) {
+            ObjectHelper.addRemove(esLintConfiguration.globals, "__moduleName", true, cond);
+            ObjectHelper.addRemove(esLintConfiguration.globals, "module", true, cond);
         }
 
         if (super.condition(uniteConfiguration.applicationFramework, "Angular")) {
-            const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
             if (esLintConfiguration) {
                 esLintConfiguration.parser = "babel-eslint";
             }
@@ -68,16 +87,24 @@ export class Angular extends SharedAppFramework {
             ]);
 
             if (ret === 0) {
-                ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
+                ret = await super.generateAppHtml(logger, fileSystem, uniteConfiguration, engineVariables, ["app.component.html", "child/child.component.html"]);
 
                 if (ret === 0) {
-                    ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`bootstrapper.spec${sourceExtension}`], true);
+                    ret = await super.generateAppCss(logger, fileSystem, uniteConfiguration, engineVariables, ["app.component", "child/child.component"]);
 
                     if (ret === 0) {
-                        ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.module.spec${sourceExtension}`], false);
+                        ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
 
                         if (ret === 0) {
-                            ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
+                            ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`bootstrapper.spec${sourceExtension}`], true);
+
+                            if (ret === 0) {
+                                ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.module.spec${sourceExtension}`], false);
+
+                                if (ret === 0) {
+                                    ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
+                                }
+                            }
                         }
                     }
                 }

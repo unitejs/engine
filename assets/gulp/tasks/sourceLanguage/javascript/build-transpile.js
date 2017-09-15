@@ -11,6 +11,7 @@ const uglify = require("gulp-uglify");
 const gutil = require("gulp-util");
 const asyncUtil = require("./util/async-util");
 const errorUtil = require("./util/error-util");
+{TRANSPILEINCLUDE}
 
 gulp.task("build-transpile", async () => {
     display.info("Running", "Babel");
@@ -25,7 +26,9 @@ gulp.task("build-transpile", async () => {
         `**/*.${uc.extensionMap(uniteConfig.sourceExtensions)}`
     ))
         .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : gutil.noop())
+        {TRANSPILEPREBUILD}
         .pipe(babel())
+        {TRANSPILEPOSTBUILD}
         .on("error", (err) => {
             display.error(err.message);
             display.error(`\n${err.codeFrame}`);

@@ -21,5 +21,5 @@ export declare class Gulp extends PipelineStepBase {
     private generateServeTasks(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
     private generateThemeTasks(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
     private generateUtils(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
-    private toggleFile(sourceFolder, sourceFile, destFolder, destFile, keep);
+    private toggleFile(sourceFolder, sourceFile, destFolder, destFile, keep, replacements?);
 }
