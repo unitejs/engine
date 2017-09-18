@@ -102,7 +102,7 @@ function extensionMap (extensions) {
     if (extensions.length === 1) {
         return extensions[0];
     } else {
-        return `{${extensions.join(",")}`;
+        return `{${extensions.join(",")}}`;
     }
 }
 
