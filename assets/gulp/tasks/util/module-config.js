@@ -47,11 +47,8 @@ function createSystemJS (uniteConfig, includeModes, isBundle, mapBase) {
         "packages": {},
         "map": { },
         "meta": {
-            "dist/*.js": {
+            "dist/*": {
                 format
-            },
-            "dist/app-module-config.js": {
-                "format": "global"
             }
         }
     };
