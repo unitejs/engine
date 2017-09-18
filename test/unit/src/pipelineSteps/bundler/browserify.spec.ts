@@ -45,67 +45,60 @@ describe("Browserify", () => {
         Chai.should().exist(obj);
     });
 
-    describe("influences", () => {
-        it("can be called and return influences", async () => {
+    describe("mainCondition", () => {
+        it("can be called with not matching condition", async () => {
             const obj = new Browserify();
-            const res = obj.influences();
-            Chai.expect(res.length).to.be.equal(2);
+            uniteConfigurationStub.bundler = undefined;
+            const res = obj.mainCondition(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(false);
+        });
+
+        it("can be called with matching condition", async () => {
+            const obj = new Browserify();
+            const res = obj.mainCondition(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(true);
         });
     });
 
     describe("initialise", () => {
-        it("can be called with bundler not matching", async () => {
-            const obj = new Browserify();
-            uniteConfigurationStub.bundler = "Webpack";
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(uniteConfigurationStub.notBundledLoader).to.be.equal(undefined);
-            Chai.expect(uniteConfigurationStub.bundledLoader).to.be.equal(undefined);
-        });
-
         it("can be called with bundler matching but failing moduleType", async () => {
             const obj = new Browserify();
             uniteConfigurationStub.moduleType = "AMD";
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("can only use");
-            Chai.expect(uniteConfigurationStub.notBundledLoader).to.be.equal(undefined);
-            Chai.expect(uniteConfigurationStub.bundledLoader).to.be.equal(undefined);
         });
 
         it("can be called with bundler matching and working moduleType", async () => {
             const obj = new Browserify();
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(uniteConfigurationStub.notBundledLoader).to.be.equal("SJS");
-            Chai.expect(uniteConfigurationStub.bundledLoader).to.be.equal("BFY");
         });
     });
 
-    describe("process", () => {
-        it("can be called with non matching bundler", async () => {
+    describe("install", () => {
+        it("can be called", async () => {
             const obj = new Browserify();
-            uniteConfigurationStub.bundler = "Webpack";
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-
-            const packageJsonDevDependencies: { [id: string]: string } = {};
-            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
-
-            Chai.expect(packageJsonDevDependencies.browserify).to.be.equal(undefined);
-        });
-
-        it("can be called with matching bundler", async () => {
-            uniteConfigurationStub.bundledLoader = "BFY";
-
-            const obj = new Browserify();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
 
             Chai.expect(packageJsonDevDependencies.browserify).to.be.equal("1.2.3");
+        });
+    });
+
+    describe("uninstall", () => {
+        it("can be called", async () => {
+            const obj = new Browserify();
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            const packageJsonDevDependencies: { [id: string]: string } = { browserify: "1.2.3"};
+            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
+
+            Chai.expect(packageJsonDevDependencies.browserify).to.be.equal(undefined);
         });
     });
 });

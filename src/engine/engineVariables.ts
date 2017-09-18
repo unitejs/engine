@@ -115,6 +115,37 @@ export class EngineVariables {
                                loaders: { [id: string]: string},
                                isModuleLoader: boolean,
                                required: boolean): void {
+
+        if (required) {
+            this.addClientPackage(name,
+                                  main,
+                                  mainMinified,
+                                  testingAdditions,
+                                  preload,
+                                  includeMode,
+                                  scriptIncludeMode,
+                                  isPackage,
+                                  assets,
+                                  map,
+                                  loaders,
+                                  isModuleLoader);
+        } else {
+            this.removeClientPackage(name);
+        }
+    }
+
+    public addClientPackage(name: string,
+                            main: string,
+                            mainMinified: string,
+                            testingAdditions:  { [id: string]: string},
+                            preload: boolean,
+                            includeMode: IncludeMode,
+                            scriptIncludeMode: ScriptIncludeMode,
+                            isPackage: boolean,
+                            assets: string,
+                            map: { [id: string]: string},
+                            loaders: { [id: string]: string},
+                            isModuleLoader: boolean): void {
         const clientPackage = new UniteClientPackage();
         clientPackage.includeMode = includeMode;
         clientPackage.preload = preload;
@@ -128,28 +159,33 @@ export class EngineVariables {
         clientPackage.loaders = loaders;
         clientPackage.scriptIncludeMode = scriptIncludeMode;
         clientPackage.isModuleLoader = isModuleLoader;
+        this._requiredClientPackages[name] = clientPackage;
+    }
 
-        let opArr: { [id: string]: UniteClientPackage };
-        if (required) {
-            opArr = this._requiredClientPackages;
-        } else {
-            opArr = this._removedClientPackages;
-        }
-
-        opArr[name] = clientPackage;
+    public removeClientPackage(name: string): void {
+        this._removedClientPackages[name] = undefined;
     }
 
     public toggleDevDependency(dependencies: string[], required: boolean): void {
-        let opArr: string[];
         if (required) {
-            opArr = this._requiredDevDependencies;
+            this.addDevDependency(dependencies);
         } else {
-            opArr = this._removedDevDependencies;
+            this.removeDevDependency(dependencies);
         }
+    }
 
+    public addDevDependency(dependencies: string[]): void {
         dependencies.forEach(dep => {
-            if (opArr.indexOf(dep) < 0) {
-                opArr.push(dep);
+            if (this._requiredDevDependencies.indexOf(dep) < 0) {
+                this._requiredDevDependencies.push(dep);
+            }
+        });
+    }
+
+    public removeDevDependency(dependencies: string[]): void {
+        dependencies.forEach(dep => {
+            if (this._removedDevDependencies.indexOf(dep) < 0) {
+                this._removedDevDependencies.push(dep);
             }
         });
     }

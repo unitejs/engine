@@ -15,6 +15,10 @@ function createRequireJS (uniteConfig, includeModes, isBundle, mapBase) {
         }
     };
 
+    if (mapBase) {
+        rjsConfig.baseUrl = mapBase;
+    }
+
     Object.keys(moduleConfig.map).forEach(key => {
         rjsConfig.map["*"][key] = moduleConfig.map[key];
     });
@@ -45,13 +49,17 @@ function createSystemJS (uniteConfig, includeModes, isBundle, mapBase) {
     const sjsConfig = {
         "paths": moduleConfig.paths,
         "packages": {},
-        "map": { },
+        "map": {},
         "meta": {
             "dist/*": {
                 format
             }
         }
     };
+
+    if (mapBase) {
+        sjsConfig.baseURL = mapBase;
+    }
 
     sjsConfig.packages[""] = {"defaultExtension": "js"};
 
@@ -84,7 +92,17 @@ function createSystemJS (uniteConfig, includeModes, isBundle, mapBase) {
 }
 
 function create (uniteConfig, includeModes, isBundle, mapBase) {
-    const loader = isBundle ? uniteConfig.bundledLoader.toLowerCase() : uniteConfig.notBundledLoader.toLowerCase();
+    let loader = null;
+    const bundlerLower = uniteConfig.bundler.toLowerCase();
+
+    if (bundlerLower === "requirejs") {
+        loader = "rjs";
+    } else if ((isBundle && bundlerLower === "systemjsbuilder") ||
+            (!isBundle && (bundlerLower === "browserify" ||
+                bundlerLower === "systemjsbuilder" ||
+                bundlerLower === "webpack"))) {
+        loader = "sjs";
+    }
 
     if (loader === "rjs") {
         return createRequireJS(uniteConfig, includeModes, isBundle, mapBase);

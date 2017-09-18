@@ -11,30 +11,21 @@ import { ProtractorConfiguration } from "../../configuration/models/protractor/p
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { WebdriverIoConfiguration } from "../../configuration/models/webdriverIo/webdriverIoConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { PipelineKey } from "../../engine/pipelineKey";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class Jasmine extends PipelineStepBase {
-    public influences(): PipelineKey[] {
-        return [
-            new PipelineKey("unite", "uniteConfigurationJson"),
-            new PipelineKey("content", "packageJson"),
-            new PipelineKey("linter", "esLint"),
-            new PipelineKey("unitTestRunner", "karma"),
-            new PipelineKey("e2eTestRunner", "protractor"),
-            new PipelineKey("e2eTestRunner", "webdriverIo")
-        ];
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+        return super.condition(uniteConfiguration.unitTestFramework, "Jasmine") || super.condition(uniteConfiguration.e2eTestFramework, "Jasmine");
     }
 
-    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         logger.info("Generating Jasmine Configuration");
 
         const isUnit = super.condition(uniteConfiguration.unitTestFramework, "Jasmine");
         const isE2E = super.condition(uniteConfiguration.e2eTestFramework, "Jasmine");
-        const isEither = isUnit || isE2E;
 
-        engineVariables.toggleDevDependency(["jasmine-core"], isEither);
-        engineVariables.toggleDevDependency(["@types/jasmine"], super.condition(uniteConfiguration.sourceLanguage, "TypeScript") && isEither);
+        engineVariables.toggleDevDependency(["jasmine-core"], true);
+        engineVariables.toggleDevDependency(["@types/jasmine"], super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
 
         engineVariables.toggleDevDependency(["karma-jasmine"], super.condition(uniteConfiguration.unitTestRunner, "Karma") && isUnit);
 
@@ -45,7 +36,7 @@ export class Jasmine extends PipelineStepBase {
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
-            ObjectHelper.addRemove(esLintConfiguration.env, "jasmine", true, isEither);
+            ObjectHelper.addRemove(esLintConfiguration.env, "jasmine", true, true);
         }
 
         const karmaConfiguration = engineVariables.getConfiguration<KarmaConfiguration>("Karma");
@@ -90,6 +81,40 @@ export class Jasmine extends PipelineStepBase {
             if (webdriverIoConfiguration) {
                 webdriverIoConfiguration.framework = "jasmine";
             }
+        }
+
+        return 0;
+    }
+
+    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        engineVariables.toggleDevDependency(["jasmine-core"], false);
+        engineVariables.toggleDevDependency(["@types/jasmine"], false);
+
+        engineVariables.toggleDevDependency(["karma-jasmine"], false);
+
+        engineVariables.toggleDevDependency(["protractor-jasmine2-html-reporter", "jasmine-spec-reporter"], false);
+
+        engineVariables.toggleDevDependency(["wdio-jasmine-framework"], false);
+
+        const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
+        if (esLintConfiguration) {
+            ObjectHelper.addRemove(esLintConfiguration.env, "jasmine", true, false);
+        }
+
+        const karmaConfiguration = engineVariables.getConfiguration<KarmaConfiguration>("Karma");
+        if (karmaConfiguration) {
+            ArrayHelper.addRemove(karmaConfiguration.frameworks, "jasmine", false);
+        }
+
+        const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
+        if (protractorConfiguration) {
+            protractorConfiguration.framework = undefined;
+            protractorConfiguration.jasmineNodeOpts = undefined;
+        }
+
+        const webdriverIoConfiguration = engineVariables.getConfiguration<WebdriverIoConfiguration>("WebdriverIO");
+        if (webdriverIoConfiguration) {
+            webdriverIoConfiguration.framework = undefined;
         }
 
         return 0;

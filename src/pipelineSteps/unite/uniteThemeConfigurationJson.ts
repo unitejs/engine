@@ -7,17 +7,12 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { UniteThemeConfiguration } from "../../configuration/models/uniteTheme/uniteThemeConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { PipelineKey } from "../../engine/pipelineKey";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class UniteThemeConfigurationJson extends PipelineStepBase {
     private static FILENAME: string = "unite-theme.json";
 
     private _configuration: UniteThemeConfiguration;
-
-    public influences(): PipelineKey[] {
-        return [];
-    }
 
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         logger.info("Initialising Unite Theme Config");
@@ -41,7 +36,7 @@ export class UniteThemeConfigurationJson extends PipelineStepBase {
         return 0;
     }
 
-    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
             logger.info(`Generating ${UniteThemeConfigurationJson.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder});
 

@@ -47,11 +47,18 @@ describe("TypeScript", () => {
         Chai.should().exist(obj);
     });
 
-    describe("influences", () => {
-        it("can be called and return influences", async () => {
+    describe("mainCondition", () => {
+        it("can be called with not matching condition", async () => {
             const obj = new TypeScript();
-            const res = obj.influences();
-            Chai.expect(res.length).to.be.equal(2);
+            uniteConfigurationStub.sourceLanguage = undefined;
+            const res = obj.mainCondition(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(false);
+        });
+
+        it("can be called with matching condition", async () => {
+            const obj = new TypeScript();
+            const res = obj.mainCondition(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(true);
         });
     });
 
@@ -101,11 +108,11 @@ describe("TypeScript", () => {
 
     });
 
-    describe("process", () => {
+    describe("install", () => {
         it("can fail if an exception is thrown", async () => {
             sandbox.stub(fileSystemMock, "fileWriteJson").throws("error");
             const obj = new TypeScript();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
         });
@@ -115,7 +122,7 @@ describe("TypeScript", () => {
             const obj = new TypeScript();
             uniteConfigurationStub.sourceLanguage = "JavaScript";
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(stub.called).to.be.equal(true);
 
@@ -130,7 +137,7 @@ describe("TypeScript", () => {
 
             const obj = new TypeScript();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerInfoSpy.args[1][0]).contains("Generating");
 

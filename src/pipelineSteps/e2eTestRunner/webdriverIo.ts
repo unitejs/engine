@@ -10,7 +10,6 @@ import { EsLintConfiguration } from "../../configuration/models/eslint/esLintCon
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { WebdriverIoConfiguration } from "../../configuration/models/webdriverIo/webdriverIoConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { PipelineKey } from "../../engine/pipelineKey";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class WebdriverIo extends PipelineStepBase {
@@ -19,63 +18,79 @@ export class WebdriverIo extends PipelineStepBase {
     private _configuration: WebdriverIoConfiguration;
     private _plugins: string[];
 
-    public influences(): PipelineKey[] {
-        return [
-            new PipelineKey("unite", "uniteConfigurationJson"),
-            new PipelineKey("content", "packageJson"),
-            new PipelineKey("linter", "esLint")
-        ];
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+        return super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO");
     }
 
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        if (super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO")) {
-            this.configDefaults(fileSystem, engineVariables);
-        }
+        this.configDefaults(fileSystem, engineVariables);
 
         return 0;
     }
 
-    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["webdriverio",
                                             "wdio-spec-reporter",
                                             "wdio-allure-reporter",
                                             "browser-sync",
                                             "selenium-standalone",
                                             "allure-commandline"],
-                                            super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
+                                            true);
 
         engineVariables.toggleDevDependency(["@types/webdriverio"],
-                                            super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO") && super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
+                                            super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
 
-        engineVariables.toggleDevDependency(["eslint-plugin-webdriverio"], super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO") && super.condition(uniteConfiguration.linter, "ESLint"));
+        engineVariables.toggleDevDependency(["eslint-plugin-webdriverio"], super.condition(uniteConfiguration.linter, "ESLint"));
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
-            ArrayHelper.addRemove(esLintConfiguration.plugins, "webdriverio", super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
-            ObjectHelper.addRemove(esLintConfiguration.env, "webdriverio/wdio", true, super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
+            ArrayHelper.addRemove(esLintConfiguration.plugins, "webdriverio", true);
+            ObjectHelper.addRemove(esLintConfiguration.env, "webdriverio/wdio", true, true);
         }
 
-        if (super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO")) {
-            try {
-                const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, WebdriverIo.FILENAME);
+        return 0;
+    }
 
-                if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker" || engineVariables.force) {
-                    logger.info(`Generating ${WebdriverIo.FILENAME}`);
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        try {
+            const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, WebdriverIo.FILENAME);
 
-                    const lines: string[] = this.finaliseConfig(fileSystem, uniteConfiguration, engineVariables);
-                    await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, WebdriverIo.FILENAME, lines);
-                } else {
-                    logger.info(`Skipping ${WebdriverIo.FILENAME} as it has no generated marker`);
-                }
+            if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker" || engineVariables.force) {
+                logger.info(`Generating ${WebdriverIo.FILENAME}`);
 
-                return 0;
-            } catch (err) {
-                logger.error(`Generating ${WebdriverIo.FILENAME} failed`, err);
-                return 1;
+                const lines: string[] = this.finaliseConfig(fileSystem, uniteConfiguration, engineVariables);
+                await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, WebdriverIo.FILENAME, lines);
+            } else {
+                logger.info(`Skipping ${WebdriverIo.FILENAME} as it has no generated marker`);
             }
-        } else {
-            return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, WebdriverIo.FILENAME, engineVariables.force);
+
+            return 0;
+        } catch (err) {
+            logger.error(`Generating ${WebdriverIo.FILENAME} failed`, err);
+            return 1;
         }
+    }
+
+    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        engineVariables.toggleDevDependency(["webdriverio",
+                                            "wdio-spec-reporter",
+                                            "wdio-allure-reporter",
+                                            "browser-sync",
+                                            "selenium-standalone",
+                                            "allure-commandline"],
+                                            false);
+
+        engineVariables.toggleDevDependency(["@types/webdriverio"], false);
+
+        engineVariables.toggleDevDependency(["eslint-plugin-webdriverio"], false);
+
+        const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
+        if (esLintConfiguration) {
+            ArrayHelper.addRemove(esLintConfiguration.plugins, "webdriverio", false);
+            ObjectHelper.addRemove(esLintConfiguration.env, "webdriverio/wdio", true, false);
+        }
+
+        return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, WebdriverIo.FILENAME, engineVariables.force);
     }
 
     private configDefaults(fileSystem: IFileSystem, engineVariables: EngineVariables): void {

@@ -5,7 +5,6 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { HtmlTemplateConfiguration } from "../../../../../dist/configuration/models/htmlTemplate/htmlTemplateConfiguration";
 import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../../dist/engine/engineVariables";
 import { RJS } from "../../../../../dist/pipelineSteps/loader/rjs";
@@ -49,89 +48,32 @@ describe("RJS", () => {
         Chai.should().exist(obj);
     });
 
-    describe("influences", () => {
-        it("can be called and return influences", async () => {
+    describe("mainCondition", () => {
+        it("can be called with not matching condition", async () => {
             const obj = new RJS();
-            const res = obj.influences();
-            Chai.expect(res.length).to.be.equal(3);
+            uniteConfigurationStub.bundler = undefined;
+            const res = obj.mainCondition(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(false);
+        });
+
+        it("can be called with matching condition", async () => {
+            const obj = new RJS();
+            const res = obj.mainCondition(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(true);
         });
     });
 
-    describe("process", () => {
+    describe("install", () => {
         it("can be called with mismatched bundled loader and mismatched not bundler loader", async () => {
-            uniteConfigurationStub.bundledLoader = "SJS";
-            uniteConfigurationStub.notBundledLoader = "SJS";
+            uniteConfigurationStub.bundler = "SystemJS";
             const obj = new RJS();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDependencies(uniteConfigurationStub, packageJsonDependencies);
 
             Chai.expect(packageJsonDependencies.requirejs).to.be.equal(undefined);
-        });
-
-        it("can be called with bundled loader and mismatched not bundler loader", async () => {
-            engineVariablesStub.setConfiguration("HTMLNoBundle", { body: []});
-            uniteConfigurationStub.bundledLoader = "RJS";
-            uniteConfigurationStub.notBundledLoader = "SJS";
-            const obj = new RJS();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-
-            const packageJsonDependencies: { [id: string]: string } = {};
-            engineVariablesStub.buildDependencies(uniteConfigurationStub, packageJsonDependencies);
-
-            Chai.expect(packageJsonDependencies.requirejs).to.be.equal("1.2.3");
-            Chai.expect(uniteConfigurationStub.clientPackages.requirejs.scriptIncludeMode).to.be.equal("bundled");
-            Chai.expect(engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle").body.length).to.be.equal(0);
-        });
-
-        it("can be called with mismatched bundled loader and not bundler loader", async () => {
-            engineVariablesStub.setConfiguration("HTMLNoBundle", { body: []});
-            uniteConfigurationStub.bundledLoader = "SJS";
-            uniteConfigurationStub.notBundledLoader = "RJS";
-            const obj = new RJS();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-
-            const packageJsonDependencies: { [id: string]: string } = {};
-            engineVariablesStub.buildDependencies(uniteConfigurationStub, packageJsonDependencies);
-
-            Chai.expect(packageJsonDependencies.requirejs).to.be.equal("1.2.3");
-            Chai.expect(uniteConfigurationStub.clientPackages.requirejs.scriptIncludeMode).to.be.equal("notBundled");
-            Chai.expect(engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle").body.length).to.be.equal(7);
-        });
-
-        it("can be called with bundled loader and not bundler loader", async () => {
-            engineVariablesStub.setConfiguration("HTMLNoBundle", { body: []});
-            uniteConfigurationStub.bundledLoader = "RJS";
-            uniteConfigurationStub.notBundledLoader = "RJS";
-            const obj = new RJS();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-
-            const packageJsonDependencies: { [id: string]: string } = {};
-            engineVariablesStub.buildDependencies(uniteConfigurationStub, packageJsonDependencies);
-
-            Chai.expect(packageJsonDependencies.requirejs).to.be.equal("1.2.3");
-            Chai.expect(uniteConfigurationStub.clientPackages.requirejs.scriptIncludeMode).to.be.equal("both");
-            Chai.expect(engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle").body.length).to.be.equal(7);
-        });
-
-        it("can be called with bundled loader and not bundler loader, no htmltemplate", async () => {
-            uniteConfigurationStub.bundledLoader = "RJS";
-            uniteConfigurationStub.notBundledLoader = "RJS";
-            const obj = new RJS();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-
-            const packageJsonDependencies: { [id: string]: string } = {};
-            engineVariablesStub.buildDependencies(uniteConfigurationStub, packageJsonDependencies);
-
-            Chai.expect(packageJsonDependencies.requirejs).to.be.equal("1.2.3");
-            Chai.expect(uniteConfigurationStub.clientPackages.requirejs.scriptIncludeMode).to.be.equal("both");
-            Chai.expect(engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle")).to.be.equal(undefined);
         });
     });
 });

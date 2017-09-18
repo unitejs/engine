@@ -31,29 +31,53 @@ export class Pipeline {
     }
 
     public async run(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        const keyMap: { [id: string]: IPipelineStep } = {};
+        const pipeline: IPipelineStep[] = [];
 
         for (const pipelineStep of this._steps) {
             const exists = await this.tryLoad(uniteConfiguration, pipelineStep, undefined, false);
 
             if (exists) {
-                keyMap[pipelineStep.combined()] = this.getStep(pipelineStep);
+                pipeline.push(this.getStep(pipelineStep));
             } else {
                 return 1;
             }
         }
 
-        const pipeline: IPipelineStep[] = this.orderByInfluence(keyMap);
+        const pipelineInstall: IPipelineStep[] = [];
+        const pipelineUninstall: IPipelineStep[] = [];
 
         for (const pipelineStep of pipeline) {
+            const condition = pipelineStep.mainCondition(uniteConfiguration, engineVariables);
+            if (condition || condition === undefined) {
+                pipelineInstall.push(pipelineStep);
+            } else {
+                pipelineUninstall.push(pipelineStep);
+            }
+        }
+
+        for (const pipelineStep of pipelineUninstall) {
+            const ret = await pipelineStep.uninstall(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
+            if (ret !== 0) {
+                return ret;
+            }
+        }
+
+        for (const pipelineStep of pipelineInstall) {
             const ret = await pipelineStep.initialise(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
             if (ret !== 0) {
                 return ret;
             }
         }
 
-        for (const pipelineStep of pipeline) {
-            const ret = await pipelineStep.process(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
+        for (const pipelineStep of pipelineInstall) {
+            const ret = await pipelineStep.install(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
+            if (ret !== 0) {
+                return ret;
+            }
+        }
+
+        for (const pipelineStep of pipelineInstall) {
+            const ret = await pipelineStep.finalise(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
             if (ret !== 0) {
                 return ret;
             }
@@ -138,59 +162,5 @@ export class Pipeline {
             this._logger.error(`Pipeline Step has an invalid key`, undefined, pipelineKey);
             return false;
         }
-    }
-
-    public orderByInfluence(keyMap: { [id: string]: IPipelineStep }): IPipelineStep[] {
-        const orderedKeys: PipelineKey[] = [];
-
-        Object.keys(keyMap).sort().forEach(keyString => {
-            const keyParts = keyString.split("/");
-            const key = new PipelineKey(keyParts[0], keyParts[1]);
-            orderedKeys.push(key);
-        });
-
-        let changed;
-        do {
-            changed = false;
-            for (let i = 0; i < orderedKeys.length && !changed; i++) {
-                const orderedKey = orderedKeys[i];
-                const pipelineStep = keyMap[orderedKey.combined()];
-                const influences = pipelineStep.influences();
-
-                let lastInfluenceIndex = -1;
-
-                influences.forEach(influence => {
-                    let influenceIndex;
-
-                    if (influence.key === "*") {
-                        const allCatKeys = orderedKeys.filter(matchKey => matchKey.category === influence.category);
-                        if (allCatKeys.length > 0) {
-                            const lastCatKey = allCatKeys[allCatKeys.length - 1];
-                            influenceIndex = orderedKeys.findIndex(matchKey => matchKey.matches(lastCatKey));
-                        } else {
-                            influenceIndex = -1;
-                        }
-                    } else {
-                        influenceIndex = orderedKeys.findIndex(matchKey => matchKey.matches(influence));
-                    }
-
-                    lastInfluenceIndex = Math.max(lastInfluenceIndex, influenceIndex);
-                });
-
-                if (i < lastInfluenceIndex && lastInfluenceIndex !== -1) {
-                    orderedKeys.splice(i, 1);
-                    orderedKeys.splice(lastInfluenceIndex, 0, orderedKey);
-                    changed = true;
-                }
-            }
-        } while (changed);
-
-        const orderedSteps = [];
-
-        for (let i = orderedKeys.length - 1; i >= 0; i--) {
-            orderedSteps.push(keyMap[orderedKeys[i].combined()]);
-        }
-
-        return orderedSteps;
     }
 }

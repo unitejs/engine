@@ -9,7 +9,6 @@ import { EsLintConfiguration } from "../../configuration/models/eslint/esLintCon
 import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { PipelineKey } from "../../engine/pipelineKey";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class Protractor extends PipelineStepBase {
@@ -19,51 +18,55 @@ export class Protractor extends PipelineStepBase {
     private _scriptStart: string[];
     private _scriptEnd: string[];
 
-    public influences(): PipelineKey[] {
-        return [
-            new PipelineKey("unite", "uniteConfigurationJson"),
-            new PipelineKey("content", "packageJson"),
-            new PipelineKey("linter", "esLint")
-        ];
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+        return super.condition(uniteConfiguration.e2eTestRunner, "Protractor");
     }
 
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        if (super.condition(uniteConfiguration.e2eTestRunner, "Protractor")) {
-            this.configDefaults(fileSystem, engineVariables);
+        this.configDefaults(fileSystem, engineVariables);
+
+        return 0;
+    }
+
+    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        engineVariables.toggleDevDependency(["protractor", "webdriver-manager", "browser-sync"], true);
+
+        const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
+        if (esLintConfiguration) {
+            ObjectHelper.addRemove(esLintConfiguration.env, "protractor", true, true);
         }
 
         return 0;
     }
 
-    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["protractor", "webdriver-manager", "browser-sync"], super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        try {
+            const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, Protractor.FILENAME);
+
+            if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker" || engineVariables.force) {
+                logger.info(`Generating ${Protractor.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
+
+                const lines: string[] = this.createConfig();
+                await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, Protractor.FILENAME, lines);
+            } else {
+                logger.info(`Skipping ${Protractor.FILENAME} as it has no generated marker`);
+            }
+        } catch (err) {
+            logger.error(`Generating ${Protractor.FILENAME} failed`, err);
+            return 1;
+        }
+        return 0;
+    }
+
+    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        engineVariables.toggleDevDependency(["protractor", "webdriver-manager", "browser-sync"], false);
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
-            ObjectHelper.addRemove(esLintConfiguration.env, "protractor", true, super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
+            ObjectHelper.addRemove(esLintConfiguration.env, "protractor", true, false);
         }
 
-        if (super.condition(uniteConfiguration.e2eTestRunner, "Protractor")) {
-            try {
-                const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, Protractor.FILENAME);
-
-                if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker" || engineVariables.force) {
-                    logger.info(`Generating ${Protractor.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
-
-                    const lines: string[] = this.createConfig();
-                    await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, Protractor.FILENAME, lines);
-                } else {
-                    logger.info(`Skipping ${Protractor.FILENAME} as it has no generated marker`);
-                }
-
-                return 0;
-            } catch (err) {
-                logger.error(`Generating ${Protractor.FILENAME} failed`, err);
-                return 1;
-            }
-        } else {
-            return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, Protractor.FILENAME, engineVariables.force);
-        }
+        return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, Protractor.FILENAME, engineVariables.force);
     }
 
     private configDefaults(fileSystem: IFileSystem, engineVariables: EngineVariables): void {

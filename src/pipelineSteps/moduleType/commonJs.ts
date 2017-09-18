@@ -1,51 +1,55 @@
 /**
  * Pipeline step to generate configuration for commonjs.
  */
+import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { BabelConfiguration } from "../../configuration/models/babel/babelConfiguration";
 import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { PipelineKey } from "../../engine/pipelineKey";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class CommonJs extends PipelineStepBase {
-    public influences(): PipelineKey[] {
-        return [
-            new PipelineKey("unite", "uniteConfigurationJson"),
-            new PipelineKey("content", "packageJson"),
-            new PipelineKey("content", "htmlTemplate"),
-            new PipelineKey("language", "javaScript"),
-            new PipelineKey("language", "typeScript")
-        ];
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+        return super.condition(uniteConfiguration.moduleType, "CommonJS");
     }
 
-    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        if (super.condition(uniteConfiguration.moduleType, "CommonJS")) {
-            try {
-                logger.info("Generating Module Type CommonJS");
+    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        logger.info("Generating Module Type CommonJS");
 
-                uniteConfiguration.srcDistReplace = "(require)*?(..\/src\/)";
-                uniteConfiguration.srcDistReplaceWith = "../dist/";
+        uniteConfiguration.srcDistReplace = "(require)*?(..\/src\/)";
+        uniteConfiguration.srcDistReplaceWith = "../dist/";
 
-                const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
-                if (typeScriptConfiguration) {
-                    typeScriptConfiguration.compilerOptions.module = "commonjs";
-                }
+        const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
+        if (typeScriptConfiguration) {
+            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "module", "commonjs", true);
+        }
 
-                const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
-                if (babelConfiguration) {
-                    const foundPreset = babelConfiguration.presets.find(preset => Array.isArray(preset) && preset.length > 0 && preset[0] === "es2015");
-                    if (foundPreset) {
-                        foundPreset[1] = { modules: "commonjs" };
-                    } else {
-                        babelConfiguration.presets.push(["es2015", { modules: "commonjs" }]);
-                    }
-                }
-            } catch (err) {
-                logger.error(`Generating Module Type CommonJS failed`, err);
-                return 1;
+        const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
+        if (babelConfiguration) {
+            const foundPreset = babelConfiguration.presets.find(preset => Array.isArray(preset) && preset.length > 0 && preset[0] === "es2015");
+            if (foundPreset) {
+                foundPreset[1] = { modules: "commonjs" };
+            } else {
+                babelConfiguration.presets.push(["es2015", { modules: "commonjs" }]);
+            }
+        }
+
+        return 0;
+    }
+
+    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
+        if (typeScriptConfiguration) {
+            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "module", "commonjs", false);
+        }
+
+        const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
+        if (babelConfiguration) {
+            const foundPreset = babelConfiguration.presets.find(preset => Array.isArray(preset) && preset.length > 0 && preset[0] === "es2015");
+            if (foundPreset) {
+                foundPreset[1] = { modules: undefined };
             }
         }
 

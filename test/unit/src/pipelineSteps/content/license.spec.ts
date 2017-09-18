@@ -50,19 +50,11 @@ describe("License", () => {
         Chai.should().exist(obj);
     });
 
-    describe("influences", () => {
-        it("can be called and return influences", async () => {
-            const obj = new License();
-            const res = obj.influences();
-            Chai.expect(res.length).to.be.equal(0);
-        });
-    });
-
-    describe("process", () => {
+    describe("finalise", () => {
         it("can fail if an exception is thrown", async () => {
             sandbox.stub(fileSystemMock, "fileWriteText").throws("error");
             const obj = new License();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
         });
@@ -71,8 +63,7 @@ describe("License", () => {
             await fileSystemMock.directoryCreate("./test/unit/temp/www/");
 
             const obj = new License();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerInfoSpy.args[0][0]).contains("Generating");
 

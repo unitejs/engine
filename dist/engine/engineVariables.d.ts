@@ -58,7 +58,17 @@ export declare class EngineVariables {
     }, loaders: {
         [id: string]: string;
     }, isModuleLoader: boolean, required: boolean): void;
+    addClientPackage(name: string, main: string, mainMinified: string, testingAdditions: {
+        [id: string]: string;
+    }, preload: boolean, includeMode: IncludeMode, scriptIncludeMode: ScriptIncludeMode, isPackage: boolean, assets: string, map: {
+        [id: string]: string;
+    }, loaders: {
+        [id: string]: string;
+    }, isModuleLoader: boolean): void;
+    removeClientPackage(name: string): void;
     toggleDevDependency(dependencies: string[], required: boolean): void;
+    addDevDependency(dependencies: string[]): void;
+    removeDevDependency(dependencies: string[]): void;
     buildDependencies(uniteConfiguration: UniteConfiguration, packageJsonDependencies: {
         [id: string]: string;
     }): void;

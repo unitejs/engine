@@ -8,7 +8,6 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { BabelConfiguration } from "../../configuration/models/babel/babelConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { PipelineKey } from "../../engine/pipelineKey";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class JavaScript extends PipelineStepBase {
@@ -16,55 +15,59 @@ export class JavaScript extends PipelineStepBase {
 
     private _configuration: BabelConfiguration;
 
-    public influences(): PipelineKey[] {
-        return [
-            new PipelineKey("unite", "uniteConfigurationJson"),
-            new PipelineKey("content", "packageJson")
-        ];
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+        return super.condition(uniteConfiguration.sourceLanguage, "JavaScript");
     }
 
     public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
-        const isJavaScript = super.condition(uniteConfiguration.sourceLanguage, "JavaScript");
-        ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "js", isJavaScript);
-        if (isJavaScript) {
-            logger.info(`Initialising ${JavaScript.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
-            if (!engineVariables.force) {
-                try {
-                    const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, JavaScript.FILENAME);
-                    if (exists) {
-                        this._configuration = await fileSystem.fileReadJson<BabelConfiguration>(engineVariables.wwwRootFolder, JavaScript.FILENAME);
-                    }
-                } catch (err) {
-                    logger.error(`Reading existing ${JavaScript.FILENAME} failed`, err);
-                    return 1;
-                }
-            }
+        logger.info(`Initialising ${JavaScript.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
-            this.configDefaults(engineVariables);
-        }
-        return 0;
-    }
-    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["babel-core", "babel-preset-es2015"], super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
-
-        if (super.condition(uniteConfiguration.sourceLanguage, "JavaScript")) {
+        ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "js", true);
+        if (!engineVariables.force) {
             try {
-                logger.info(`Generating ${JavaScript.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
-
-                await fileSystem.fileWriteJson(engineVariables.wwwRootFolder, JavaScript.FILENAME, this._configuration);
-
-                return 0;
+                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, JavaScript.FILENAME);
+                if (exists) {
+                    this._configuration = await fileSystem.fileReadJson<BabelConfiguration>(engineVariables.wwwRootFolder, JavaScript.FILENAME);
+                }
             } catch (err) {
-                logger.error(`Generating ${JavaScript.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwRootFolder });
+                logger.error(`Reading existing ${JavaScript.FILENAME} failed`, err);
                 return 1;
             }
-        } else {
-            return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, JavaScript.FILENAME, engineVariables.force);
         }
+
+        this.configDefaults(engineVariables);
+
+        return 0;
+    }
+
+    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        engineVariables.toggleDevDependency(["babel-core", "babel-preset-es2015"], super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
+
+        return 0;
+    }
+
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        try {
+            logger.info(`Generating ${JavaScript.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
+
+            await fileSystem.fileWriteJson(engineVariables.wwwRootFolder, JavaScript.FILENAME, this._configuration);
+
+            return 0;
+        } catch (err) {
+            logger.error(`Generating ${JavaScript.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwRootFolder });
+            return 1;
+        }
+    }
+
+    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "js", false);
+        engineVariables.toggleDevDependency(["babel-core", "babel-preset-es2015"], false);
+
+        return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, JavaScript.FILENAME, engineVariables.force);
     }
 
     private configDefaults(engineVariables: EngineVariables): void {

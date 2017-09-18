@@ -45,14 +45,6 @@ describe("HtmlTemplate", () => {
         Chai.should().exist(obj);
     });
 
-    describe("influences", () => {
-        it("can be called and return influences", async () => {
-            const obj = new HtmlTemplate();
-            const res = obj.influences();
-            Chai.expect(res.length).to.be.equal(0);
-        });
-    });
-
     describe("initialise", () => {
         it("can setup the engine configuration", async () => {
             const obj = new HtmlTemplate();
@@ -65,10 +57,10 @@ describe("HtmlTemplate", () => {
         });
     });
 
-    describe("process", () => {
+    describe("finalise", () => {
         it("can fail if an exception is thrown", async () => {
             const obj = new HtmlTemplate();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
         });
@@ -79,7 +71,7 @@ describe("HtmlTemplate", () => {
 
             const obj = new HtmlTemplate();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerInfoSpy.args[0][0]).contains("Skipping");
         });
@@ -90,7 +82,7 @@ describe("HtmlTemplate", () => {
 
             const obj = new HtmlTemplate();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerInfoSpy.args[0][0]).contains("Generating");
 
@@ -109,7 +101,7 @@ describe("HtmlTemplate", () => {
             htmlTemplateConfiguration.head.push("head1");
             htmlTemplateConfiguration.body.push("body2");
 
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerInfoSpy.args[0][0]).contains("Generating");
 

@@ -11,30 +11,21 @@ import { ProtractorConfiguration } from "../../configuration/models/protractor/p
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { WebdriverIoConfiguration } from "../../configuration/models/webdriverIo/webdriverIoConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { PipelineKey } from "../../engine/pipelineKey";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class MochaChai extends PipelineStepBase {
-    public influences(): PipelineKey[] {
-        return [
-            new PipelineKey("unite", "uniteConfigurationJson"),
-            new PipelineKey("content", "packageJson"),
-            new PipelineKey("linter", "esLint"),
-            new PipelineKey("unitTestRunner", "karma"),
-            new PipelineKey("e2eTestRunner", "protractor"),
-            new PipelineKey("e2eTestRunner", "webdriverIo")
-        ];
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+        return super.condition(uniteConfiguration.unitTestFramework, "MochaChai") || super.condition(uniteConfiguration.e2eTestFramework, "MochaChai");
     }
 
-    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         logger.info("Generating MochaChai Configuration");
 
         const isUnit = super.condition(uniteConfiguration.unitTestFramework, "MochaChai");
         const isE2E = super.condition(uniteConfiguration.e2eTestFramework, "MochaChai");
-        const isEither = isUnit || isE2E;
 
-        engineVariables.toggleDevDependency(["mocha"], isEither);
-        engineVariables.toggleDevDependency(["@types/mocha", "@types/chai"], super.condition(uniteConfiguration.sourceLanguage, "TypeScript") && isEither);
+        engineVariables.toggleDevDependency(["mocha"], true);
+        engineVariables.toggleDevDependency(["@types/mocha", "@types/chai"], super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
 
         engineVariables.toggleDevDependency(["karma-mocha", "karma-chai"], super.condition(uniteConfiguration.unitTestRunner, "Karma") && isUnit);
 
@@ -55,11 +46,11 @@ export class MochaChai extends PipelineStepBase {
             undefined,
             undefined,
             undefined,
-            isEither);
+            true);
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
-            ObjectHelper.addRemove(esLintConfiguration.env, "mocha", true, isEither);
+            ObjectHelper.addRemove(esLintConfiguration.env, "mocha", true, true);
         }
 
         const karmaConfiguration = engineVariables.getConfiguration<KarmaConfiguration>("Karma");
@@ -89,6 +80,42 @@ export class MochaChai extends PipelineStepBase {
             if (webdriverIoConfiguration) {
                 webdriverIoConfiguration.framework = "mocha";
             }
+        }
+
+        return 0;
+    }
+
+    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        engineVariables.toggleDevDependency(["mocha"], false);
+        engineVariables.toggleDevDependency(["@types/mocha", "@types/chai"], false);
+
+        engineVariables.toggleDevDependency(["karma-mocha", "karma-chai"], false);
+
+        engineVariables.toggleDevDependency(["mochawesome-screenshots"], false);
+
+        engineVariables.toggleDevDependency(["wdio-mocha-framework"], false);
+
+        engineVariables.removeClientPackage("chai");
+
+        const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
+        if (esLintConfiguration) {
+            ObjectHelper.addRemove(esLintConfiguration.env, "mocha", true, false);
+        }
+
+        const karmaConfiguration = engineVariables.getConfiguration<KarmaConfiguration>("Karma");
+        if (karmaConfiguration) {
+            ArrayHelper.addRemove(karmaConfiguration.frameworks, "mocha", false);
+        }
+
+        const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
+        if (protractorConfiguration) {
+            protractorConfiguration.framework = undefined;
+            protractorConfiguration.mochaOpts = undefined;
+        }
+
+        const webdriverIoConfiguration = engineVariables.getConfiguration<WebdriverIoConfiguration>("WebdriverIO");
+        if (webdriverIoConfiguration) {
+            webdriverIoConfiguration.framework = undefined;
         }
 
         return 0;

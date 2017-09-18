@@ -7,12 +7,13 @@ import { UniteConfiguration } from "../configuration/models/unite/uniteConfigura
 import { IPipelineStep } from "../interfaces/IPipelineStep";
 import { EngineVariables } from "./engineVariables";
 import { MarkerState } from "./markerState";
-import { PipelineKey } from "./pipelineKey";
 export declare abstract class PipelineStepBase implements IPipelineStep {
     static MARKER: string;
+    mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined;
     initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
-    abstract influences(): PipelineKey[];
-    abstract process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
+    install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
+    uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
+    finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     copyFile(logger: ILogger, fileSystem: IFileSystem, sourceFolder: string, sourceFilename: string, destFolder: string, destFilename: string, force: boolean, replacements?: {
         [id: string]: string[];
     }): Promise<number>;

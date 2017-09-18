@@ -47,14 +47,6 @@ describe("PackageJson", () => {
         Chai.should().exist(obj);
     });
 
-    describe("influences", () => {
-        it("can be called and return influences", async () => {
-            const obj = new PackageJson();
-            const res = obj.influences();
-            Chai.expect(res.length).to.be.equal(0);
-        });
-    });
-
     describe("initialise", () => {
         it("can fail when exception is thrown", async () => {
             sandbox.stub(fileSystemMock, "fileExists").throws("error");
@@ -63,6 +55,30 @@ describe("PackageJson", () => {
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
+        });
+
+        it("can ignore current if force", async () => {
+            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
+            const initjson = new PackageConfiguration();
+            initjson.name = "fred";
+            initjson.version = "1.0.0";
+            initjson.dependencies = { "my-package": "1.0.1", "a-package": "1.0.1" };
+            initjson.devDependencies = { "dev-package": "2.0.2", "a-dev-package": "2.0.2" };
+            initjson.engines = { "my-engine": "3.0.0" };
+            await fileSystemMock.fileWriteJson("./test/unit/temp/www/", "package.json", initjson);
+
+            engineVariablesStub.force = true;
+            const obj = new PackageJson();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration("PackageJson")).to.be.deep.equal({
+                name: "test",
+                version: "0.0.1",
+                license: "MIT",
+                devDependencies: {},
+                dependencies: {},
+                engines: { node: ">=8.0.0" }
+            });
         });
 
         it("can setup the engine configuration", async () => {
@@ -80,10 +96,10 @@ describe("PackageJson", () => {
         });
     });
 
-    describe("process", () => {
+    describe("finalise", () => {
         it("can fail if an exception is thrown", async () => {
             const obj = new PackageJson();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
         });
@@ -93,7 +109,7 @@ describe("PackageJson", () => {
 
             const obj = new PackageJson();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerInfoSpy.args[1][0]).contains("Generating");
 
@@ -117,7 +133,7 @@ describe("PackageJson", () => {
 
             const obj = new PackageJson();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerInfoSpy.args[1][0]).contains("Generating");
 

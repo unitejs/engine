@@ -45,19 +45,26 @@ describe("UnitTestScaffold", () => {
         Chai.should().exist(obj);
     });
 
-    describe("influences", () => {
-        it("can be called and return influences", async () => {
+    describe("mainCondition", () => {
+        it("can be called with not matching condition", async () => {
             const obj = new UnitTestScaffold();
-            const res = obj.influences();
-            Chai.expect(res.length).to.be.equal(1);
+            uniteConfigurationStub.unitTestRunner = undefined;
+            const res = obj.mainCondition(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(false);
+        });
+
+        it("can be called with matching condition", async () => {
+            const obj = new UnitTestScaffold();
+            const res = obj.mainCondition(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(true);
         });
     });
 
-    describe("process", () => {
+    describe("install", () => {
         it("can throw an exception", async () => {
             sandbox.stub(fileSystemMock, "directoryCreate").rejects("error");
             const obj = new UnitTestScaffold();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).contain("failed");
         });
@@ -66,7 +73,7 @@ describe("UnitTestScaffold", () => {
             uniteConfigurationStub.unitTestRunner = "None";
             const stub = sandbox.stub(fileSystemMock, "directoryCreate").resolves();
             const obj = new UnitTestScaffold();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(stub.called).to.be.equal(false);
         });
@@ -74,7 +81,7 @@ describe("UnitTestScaffold", () => {
         it("can succeed", async () => {
             const stub = sandbox.stub(fileSystemMock, "directoryCreate").resolves();
             const obj = new UnitTestScaffold();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerInfoSpy.args[0][0]).contain("Creating");
             Chai.expect(stub.called).to.be.equal(true);

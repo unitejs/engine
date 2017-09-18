@@ -5,7 +5,6 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { PipelineKey } from "../../engine/pipelineKey";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class Electron extends PipelineStepBase {
@@ -13,23 +12,24 @@ export class Electron extends PipelineStepBase {
     private static FILENAME: string = "platform-electron.js";
     private static FILENAME2: string = "main.js";
 
-    public influences(): PipelineKey[] {
-        return [
-            new PipelineKey("unite", "uniteConfigurationJson"),
-            new PipelineKey("content", "packageJson")
-        ];
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+        return super.objectCondition(uniteConfiguration.platforms, Electron.PLATFORM);
     }
 
-    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["archiver",
                                             "electron-packager",
                                             "unitejs-image-cli"],
-                                            super.condition(uniteConfiguration.taskManager, "Gulp") &&
-                                            super.objectCondition(uniteConfiguration.platforms, Electron.PLATFORM));
+                                            super.condition(uniteConfiguration.taskManager, "Gulp"));
 
+        return 0;
+    }
+
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         const buildAssetPlatform = fileSystem.pathCombine(engineVariables.www.buildFolder, "/assets/platform/electron/");
         const buildTasks = fileSystem.pathCombine(engineVariables.www.buildFolder, "/tasks/");
-        if (super.condition(uniteConfiguration.taskManager, "Gulp") && super.objectCondition(uniteConfiguration.platforms, Electron.PLATFORM)) {
+
+        if (super.condition(uniteConfiguration.taskManager, "Gulp")) {
             const assetTasksPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/platform/");
             let ret = await this.copyFile(logger, fileSystem, assetTasksPlatform, Electron.FILENAME, buildTasks, Electron.FILENAME, engineVariables.force);
 
@@ -39,12 +39,24 @@ export class Electron extends PipelineStepBase {
             }
 
             return ret;
-        } else {
-            let ret = await super.deleteFile(logger, fileSystem, buildTasks, Electron.FILENAME, engineVariables.force);
-            if (ret === 0) {
-                ret = await super.deleteFile(logger, fileSystem, buildAssetPlatform, Electron.FILENAME2, engineVariables.force);
-            }
-            return ret;
         }
+
+        return 0;
+    }
+
+    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        engineVariables.toggleDevDependency(["archiver",
+                                            "electron-packager",
+                                            "unitejs-image-cli"],
+                                            false);
+
+        const buildAssetPlatform = fileSystem.pathCombine(engineVariables.www.buildFolder, "/assets/platform/electron/");
+        const buildTasks = fileSystem.pathCombine(engineVariables.www.buildFolder, "/tasks/");
+
+        let ret = await super.deleteFile(logger, fileSystem, buildTasks, Electron.FILENAME, engineVariables.force);
+        if (ret === 0) {
+            ret = await super.deleteFile(logger, fileSystem, buildAssetPlatform, Electron.FILENAME2, engineVariables.force);
+        }
+        return ret;
     }
 }

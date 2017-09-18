@@ -5,23 +5,18 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { PipelineKey } from "../../engine/pipelineKey";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class Assets extends PipelineStepBase {
     private static FILENAME: string = "logo-tile.svg";
     private static FILENAME2: string = "logo-transparent.svg";
 
-    public influences(): PipelineKey[] {
-        return [
-            new PipelineKey("applicationFramework", "*"),
-            new PipelineKey("unite", "uniteThemeConfigurationJson")
-        ];
+    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        engineVariables.toggleDevDependency(["unitejs-image-cli"], true);
+        return 0;
     }
 
-    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["unitejs-image-cli"], true);
-
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
             logger.info("Creating Directory", { assetsSrcFolder: engineVariables.www.assetsSrcFolder });
 
@@ -56,5 +51,10 @@ export class Assets extends PipelineStepBase {
             logger.error("Copy Assets failed", err);
             return 1;
         }
+    }
+
+    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        engineVariables.toggleDevDependency(["unitejs-image-cli"], false);
+        return 0;
     }
 }

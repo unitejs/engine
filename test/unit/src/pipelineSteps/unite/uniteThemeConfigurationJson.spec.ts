@@ -46,14 +46,6 @@ describe("UniteThemeConfigurationJson", () => {
         Chai.should().exist(obj);
     });
 
-    describe("influences", () => {
-        it("can be called and return influences", async () => {
-            const obj = new UniteThemeConfigurationJson();
-            const res = obj.influences();
-            Chai.expect(res.length).to.be.equal(0);
-        });
-    });
-
     describe("intitialise", () => {
         it("can fail when exception is thrown", async () => {
             fileSystemMock.fileExists = sandbox.stub().throws("error");
@@ -85,11 +77,11 @@ describe("UniteThemeConfigurationJson", () => {
         });
     });
 
-    describe("process", () => {
+    describe("install", () => {
         it("can fail writing", async () => {
             sandbox.stub(fileSystemMock, "fileWriteJson").rejects("error");
             const obj = new UniteThemeConfigurationJson();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
         });
@@ -98,7 +90,7 @@ describe("UniteThemeConfigurationJson", () => {
             const stub = sandbox.stub(fileSystemMock, "fileWriteJson").resolves();
             const obj = new UniteThemeConfigurationJson();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
 
             Chai.expect(stub.called).to.be.equal(true);

@@ -43,12 +43,11 @@ describe("Angular", () => {
         uniteConfigurationStub.linter = "ESLint";
         uniteConfigurationStub.cssPre = "Css";
         uniteConfigurationStub.cssPost = "None";
+        uniteConfigurationStub.taskManager = "Gulp";
         uniteConfigurationStub.clientPackages = {};
         uniteConfigurationStub.sourceExtensions = ["js"];
         uniteConfigurationStub.viewExtensions = [];
         uniteConfigurationStub.styleExtension = "css";
-        uniteConfigurationStub.notBundledLoader = "rjs";
-        uniteConfigurationStub.bundledLoader = "rjs";
 
         engineVariablesStub = new EngineVariables();
         engineVariablesStub.engineAssetsFolder = "./assets/";
@@ -67,11 +66,18 @@ describe("Angular", () => {
         Chai.should().exist(obj);
     });
 
-    describe("influences", () => {
-        it("can be called and return influences", async () => {
+    describe("mainCondition", () => {
+        it("can be called with not matching condition", async () => {
             const obj = new Angular();
-            const res = obj.influences();
-            Chai.expect(res.length).to.be.equal(5);
+            uniteConfigurationStub.applicationFramework = undefined;
+            const res = obj.mainCondition(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(false);
+        });
+
+        it("can be called with matching condition", async () => {
+            const obj = new Angular();
+            const res = obj.mainCondition(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(true);
         });
     });
 
@@ -100,89 +106,92 @@ describe("Angular", () => {
         });
     });
 
-    describe("process", () => {
-        it("can be called with application framework not matching", async () => {
-            engineVariablesStub.setConfiguration("Babel", { plugins: []});
-            engineVariablesStub.setConfiguration("ESLint", { parser: "espree"});
-            engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {}});
-            const obj = new Angular();
-            uniteConfigurationStub.applicationFramework = "PlainApp";
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins.length).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parser).to.be.equal("espree");
-            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.experimentalDecorators).to.be.equal(undefined);
-        });
-
-        it("can be called with application framework matching javascript", async () => {
+    describe("install", () => {
+        it("can be called with javascript", async () => {
             engineVariablesStub.setConfiguration("Babel", { plugins: []});
             engineVariablesStub.setConfiguration("ESLint", { parser: "espree"});
             const obj = new Angular();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(1);
+            Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(1);
             Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins.length).to.be.equal(1);
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parser).to.be.equal("babel-eslint");
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript")).to.be.equal(undefined);
-            const exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.module.js");
-            Chai.expect(exists).to.be.equal(true);
+            const packageJsonDependencies: { [id: string]: string } = {};
+            engineVariablesStub.buildDependencies(uniteConfigurationStub, packageJsonDependencies);
+            Chai.expect(uniteConfigurationStub.clientPackages["zone.js"].testingAdditions["runner-patch"]).to.be.equal("dist/jasmine-patch.js");
         });
 
-        it("can be called with application framework matching typescript", async () => {
+        it("can be called with typescript", async () => {
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {}});
             uniteConfigurationStub.sourceLanguage = "TypeScript";
             uniteConfigurationStub.sourceExtensions = ["ts"];
             const obj = new Angular();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(1);
+            Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(1);
             Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel")).to.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint")).to.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.experimentalDecorators).to.be.equal(true);
-            const exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.module.ts");
-            Chai.expect(exists).to.be.equal(true);
+            const packageJsonDependencies: { [id: string]: string } = {};
+            engineVariablesStub.buildDependencies(uniteConfigurationStub, packageJsonDependencies);
+            Chai.expect(uniteConfigurationStub.clientPackages["zone.js"].testingAdditions["runner-patch"]).to.be.equal("dist/jasmine-patch.js");
         });
 
-        it("can be called with application framework matching and mocha framework", async () => {
-            engineVariablesStub.setConfiguration("Babel", { plugins: []});
-            engineVariablesStub.setConfiguration("ESLint", { parser: "espree"});
-            engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {}});
+        it("can be called with mocha framework", async () => {
             uniteConfigurationStub.unitTestFramework = "MochaChai";
             const obj = new Angular();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins.length).to.be.equal(1);
-            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parser).to.be.equal("babel-eslint");
-            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.experimentalDecorators).to.be.equal(true);
+
+            const packageJsonDependencies: { [id: string]: string } = {};
+            engineVariablesStub.buildDependencies(uniteConfigurationStub, packageJsonDependencies);
+            Chai.expect(uniteConfigurationStub.clientPackages["zone.js"].testingAdditions["runner-patch"]).to.be.equal("dist/mocha-patch.js");
         });
 
+        it("can be called with not gulp", async () => {
+            uniteConfigurationStub.taskManager = undefined;
+            const obj = new Angular();
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(0);
+            Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(0);
+        });
+    });
+
+    describe("finalise", () => {
         it("can fail with no source", async () => {
-            const stub = sandbox.stub(fileSystemMock, "fileReadBinary");
+            const stub = sandbox.stub(fileSystemMock, "fileReadText");
             stub.callsFake(async (directoryName, fileName) => {
                 if (fileName.endsWith("js")) {
                     return Promise.reject("error");
                 } else {
-                    return new FileSystemMock().fileReadBinary(directoryName, fileName);
+                    return new FileSystemMock().fileReadText(directoryName, fileName);
                 }
             });
 
             const obj = new Angular();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.module.js");
             Chai.expect(exists).to.be.equal(false);
         });
 
         it("can fail with no e2e tests", async () => {
-            const stub = sandbox.stub(fileSystemMock, "fileReadBinary");
+            const stub = sandbox.stub(fileSystemMock, "fileReadText");
             stub.callsFake(async (directoryName, fileName) => {
                 if (fileName.endsWith("spec.js")) {
                     return Promise.reject("error");
                 } else {
-                    return new FileSystemMock().fileReadBinary(directoryName, fileName);
+                    return new FileSystemMock().fileReadText(directoryName, fileName);
                 }
             });
 
             const obj = new Angular();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             let exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.module.js");
             Chai.expect(exists).to.be.equal(true);
@@ -190,19 +199,57 @@ describe("Angular", () => {
             Chai.expect(exists).to.be.equal(false);
         });
 
+        it("can fail with no html", async () => {
+            const stub = sandbox.stub(fileSystemMock, "fileReadText");
+            stub.callsFake(async (directoryName, fileName) => {
+                if (fileName.endsWith("html")) {
+                    return Promise.reject("error");
+                } else {
+                    return new FileSystemMock().fileReadText(directoryName, fileName);
+                }
+            });
+
+            const obj = new Angular();
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(1);
+            let exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.module.js");
+            Chai.expect(exists).to.be.equal(true);
+            exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.component.html");
+            Chai.expect(exists).to.be.equal(false);
+        });
+
+        it("can fail with no css", async () => {
+            const stub = sandbox.stub(fileSystemMock, "fileReadText");
+            stub.callsFake(async (directoryName, fileName) => {
+                if (fileName.endsWith("css")) {
+                    return Promise.reject("error");
+                } else {
+                    return new FileSystemMock().fileReadText(directoryName, fileName);
+                }
+            });
+
+            const obj = new Angular();
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(1);
+            let exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.module.js");
+            Chai.expect(exists).to.be.equal(true);
+            exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.component.css");
+            Chai.expect(exists).to.be.equal(false);
+        });
+
         it("can fail with no shared unit tests", async () => {
-            const stub = sandbox.stub(fileSystemMock, "fileReadBinary");
+            const stub = sandbox.stub(fileSystemMock, "fileReadText");
             stub.callsFake(async (directoryName, fileName) => {
                 if (fileName.endsWith("spec.js")
                     && directoryName.indexOf("unit") >= 0) {
                     return Promise.reject("error");
                 } else {
-                    return new FileSystemMock().fileReadBinary(directoryName, fileName);
+                    return new FileSystemMock().fileReadText(directoryName, fileName);
                 }
             });
 
             const obj = new Angular();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             let exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/e2e/src/", "app.spec.js");
             Chai.expect(exists).to.be.equal(true);
@@ -211,23 +258,60 @@ describe("Angular", () => {
         });
 
         it("can fail with no custom unit tests", async () => {
-            const stub = sandbox.stub(fileSystemMock, "fileReadBinary");
+            const stub = sandbox.stub(fileSystemMock, "fileReadText");
             stub.callsFake(async (directoryName, fileName) => {
                 if (fileName.endsWith("app.module.spec.js")
                     && directoryName.indexOf("unit") >= 0) {
                     return Promise.reject("error");
                 } else {
-                    return new FileSystemMock().fileReadBinary(directoryName, fileName);
+                    return new FileSystemMock().fileReadText(directoryName, fileName);
                 }
             });
 
             const obj = new Angular();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             let exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/unit/src/", "bootstrapper.spec.js");
             Chai.expect(exists).to.be.equal(true);
             exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/unit/src/", "app.module.spec.js");
             Chai.expect(exists).to.be.equal(false);
+        });
+
+        it("can complete successfully with javascript", async () => {
+            const obj = new Angular();
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            const exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/unit/src/", "bootstrapper.spec.js");
+            Chai.expect(exists).to.be.equal(true);
+        });
+
+        it("can complete successfully with typescript", async () => {
+            uniteConfigurationStub.sourceLanguage = "TypeScript";
+            const obj = new Angular();
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            const exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/unit/src/", "bootstrapper.spec.ts");
+            Chai.expect(exists).to.be.equal(true);
+        });
+    });
+
+    describe("uninstall", () => {
+        it("can be called no configurations", async () => {
+            const obj = new Angular();
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+        });
+
+        it("can be called with configurations", async () => {
+            engineVariablesStub.setConfiguration("Babel", { plugins: ["transform-decorators-legacy"]});
+            engineVariablesStub.setConfiguration("ESLint", { parser: "babel-eslint"});
+            engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {}});
+            const obj = new Angular();
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins.length).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parser).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.experimentalDecorators).to.be.equal(undefined);
         });
     });
 });

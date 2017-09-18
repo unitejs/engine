@@ -48,19 +48,11 @@ describe("UniteConfigurationJson", () => {
         Chai.should().exist(obj);
     });
 
-    describe("influences", () => {
-        it("can be called and return influences", async () => {
-            const obj = new UniteConfigurationJson();
-            const res = obj.influences();
-            Chai.expect(res.length).to.be.equal(0);
-        });
-    });
-
-    describe("process", () => {
+    describe("install", () => {
         it("can throw an exception", async () => {
             sandbox.stub(fileSystemMock, "fileWriteJson").rejects("error");
             const obj = new UniteConfigurationJson();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).contain("failed");
         });
@@ -69,7 +61,7 @@ describe("UniteConfigurationJson", () => {
             const obj = new UniteConfigurationJson();
             engineVariablesStub.enginePackageJson = new PackageConfiguration();
             engineVariablesStub.enginePackageJson.version = "1.2.3";
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
 
             const json = await fileSystemMock.fileReadJson<UniteConfiguration>("./test/unit/temp/", "unite.json");

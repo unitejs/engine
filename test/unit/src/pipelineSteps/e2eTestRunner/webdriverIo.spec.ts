@@ -47,11 +47,18 @@ describe("WebdriverIo", () => {
         Chai.should().exist(obj);
     });
 
-    describe("influences", () => {
-        it("can be called and return influences", async () => {
+    describe("mainCondition", () => {
+        it("can be called with not matching condition", async () => {
             const obj = new WebdriverIo();
-            const res = obj.influences();
-            Chai.expect(res.length).to.be.equal(3);
+            uniteConfigurationStub.e2eTestRunner = undefined;
+            const res = obj.mainCondition(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(false);
+        });
+
+        it("can be called with matching condition", async () => {
+            const obj = new WebdriverIo();
+            const res = obj.mainCondition(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(true);
         });
     });
 
@@ -72,11 +79,11 @@ describe("WebdriverIo", () => {
         });
     });
 
-    describe("process", () => {
+    describe("install", () => {
         it("can fail if an exception is thrown", async () => {
             sandbox.stub(fileSystemMock, "fileWriteLines").throws("error");
             const obj = new WebdriverIo();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
         });
@@ -87,7 +94,7 @@ describe("WebdriverIo", () => {
 
             const obj = new WebdriverIo();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerInfoSpy.args[0][0]).contains("Skipping");
         });
@@ -97,7 +104,7 @@ describe("WebdriverIo", () => {
             uniteConfigurationStub.e2eTestRunner = "None";
             const obj = new WebdriverIo();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(stub.called).to.be.equal(true);
 
@@ -116,7 +123,7 @@ describe("WebdriverIo", () => {
             await fileSystemMock.directoryCreate("./test/unit/temp/www/");
             const obj = new WebdriverIo();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
 
             Chai.expect(res).to.be.equal(0);
 
@@ -130,7 +137,7 @@ describe("WebdriverIo", () => {
             await fileSystemMock.directoryCreate("./test/unit/temp/www/");
             const obj = new WebdriverIo();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
 
             Chai.expect(res).to.be.equal(0);
 
@@ -147,7 +154,7 @@ describe("WebdriverIo", () => {
             uniteConfigurationStub.sourceLanguage = "TypeScript";
             const obj = new WebdriverIo();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
 
             Chai.expect(res).to.be.equal(0);
 
@@ -163,7 +170,7 @@ describe("WebdriverIo", () => {
 
             const obj = new WebdriverIo();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerInfoSpy.args[0][0]).contains("Generating");
 
@@ -192,7 +199,7 @@ describe("WebdriverIo", () => {
             plugins.push("plugin1");
             plugins.push("plugin2");
 
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerInfoSpy.args[0][0]).contains("Generating");
 

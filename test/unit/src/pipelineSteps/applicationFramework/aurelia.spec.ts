@@ -5,12 +5,13 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
+import { BabelConfiguration } from "../../../../../dist/configuration/models/babel/babelConfiguration";
 import { EsLintConfiguration } from "../../../../../dist/configuration/models/eslint/esLintConfiguration";
+import { ProtractorConfiguration } from "../../../../../dist/configuration/models/protractor/protractorConfiguration";
 import { TypeScriptConfiguration } from "../../../../../dist/configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../../dist/engine/engineVariables";
 import { Aurelia } from "../../../../../dist/pipelineSteps/applicationFramework/aurelia";
-import { ProtractorConfiguration } from "../../../../../src/configuration/models/protractor/protractorConfiguration";
 import { FileSystemMock } from "../../fileSystem.mock";
 
 describe("Aurelia", () => {
@@ -47,14 +48,11 @@ describe("Aurelia", () => {
         uniteConfigurationStub.sourceExtensions = ["js"];
         uniteConfigurationStub.viewExtensions = [];
         uniteConfigurationStub.styleExtension = "css";
-        uniteConfigurationStub.notBundledLoader = "rjs";
-        uniteConfigurationStub.bundledLoader = "rjs";
 
         engineVariablesStub = new EngineVariables();
         engineVariablesStub.engineAssetsFolder = "./assets/";
         engineVariablesStub.setupDirectories(fileSystemMock, "./test/unit/temp");
         engineVariablesStub.findDependencyVersion = sandbox.stub().returns("1.2.3");
-        engineVariablesStub.setConfiguration("Protractor", { plugins: []});
     });
 
     afterEach(async () => {
@@ -67,11 +65,18 @@ describe("Aurelia", () => {
         Chai.should().exist(obj);
     });
 
-    describe("influences", () => {
-        it("can be called and return influences", async () => {
+    describe("mainCondition", () => {
+        it("can be called with not matching condition", async () => {
             const obj = new Aurelia();
-            const res = obj.influences();
-            Chai.expect(res.length).to.be.equal(5);
+            uniteConfigurationStub.applicationFramework = undefined;
+            const res = obj.mainCondition(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(false);
+        });
+
+        it("can be called with matching condition", async () => {
+            const obj = new Aurelia();
+            const res = obj.mainCondition(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(true);
         });
     });
 
@@ -100,60 +105,27 @@ describe("Aurelia", () => {
         });
     });
 
-    describe("process", () => {
-        it("can be called with application framework not matching", async () => {
-            const obj = new Aurelia();
-            uniteConfigurationStub.applicationFramework = "PlainApp";
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins")).to.be.equal(undefined);
-        });
-
-        it("can be called with application framework matching javascript", async () => {
-            engineVariablesStub.setConfiguration("ESLint", { });
-            engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.push({ path: "aaa" });
-            const obj = new Aurelia();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(2);
-            Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins")).to.be.equal(undefined);
-            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript")).to.be.equal(undefined);
-            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parser).to.be.equal("babel-eslint");
-            const exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.js");
-            Chai.expect(exists).to.be.equal(true);
-        });
-
-        it("can be called with application framework matching typescript", async () => {
-            engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.push({ path: "aaa" });
-            uniteConfigurationStub.sourceLanguage = "TypeScript";
-            uniteConfigurationStub.sourceExtensions = ["ts"];
-            const obj = new Aurelia();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(2);
-            Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins")).to.be.equal(undefined);
-            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript")).to.be.equal(undefined);
-            const exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.ts");
-            Chai.expect(exists).to.be.equal(true);
-        });
-
-        it("can be called with application framework matching webdriverio", async () => {
-            engineVariablesStub.setConfiguration("Protractor", undefined);
+    describe("install", () => {
+        it("can be called with configurations", async () => {
+            engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "aaaa" }] });
             engineVariablesStub.setConfiguration("WebdriverIO.Plugins", []);
-            engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {}});
+            engineVariablesStub.setConfiguration("Babel", { plugins: [] });
+            engineVariablesStub.setConfiguration("ESLint", { parser: {} });
+            engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {} });
             const obj = new Aurelia();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor")).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(2);
             Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins").length).to.be.equal(1);
+            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins.length).to.be.equal(1);
+            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parser).to.be.equal("babel-eslint");
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.experimentalDecorators).to.be.equal(true);
         });
 
         it("can be called with AMD module type", async () => {
             const obj = new Aurelia();
             uniteConfigurationStub.moduleType = "AMD";
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             const packageJsonDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDependencies(uniteConfigurationStub, packageJsonDependencies);
@@ -164,7 +136,7 @@ describe("Aurelia", () => {
         it("can be called with CommonJS module type", async () => {
             const obj = new Aurelia();
             uniteConfigurationStub.moduleType = "CommonJS";
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             const packageJsonDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDependencies(uniteConfigurationStub, packageJsonDependencies);
@@ -175,43 +147,45 @@ describe("Aurelia", () => {
         it("can be called with SystemJS module type", async () => {
             const obj = new Aurelia();
             uniteConfigurationStub.moduleType = "SystemJS";
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             const packageJsonDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDependencies(uniteConfigurationStub, packageJsonDependencies);
             Chai.expect(uniteConfigurationStub.clientPackages["aurelia-bootstrapper"].main).to.be.equal("dist/system/aurelia-bootstrapper.js");
             Chai.expect(packageJsonDependencies["aurelia-bootstrapper"]).to.be.equal("1.2.3");
         });
+    });
 
+    describe("finalise", () => {
         it("can fail with no source", async () => {
-            const stub = sandbox.stub(fileSystemMock, "fileReadBinary");
+            const stub = sandbox.stub(fileSystemMock, "fileReadText");
             stub.callsFake(async (directoryName, fileName) => {
                 if (fileName.endsWith("js")) {
                     return Promise.reject("error");
                 } else {
-                    return new FileSystemMock().fileReadBinary(directoryName, fileName);
+                    return new FileSystemMock().fileReadText(directoryName, fileName);
                 }
             });
 
             const obj = new Aurelia();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.js");
             Chai.expect(exists).to.be.equal(false);
         });
 
         it("can fail with no html", async () => {
-            const stub = sandbox.stub(fileSystemMock, "fileReadBinary");
+            const stub = sandbox.stub(fileSystemMock, "fileReadText");
             stub.callsFake(async (directoryName, fileName) => {
                 if (fileName.endsWith("html")) {
                     return Promise.reject("error");
                 } else {
-                    return new FileSystemMock().fileReadBinary(directoryName, fileName);
+                    return new FileSystemMock().fileReadText(directoryName, fileName);
                 }
             });
 
             const obj = new Aurelia();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             let exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.js");
             Chai.expect(exists).to.be.equal(true);
@@ -220,17 +194,17 @@ describe("Aurelia", () => {
         });
 
         it("can fail with no css", async () => {
-            const stub = sandbox.stub(fileSystemMock, "fileReadBinary");
+            const stub = sandbox.stub(fileSystemMock, "fileReadText");
             stub.callsFake(async (directoryName, fileName) => {
                 if (fileName.endsWith("css")) {
                     return Promise.reject("error");
                 } else {
-                    return new FileSystemMock().fileReadBinary(directoryName, fileName);
+                    return new FileSystemMock().fileReadText(directoryName, fileName);
                 }
             });
 
             const obj = new Aurelia();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             let exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.html");
             Chai.expect(exists).to.be.equal(true);
@@ -239,17 +213,17 @@ describe("Aurelia", () => {
         });
 
         it("can fail with no e2e tests", async () => {
-            const stub = sandbox.stub(fileSystemMock, "fileReadBinary");
+            const stub = sandbox.stub(fileSystemMock, "fileReadText");
             stub.callsFake(async (directoryName, fileName) => {
                 if (fileName.endsWith("spec.js")) {
                     return Promise.reject("error");
                 } else {
-                    return new FileSystemMock().fileReadBinary(directoryName, fileName);
+                    return new FileSystemMock().fileReadText(directoryName, fileName);
                 }
             });
 
             const obj = new Aurelia();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             let exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/child/", "child.css");
             Chai.expect(exists).to.be.equal(true);
@@ -258,23 +232,64 @@ describe("Aurelia", () => {
         });
 
         it("can fail with no unit tests", async () => {
-            const stub = sandbox.stub(fileSystemMock, "fileReadBinary");
+            const stub = sandbox.stub(fileSystemMock, "fileReadText");
             stub.callsFake(async (directoryName, fileName) => {
                 if (fileName.endsWith("spec.js")
                     && directoryName.indexOf("unit") >= 0) {
                     return Promise.reject("error");
                 } else {
-                    return new FileSystemMock().fileReadBinary(directoryName, fileName);
+                    return new FileSystemMock().fileReadText(directoryName, fileName);
                 }
             });
 
             const obj = new Aurelia();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             let exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/e2e/src/", "app.spec.js");
             Chai.expect(exists).to.be.equal(true);
             exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/unit/src/", "app.spec.js");
             Chai.expect(exists).to.be.equal(false);
+        });
+
+        it("can complete as javascript", async () => {
+            const obj = new Aurelia();
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            const exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/unit/src/", "app.spec.js");
+            Chai.expect(exists).to.be.equal(true);
+        });
+
+        it("can complete as typescript", async () => {
+            uniteConfigurationStub.sourceLanguage = "TypeScript";
+            const obj = new Aurelia();
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            const exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/unit/src/", "app.spec.ts");
+            Chai.expect(exists).to.be.equal(true);
+        });
+    });
+
+    describe("uninstall", () => {
+        it("can be called no configurations", async () => {
+            const obj = new Aurelia();
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+        });
+
+        it("can be called with configurations", async () => {
+            engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/aurelia-protractor-plugin" } ] });
+            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", [ "unitejs-aurelia-webdriver-plugin" ]);
+            engineVariablesStub.setConfiguration("Babel", { plugins: ["transform-decorators-legacy"] });
+            engineVariablesStub.setConfiguration("ESLint", { parser: "babel-eslint" });
+            engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {} });
+            const obj = new Aurelia();
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins").length).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins.length).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parser).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.experimentalDecorators).to.be.equal(undefined);
         });
     });
 });

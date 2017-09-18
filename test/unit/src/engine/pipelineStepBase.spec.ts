@@ -7,16 +7,11 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../../../dist/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../dist/engine/engineVariables";
-import { PipelineKey } from "../../../../dist/engine/pipelineKey";
 import { PipelineStepBase } from "../../../../dist/engine/pipelineStepBase";
 import { FileSystemMock } from "../fileSystem.mock";
 
 class TestPipelineStep extends PipelineStepBase {
-    public influences(): PipelineKey[] {
-        return [];
-    }
-
-    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         return Promise.resolve(0);
     }
 }
@@ -64,10 +59,10 @@ describe("PipelineStepBase", () => {
         });
     });
 
-    describe("process", () => {
+    describe("install", () => {
         it("can be called", async () => {
             const obj = new TestPipelineStep();
-            const res = await obj.process(loggerStub, fileSystemStub, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemStub, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
         });
     });

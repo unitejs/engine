@@ -7,23 +7,27 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { PackageConfiguration } from "../../configuration/models/packages/packageConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { PipelineKey } from "../../engine/pipelineKey";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 import { IPackageManager } from "../../interfaces/IPackageManager";
 import { PackageUtils } from "../packageUtils";
 
 export class Npm extends PipelineStepBase implements IPackageManager {
-    public influences(): PipelineKey[] {
-        return [
-            new PipelineKey("unite", "uniteConfigurationJson"),
-            new PipelineKey("content", "gitIgnore")
-        ];
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+        return super.condition(uniteConfiguration.packageManager, "Npm");
     }
 
-    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         const gitIgnoreConfiguration = engineVariables.getConfiguration<string[]>("GitIgnore");
         if (gitIgnoreConfiguration) {
-            ArrayHelper.addRemove(gitIgnoreConfiguration, "node_modules", super.condition(uniteConfiguration.packageManager, "Npm"));
+            ArrayHelper.addRemove(gitIgnoreConfiguration, "node_modules", true);
+        }
+        return 0;
+    }
+
+    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        const gitIgnoreConfiguration = engineVariables.getConfiguration<string[]>("GitIgnore");
+        if (gitIgnoreConfiguration) {
+            ArrayHelper.addRemove(gitIgnoreConfiguration, "node_modules", false);
         }
         return 0;
     }

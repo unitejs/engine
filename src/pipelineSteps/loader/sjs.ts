@@ -7,21 +7,18 @@ import { HtmlTemplateConfiguration } from "../../configuration/models/htmlTempla
 import { ScriptIncludeMode } from "../../configuration/models/unite/scriptIncludeMode";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { PipelineKey } from "../../engine/pipelineKey";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class SJS extends PipelineStepBase {
-    public influences(): PipelineKey[] {
-        return [
-            new PipelineKey("unite", "uniteConfigurationJson"),
-            new PipelineKey("content", "packageJson"),
-            new PipelineKey("content", "htmlTemplate")
-        ];
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+        return super.condition(uniteConfiguration.bundler, "Browserify") ||
+               super.condition(uniteConfiguration.bundler, "SystemJsBuilder") ||
+               super.condition(uniteConfiguration.bundler, "Webpack");
     }
 
-    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        const bundledLoaderCond = super.condition(uniteConfiguration.bundledLoader, "SJS");
-        const notBundledLoaderCond = super.condition(uniteConfiguration.notBundledLoader, "SJS");
+    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        const bundledLoaderCond = super.condition(uniteConfiguration.bundler, "SystemJsBuilder");
+        const notBundledLoaderCond = this.mainCondition(uniteConfiguration, engineVariables);
 
         let scriptIncludeMode: ScriptIncludeMode;
 
@@ -29,13 +26,9 @@ export class SJS extends PipelineStepBase {
             scriptIncludeMode = "both";
         } else if (notBundledLoaderCond) {
             scriptIncludeMode = "notBundled";
-        } else if (bundledLoaderCond) {
-            scriptIncludeMode = "bundled";
-        } else {
-            scriptIncludeMode = "none";
         }
 
-        engineVariables.toggleClientPackage(
+        engineVariables.addClientPackage(
             "systemjs",
             "dist/system.src.js",
             "dist/system.js",
@@ -47,8 +40,7 @@ export class SJS extends PipelineStepBase {
             undefined,
             undefined,
             undefined,
-            true,
-            bundledLoaderCond || notBundledLoaderCond);
+            true);
 
         if (notBundledLoaderCond) {
             const htmlNoBundle = engineVariables.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle");
@@ -63,6 +55,12 @@ export class SJS extends PipelineStepBase {
                 htmlNoBundle.body.push("</script>");
             }
         }
+
+        return 0;
+    }
+
+    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        engineVariables.removeClientPackage("systemjs");
 
         return 0;
     }

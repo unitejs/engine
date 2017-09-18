@@ -7,17 +7,12 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { PackageConfiguration } from "../../configuration/models/packages/packageConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { PipelineKey } from "../../engine/pipelineKey";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class PackageJson extends PipelineStepBase {
     private static FILENAME: string = "package.json";
 
     private _configuration: PackageConfiguration;
-
-    public influences(): PipelineKey[] {
-        return [];
-    }
 
     public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,
@@ -42,7 +37,7 @@ export class PackageJson extends PipelineStepBase {
         return 0;
     }
 
-    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
             logger.info(`Generating ${PackageJson.FILENAME} in`, { wwwFolder: engineVariables.wwwRootFolder });
 

@@ -19,7 +19,4 @@ export declare class Pipeline {
     run(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     getStep<T extends IPipelineStep>(pipelineKey: PipelineKey): T;
     tryLoad(uniteConfiguration: UniteConfiguration, pipelineKey: PipelineKey, configurationType?: string, defineProperty?: boolean): Promise<boolean>;
-    orderByInfluence(keyMap: {
-        [id: string]: IPipelineStep;
-    }): IPipelineStep[];
 }

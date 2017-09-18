@@ -5,7 +5,6 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { PipelineKey } from "../../engine/pipelineKey";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class Gulp extends PipelineStepBase {
@@ -15,25 +14,11 @@ export class Gulp extends PipelineStepBase {
 
     private _files: { sourceFolder: string; sourceFile: string; destFolder: string; destFile: string; keep: boolean; replacements: { [id: string]: string[]} }[];
 
-    public influences(): PipelineKey[] {
-        return [
-            new PipelineKey("unite", "uniteConfigurationJson"),
-            new PipelineKey("content", "packageJson")
-        ];
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+        return super.condition(uniteConfiguration.taskManager, "Gulp");
     }
 
-    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        this._buildFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "build");
-        this._tasksFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "build/tasks");
-        this._utilFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "build/tasks/util");
-        this._files = [];
-
-        return 0;
-    }
-
-    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        const isGulp = super.condition(uniteConfiguration.taskManager, "Gulp");
-
+    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency([
                                                 "gulp",
                                                 "require-dir",
@@ -44,17 +29,13 @@ export class Gulp extends PipelineStepBase {
                                                 "uglify-js",
                                                 "mkdirp"
                                             ],
-                                            isGulp);
+                                            true);
 
-        const assetGulp = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp");
-        this.toggleFile(assetGulp, "gulpfile.js", engineVariables.wwwRootFolder, "gulpfile.js", isGulp);
+        return 0;
+    }
 
-        this.generateBuildTasks(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
-        this.generateUnitTasks(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
-        this.generateE2eTasks(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
-        this.generateServeTasks(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
-        this.generateThemeTasks(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
-        this.generateUtils(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        this.buildFiles(logger, fileSystem, uniteConfiguration, engineVariables, true);
 
         for (let i = 0; i < this._files.length; i++) {
             let ret;
@@ -77,18 +58,42 @@ export class Gulp extends PipelineStepBase {
             }
         }
 
-        if (!isGulp) {
-            try {
-                logger.info("Deleting Gulp Build Directory", { gulpBuildFolder: this._buildFolder });
+        return 0;
+    }
 
-                const exists = await fileSystem.directoryExists(engineVariables.wwwRootFolder);
-                if (exists) {
-                    await fileSystem.directoryDelete(this._buildFolder);
-                }
-            } catch (err) {
-                logger.error("Deleting Gulp Build Directory failed", err, { gulpBuildFolder: this._buildFolder });
-                return 1;
+    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        engineVariables.toggleDevDependency([
+                                                "gulp",
+                                                "require-dir",
+                                                "gulp-rename",
+                                                "gulp-replace",
+                                                "minimist",
+                                                "gulp-uglify",
+                                                "uglify-js",
+                                                "mkdirp"
+                                            ],
+                                            false);
+
+        this.buildFiles(logger, fileSystem, uniteConfiguration, engineVariables, false);
+
+        for (let i = 0; i < this._files.length; i++) {
+            const ret = await super.deleteFile(logger, fileSystem, this._files[i].destFolder, this._files[i].destFile, engineVariables.force);
+
+            if (ret !== 0) {
+                return ret;
             }
+        }
+
+        try {
+            logger.info("Deleting Gulp Build Directory", { gulpBuildFolder: this._buildFolder });
+
+            const exists = await fileSystem.directoryExists(engineVariables.wwwRootFolder);
+            if (exists) {
+                await fileSystem.directoryDelete(this._buildFolder);
+            }
+        } catch (err) {
+            logger.error("Deleting Gulp Build Directory failed", err, { gulpBuildFolder: this._buildFolder });
+            return 1;
         }
 
         return 0;
@@ -229,6 +234,23 @@ export class Gulp extends PipelineStepBase {
         this.toggleFile(assetUtils, "platform-utils.js", this._utilFolder, "platform-utils.js", isGulp);
         this.toggleFile(assetUtils, "theme-utils.js", this._utilFolder, "theme-utils.js", isGulp);
         this.toggleFile(assetUtils, "unite-config.js", this._utilFolder, "unite-config.js", isGulp);
+    }
+
+    private buildFiles(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, isGulp: boolean): void {
+        this._buildFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "build");
+        this._tasksFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "build/tasks");
+        this._utilFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "build/tasks/util");
+        this._files = [];
+
+        const assetGulp = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp");
+        this.toggleFile(assetGulp, "gulpfile.js", engineVariables.wwwRootFolder, "gulpfile.js", isGulp);
+
+        this.generateBuildTasks(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
+        this.generateUnitTasks(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
+        this.generateE2eTasks(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
+        this.generateServeTasks(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
+        this.generateThemeTasks(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
+        this.generateUtils(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
     }
 
     private toggleFile(sourceFolder: string, sourceFile: string, destFolder: string, destFile: string, keep: boolean, replacements?: { [id: string]: string[]}): void {

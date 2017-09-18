@@ -46,12 +46,20 @@ describe("Sass", () => {
         Chai.should().exist(obj);
     });
 
-    describe("influences", () => {
-        it("can be called and return influences", async () => {
+    describe("mainCondition", () => {
+        it("can be called with not matching condition", async () => {
             const obj = new Sass();
-            const res = obj.influences();
-            Chai.expect(res.length).to.be.equal(2);
+            uniteConfigurationStub.cssPre = undefined;
+            const res = obj.mainCondition(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(false);
         });
+
+        it("can be called with matching condition", async () => {
+            const obj = new Sass();
+            const res = obj.mainCondition(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(true);
+        });
+
     });
 
     describe("initialise", () => {
@@ -71,11 +79,11 @@ describe("Sass", () => {
         });
     });
 
-    describe("process", () => {
+    describe("install", () => {
         it("can fail if an exception is thrown", async () => {
             sandbox.stub(fileSystemMock, "directoryCreate").throws("error");
             const obj = new Sass();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
         });
@@ -83,7 +91,7 @@ describe("Sass", () => {
         it("can skip not Sass", async () => {
             const obj = new Sass();
             uniteConfigurationStub.cssPre = "Less";
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
 
             let exists = await fileSystemMock.directoryExists("./test/unit/temp/www/sass");
@@ -102,7 +110,7 @@ describe("Sass", () => {
 
             const obj = new Sass();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
 
             let exists = await fileSystemMock.directoryExists("./test/unit/temp/www/sass");

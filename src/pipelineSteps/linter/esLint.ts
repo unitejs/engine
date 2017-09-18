@@ -8,7 +8,6 @@ import { EsLintConfiguration } from "../../configuration/models/eslint/esLintCon
 import { EsLintParserOptions } from "../../configuration/models/eslint/esLintParserOptions";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { PipelineKey } from "../../engine/pipelineKey";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class EsLint extends PipelineStepBase {
@@ -18,91 +17,93 @@ export class EsLint extends PipelineStepBase {
     private _configuration: EsLintConfiguration;
     private _ignore: string[];
 
-    public influences(): PipelineKey[] {
-        return [
-            new PipelineKey("unite", "uniteConfigurationJson"),
-            new PipelineKey("content", "packageJson")
-        ];
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+        return super.condition(uniteConfiguration.linter, "ESLint");
     }
 
     public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
-        if (super.condition(uniteConfiguration.linter, "ESLint")) {
-            if (!super.condition(uniteConfiguration.sourceLanguage, "JavaScript")) {
-                logger.error("You can only use ESLint when the source language is JavaScript");
+        if (!super.condition(uniteConfiguration.sourceLanguage, "JavaScript")) {
+            logger.error("You can only use ESLint when the source language is JavaScript");
+            return 1;
+        }
+
+        logger.info(`Initialising ${EsLint.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
+
+        if (!engineVariables.force) {
+            try {
+                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, EsLint.FILENAME);
+                if (exists) {
+                    this._configuration = await fileSystem.fileReadJson<EsLintConfiguration>(engineVariables.wwwRootFolder, EsLint.FILENAME);
+                }
+            } catch (err) {
+                logger.error(`Reading existing ${EsLint.FILENAME} failed`, err);
                 return 1;
             }
 
-            logger.info(`Initialising ${EsLint.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
-
-            if (!engineVariables.force) {
-                try {
-                    const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, EsLint.FILENAME);
-                    if (exists) {
-                        this._configuration = await fileSystem.fileReadJson<EsLintConfiguration>(engineVariables.wwwRootFolder, EsLint.FILENAME);
-                    }
-                } catch (err) {
-                    logger.error(`Reading existing ${EsLint.FILENAME} failed`, err);
-                    return 1;
+            try {
+                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, EsLint.FILENAME2);
+                if (exists) {
+                    this._ignore = await fileSystem.fileReadLines(engineVariables.wwwRootFolder, EsLint.FILENAME2);
                 }
-
-                try {
-                    const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, EsLint.FILENAME2);
-                    if (exists) {
-                        this._ignore = await fileSystem.fileReadLines(engineVariables.wwwRootFolder, EsLint.FILENAME2);
-                    }
-                } catch (err) {
-                    logger.error(`Reading existing ${EsLint.FILENAME} failed`, err);
-                    return 1;
-                }
+            } catch (err) {
+                logger.error(`Reading existing ${EsLint.FILENAME} failed`, err);
+                return 1;
             }
-
-            this.configDefaults(engineVariables);
         }
+
+        this.configDefaults(engineVariables);
+
         return 0;
     }
 
-    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["eslint"], super.condition(uniteConfiguration.linter, "ESLint"));
+    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        engineVariables.toggleDevDependency(["eslint"], true);
 
-        if (super.condition(uniteConfiguration.linter, "ESLint")) {
-            try {
-                logger.info(`Generating ${EsLint.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
+        return 0;
+    }
 
-                await fileSystem.fileWriteJson(engineVariables.wwwRootFolder, EsLint.FILENAME, this._configuration);
-            } catch (err) {
-                logger.error(`Generating ${EsLint.FILENAME} failed`, err);
-                return 1;
-            }
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        try {
+            logger.info(`Generating ${EsLint.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
-            try {
-                const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, EsLint.FILENAME2);
-
-                if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker" || engineVariables.force) {
-                    logger.info(`Generating ${EsLint.FILENAME2} Configuration`, { wwwFolder: engineVariables.wwwRootFolder });
-
-                    this._ignore.push(super.wrapGeneratedMarker("# ", ""));
-
-                    await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, EsLint.FILENAME2, this._ignore);
-                } else {
-                    logger.info(`Skipping ${EsLint.FILENAME2} as it has no generated marker`);
-                }
-
-                return 0;
-            } catch (err) {
-                logger.error(`Generating ${EsLint.FILENAME2} failed`, err);
-                return 1;
-            }
-        } else {
-            let ret = await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, EsLint.FILENAME, engineVariables.force);
-            if (ret === 0) {
-                ret = await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, EsLint.FILENAME2, engineVariables.force);
-            }
-
-            return ret;
+            await fileSystem.fileWriteJson(engineVariables.wwwRootFolder, EsLint.FILENAME, this._configuration);
+        } catch (err) {
+            logger.error(`Generating ${EsLint.FILENAME} failed`, err);
+            return 1;
         }
+
+        try {
+            const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, EsLint.FILENAME2);
+
+            if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker" || engineVariables.force) {
+                logger.info(`Generating ${EsLint.FILENAME2} Configuration`, { wwwFolder: engineVariables.wwwRootFolder });
+
+                this._ignore.push(super.wrapGeneratedMarker("# ", ""));
+
+                await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, EsLint.FILENAME2, this._ignore);
+            } else {
+                logger.info(`Skipping ${EsLint.FILENAME2} as it has no generated marker`);
+            }
+
+            return 0;
+        } catch (err) {
+            logger.error(`Generating ${EsLint.FILENAME2} failed`, err);
+            return 1;
+        }
+    }
+
+    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        engineVariables.toggleDevDependency(["eslint"], false);
+
+        let ret = await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, EsLint.FILENAME, engineVariables.force);
+        if (ret === 0) {
+            ret = await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, EsLint.FILENAME2, engineVariables.force);
+        }
+
+        return ret;
     }
 
     private configDefaults(engineVariables: EngineVariables): void {

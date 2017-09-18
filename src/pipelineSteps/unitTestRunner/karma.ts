@@ -9,7 +9,6 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { KarmaConfiguration } from "../../configuration/models/karma/karmaConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { PipelineKey } from "../../engine/pipelineKey";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class Karma extends PipelineStepBase {
@@ -17,77 +16,91 @@ export class Karma extends PipelineStepBase {
 
     private _configuration: KarmaConfiguration;
 
-    public influences(): PipelineKey[] {
-        return [
-            new PipelineKey("unite", "uniteConfigurationJson"),
-            new PipelineKey("content", "packageJson")
-        ];
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+        return super.condition(uniteConfiguration.unitTestRunner, "Karma");
     }
 
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        logger.info(`Initialising ${Karma.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
-        if (super.condition(uniteConfiguration.unitTestRunner, "Karma")) {
-            logger.info(`Initialising ${Karma.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
+        if (!engineVariables.force) {
+            try {
+                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, Karma.FILENAME);
+                if (exists) {
+                    const conf = await fileSystem.fileReadText(engineVariables.wwwRootFolder, Karma.FILENAME);
 
-            if (!engineVariables.force) {
-                try {
-                    const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, Karma.FILENAME);
-                    if (exists) {
-                        const conf = await fileSystem.fileReadText(engineVariables.wwwRootFolder, Karma.FILENAME);
-
-                        const jsonMatches: RegExpExecArray = /config.set\(((.|\n|\r)*)\)/.exec(conf);
-                        if (jsonMatches && jsonMatches.length === 3) {
-                            this._configuration = JsonHelper.parseCode(jsonMatches[1]);
-                            if (this._configuration.files) {
-                                let keepFiles = this._configuration.files.filter(item => item.includeType === "polyfill");
-                                keepFiles = keepFiles.concat(this._configuration.files.filter(item => item.includeType === "fixed"));
-                                this._configuration.files = keepFiles;
-                            }
-                        } else {
-                            logger.error(`Reading existing ${Karma.FILENAME} regex failed to parse`);
-                            return 1;
+                    const jsonMatches: RegExpExecArray = /config.set\(((.|\n|\r)*)\)/.exec(conf);
+                    if (jsonMatches && jsonMatches.length === 3) {
+                        this._configuration = JsonHelper.parseCode(jsonMatches[1]);
+                        if (this._configuration.files) {
+                            let keepFiles = this._configuration.files.filter(item => item.includeType === "polyfill");
+                            keepFiles = keepFiles.concat(this._configuration.files.filter(item => item.includeType === "fixed"));
+                            this._configuration.files = keepFiles;
                         }
+                    } else {
+                        logger.error(`Reading existing ${Karma.FILENAME} regex failed to parse`);
+                        return 1;
                     }
-                } catch (err) {
-                    logger.error(`Reading existing ${Karma.FILENAME} failed`, err);
-                    return 1;
                 }
+            } catch (err) {
+                logger.error(`Reading existing ${Karma.FILENAME} failed`, err);
+                return 1;
             }
-
-            this.configDefaults(fileSystem, uniteConfiguration, engineVariables);
         }
+
+        this.configDefaults(fileSystem, uniteConfiguration, engineVariables);
 
         return 0;
     }
 
-    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["karma",
-            "karma-story-reporter",
-            "karma-html-reporter",
-            "karma-coverage",
-            "karma-coverage-allsources",
-            "karma-sourcemap-loader",
-            "karma-remap-istanbul",
-            "remap-istanbul",
-            "karma-chrome-launcher",
-            "karma-firefox-launcher",
-            "karma-phantomjs-launcher",
-            "karma-safari-launcher",
-            "karma-ie-launcher"
-        ],
-                                            super.condition(uniteConfiguration.unitTestRunner, "Karma"));
+                                            "karma-story-reporter",
+                                            "karma-html-reporter",
+                                            "karma-coverage",
+                                            "karma-coverage-allsources",
+                                            "karma-sourcemap-loader",
+                                            "karma-remap-istanbul",
+                                            "remap-istanbul",
+                                            "karma-chrome-launcher",
+                                            "karma-firefox-launcher",
+                                            "karma-phantomjs-launcher",
+                                            "karma-safari-launcher",
+                                            "karma-ie-launcher"
+                                        ],
+                                            true);
 
-        if (super.condition(uniteConfiguration.unitTestRunner, "Karma")) {
-            logger.info(`Generating ${Karma.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
+        return 0;
+    }
 
-            const lines: string[] = [];
-            this.generateConfig(fileSystem, uniteConfiguration, engineVariables, lines);
-            await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, Karma.FILENAME, lines);
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        logger.info(`Generating ${Karma.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
-            return 0;
-        } else {
-            return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, Karma.FILENAME, engineVariables.force);
-        }
+        const lines: string[] = [];
+        this.generateConfig(fileSystem, uniteConfiguration, engineVariables, lines);
+        await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, Karma.FILENAME, lines);
+
+        return 0;
+    }
+
+    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        engineVariables.toggleDevDependency(["karma",
+                                            "karma-story-reporter",
+                                            "karma-html-reporter",
+                                            "karma-coverage",
+                                            "karma-coverage-allsources",
+                                            "karma-sourcemap-loader",
+                                            "karma-remap-istanbul",
+                                            "remap-istanbul",
+                                            "karma-chrome-launcher",
+                                            "karma-firefox-launcher",
+                                            "karma-phantomjs-launcher",
+                                            "karma-safari-launcher",
+                                            "karma-ie-launcher"
+                                        ],
+                                            false);
+
+        return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, Karma.FILENAME, engineVariables.force);
     }
 
     private configDefaults(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void {
@@ -196,6 +209,11 @@ export class Karma extends PipelineStepBase {
     }
 
     private generateConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, lines: string[]): void {
+        // Order the include types
+        let orderedFiles = this._configuration.files.filter(item => item.includeType === "polyfill");
+        orderedFiles = orderedFiles.concat(this._configuration.files.filter(item => item.includeType === "fixed"));
+        this._configuration.files = orderedFiles;
+
         lines.push("module.exports = function(config) {");
         lines.push(`    config.set(${JsonHelper.codify(this._configuration)});`);
         lines.push("};");

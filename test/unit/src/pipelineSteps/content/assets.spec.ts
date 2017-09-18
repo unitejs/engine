@@ -33,6 +33,7 @@ describe("Assets", () => {
         engineVariablesStub = new EngineVariables();
         engineVariablesStub.engineAssetsFolder = "./assets/";
         engineVariablesStub.setupDirectories(fileSystemMock, "./test/unit/temp");
+        engineVariablesStub.findDependencyVersion = sandbox.stub().returns("1.2.3");
     });
 
     afterEach(async () => {
@@ -45,20 +46,25 @@ describe("Assets", () => {
         Chai.should().exist(obj);
     });
 
-    describe("influences", () => {
-        it("can be called and return influences", async () => {
+    describe("install", () => {
+        it("can be called", async () => {
             const obj = new Assets();
-            const res = obj.influences();
-            Chai.expect(res.length).to.be.equal(2);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            const packageJsonDevDependencies: { [id: string]: string } = {};
+            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
+
+            Chai.expect(packageJsonDevDependencies["unitejs-image-cli"]).to.be.equal("1.2.3");
         });
     });
 
-    describe("process", () => {
+    describe("finalise", () => {
         it("can fail when asset source folder create fails", async () => {
             sandbox.stub(fileSystemMock, "directoryCreate").rejects();
 
             const obj = new Assets();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
 
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
@@ -70,7 +76,7 @@ describe("Assets", () => {
                 .onSecondCall().rejects();
 
             const obj = new Assets();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
 
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
@@ -80,27 +86,27 @@ describe("Assets", () => {
             sandbox.stub(fileSystemMock, "pathCombine").throws("error");
 
             const obj = new Assets();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
 
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
         });
 
         it("can fail when first file copy fails", async () => {
-            sandbox.stub(fileSystemMock, "fileWriteBinary").rejects();
+            sandbox.stub(fileSystemMock, "fileWriteText").rejects();
 
             const obj = new Assets();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
 
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
         });
 
         it("can fail when second file copy fails", async () => {
-            sandbox.stub(fileSystemMock, "fileWriteBinary").onSecondCall().rejects();
+            sandbox.stub(fileSystemMock, "fileWriteText").onSecondCall().rejects();
 
             const obj = new Assets();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
 
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
@@ -108,7 +114,7 @@ describe("Assets", () => {
 
         it("can succeed", async () => {
             const obj = new Assets();
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
 
             let exists = await fileSystemMock.directoryExists("./test/unit/temp/www/assets/");
@@ -122,6 +128,19 @@ describe("Assets", () => {
 
             exists = await fileSystemMock.fileExists("./test/unit/temp/www/assetsSrc/theme", "logo-transparent.svg");
             Chai.expect(exists).to.be.equal(true);
+        });
+    });
+
+    describe("uninstall", () => {
+        it("can be called", async () => {
+            const obj = new Assets();
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            const packageJsonDevDependencies: { [id: string]: string } = { "unitejs-image-cli": "1.2.3" };
+            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
+
+            Chai.expect(packageJsonDevDependencies["unitejs-image-cli"]).to.be.equal(undefined);
         });
     });
 });

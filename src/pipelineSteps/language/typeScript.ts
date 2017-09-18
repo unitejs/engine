@@ -9,7 +9,6 @@ import { TypeScriptCompilerOptions } from "../../configuration/models/typeScript
 import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { PipelineKey } from "../../engine/pipelineKey";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class TypeScript extends PipelineStepBase {
@@ -17,56 +16,61 @@ export class TypeScript extends PipelineStepBase {
 
     private _configuration: TypeScriptConfiguration;
 
-    public influences(): PipelineKey[] {
-        return [
-            new PipelineKey("unite", "uniteConfigurationJson"),
-            new PipelineKey("content", "packageJson")
-        ];
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+        return super.condition(uniteConfiguration.sourceLanguage, "TypeScript");
     }
 
     public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
-        const isTypeScript = super.condition(uniteConfiguration.sourceLanguage, "TypeScript");
-        ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "ts", isTypeScript);
-        if (isTypeScript) {
-            logger.info(`Initialising ${TypeScript.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
-            if (!engineVariables.force) {
-                try {
-                    const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, TypeScript.FILENAME);
-                    if (exists) {
-                        this._configuration = await fileSystem.fileReadJson<TypeScriptConfiguration>(engineVariables.wwwRootFolder, TypeScript.FILENAME);
-                    }
-                } catch (err) {
-                    logger.error(`Reading existing ${TypeScript.FILENAME} failed`, err);
-                    return 1;
+        logger.info(`Initialising ${TypeScript.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
+
+        ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "ts", true);
+
+        if (!engineVariables.force) {
+            try {
+                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, TypeScript.FILENAME);
+                if (exists) {
+                    this._configuration = await fileSystem.fileReadJson<TypeScriptConfiguration>(engineVariables.wwwRootFolder, TypeScript.FILENAME);
                 }
+            } catch (err) {
+                logger.error(`Reading existing ${TypeScript.FILENAME} failed`, err);
+                return 1;
             }
-
-            this.configDefaults(engineVariables);
         }
+
+        this.configDefaults(engineVariables);
+
         return 0;
     }
 
-    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["typescript", "unitejs-types"], super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
 
-        if (super.condition(uniteConfiguration.sourceLanguage, "TypeScript")) {
-            try {
-                logger.info(`Generating ${TypeScript.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
+        return 0;
+    }
 
-                await fileSystem.fileWriteJson(engineVariables.wwwRootFolder, TypeScript.FILENAME, this._configuration);
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        try {
+            logger.info(`Generating ${TypeScript.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
 
-                return 0;
-            } catch (err) {
-                logger.error(`Generating ${TypeScript.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwRootFolder });
-                return 1;
-            }
-        } else {
-            return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, TypeScript.FILENAME, engineVariables.force);
+            await fileSystem.fileWriteJson(engineVariables.wwwRootFolder, TypeScript.FILENAME, this._configuration);
+
+            return 0;
+        } catch (err) {
+            logger.error(`Generating ${TypeScript.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwRootFolder });
+            return 1;
         }
+    }
+
+    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "ts", false);
+
+        engineVariables.toggleDevDependency(["typescript", "unitejs-types"], false);
+
+        return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, TypeScript.FILENAME, engineVariables.force);
     }
 
     private configDefaults(engineVariables: EngineVariables): void {

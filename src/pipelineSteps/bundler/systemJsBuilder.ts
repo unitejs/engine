@@ -5,30 +5,21 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { PipelineKey } from "../../engine/pipelineKey";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class SystemJsBuilder extends PipelineStepBase {
-    public influences(): PipelineKey[] {
-        return [
-            new PipelineKey("unite", "uniteConfigurationJson"),
-            new PipelineKey("content", "packageJson")
-        ];
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+        return super.condition(uniteConfiguration.bundler, "SystemJSBuilder");
     }
 
-    public async initialise(logger: ILogger,
-                            fileSystem: IFileSystem,
-                            uniteConfiguration: UniteConfiguration,
-                            engineVariables: EngineVariables): Promise<number> {
-        if (super.condition(uniteConfiguration.bundler, "SystemJSBuilder")) {
-            uniteConfiguration.notBundledLoader = "SJS";
-            uniteConfiguration.bundledLoader = "SJS";
-        }
+    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        engineVariables.toggleDevDependency(["systemjs-builder"], true);
+
         return 0;
     }
 
-    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["systemjs-builder"], super.condition(uniteConfiguration.bundledLoader, "SJS"));
+    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+        engineVariables.toggleDevDependency(["systemjs-builder"], false);
 
         return 0;
     }

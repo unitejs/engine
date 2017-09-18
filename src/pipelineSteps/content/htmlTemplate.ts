@@ -6,7 +6,6 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { HtmlTemplateConfiguration } from "../../configuration/models/htmlTemplate/htmlTemplateConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
-import { PipelineKey } from "../../engine/pipelineKey";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class HtmlTemplate extends PipelineStepBase {
@@ -15,10 +14,6 @@ export class HtmlTemplate extends PipelineStepBase {
 
     private _htmlNoBundle: HtmlTemplateConfiguration;
     private _htmlBundle: HtmlTemplateConfiguration;
-
-    public influences(): PipelineKey[] {
-        return [];
-    }
 
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         this._htmlNoBundle = {
@@ -41,7 +36,7 @@ export class HtmlTemplate extends PipelineStepBase {
         return 0;
     }
 
-    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         let ret = await this.createTemplate(logger, fileSystem, uniteConfiguration, engineVariables, HtmlTemplate.FILENAME_NO_BUNDLE, this._htmlNoBundle, false);
 
         if (ret === 0) {

@@ -13,6 +13,8 @@
 * Changed Aurelia JavaScript transpiler to include "transform-decorators-legacy plugin
 * SystemJS bundling now also handles commonjs and amd modules
 * Angular now supports templateUrl and styleUrls in components
+* Change pipeline step to have more phases and remove influences for ordering
+* Fixed SystemJS unite-bootstrap preloadModules
 
 ## v1.0.1
 

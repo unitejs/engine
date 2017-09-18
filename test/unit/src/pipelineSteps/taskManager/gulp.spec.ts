@@ -47,11 +47,18 @@ describe("Gulp", () => {
         Chai.should().exist(obj);
     });
 
-    describe("influences", () => {
-        it("can be called and return influences", async () => {
+    describe("mainCondition", () => {
+        it("can be called with not matching condition", async () => {
             const obj = new Gulp();
-            const res = obj.influences();
-            Chai.expect(res.length).to.be.equal(2);
+            uniteConfigurationStub.taskManager = undefined;
+            const res = obj.mainCondition(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(false);
+        });
+
+        it("can be called with matching condition", async () => {
+            const obj = new Gulp();
+            const res = obj.mainCondition(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(true);
         });
     });
 
@@ -63,7 +70,7 @@ describe("Gulp", () => {
         });
     });
 
-    describe("process", () => {
+    describe("install", () => {
         it("can be called with mismatched task manager and directory existing", async () => {
             sandbox.stub(fileSystemMock, "directoryExists").resolves(true);
             const stub = sandbox.stub(fileSystemMock, "directoryDelete").resolves();
@@ -79,7 +86,7 @@ describe("Gulp", () => {
             uniteConfigurationStub.server = "BrowserSync";
             const obj = new Gulp();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(stub.callCount).to.be.equal(1);
 
@@ -102,7 +109,7 @@ describe("Gulp", () => {
             uniteConfigurationStub.server = "BrowserSync";
             const obj = new Gulp();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
@@ -125,7 +132,7 @@ describe("Gulp", () => {
             uniteConfigurationStub.taskManager = undefined;
             const obj = new Gulp();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
         });
@@ -144,7 +151,7 @@ describe("Gulp", () => {
             uniteConfigurationStub.server = "BrowserSync";
             const obj = new Gulp();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
 
             Chai.expect(res).to.be.equal(1);
         });
@@ -163,7 +170,7 @@ describe("Gulp", () => {
             uniteConfigurationStub.server = "BrowserSync";
             const obj = new Gulp();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
 
             Chai.expect(res).to.be.equal(0);
 
@@ -189,7 +196,7 @@ describe("Gulp", () => {
             uniteConfigurationStub.server = "BrowserSync";
             const obj = new Gulp();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
 
             Chai.expect(res).to.be.equal(0);
 
@@ -215,7 +222,7 @@ describe("Gulp", () => {
             uniteConfigurationStub.server = "BrowserSync";
             const obj = new Gulp();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.process(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
 
             Chai.expect(res).to.be.equal(0);
 

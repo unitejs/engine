@@ -7,17 +7,10 @@ import { UniteConfiguration } from "../../configuration/models/unite/uniteConfig
 import { UniteDirectories } from "../../configuration/models/unite/uniteDirectories";
 import { UniteWwwDirectories } from "../../configuration/models/unite/uniteWwwDirectories";
 import { EngineVariables } from "../../engine/engineVariables";
-import { PipelineKey } from "../../engine/pipelineKey";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class UniteConfigurationDirectories extends PipelineStepBase {
-    public influences(): PipelineKey[] {
-        return [
-            new PipelineKey("unite", "uniteConfigurationJson")
-        ];
-    }
-
-    public async process(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         try {
             logger.info("Generating directories configuration", { wwwFolder: engineVariables.wwwRootFolder });
 
