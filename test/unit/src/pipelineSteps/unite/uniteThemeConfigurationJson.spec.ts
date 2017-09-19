@@ -77,11 +77,11 @@ describe("UniteThemeConfigurationJson", () => {
         });
     });
 
-    describe("install", () => {
+    describe("finalise", () => {
         it("can fail writing", async () => {
             sandbox.stub(fileSystemMock, "fileWriteJson").rejects("error");
             const obj = new UniteThemeConfigurationJson();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
         });
@@ -90,7 +90,7 @@ describe("UniteThemeConfigurationJson", () => {
             const stub = sandbox.stub(fileSystemMock, "fileWriteJson").resolves();
             const obj = new UniteThemeConfigurationJson();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
 
             Chai.expect(stub.called).to.be.equal(true);

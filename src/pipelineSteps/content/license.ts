@@ -11,18 +11,14 @@ export class License extends PipelineStepBase {
     private static FILENAME: string = "LICENSE";
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        try {
-            logger.info(`Generating ${License.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder});
-
+        return super.fileWriteText(logger,
+                                   fileSystem,
+                                   engineVariables.wwwRootFolder,
+                                   License.FILENAME,
+                                   engineVariables.force,
+                                   async() => {
             const yearString = new Date().getFullYear().toString();
-            const replaced = engineVariables.license.licenseText.replace(/<year>/gi, yearString);
-
-            await fileSystem.fileWriteText(engineVariables.wwwRootFolder, License.FILENAME, replaced);
-
-            return 0;
-        } catch (err) {
-            logger.error(`Generating ${License.FILENAME} failed`, err);
-            return 1;
-        }
+            return engineVariables.license.licenseText.replace(/<year>/gi, yearString);
+        });
     }
 }

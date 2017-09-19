@@ -47,14 +47,6 @@ describe("UniteConfigurationDirectories", () => {
     });
 
     describe("install", () => {
-        it("can throw an exception", async () => {
-            sandbox.stub(fileSystemMock, "pathToWeb").throws("error");
-            const obj = new UniteConfigurationDirectories();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(1);
-            Chai.expect(loggerErrorSpy.args[0][0]).contain("failed");
-        });
-
         it("can setup folders with no unit test runner", async () => {
             const obj = new UniteConfigurationDirectories();
             const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);

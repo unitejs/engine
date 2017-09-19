@@ -62,99 +62,29 @@ describe("JavaScript", () => {
         });
     });
 
-    describe("initialise", () => {
-        it("can fail when exception is thrown", async () => {
-            sandbox.stub(fileSystemMock, "fileExists").throws("error");
-
-            const obj = new JavaScript();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(1);
-            Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
-        });
-
-        it("can not setup the engine configuration if not JavaScript", async () => {
-            const obj = new JavaScript();
-            uniteConfigurationStub.sourceLanguage = "TypeScript";
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration("Babel")).to.be.equal(undefined);
-        });
-
-        it("can setup the engine configuration", async () => {
-            const obj = new JavaScript();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration("Babel")).to.be.deep.equal({
-                presets: [],
-                plugins: [],
-                env: {}
-            });
-        });
-
-        it("can setup the engine configuration from existing", async () => {
+    describe("intitialise", () => {
+        it("can succeed when file does exist", async () => {
             fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
-            fileSystemMock.fileReadJson = sandbox.stub().resolves({ plugins: [ "my-plugin"] });
+            fileSystemMock.fileReadJson = sandbox.stub().resolves({ presets: [ "blah" ] });
             const obj = new JavaScript();
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration("Babel")).to.be.deep.equal({
-                presets: [],
-                plugins: ["my-plugin"],
-                env: {}
-            });
+            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").presets).contains("blah");
         });
 
-        it("can setup the engine configuration from existing not forced", async () => {
-            fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
-            fileSystemMock.fileReadJson = sandbox.stub().resolves({ plugins: [ "my-plugin"] });
-            engineVariablesStub.force = true;
+        it("can succeed when file does not exist", async () => {
             const obj = new JavaScript();
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration("Babel")).to.be.deep.equal({
-                presets: [],
-                plugins: [],
-                env: {}
-            });
+            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").presets.length).to.be.equal(0);
         });
     });
 
     describe("install", () => {
-        it("can fail if an exception is thrown", async () => {
-            sandbox.stub(fileSystemMock, "fileWriteJson").throws("error");
+        it("can be called", async () => {
             const obj = new JavaScript();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(1);
-            Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
-        });
-
-        it("can delete file if not JavaScript", async () => {
-            const stub = sandbox.stub(fileSystemMock, "fileExists").returns(false);
-            const obj = new JavaScript();
-            uniteConfigurationStub.sourceLanguage = "TypeScript";
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(stub.called).to.be.equal(true);
-
-            const packageJsonDevDependencies: { [id: string]: string } = {};
-            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
-
-            Chai.expect(packageJsonDevDependencies["babel-core"]).to.be.equal(undefined);
-            Chai.expect(packageJsonDevDependencies["babel-preset-es2015"]).to.be.equal(undefined);
-        });
-
-        it("can write file", async () => {
-            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
-
-            const obj = new JavaScript();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(loggerInfoSpy.args[1][0]).contains("Generating");
-
-            const json = await fileSystemMock.fileReadJson<BabelConfiguration>("./test/unit/temp/www/", ".babelrc");
-            Chai.expect(json.presets).to.be.deep.equal([]);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
@@ -162,21 +92,39 @@ describe("JavaScript", () => {
             Chai.expect(packageJsonDevDependencies["babel-core"]).to.be.equal("1.2.3");
             Chai.expect(packageJsonDevDependencies["babel-preset-es2015"]).to.be.equal("1.2.3");
         });
+    });
 
-        it("can combine with existing file", async () => {
+    describe("finalise", () => {
+        it("can succeed writing", async () => {
             await fileSystemMock.directoryCreate("./test/unit/temp/www/");
-            const initjson = new BabelConfiguration();
-            initjson.presets = [ "preset1", "preset2" ];
-            await fileSystemMock.fileWriteJson("./test/unit/temp/www/", ".babelrc", initjson);
 
             const obj = new JavaScript();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(loggerInfoSpy.args[1][0]).contains("Generating");
 
-            const json = await fileSystemMock.fileReadJson<BabelConfiguration>("./test/unit/temp/www/", ".babelrc");
-            Chai.expect(json.presets).to.be.deep.equal(["preset1", "preset2"]);
+            const exists = await fileSystemMock.fileExists("./test/unit/temp/www/", ".babelrc");
+            Chai.expect(exists).to.be.equal(true);
+        });
+    });
+
+    describe("uninstall", () => {
+        it("can be called", async () => {
+            const obj = new JavaScript();
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            const packageJsonDevDependencies: { [id: string]: string } = {
+                "babel-core": "1.2.3",
+                "babel-preset-es2015": "1.2.3"
+            };
+            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
+
+            Chai.expect(packageJsonDevDependencies["babel-core"]).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["babel-preset-es2015"]).to.be.equal(undefined);
+
+            const exists = await fileSystemMock.fileExists("./test/unit/temp/www/", ".babelrc");
+            Chai.expect(exists).to.be.equal(false);
         });
     });
 });

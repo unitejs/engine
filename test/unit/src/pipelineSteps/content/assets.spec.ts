@@ -82,16 +82,6 @@ describe("Assets", () => {
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
         });
 
-        it("can fail when path combine fails", async () => {
-            sandbox.stub(fileSystemMock, "pathCombine").throws("error");
-
-            const obj = new Assets();
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(1);
-
-            Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
-        });
-
         it("can fail when first file copy fails", async () => {
             sandbox.stub(fileSystemMock, "fileWriteText").rejects();
 

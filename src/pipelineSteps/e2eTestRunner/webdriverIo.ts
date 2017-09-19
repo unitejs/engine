@@ -52,23 +52,12 @@ export class WebdriverIo extends PipelineStepBase {
     }
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        try {
-            const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, WebdriverIo.FILENAME);
-
-            if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker" || engineVariables.force) {
-                logger.info(`Generating ${WebdriverIo.FILENAME}`);
-
-                const lines: string[] = this.finaliseConfig(fileSystem, uniteConfiguration, engineVariables);
-                await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, WebdriverIo.FILENAME, lines);
-            } else {
-                logger.info(`Skipping ${WebdriverIo.FILENAME} as it has no generated marker`);
-            }
-
-            return 0;
-        } catch (err) {
-            logger.error(`Generating ${WebdriverIo.FILENAME} failed`, err);
-            return 1;
-        }
+        return super.fileWriteLines(logger,
+                                    fileSystem,
+                                    engineVariables.wwwRootFolder,
+                                    WebdriverIo.FILENAME,
+                                    engineVariables.force,
+                                    async () => this.finaliseConfig(fileSystem, uniteConfiguration, engineVariables));
     }
 
     public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
@@ -90,7 +79,7 @@ export class WebdriverIo extends PipelineStepBase {
             ObjectHelper.addRemove(esLintConfiguration.env, "webdriverio/wdio", true, false);
         }
 
-        return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, WebdriverIo.FILENAME, engineVariables.force);
+        return await super.deleteFileLines(logger, fileSystem, engineVariables.wwwRootFolder, WebdriverIo.FILENAME, engineVariables.force);
     }
 
     private configDefaults(fileSystem: IFileSystem, engineVariables: EngineVariables): void {

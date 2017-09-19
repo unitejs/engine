@@ -84,6 +84,22 @@ describe("Yarn", () => {
         });
     });
 
+    describe("uninstall", () => {
+        it("can be called with no configurations", async () => {
+            const obj = new Yarn();
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+        });
+
+        it("can be called with configurations", async () => {
+            engineVariablesStub.setConfiguration("GitIgnore", ["node_modules"]);
+            const obj = new Yarn();
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<string[]>("GitIgnore")).not.contains("node_modules");
+        });
+    });
+
     describe("info", () => {
         it("can throw an error for an unknown package", async () => {
             sandbox.stub(PackageUtils, "exec").rejects("error");

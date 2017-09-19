@@ -63,14 +63,6 @@ describe("Less", () => {
     });
 
     describe("initialise", () => {
-        it("can not setup the engine configuration if not Less", async () => {
-            const obj = new Less();
-            uniteConfigurationStub.cssPre = "Sass";
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(uniteConfigurationStub.styleExtension).to.be.equal(undefined);
-        });
-
         it("can setup the engine configuration", async () => {
             const obj = new Less();
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
@@ -80,48 +72,55 @@ describe("Less", () => {
     });
 
     describe("install", () => {
-        it("can fail if an exception is thrown", async () => {
-            sandbox.stub(fileSystemMock, "directoryCreate").throws("error");
-            const obj = new Less();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(1);
-            Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
-        });
-
-        it("can skip not Less", async () => {
-            const obj = new Less();
-            uniteConfigurationStub.cssPre = "Sass";
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-
-            let exists = await fileSystemMock.directoryExists("./test/unit/temp/www/less");
-            Chai.expect(exists).to.be.equal(false);
-
-            exists = await fileSystemMock.directoryExists("./test/unit/temp/www/css");
-            Chai.expect(exists).to.be.equal(false);
-
-            const packageJsonDevDependencies: { [id: string]: string } = {};
-            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
-            Chai.expect(packageJsonDevDependencies.less).to.be.equal(undefined);
-        });
-
-        it("can create dirs if Less", async () => {
-            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
-
+        it("can be called", async () => {
             const obj = new Less();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
 
-            let exists = await fileSystemMock.directoryExists("./test/unit/temp/www/less");
-            Chai.expect(exists).to.be.equal(true);
-
-            exists = await fileSystemMock.directoryExists("./test/unit/temp/www/css");
-            Chai.expect(exists).to.be.equal(true);
-
             const packageJsonDevDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
             Chai.expect(packageJsonDevDependencies.less).to.be.equal("1.2.3");
+        });
+    });
+
+    describe("finalise", () => {
+        it("can fail if an exception is thrown", async () => {
+            sandbox.stub(fileSystemMock, "directoryCreate").throws("error");
+            const obj = new Less();
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
+        });
+
+        it("can create dirs", async () => {
+            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
+
+            const obj = new Less();
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            const exists = await fileSystemMock.directoryExists("./test/unit/temp/www/less");
+            Chai.expect(exists).to.be.equal(true);
+        });
+    });
+
+    describe("uninstall", () => {
+        it("can delete dirs", async () => {
+            await fileSystemMock.directoryCreate("./test/unit/temp/www/less");
+
+            const obj = new Less();
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            const packageJsonDevDependencies: { [id: string]: string } = { less: "1.2.3"};
+            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
+            Chai.expect(packageJsonDevDependencies.less).to.be.equal(undefined);
+
+            const exists = await fileSystemMock.directoryExists("./test/unit/temp/www/less");
+            Chai.expect(exists).to.be.equal(false);
         });
     });
 });

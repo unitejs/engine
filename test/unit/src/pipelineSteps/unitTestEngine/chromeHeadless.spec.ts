@@ -31,6 +31,7 @@ describe("ChromeHeadless", () => {
         fileSystemMock = new FileSystemMock();
         uniteConfigurationStub = new UniteConfiguration();
         uniteConfigurationStub.unitTestEngine = "ChromeHeadless";
+        uniteConfigurationStub.unitTestRunner = "Karma";
 
         engineVariablesStub = new EngineVariables();
         engineVariablesStub.setupDirectories(fileSystemMock, "./test/unit/temp");
@@ -63,23 +64,7 @@ describe("ChromeHeadless", () => {
     });
 
     describe("install", () => {
-        it("can be called with undefined test engine", async () => {
-            uniteConfigurationStub.unitTestEngine = undefined;
-            uniteConfigurationStub.unitTestRunner = undefined;
-            const obj = new ChromeHeadless();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-
-            const packageJsonDevDependencies: { [id: string]: string } = {};
-            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
-            Chai.expect(packageJsonDevDependencies["karma-chrome-launcher"]).to.be.equal(undefined);
-
-            Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma")).to.be.equal(undefined);
-        });
-
-        it("can be called with unit engine defined but no karma config", async () => {
-            uniteConfigurationStub.unitTestRunner = "Karma";
-
+        it("can be called with no configurations", async () => {
             const obj = new ChromeHeadless();
             const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
@@ -87,13 +72,9 @@ describe("ChromeHeadless", () => {
             const packageJsonDevDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
             Chai.expect(packageJsonDevDependencies["karma-chrome-launcher"]).to.be.equal("1.2.3");
-
-            Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma")).to.be.equal(undefined);
         });
 
-        it("can be called with unit engine defined", async () => {
-            uniteConfigurationStub.unitTestRunner = "Karma";
-
+        it("can be called with configurations", async () => {
             engineVariablesStub.setConfiguration("Karma", { browsers: [] });
 
             const obj = new ChromeHeadless();
@@ -105,6 +86,32 @@ describe("ChromeHeadless", () => {
             Chai.expect(packageJsonDevDependencies["karma-chrome-launcher"]).to.be.equal("1.2.3");
 
             Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma").browsers).contains("ChromeHeadless");
+        });
+    });
+
+    describe("uninstall", () => {
+        it("can be called with no configurations", async () => {
+            const obj = new ChromeHeadless();
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            const packageJsonDevDependencies: { [id: string]: string } = { "karma-chrome-launcher": "1.2.3"};
+            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
+            Chai.expect(packageJsonDevDependencies["karma-chrome-launcher"]).to.be.equal(undefined);
+        });
+
+        it("can be called with configurations", async () => {
+            engineVariablesStub.setConfiguration("Karma", { browsers: [ "ChromeHeadless" ] });
+
+            const obj = new ChromeHeadless();
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            const packageJsonDevDependencies: { [id: string]: string } = { "karma-chrome-launcher": "1.2.3"};
+            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
+            Chai.expect(packageJsonDevDependencies["karma-chrome-launcher"]).to.be.equal(undefined);
+
+            Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma").browsers).not.contains("ChromeHeadless");
         });
     });
 });

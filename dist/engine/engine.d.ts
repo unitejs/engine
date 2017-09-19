@@ -11,6 +11,7 @@ export declare class Engine implements IEngine {
     private _fileSystem;
     private _engineRootFolder;
     private _engineAssetsFolder;
+    private _pipelineStepFolder;
     private _enginePackageJson;
     private _pipeline;
     initialise(logger: ILogger, fileSystem: IFileSystem): Promise<number>;
@@ -30,4 +31,7 @@ export declare class Engine implements IEngine {
     private platformRemove(platformName, outputDirectory, uniteConfiguration);
     private createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
     private mapParser(input);
+    private addPipelinePre();
+    private addPipelineDynamic();
+    private addPipelinePost();
 }

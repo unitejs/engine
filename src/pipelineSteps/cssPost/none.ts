@@ -13,8 +13,6 @@ export class None extends PipelineStepBase {
     }
 
     public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        logger.info("Generating Post CSS None Configuration");
-
         engineVariables.toggleDevDependency(["cssnano"], true);
 
         return 0;

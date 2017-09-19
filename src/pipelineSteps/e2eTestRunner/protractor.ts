@@ -40,22 +40,12 @@ export class Protractor extends PipelineStepBase {
     }
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        try {
-            const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, Protractor.FILENAME);
-
-            if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker" || engineVariables.force) {
-                logger.info(`Generating ${Protractor.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
-
-                const lines: string[] = this.createConfig();
-                await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, Protractor.FILENAME, lines);
-            } else {
-                logger.info(`Skipping ${Protractor.FILENAME} as it has no generated marker`);
-            }
-        } catch (err) {
-            logger.error(`Generating ${Protractor.FILENAME} failed`, err);
-            return 1;
-        }
-        return 0;
+        return super.fileWriteLines(logger,
+                                    fileSystem,
+                                    engineVariables.wwwRootFolder,
+                                    Protractor.FILENAME,
+                                    engineVariables.force,
+                                    async () => this.createConfig());
     }
 
     public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
@@ -66,7 +56,7 @@ export class Protractor extends PipelineStepBase {
             ObjectHelper.addRemove(esLintConfiguration.env, "protractor", true, false);
         }
 
-        return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, Protractor.FILENAME, engineVariables.force);
+        return await super.deleteFileLines(logger, fileSystem, engineVariables.wwwRootFolder, Protractor.FILENAME, engineVariables.force);
     }
 
     private configDefaults(fileSystem: IFileSystem, engineVariables: EngineVariables): void {

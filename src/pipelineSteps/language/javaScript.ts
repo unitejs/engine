@@ -23,25 +23,19 @@ export class JavaScript extends PipelineStepBase {
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
+        return super.fileReadJson<BabelConfiguration>(logger,
+                                                      fileSystem,
+                                                      engineVariables.wwwRootFolder,
+                                                      JavaScript.FILENAME,
+                                                      engineVariables.force,
+                                                      async (obj) => {
+            this._configuration = obj;
 
-        logger.info(`Initialising ${JavaScript.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
+            ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "js", true);
+            this.configDefaults(engineVariables);
 
-        ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "js", true);
-        if (!engineVariables.force) {
-            try {
-                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, JavaScript.FILENAME);
-                if (exists) {
-                    this._configuration = await fileSystem.fileReadJson<BabelConfiguration>(engineVariables.wwwRootFolder, JavaScript.FILENAME);
-                }
-            } catch (err) {
-                logger.error(`Reading existing ${JavaScript.FILENAME} failed`, err);
-                return 1;
-            }
-        }
-
-        this.configDefaults(engineVariables);
-
-        return 0;
+            return 0;
+        });
     }
 
     public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
@@ -51,23 +45,20 @@ export class JavaScript extends PipelineStepBase {
     }
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        try {
-            logger.info(`Generating ${JavaScript.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
+        return super.fileWriteJson(logger,
+                                   fileSystem,
+                                   engineVariables.wwwRootFolder,
+                                   JavaScript.FILENAME,
+                                   engineVariables.force,
+                                   async() => this._configuration);
 
-            await fileSystem.fileWriteJson(engineVariables.wwwRootFolder, JavaScript.FILENAME, this._configuration);
-
-            return 0;
-        } catch (err) {
-            logger.error(`Generating ${JavaScript.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwRootFolder });
-            return 1;
-        }
     }
 
     public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "js", false);
         engineVariables.toggleDevDependency(["babel-core", "babel-preset-es2015"], false);
 
-        return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, JavaScript.FILENAME, engineVariables.force);
+        return await super.deleteFileJson(logger, fileSystem, engineVariables.wwwRootFolder, JavaScript.FILENAME, engineVariables.force);
     }
 
     private configDefaults(engineVariables: EngineVariables): void {

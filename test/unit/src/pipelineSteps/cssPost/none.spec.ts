@@ -62,30 +62,28 @@ describe("None", () => {
     });
 
     describe("install", () => {
-        it("can not configure plugins if not post css none", async () => {
-            const obj = new None();
-            uniteConfigurationStub.cssPost = "PostCss";
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-
-            const packageJsonDevDependencies: { [id: string]: string } = {};
-            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
-
-            Chai.expect(packageJsonDevDependencies.cssnano).to.be.equal(undefined);
-        });
-
-        it("can configure plugins if post css none", async () => {
-            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
-
+        it("can be called", async () => {
             const obj = new None();
             const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(loggerInfoSpy.args[0][0]).contains("Generating");
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
 
             Chai.expect(packageJsonDevDependencies.cssnano).to.be.equal("1.2.3");
+        });
+    });
+
+    describe("uninstall", () => {
+        it("can be called", async () => {
+            const obj = new None();
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            const packageJsonDevDependencies: { [id: string]: string } = { cssnano: "1.2.3"};
+            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
+
+            Chai.expect(packageJsonDevDependencies.cssnano).to.be.equal(undefined);
         });
     });
 });

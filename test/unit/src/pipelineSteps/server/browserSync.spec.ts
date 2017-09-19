@@ -62,26 +62,26 @@ describe("BrowserSync", () => {
     });
 
     describe("install", () => {
-        it("can be called with mismatched server", async () => {
-            uniteConfigurationStub.server = undefined;
+        it("can be called", async() => {
             const obj = new BrowserSync();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-
-            const packageJsonDevDependencies: { [id: string]: string } = {};
-            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
-            Chai.expect(packageJsonDevDependencies["browser-sync"]).to.be.equal(undefined);
-        });
-
-        it("can succeed", async() => {
-            const obj = new BrowserSync();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
             Chai.expect(packageJsonDevDependencies["browser-sync"]).to.be.equal("1.2.3");
+        });
+    });
+
+    describe("uninstall", () => {
+        it("can be called", async() => {
+            const obj = new BrowserSync();
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            const packageJsonDevDependencies: { [id: string]: string } = { "browser-sync": "1.2.3"};
+            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
+            Chai.expect(packageJsonDevDependencies["browser-sync"]).to.be.equal(undefined);
         });
     });
 });

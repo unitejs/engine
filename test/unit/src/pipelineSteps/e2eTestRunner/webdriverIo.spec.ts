@@ -31,6 +31,8 @@ describe("WebdriverIo", () => {
         fileSystemMock = new FileSystemMock();
         uniteConfigurationStub = new UniteConfiguration();
         uniteConfigurationStub.e2eTestRunner = "WebdriverIO";
+        uniteConfigurationStub.sourceLanguage = "TypeScript";
+        uniteConfigurationStub.linter = "ESLint";
 
         engineVariablesStub = new EngineVariables();
         engineVariablesStub.setupDirectories(fileSystemMock, "./test/unit/temp");
@@ -63,14 +65,6 @@ describe("WebdriverIo", () => {
     });
 
     describe("initialise", () => {
-        it("can not setup the engine configuration if not WebdriverIo", async () => {
-            uniteConfigurationStub.e2eTestRunner = "None";
-            const obj = new WebdriverIo();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration("WebdriverIO")).to.be.equal(undefined);
-        });
-
         it("can setup the engine configuration", async () => {
             const obj = new WebdriverIo();
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
@@ -80,102 +74,10 @@ describe("WebdriverIo", () => {
     });
 
     describe("install", () => {
-        it("can fail if an exception is thrown", async () => {
-            sandbox.stub(fileSystemMock, "fileWriteLines").throws("error");
+        it("can be called with no configurations", async () => {
             const obj = new WebdriverIo();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(1);
-            Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
-        });
-
-        it("can skip if file has no generated marker", async () => {
-            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
-            await fileSystemMock.fileWriteLines("./test/unit/temp/www/", "wdio.conf.js", []);
-
-            const obj = new WebdriverIo();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(loggerInfoSpy.args[0][0]).contains("Skipping");
-        });
-
-        it("can skip if not protracotr", async () => {
-            const stub = sandbox.stub(fileSystemMock, "fileExists").returns(false);
-            uniteConfigurationStub.e2eTestRunner = "None";
-            const obj = new WebdriverIo();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(stub.called).to.be.equal(true);
-
-            const packageJsonDevDependencies: { [id: string]: string } = {};
-            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
-            Chai.expect(packageJsonDevDependencies.webdriverio).to.be.equal(undefined);
-            Chai.expect(packageJsonDevDependencies["wdio-spec-reporter"]).to.be.equal(undefined);
-            Chai.expect(packageJsonDevDependencies["wdio-allure-reporter"]).to.be.equal(undefined);
-            Chai.expect(packageJsonDevDependencies["browser-sync"]).to.be.equal(undefined);
-            Chai.expect(packageJsonDevDependencies["selenium-standalone"]).to.be.equal(undefined);
-            Chai.expect(packageJsonDevDependencies["allure-commandline"]).to.be.equal(undefined);
-        });
-
-        it("can set lint configuration if JavaScript", async () => {
-            engineVariablesStub.setConfiguration("ESLint", { plugins: [], env: {} });
-            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
-            const obj = new WebdriverIo();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-
-            Chai.expect(res).to.be.equal(0);
-
-            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").plugins).contains("webdriverio");
-            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").env["webdriverio/wdio"]).to.be.equal(true);
-        });
-
-        it("can set lint configuration if JavaScript", async () => {
-            uniteConfigurationStub.linter = "ESLint";
-            engineVariablesStub.setConfiguration("ESLint", { plugins: [], env: {} });
-            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
-            const obj = new WebdriverIo();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-
-            Chai.expect(res).to.be.equal(0);
-
-            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").plugins).contains("webdriverio");
-            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").env["webdriverio/wdio"]).to.be.equal(true);
-
-            const packageJsonDevDependencies: { [id: string]: string } = {};
-            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
-            Chai.expect(packageJsonDevDependencies["eslint-plugin-webdriverio"]).to.be.equal("1.2.3");
-        });
-
-        it("can set configuration if TypeScript", async () => {
-            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
-            uniteConfigurationStub.sourceLanguage = "TypeScript";
-            const obj = new WebdriverIo();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-
-            Chai.expect(res).to.be.equal(0);
-
-            const packageJsonDevDependencies: { [id: string]: string } = {};
-            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
-            Chai.expect(packageJsonDevDependencies["eslint-plugin-webdriverio"]).to.be.equal(undefined);
-            Chai.expect(packageJsonDevDependencies["@types/webdriverio"]).to.be.equal("1.2.3");
-        });
-
-        it("can write if file has a generated marker", async () => {
-            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
-            await fileSystemMock.fileWriteLines("./test/unit/temp/www/", "wdio.conf.js", ["Generated by UniteJS"]);
-
-            const obj = new WebdriverIo();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(loggerInfoSpy.args[0][0]).contains("Generating");
-
-            const lines = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "wdio.conf.js");
-            Chai.expect(lines.length).to.be.equal(25);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
@@ -185,26 +87,81 @@ describe("WebdriverIo", () => {
             Chai.expect(packageJsonDevDependencies["browser-sync"]).to.be.equal("1.2.3");
             Chai.expect(packageJsonDevDependencies["selenium-standalone"]).to.be.equal("1.2.3");
             Chai.expect(packageJsonDevDependencies["allure-commandline"]).to.be.equal("1.2.3");
-            Chai.expect(packageJsonDevDependencies["eslint-plugin-webdriverio"]).to.be.equal(undefined);
-            Chai.expect(packageJsonDevDependencies["@types/webdriverio"]).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["@types/webdriverio"]).to.be.equal("1.2.3");
+            Chai.expect(packageJsonDevDependencies["eslint-plugin-webdriverio"]).to.be.equal("1.2.3");
         });
 
-        it("can write file with plugins", async () => {
+        it("can be called with configurations", async () => {
+            engineVariablesStub.setConfiguration("ESLint", { plugins: [], env: {} });
+
+            const obj = new WebdriverIo();
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").plugins).contains("webdriverio");
+            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").env["webdriverio/wdio"]).to.be.equal(true);
+        });
+    });
+
+    describe("finalise", () => {
+        it("can succeed writing", async () => {
             await fileSystemMock.directoryCreate("./test/unit/temp/www/");
 
             const obj = new WebdriverIo();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
 
-            const plugins = engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins");
-            plugins.push("plugin1");
-            plugins.push("plugin2");
+            engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins").push("foo");
 
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(loggerInfoSpy.args[0][0]).contains("Generating");
 
-            const lines = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "wdio.conf.js");
-            Chai.expect(lines.length).to.be.equal(27);
+            const exists = await fileSystemMock.fileExists("./test/unit/temp/www/", "wdio.conf.js");
+            Chai.expect(exists).to.be.equal(true);
+        });
+    });
+
+    describe("uninstall", () => {
+        it("can be called with no configurations", async () => {
+            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
+            await fileSystemMock.fileWriteText("./test/unit/temp/www/", "wdio.conf.js", "Generated by UniteJS");
+
+            const obj = new WebdriverIo();
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            const packageJsonDevDependencies: { [id: string]: string } = {
+                webdriverio: "1.2.3",
+                "wdio-spec-reporter": "1.2.3",
+                "wdio-allure-reporter": "1.2.3",
+                "browser-sync": "1.2.3",
+                "selenium-standalone": "1.2.3",
+                "allure-commandline": "1.2.3",
+                "@types/webdriverio": "1.2.3",
+                "eslint-plugin-webdriverio": "1.2.3"
+            };
+            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
+            Chai.expect(packageJsonDevDependencies.webdriverio).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["wdio-spec-reporter"]).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["wdio-allure-reporter"]).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["browser-sync"]).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["selenium-standalone"]).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["allure-commandline"]).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["@types/webdriverio"]).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["eslint-plugin-webdriverio"]).to.be.equal(undefined);
+
+            const exists = await fileSystemMock.fileExists("./test/unit/temp/www/", "wdio.conf.js");
+            Chai.expect(exists).to.be.equal(false);
+        });
+
+        it("can be called with configurations", async () => {
+            engineVariablesStub.setConfiguration("ESLint", { plugins: ["webdriverio"], env: { "webdriverio/wdio": true } });
+
+            const obj = new WebdriverIo();
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").plugins).not.contains("webdriverio");
+            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").env["webdriverio/wdio"]).to.be.equal(undefined);
         });
     });
 });

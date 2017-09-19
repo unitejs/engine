@@ -65,37 +65,15 @@ describe("Amd", () => {
     });
 
     describe("install", () => {
-        it("can be called with mismatched module type", async () => {
-            uniteConfigurationStub.moduleType = "CommonJS";
+        it("can be called with no configurations", async () => {
             const obj = new Amd();
             const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-
-            const packageJsonDevDependencies: { [id: string]: string } = {};
-            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
-
-            Chai.expect(packageJsonDevDependencies.requirejs).to.be.equal(undefined);
         });
 
-        it("can be called with matching module type and no engine configuration", async () => {
-            const obj = new Amd();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(uniteConfigurationStub.srcDistReplaceWith).to.be.equal("../dist/");
-        });
-
-        it("can throw exception", async () => {
-            engineVariablesStub.setConfiguration("Babel", {});
-            const obj = new Amd();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(1);
-
-            Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
-        });
-
-        it("can be called with matching module type and engine configuration", async () => {
-            engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {}});
-            engineVariablesStub.setConfiguration("Babel", { presets: []});
+        it("can be called with configurations already set", async () => {
+            engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {} });
+            engineVariablesStub.setConfiguration("Babel", { presets: [ ["es2015", { modules: "blah" }] ] });
 
             const obj = new Amd();
             const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
@@ -105,14 +83,48 @@ describe("Amd", () => {
             Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").presets[0][1].modules).to.be.equal("amd");
         });
 
-        it("can be called with matching module type and engine configuration, existing babel", async () => {
-            engineVariablesStub.setConfiguration("Babel", { presets: [["es2015", { modules: "commonjs" }]]});
+        it("can be called with configurations", async () => {
+            engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {} });
+            engineVariablesStub.setConfiguration("Babel", { presets: [] });
 
             const obj = new Amd();
             const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
 
+            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.module).to.be.equal("amd");
             Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").presets[0][1].modules).to.be.equal("amd");
+        });
+    });
+
+    describe("uninstall", () => {
+        it("can be called with no configurations", async () => {
+            const obj = new Amd();
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+        });
+
+        it("can be called with configurations but no presets", async () => {
+            engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: { module: "amd"} });
+            engineVariablesStub.setConfiguration("Babel", { presets: [ ["es2016", { modules: "blah" }] ] });
+
+            const obj = new Amd();
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.module).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").presets[0][1].modules).to.be.equal("blah");
+        });
+
+        it("can be called with configurations", async () => {
+            engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: { module: "amd"} });
+            engineVariablesStub.setConfiguration("Babel", { presets: [ ["es2015", { modules: "amd" }] ] });
+
+            const obj = new Amd();
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.module).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").presets[0][1].modules).to.be.equal(undefined);
         });
     });
 });

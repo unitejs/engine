@@ -15,40 +15,27 @@ export class UniteThemeConfigurationJson extends PipelineStepBase {
     private _configuration: UniteThemeConfiguration;
 
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        logger.info("Initialising Unite Theme Config");
+        return super.fileReadJson<UniteThemeConfiguration>(logger,
+                                                           fileSystem,
+                                                           fileSystem.pathCombine(engineVariables.www.assetsSrcFolder, "theme/"),
+                                                           UniteThemeConfigurationJson.FILENAME,
+                                                           engineVariables.force,
+                                                           async (obj) => {
+            this._configuration = obj;
 
-        const sourceThemeFolder = fileSystem.pathCombine(engineVariables.www.assetsSrcFolder, "theme/");
+            this.configDefaults(uniteConfiguration, engineVariables);
 
-        if (!engineVariables.force) {
-            try {
-                const exists = await fileSystem.fileExists(sourceThemeFolder, UniteThemeConfigurationJson.FILENAME);
-                if (exists) {
-                    this._configuration = await fileSystem.fileReadJson<UniteThemeConfiguration>(sourceThemeFolder, UniteThemeConfigurationJson.FILENAME);
-                }
-            } catch (err) {
-                logger.error(`Reading existing ${UniteThemeConfigurationJson.FILENAME} failed`, err);
-                return 1;
-            }
-        }
-
-        this.configDefaults(uniteConfiguration, engineVariables);
-
-        return 0;
+            return 0;
+        });
     }
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        try {
-            logger.info(`Generating ${UniteThemeConfigurationJson.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder});
-
-            const sourceThemeFolder = fileSystem.pathCombine(engineVariables.www.assetsSrcFolder, "theme/");
-
-            await fileSystem.fileWriteJson(sourceThemeFolder, UniteThemeConfigurationJson.FILENAME, this._configuration);
-
-            return 0;
-        } catch (err) {
-            logger.error(`Generating ${UniteThemeConfigurationJson.FILENAME} failed`, err);
-            return 1;
-        }
+        return super.fileWriteJson(logger,
+                                   fileSystem,
+                                   fileSystem.pathCombine(engineVariables.www.assetsSrcFolder, "theme/"),
+                                   UniteThemeConfigurationJson.FILENAME,
+                                   engineVariables.force,
+                                   async() => this._configuration);
     }
 
     private configDefaults(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void {

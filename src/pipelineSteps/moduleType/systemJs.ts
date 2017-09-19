@@ -16,8 +16,6 @@ export class SystemJs extends PipelineStepBase {
     }
 
     public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        logger.info("Generating Module Type SystemJS");
-
         uniteConfiguration.srcDistReplace = "(System.register)*?(..\/src\/)";
         uniteConfiguration.srcDistReplaceWith = "../dist/";
 

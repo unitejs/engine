@@ -26,6 +26,7 @@ export class Engine implements IEngine {
     private _fileSystem: IFileSystem;
     private _engineRootFolder: string;
     private _engineAssetsFolder: string;
+    private _pipelineStepFolder: string;
     private _enginePackageJson: PackageConfiguration;
 
     private _pipeline: Pipeline;
@@ -39,8 +40,9 @@ export class Engine implements IEngine {
 
             this._enginePackageJson = await this._fileSystem.fileReadJson<PackageConfiguration>(this._engineRootFolder, "package.json");
 
-            this._pipeline = new Pipeline(this._logger, this._fileSystem,
-                                          this._fileSystem.pathCombine(this._engineRootFolder, `dist/pipelineSteps`));
+            this._pipelineStepFolder = this._fileSystem.pathCombine(this._engineRootFolder, "dist/pipelineSteps");
+
+            this._pipeline = new Pipeline(this._logger, this._fileSystem, this._pipelineStepFolder);
 
             return 0;
         } catch (err) {
@@ -143,7 +145,7 @@ export class Engine implements IEngine {
         if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("bundler", uniteConfiguration.bundler))) {
             return 1;
         }
-        if (unitTestRunner === "None") {
+        if (uniteConfiguration.unitTestRunner === "None") {
             if (unitTestFramework !== null && unitTestFramework !== undefined) {
                 this._logger.error("unitTestFramework is not valid if unitTestRunner is None");
                 return 1;
@@ -163,7 +165,7 @@ export class Engine implements IEngine {
                 return 1;
             }
         }
-        if (e2eTestRunner === "None") {
+        if (uniteConfiguration.e2eTestRunner === "None") {
             if (e2eTestFramework !== null && e2eTestFramework !== undefined) {
                 this._logger.error("e2eTestFramework is not valid if e2eTestRunner is None");
                 return 1;
@@ -176,7 +178,7 @@ export class Engine implements IEngine {
                 return 1;
             }
         }
-        if (linter !== "None") {
+        if (uniteConfiguration.linter !== "None") {
             if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("linter", uniteConfiguration.linter))) {
                 return 1;
             }
@@ -354,73 +356,11 @@ export class Engine implements IEngine {
         engineVariables.force = force;
         engineVariables.license = license;
 
-        this._pipeline.add("scaffold", "outputDirectory");
-        this._pipeline.add("scaffold", "appScaffold");
-        this._pipeline.add("scaffold", "unitTestScaffold");
-        this._pipeline.add("scaffold", "e2eTestScaffold");
+        this.addPipelinePre();
 
-        this._pipeline.add("applicationFramework", "plainApp");
-        this._pipeline.add("applicationFramework", "angular");
-        this._pipeline.add("applicationFramework", "aurelia");
-        this._pipeline.add("applicationFramework", "react");
+        await this.addPipelineDynamic();
 
-        this._pipeline.add("taskManager", "gulp");
-
-        this._pipeline.add("platform", "web");
-        this._pipeline.add("platform", "electron");
-
-        this._pipeline.add("moduleType", "amd");
-        this._pipeline.add("moduleType", "commonJs");
-        this._pipeline.add("moduleType", "systemJs");
-
-        this._pipeline.add("loader", "sjs");
-        this._pipeline.add("loader", "rjs");
-
-        this._pipeline.add("bundler", "browserify");
-        this._pipeline.add("bundler", "requireJs");
-        this._pipeline.add("bundler", "systemJsBuilder");
-        this._pipeline.add("bundler", "webpack");
-
-        this._pipeline.add("cssPre", "css");
-        this._pipeline.add("cssPre", "less");
-        this._pipeline.add("cssPre", "sass");
-        this._pipeline.add("cssPre", "stylus");
-
-        this._pipeline.add("cssPost", "none");
-        this._pipeline.add("cssPost", "postCss");
-
-        this._pipeline.add("testFramework", "jasmine");
-        this._pipeline.add("testFramework", "mochaChai");
-
-        this._pipeline.add("language", "javaScript");
-        this._pipeline.add("language", "typeScript");
-
-        this._pipeline.add("e2eTestRunner", "webdriverIo");
-        this._pipeline.add("e2eTestRunner", "protractor");
-
-        this._pipeline.add("unitTestEngine", "phantomJs");
-        this._pipeline.add("unitTestEngine", "chromeHeadless");
-
-        this._pipeline.add("linter", "esLint");
-        this._pipeline.add("linter", "tsLint");
-
-        this._pipeline.add("unitTestRunner", "karma");
-
-        this._pipeline.add("packageManager", "npm");
-        this._pipeline.add("packageManager", "yarn");
-
-        this._pipeline.add("server", "browserSync");
-
-        this._pipeline.add("content", "htmlTemplate");
-        this._pipeline.add("content", "readMe");
-        this._pipeline.add("content", "gitIgnore");
-        this._pipeline.add("content", "license");
-        this._pipeline.add("content", "assets");
-        this._pipeline.add("content", "packageJson");
-
-        this._pipeline.add("unite", "uniteConfigurationDirectories");
-        this._pipeline.add("unite", "uniteThemeConfigurationJson");
-        this._pipeline.add("unite", "uniteConfigurationJson");
+        this.addPipelinePost();
 
         const ret = await this._pipeline.run(uniteConfiguration, engineVariables);
 
@@ -723,5 +663,33 @@ export class Engine implements IEngine {
         }
 
         return parsedMap;
+    }
+
+    private addPipelinePre(): void {
+        this._pipeline.add("scaffold", "outputDirectory");
+        this._pipeline.add("scaffold", "appScaffold");
+        this._pipeline.add("scaffold", "unitTestScaffold");
+        this._pipeline.add("scaffold", "e2eTestScaffold");
+    }
+
+    private async addPipelineDynamic(): Promise<void> {
+        const folders = await this._fileSystem.directoryGetFolders(this._pipelineStepFolder);
+
+        for (let i = 0; i < folders.length; i++) {
+            if (folders[i] !== "scaffold" && folders[i] !== "unite") {
+                const fullFolder = this._fileSystem.pathCombine(this._pipelineStepFolder, folders[i]);
+                const files = await this._fileSystem.directoryGetFiles(fullFolder);
+
+                files.filter(file => file.endsWith(".js")).forEach(file => {
+                    this._pipeline.add(folders[i], file.replace(".js", ""));
+                });
+            }
+        }
+    }
+
+    private addPipelinePost(): void {
+        this._pipeline.add("unite", "uniteConfigurationDirectories");
+        this._pipeline.add("unite", "uniteThemeConfigurationJson");
+        this._pipeline.add("unite", "uniteConfigurationJson");
     }
 }

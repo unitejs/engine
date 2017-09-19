@@ -76,31 +76,6 @@ describe("MochaChai", () => {
     });
 
     describe("install", () => {
-        it("can be called with undefined test frameworks", async () => {
-            uniteConfigurationStub.unitTestFramework = "Jasmine";
-            uniteConfigurationStub.e2eTestFramework = "Jasmine";
-            const obj = new MochaChai();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-
-            const packageJsonDevDependencies: { [id: string]: string } = {};
-            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
-            Chai.expect(packageJsonDevDependencies.mocha).to.be.equal(undefined);
-            Chai.expect(packageJsonDevDependencies["@types/mocha"]).to.be.equal(undefined);
-            Chai.expect(packageJsonDevDependencies["@types/chai"]).to.be.equal(undefined);
-            Chai.expect(packageJsonDevDependencies["karma-mocha"]).to.be.equal(undefined);
-            Chai.expect(packageJsonDevDependencies["karma-chai"]).to.be.equal(undefined);
-            Chai.expect(packageJsonDevDependencies["mochawesome-screenshots"]).to.be.equal(undefined);
-            Chai.expect(packageJsonDevDependencies["wdio-mocha-framework"]).to.be.equal(undefined);
-
-            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint")).to.be.equal(undefined);
-            Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma")).to.be.equal(undefined);
-            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor")).to.be.equal(undefined);
-            Chai.expect(engineVariablesStub.getConfiguration<string[]>("Protractor.ScriptStart")).to.be.equal(undefined);
-            Chai.expect(engineVariablesStub.getConfiguration<string[]>("Protractor.ScriptEnd")).to.be.equal(undefined);
-            Chai.expect(engineVariablesStub.getConfiguration<WebdriverIoConfiguration>("WebdriverIO")).to.be.equal(undefined);
-        });
-
         it("can be called with unit framework defined", async () => {
             uniteConfigurationStub.sourceLanguage = "TypeScript";
             uniteConfigurationStub.unitTestRunner = "Karma";
@@ -125,8 +100,6 @@ describe("MochaChai", () => {
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint")).to.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma").frameworks).contains("mocha");
             Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor")).to.be.equal(undefined);
-            Chai.expect(engineVariablesStub.getConfiguration<string[]>("Protractor.ScriptStart")).to.be.equal(undefined);
-            Chai.expect(engineVariablesStub.getConfiguration<string[]>("Protractor.ScriptEnd")).to.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<WebdriverIoConfiguration>("WebdriverIO")).to.be.equal(undefined);
         });
 
@@ -135,9 +108,7 @@ describe("MochaChai", () => {
             uniteConfigurationStub.e2eTestRunner = "Protractor";
 
             engineVariablesStub.setConfiguration("ESLint", { env: {} });
-            engineVariablesStub.setConfiguration("Protractor", { framework: "", MochaChaiNodeOpts: {} });
-            engineVariablesStub.setConfiguration("Protractor.ScriptStart", []);
-            engineVariablesStub.setConfiguration("Protractor.ScriptEnd", []);
+            engineVariablesStub.setConfiguration("Protractor", { framework: "", mochaOpts: {} });
 
             const obj = new MochaChai();
             const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
@@ -156,8 +127,6 @@ describe("MochaChai", () => {
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").env.mocha).to.be.equal(true);
             Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma")).to.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").framework).to.be.equal("mocha");
-            Chai.expect(engineVariablesStub.getConfiguration<string[]>("Protractor.ScriptStart").length).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration<string[]>("Protractor.ScriptEnd").length).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<WebdriverIoConfiguration>("WebdriverIO")).to.be.equal(undefined);
         });
 
@@ -185,9 +154,50 @@ describe("MochaChai", () => {
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").env.mocha).to.be.equal(true);
             Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma")).to.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor")).to.be.equal(undefined);
-            Chai.expect(engineVariablesStub.getConfiguration<string[]>("Protractor.ScriptStart")).to.be.equal(undefined);
-            Chai.expect(engineVariablesStub.getConfiguration<string[]>("Protractor.ScriptEnd")).to.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<WebdriverIoConfiguration>("WebdriverIO").framework).to.be.equal("mocha");
+        });
+    });
+
+    describe("uninstall", () => {
+        it("can be called with no configurations", async () => {
+            const obj = new MochaChai();
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            const packageJsonDevDependencies: { [id: string]: string } = {
+                mocha: "1.2.3",
+                "@types/mocha": "1.2.3",
+                "@types/chai": "1.2.3",
+                "karma-mocha": "1.2.3",
+                "karma-chai": "1.2.3",
+                "mochawesome-screenshots": "1.2.3",
+                "wdio-mocha-framework": "1.2.3"
+            };
+            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
+            Chai.expect(packageJsonDevDependencies.mocha).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["@types/mocha"]).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["@types/chai"]).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["karma-mocha"]).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["karma-chai"]).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["mochawesome-screenshots"]).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["wdio-mocha-framework"]).to.be.equal(undefined);
+        });
+
+        it("can be called with configurations", async () => {
+            engineVariablesStub.setConfiguration("ESLint", { env: { mocha: true } });
+            engineVariablesStub.setConfiguration("Karma", { frameworks: [ "mocha" ] });
+            engineVariablesStub.setConfiguration("Protractor", { framework: "mocha", mochaOpts: {} });
+            engineVariablesStub.setConfiguration("WebdriverIO", { framework: "mocha"});
+
+            const obj = new MochaChai();
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").env.mocha).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma").frameworks).not.contains("mocha");
+            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").framework).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").mochaOpts).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<WebdriverIoConfiguration>("WebdriverIO").framework).to.be.equal(undefined);
         });
     });
 });

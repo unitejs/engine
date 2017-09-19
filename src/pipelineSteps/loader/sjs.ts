@@ -26,6 +26,8 @@ export class SJS extends PipelineStepBase {
             scriptIncludeMode = "both";
         } else if (notBundledLoaderCond) {
             scriptIncludeMode = "notBundled";
+        } else {
+            scriptIncludeMode = "none";
         }
 
         engineVariables.addClientPackage(

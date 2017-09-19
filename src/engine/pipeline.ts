@@ -1,6 +1,7 @@
 /**
  * Class for pipeline
  */
+import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
@@ -56,30 +57,53 @@ export class Pipeline {
         }
 
         for (const pipelineStep of pipelineUninstall) {
-            const ret = await pipelineStep.uninstall(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
-            if (ret !== 0) {
-                return ret;
+            try {
+                const ret = await pipelineStep.uninstall(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
+                if (ret !== 0) {
+                    return ret;
+                }
+            } catch (err) {
+                this._logger.error(`Exception uninstalling pipeline step '${ObjectHelper.getClassName(pipelineStep)}'`, err);
+                return 1;
             }
         }
 
         for (const pipelineStep of pipelineInstall) {
-            const ret = await pipelineStep.initialise(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
-            if (ret !== 0) {
-                return ret;
+            try {
+                this._logger.info("Initialising", { step: ObjectHelper.getClassName(pipelineStep) });
+                const ret = await pipelineStep.initialise(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
+                if (ret !== 0) {
+                    return ret;
+                }
+            } catch (err) {
+                this._logger.error(`Exception initialising pipeline step '${ObjectHelper.getClassName(pipelineStep)}'`, err);
+                return 1;
             }
         }
 
         for (const pipelineStep of pipelineInstall) {
-            const ret = await pipelineStep.install(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
-            if (ret !== 0) {
-                return ret;
+            try {
+                this._logger.info("Installing", { step: ObjectHelper.getClassName(pipelineStep) });
+                const ret = await pipelineStep.install(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
+                if (ret !== 0) {
+                    return ret;
+                }
+            } catch (err) {
+                this._logger.error(`Exception installing pipeline step '${ObjectHelper.getClassName(pipelineStep)}'`, err);
+                return 1;
             }
         }
 
         for (const pipelineStep of pipelineInstall) {
-            const ret = await pipelineStep.finalise(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
-            if (ret !== 0) {
-                return ret;
+            try {
+                this._logger.info("Finalising", { step: ObjectHelper.getClassName(pipelineStep) });
+                const ret = await pipelineStep.finalise(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
+                if (ret !== 0) {
+                    return ret;
+                }
+            } catch (err) {
+                this._logger.error(`Exception finalising pipeline step '${ObjectHelper.getClassName(pipelineStep)}'`, err);
+                return 1;
             }
         }
 
@@ -120,12 +144,13 @@ export class Pipeline {
                     files = files.filter(file => file.endsWith(".js")).map(file => file.replace(".js", ""));
 
                     if (pipelineKey.key === undefined || pipelineKey.key === null || pipelineKey.key.length === 0) {
-                        this._logger.error(`${actualType} should not be blank, possible options could be [${files.join(", ")}]`);
+                        this._logger.error(`--${actualType} should not be blank, possible options could be [${files.join(", ")}]`);
                         return false;
                     } else {
                         const moduleIdLower = pipelineKey.key.toLowerCase();
                         for (let i = 0; i < files.length; i++) {
                             if (files[i].toLowerCase() === moduleIdLower) {
+                                // We disable the linting as we are trying to dynamically load modules
                                 // tslint:disable:no-require-imports
                                 // tslint:disable:non-literal-require
                                 const loadFile = this._fileSystem.pathCombine(moduleTypeFolder, files[i]);
@@ -148,11 +173,11 @@ export class Pipeline {
                                 return true;
                             }
                         }
-                        this._logger.error(`Pipeline Step ${pipelineKey.key} for arg ${actualType} could not be located, possible options could be [${files.join(", ")}]`);
+                        this._logger.error(`Pipeline Step '${pipelineKey.key}' for arg --${actualType} could not be located, possible options could be [${files.join(", ")}]`);
                         return false;
                     }
                 } catch (err) {
-                    this._logger.error(`Pipeline Step ${pipelineKey.key} for arg ${actualType} failed to load`, err);
+                    this._logger.error(`Pipeline Step '${pipelineKey.key}' for arg --${actualType} failed to load`, err);
                     return false;
                 }
             } else {

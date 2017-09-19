@@ -14,44 +14,28 @@ export class GitIgnore extends PipelineStepBase {
     private _ignore: string[];
 
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        logger.info(`Initialising ${GitIgnore.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
-
-        if (!engineVariables.force) {
-            try {
-                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, GitIgnore.FILENAME);
-                if (exists) {
-                    this._ignore = await fileSystem.fileReadLines(engineVariables.wwwRootFolder, GitIgnore.FILENAME);
-                }
-            } catch (err) {
-                logger.error(`Reading existing ${GitIgnore.FILENAME} failed`, err);
-                return 1;
-            }
-        }
-
-        this.configDefaults(engineVariables);
-
-        return 0;
+        return super.fileReadLines(logger,
+                                   fileSystem,
+                                   engineVariables.wwwRootFolder,
+                                   GitIgnore.FILENAME,
+                                   engineVariables.force,
+                                   async (lines) => {
+                                        this._ignore = lines;
+                                        this.configDefaults(engineVariables);
+                                        return 0;
+                                    });
     }
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        try {
-            const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, GitIgnore.FILENAME);
-
-            if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker" || engineVariables.force) {
-                logger.info(`Generating ${GitIgnore.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
-
-                this._ignore.push(super.wrapGeneratedMarker("# ", ""));
-
-                await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, GitIgnore.FILENAME, this._ignore);
-            } else {
-                logger.info(`Skipping ${GitIgnore.FILENAME} as it has no generated marker`);
-            }
-
-            return 0;
-        } catch (err) {
-            logger.error(`Generating ${GitIgnore.FILENAME} failed`, err);
-            return 1;
-        }
+        return super.fileWriteLines(logger,
+                                    fileSystem,
+                                    engineVariables.wwwRootFolder,
+                                    GitIgnore.FILENAME,
+                                    engineVariables.force,
+                                    async () => {
+                                        this._ignore.push(super.wrapGeneratedMarker("# ", ""));
+                                        return this._ignore;
+                                    });
     }
 
     private configDefaults(engineVariables: EngineVariables): void {

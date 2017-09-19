@@ -7,7 +7,6 @@ import { UniteConfiguration } from "../../configuration/models/unite/uniteConfig
 import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 export declare class Gulp extends PipelineStepBase {
-    private _buildFolder;
     private _tasksFolder;
     private _utilFolder;
     private _files;
@@ -15,12 +14,16 @@ export declare class Gulp extends PipelineStepBase {
     install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
-    generateBuildTasks(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, isGulp: boolean): void;
-    private generateUnitTasks(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
-    private generateE2eTasks(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
-    private generateServeTasks(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
-    private generateThemeTasks(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
-    private generateUtils(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
-    private buildFiles(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
+    private generateBuildDependencies(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
+    private generateBuildFiles(logger, fileSystem, uniteConfiguration, engineVariables);
+    private generateUnitDependencies(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
+    private generateUnitFiles(logger, fileSystem, uniteConfiguration, engineVariables);
+    private generateE2eDependencies(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
+    private generateE2eFiles(logger, fileSystem, uniteConfiguration, engineVariables);
+    private generateServeDependencies(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
+    private generateServeFiles(logger, fileSystem, uniteConfiguration, engineVariables);
+    private generateThemeFiles(logger, fileSystem, uniteConfiguration, engineVariables);
+    private generateUtilsDependencies(logger, fileSystem, uniteConfiguration, engineVariables, isGulp);
+    private generateUtilsFiles(logger, fileSystem, uniteConfiguration, engineVariables);
     private toggleFile(sourceFolder, sourceFile, destFolder, destFile, keep, replacements?);
 }

@@ -21,36 +21,31 @@ export class Karma extends PipelineStepBase {
     }
 
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        logger.info(`Initialising ${Karma.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
-
-        if (!engineVariables.force) {
-            try {
-                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, Karma.FILENAME);
-                if (exists) {
-                    const conf = await fileSystem.fileReadText(engineVariables.wwwRootFolder, Karma.FILENAME);
-
-                    const jsonMatches: RegExpExecArray = /config.set\(((.|\n|\r)*)\)/.exec(conf);
-                    if (jsonMatches && jsonMatches.length === 3) {
-                        this._configuration = JsonHelper.parseCode(jsonMatches[1]);
-                        if (this._configuration.files) {
-                            let keepFiles = this._configuration.files.filter(item => item.includeType === "polyfill");
-                            keepFiles = keepFiles.concat(this._configuration.files.filter(item => item.includeType === "fixed"));
-                            this._configuration.files = keepFiles;
-                        }
-                    } else {
-                        logger.error(`Reading existing ${Karma.FILENAME} regex failed to parse`);
-                        return 1;
+        return super.fileReadText(logger,
+                                  fileSystem,
+                                  engineVariables.wwwRootFolder,
+                                  Karma.FILENAME,
+                                  engineVariables.force,
+                                  async (text) => {
+            if (text) {
+                const jsonMatches: RegExpExecArray = /config.set\(((.|\n|\r)*)\)/.exec(text);
+                if (jsonMatches && jsonMatches.length === 3) {
+                    this._configuration = JsonHelper.parseCode(jsonMatches[1]);
+                    if (this._configuration.files) {
+                        let keepFiles = this._configuration.files.filter(item => item.includeType === "polyfill");
+                        keepFiles = keepFiles.concat(this._configuration.files.filter(item => item.includeType === "fixed"));
+                        this._configuration.files = keepFiles;
                     }
+                } else {
+                    logger.error(`Reading existing ${Karma.FILENAME} regex failed to parse`);
+                    return 1;
                 }
-            } catch (err) {
-                logger.error(`Reading existing ${Karma.FILENAME} failed`, err);
-                return 1;
             }
-        }
 
-        this.configDefaults(fileSystem, uniteConfiguration, engineVariables);
+            this.configDefaults(fileSystem, uniteConfiguration, engineVariables);
 
-        return 0;
+            return 0;
+        });
     }
 
     public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
@@ -74,13 +69,12 @@ export class Karma extends PipelineStepBase {
     }
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        logger.info(`Generating ${Karma.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
-
-        const lines: string[] = [];
-        this.generateConfig(fileSystem, uniteConfiguration, engineVariables, lines);
-        await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, Karma.FILENAME, lines);
-
-        return 0;
+        return super.fileWriteLines(logger,
+                                    fileSystem,
+                                    engineVariables.wwwRootFolder,
+                                    Karma.FILENAME,
+                                    engineVariables.force,
+                                    async() => this.generateConfig());
     }
 
     public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
@@ -100,7 +94,7 @@ export class Karma extends PipelineStepBase {
                                         ],
                                             false);
 
-        return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, Karma.FILENAME, engineVariables.force);
+        return await super.deleteFileLines(logger, fileSystem, engineVariables.wwwRootFolder, Karma.FILENAME, engineVariables.force);
     }
 
     private configDefaults(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void {
@@ -208,15 +202,18 @@ export class Karma extends PipelineStepBase {
         engineVariables.setConfiguration("Karma", this._configuration);
     }
 
-    private generateConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, lines: string[]): void {
+    private generateConfig(): string[] {
         // Order the include types
         let orderedFiles = this._configuration.files.filter(item => item.includeType === "polyfill");
         orderedFiles = orderedFiles.concat(this._configuration.files.filter(item => item.includeType === "fixed"));
         this._configuration.files = orderedFiles;
 
+        const lines: string[] = [];
         lines.push("module.exports = function(config) {");
         lines.push(`    config.set(${JsonHelper.codify(this._configuration)});`);
         lines.push("};");
         lines.push(super.wrapGeneratedMarker("/* ", " */"));
+
+        return lines;
     }
 }

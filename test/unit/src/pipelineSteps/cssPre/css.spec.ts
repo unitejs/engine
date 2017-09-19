@@ -62,14 +62,6 @@ describe("Css", () => {
     });
 
     describe("initialise", () => {
-        it("can not setup the engine configuration if not Css", async () => {
-            const obj = new Css();
-            uniteConfigurationStub.cssPre = "Sass";
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(uniteConfigurationStub.styleExtension).to.be.equal(undefined);
-        });
-
         it("can setup the engine configuration", async () => {
             const obj = new Css();
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
@@ -78,26 +70,13 @@ describe("Css", () => {
         });
     });
 
-    describe("install", () => {
+    describe("finalise", () => {
         it("can fail if an exception is thrown", async () => {
             sandbox.stub(fileSystemMock, "directoryCreate").throws("error");
             const obj = new Css();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
-        });
-
-        it("can skip not css", async () => {
-            const obj = new Css();
-            uniteConfigurationStub.cssPre = "Sass";
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-
-            let exists = await fileSystemMock.directoryExists("./test/unit/temp/www/cssSrc");
-            Chai.expect(exists).to.be.equal(false);
-
-            exists = await fileSystemMock.directoryExists("./test/unit/temp/www/css");
-            Chai.expect(exists).to.be.equal(false);
         });
 
         it("can create dirs if css", async () => {
@@ -105,14 +84,25 @@ describe("Css", () => {
 
             const obj = new Css();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
 
-            let exists = await fileSystemMock.directoryExists("./test/unit/temp/www/cssSrc");
+            const exists = await fileSystemMock.directoryExists("./test/unit/temp/www/cssSrc");
             Chai.expect(exists).to.be.equal(true);
+        });
+    });
 
-            exists = await fileSystemMock.directoryExists("./test/unit/temp/www/css");
-            Chai.expect(exists).to.be.equal(true);
+    describe("uninstall", () => {
+        it("can delete dirs", async () => {
+            await fileSystemMock.directoryCreate("./test/unit/temp/www/cssSrc");
+
+            const obj = new Css();
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            const exists = await fileSystemMock.directoryExists("./test/unit/temp/www/cssSrc");
+            Chai.expect(exists).to.be.equal(false);
         });
     });
 });

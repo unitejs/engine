@@ -13,24 +13,9 @@ export class UnitTestScaffold extends PipelineStepBase {
     }
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        try {
-            logger.info("Creating Unit Test Directory", { unitTestSrcFolder: engineVariables.www.unitTestSrcFolder });
-            await fileSystem.directoryCreate(engineVariables.www.unitTestSrcFolder);
-        } catch (err) {
-            logger.error("Creating Unit Test Directory failed", err, { unitTestSrcFolder: engineVariables.www.unitTestSrcFolder });
-            return 1;
-        }
-
-        return 0;
+        return await super.createFolder(logger, fileSystem, engineVariables.www.unitTestFolder);
     }
 
     public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        try {
-            await fileSystem.directoryDelete(engineVariables.www.unitTestSrcFolder);
-        } catch (err) {
-            logger.error("Deleting Unit Test Directory failed", err, { unitTestSrcFolder: engineVariables.www.unitTestSrcFolder });
-            return 1;
-        }
-
-        return 0;
+        return super.deleteFolder(logger, fileSystem, engineVariables.www.unitTestFolder, engineVariables.force);
     }}

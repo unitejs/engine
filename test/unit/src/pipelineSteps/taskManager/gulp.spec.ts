@@ -30,6 +30,15 @@ describe("Gulp", () => {
         fileSystemMock = new FileSystemMock();
         uniteConfigurationStub = new UniteConfiguration();
         uniteConfigurationStub.taskManager = "Gulp";
+        uniteConfigurationStub.unitTestRunner = "Karma";
+        uniteConfigurationStub.e2eTestRunner = "Protractor";
+        uniteConfigurationStub.sourceLanguage = "JavaScript";
+        uniteConfigurationStub.bundler = "RequireJS";
+        uniteConfigurationStub.moduleType = "AMD";
+        uniteConfigurationStub.linter = "ESLint";
+        uniteConfigurationStub.cssPre = "Css";
+        uniteConfigurationStub.cssPost = "PostCss";
+        uniteConfigurationStub.server = "BrowserSync";
 
         engineVariablesStub = new EngineVariables();
         engineVariablesStub.engineAssetsFolder = "./assets/";
@@ -71,167 +80,70 @@ describe("Gulp", () => {
     });
 
     describe("install", () => {
-        it("can be called with mismatched task manager and directory existing", async () => {
-            sandbox.stub(fileSystemMock, "directoryExists").resolves(true);
-            const stub = sandbox.stub(fileSystemMock, "directoryDelete").resolves();
-            uniteConfigurationStub.taskManager = undefined;
-            uniteConfigurationStub.sourceLanguage = "JavaScript";
-            uniteConfigurationStub.bundler = "RequireJS";
-            uniteConfigurationStub.moduleType = "AMD";
-            uniteConfigurationStub.linter = "ESLint";
-            uniteConfigurationStub.cssPre = "Css";
-            uniteConfigurationStub.cssPost = "PostCss";
-            uniteConfigurationStub.unitTestRunner = "None";
-            uniteConfigurationStub.e2eTestRunner = "Protractor";
-            uniteConfigurationStub.server = "BrowserSync";
+        it("can be called", async () => {
             const obj = new Gulp();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(stub.callCount).to.be.equal(1);
-
-            const packageJsonDevDependencies: { [id: string]: string } = {};
-            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
-            Chai.expect(packageJsonDevDependencies.del).to.be.equal(undefined);
-        });
-
-        it("can be called with mismatched task manager and directory not existing", async () => {
-            sandbox.stub(fileSystemMock, "directoryExists").resolves(false);
-            uniteConfigurationStub.taskManager = undefined;
-            uniteConfigurationStub.sourceLanguage = "JavaScript";
-            uniteConfigurationStub.bundler = "RequireJS";
-            uniteConfigurationStub.moduleType = "AMD";
-            uniteConfigurationStub.linter = "ESLint";
-            uniteConfigurationStub.cssPre = "Css";
-            uniteConfigurationStub.cssPost = "PostCss";
-            uniteConfigurationStub.unitTestRunner = "None";
-            uniteConfigurationStub.e2eTestRunner = "Protractor";
-            uniteConfigurationStub.server = "BrowserSync";
-            const obj = new Gulp();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
-            Chai.expect(packageJsonDevDependencies.del).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies.gulp).to.be.equal("1.2.3");
+            Chai.expect(packageJsonDevDependencies.del).to.be.equal("1.2.3");
+            Chai.expect(packageJsonDevDependencies["gulp-karma-runner"]).to.be.equal("1.2.3");
+            Chai.expect(packageJsonDevDependencies["browser-sync"]).to.be.equal("1.2.3");
+            Chai.expect(packageJsonDevDependencies["gulp-util"]).to.be.equal("1.2.3");
         });
+    });
 
-        it("can be called with mismatched task manager and directory existing throws exception", async () => {
-            sandbox.stub(fileSystemMock, "directoryExists").rejects("error");
-            sandbox.stub(fileSystemMock, "directoryDelete").resolves();
-            uniteConfigurationStub.sourceLanguage = "JavaScript";
-            uniteConfigurationStub.bundler = "RequireJS";
-            uniteConfigurationStub.moduleType = "AMD";
-            uniteConfigurationStub.linter = "ESLint";
-            uniteConfigurationStub.cssPre = "Css";
-            uniteConfigurationStub.cssPost = "PostCss";
+    describe("finalise", () => {
+        it("can be called with so that files are deleted", async () => {
             uniteConfigurationStub.unitTestRunner = "None";
-            uniteConfigurationStub.e2eTestRunner = "Protractor";
-            uniteConfigurationStub.server = "BrowserSync";
-            uniteConfigurationStub.taskManager = undefined;
             const obj = new Gulp();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(1);
-            Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
         });
 
-        it("can be called and fail to copy file", async () => {
-            sandbox.stub(fileSystemMock, "fileWriteBinary").rejects();
-            sandbox.stub(fileSystemMock, "directoryCreate").resolves();
-            uniteConfigurationStub.sourceLanguage = "JavaScript";
-            uniteConfigurationStub.bundler = "RequireJS";
-            uniteConfigurationStub.moduleType = "AMD";
-            uniteConfigurationStub.linter = "ESLint";
-            uniteConfigurationStub.cssPre = "Css";
-            uniteConfigurationStub.cssPost = "PostCss";
-            uniteConfigurationStub.unitTestRunner = "None";
-            uniteConfigurationStub.e2eTestRunner = "None";
-            uniteConfigurationStub.server = "BrowserSync";
+        it("can be called with failing file operations", async () => {
+            sandbox.stub(fileSystemMock, "fileWriteText").rejects();
             const obj = new Gulp();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(1);
         });
 
-        it("can be called with no unit runner or e2e runner", async () => {
-            const stub = sandbox.stub(fileSystemMock, "fileWriteBinary").resolves();
-            sandbox.stub(fileSystemMock, "directoryCreate").resolves();
-            uniteConfigurationStub.sourceLanguage = "JavaScript";
-            uniteConfigurationStub.bundler = "RequireJS";
-            uniteConfigurationStub.moduleType = "AMD";
-            uniteConfigurationStub.linter = "ESLint";
-            uniteConfigurationStub.cssPre = "Css";
-            uniteConfigurationStub.cssPost = "PostCss";
-            uniteConfigurationStub.unitTestRunner = "None";
-            uniteConfigurationStub.e2eTestRunner = "None";
-            uniteConfigurationStub.server = "BrowserSync";
+        it("can be called", async () => {
             const obj = new Gulp();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-
-            Chai.expect(stub.callCount).to.be.equal(26);
-
-            const packageJsonDevDependencies: { [id: string]: string } = {};
-            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
-            Chai.expect(packageJsonDevDependencies.del).to.be.equal("1.2.3");
-            Chai.expect(Object.keys(packageJsonDevDependencies).length).to.be.equal(21);
         });
+    });
 
-        it("can be called with unit runner and no e2e runner", async () => {
-            const stub = sandbox.stub(fileSystemMock, "fileWriteBinary").resolves();
-            sandbox.stub(fileSystemMock, "directoryCreate").resolves();
-            uniteConfigurationStub.sourceLanguage = "JavaScript";
-            uniteConfigurationStub.bundler = "RequireJS";
-            uniteConfigurationStub.moduleType = "AMD";
-            uniteConfigurationStub.linter = "ESLint";
-            uniteConfigurationStub.cssPre = "Css";
-            uniteConfigurationStub.cssPost = "PostCss";
-            uniteConfigurationStub.unitTestRunner = "Karma";
-            uniteConfigurationStub.e2eTestRunner = "None";
-            uniteConfigurationStub.server = "BrowserSync";
+    describe("uninstall", () => {
+        it("can be called", async () => {
+            await fileSystemMock.directoryCreate("./test/unit/temp/build/tasks");
+
             const obj = new Gulp();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
 
-            Chai.expect(stub.callCount).to.be.equal(30);
-
-            const packageJsonDevDependencies: { [id: string]: string } = {};
+            const packageJsonDevDependencies: { [id: string]: string } = {
+                gulp: "1.2.3",
+                del: "1.2.3",
+                "gulp-karma-runner": "1.2.3",
+                "browser-sync": "1.2.3",
+                "gulp-util": "1.2.3"
+            };
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
-            Chai.expect(packageJsonDevDependencies.del).to.be.equal("1.2.3");
-            Chai.expect(Object.keys(packageJsonDevDependencies).length).to.be.equal(22);
-        });
+            Chai.expect(packageJsonDevDependencies.gulp).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies.del).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["gulp-karma-runner"]).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["browser-sync"]).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["gulp-util"]).to.be.equal(undefined);
 
-        it("can be called with no unit runner and e2e runner", async () => {
-            const stub = sandbox.stub(fileSystemMock, "fileWriteBinary").resolves();
-            sandbox.stub(fileSystemMock, "directoryCreate").resolves();
-            uniteConfigurationStub.sourceLanguage = "JavaScript";
-            uniteConfigurationStub.bundler = "RequireJS";
-            uniteConfigurationStub.moduleType = "AMD";
-            uniteConfigurationStub.linter = "ESLint";
-            uniteConfigurationStub.cssPre = "Css";
-            uniteConfigurationStub.cssPost = "PostCss";
-            uniteConfigurationStub.unitTestRunner = "None";
-            uniteConfigurationStub.e2eTestRunner = "Protractor";
-            uniteConfigurationStub.server = "BrowserSync";
-            const obj = new Gulp();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-
-            Chai.expect(res).to.be.equal(0);
-
-            Chai.expect(stub.callCount).to.be.equal(31);
-
-            const packageJsonDevDependencies: { [id: string]: string } = {};
-            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
-            Chai.expect(packageJsonDevDependencies.del).to.be.equal("1.2.3");
-            Chai.expect(Object.keys(packageJsonDevDependencies).length).to.be.equal(22);
+            const exists = await fileSystemMock.directoryExists("./test/unit/temp/www/build/tasks");
+            Chai.expect(exists).to.be.equal(false);
         });
     });
 });

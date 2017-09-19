@@ -19,8 +19,6 @@ export class Jasmine extends PipelineStepBase {
     }
 
     public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        logger.info("Generating Jasmine Configuration");
-
         const isUnit = super.condition(uniteConfiguration.unitTestFramework, "Jasmine");
         const isE2E = super.condition(uniteConfiguration.e2eTestFramework, "Jasmine");
 
@@ -47,8 +45,8 @@ export class Jasmine extends PipelineStepBase {
         if (isE2E) {
             const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
             if (protractorConfiguration) {
-                protractorConfiguration.framework = "jasmine";
-                protractorConfiguration.jasmineNodeOpts = { showColors: true };
+                ObjectHelper.addRemove(protractorConfiguration, "framework", "jasmine", true);
+                ObjectHelper.addRemove(protractorConfiguration, "jasmineNodeOpts",  { showColors: true }, true);
             }
 
             const protractorScriptStart = engineVariables.getConfiguration<string[]>("Protractor.ScriptStart");
@@ -79,7 +77,7 @@ export class Jasmine extends PipelineStepBase {
 
             const webdriverIoConfiguration = engineVariables.getConfiguration<WebdriverIoConfiguration>("WebdriverIO");
             if (webdriverIoConfiguration) {
-                webdriverIoConfiguration.framework = "jasmine";
+                ObjectHelper.addRemove(webdriverIoConfiguration, "framework", "jasmine", true);
             }
         }
 
@@ -108,13 +106,13 @@ export class Jasmine extends PipelineStepBase {
 
         const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
         if (protractorConfiguration) {
-            protractorConfiguration.framework = undefined;
-            protractorConfiguration.jasmineNodeOpts = undefined;
+            ObjectHelper.addRemove(protractorConfiguration, "framework", "jasmine", false);
+            ObjectHelper.addRemove(protractorConfiguration, "jasmineNodeOpts", undefined, true);
         }
 
         const webdriverIoConfiguration = engineVariables.getConfiguration<WebdriverIoConfiguration>("WebdriverIO");
         if (webdriverIoConfiguration) {
-            webdriverIoConfiguration.framework = undefined;
+            ObjectHelper.addRemove(webdriverIoConfiguration, "framework", "jasmine", false);
         }
 
         return 0;

@@ -13,25 +13,10 @@ export class E2eTestScaffold extends PipelineStepBase {
     }
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        try {
-            logger.info("Creating E2E Test Directory", { e2eTestSrcFolder: engineVariables.www.e2eTestSrcFolder });
-            await fileSystem.directoryCreate(engineVariables.www.e2eTestSrcFolder);
-        } catch (err) {
-            logger.error("Creating E2E Test Directory failed", err, { e2eTestSrcFolder: engineVariables.www.e2eTestSrcFolder });
-            return 1;
-        }
-
-        return 0;
+        return await super.createFolder(logger, fileSystem, engineVariables.www.e2eTestFolder);
     }
 
     public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        try {
-            await fileSystem.directoryDelete(engineVariables.www.e2eTestSrcFolder);
-        } catch (err) {
-            logger.error("Deleting E2E Test Directory failed", err, { e2eTestSrcFolder: engineVariables.www.e2eTestSrcFolder });
-            return 1;
-        }
-
-        return 0;
+        return super.deleteFolder(logger, fileSystem, engineVariables.www.e2eTestFolder, engineVariables.force);
     }
 }

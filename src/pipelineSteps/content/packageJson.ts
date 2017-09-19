@@ -18,41 +18,34 @@ export class PackageJson extends PipelineStepBase {
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
-        logger.info(`Initialising ${PackageJson.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
+        return super.fileReadJson<PackageConfiguration>(logger,
+                                                        fileSystem,
+                                                        engineVariables.wwwRootFolder,
+                                                        PackageJson.FILENAME,
+                                                        engineVariables.force,
+                                                        async (obj) => {
+            this._configuration = obj;
+            this.configDefaults(uniteConfiguration, engineVariables);
 
-        if (!engineVariables.force) {
-                try {
-                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, PackageJson.FILENAME);
-                if (exists) {
-                    this._configuration = await fileSystem.fileReadJson<PackageConfiguration>(engineVariables.wwwRootFolder, PackageJson.FILENAME);
-                }
-            } catch (err) {
-                logger.error(`Reading existing ${PackageJson.FILENAME} failed`, err);
-                return 1;
-            }
-        }
-
-        this.configDefaults(uniteConfiguration, engineVariables);
-
-        return 0;
+            return 0;
+        });
     }
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        try {
-            logger.info(`Generating ${PackageJson.FILENAME} in`, { wwwFolder: engineVariables.wwwRootFolder });
+        return super.fileWriteJson(logger,
+                                   fileSystem,
+                                   engineVariables.wwwRootFolder,
+                                   PackageJson.FILENAME,
+                                   engineVariables.force,
+                                   async () => {
+                engineVariables.buildDependencies(uniteConfiguration, this._configuration.dependencies);
+                engineVariables.buildDevDependencies(this._configuration.devDependencies);
 
-            engineVariables.buildDependencies(uniteConfiguration, this._configuration.dependencies);
-            engineVariables.buildDevDependencies(this._configuration.devDependencies);
+                this._configuration.dependencies = ObjectHelper.sort(this._configuration.dependencies);
+                this._configuration.devDependencies = ObjectHelper.sort(this._configuration.devDependencies);
 
-            this._configuration.dependencies = ObjectHelper.sort(this._configuration.dependencies);
-            this._configuration.devDependencies = ObjectHelper.sort(this._configuration.devDependencies);
-
-            await fileSystem.fileWriteJson(engineVariables.wwwRootFolder, PackageJson.FILENAME, this._configuration);
-            return 0;
-        } catch (err) {
-            logger.error(`Generating ${PackageJson.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwRootFolder });
-            return 1;
-        }
+                return this._configuration;
+            });
     }
 
     private configDefaults(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void {

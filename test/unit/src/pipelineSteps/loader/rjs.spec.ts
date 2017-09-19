@@ -5,6 +5,7 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
+import { HtmlTemplateConfiguration } from "../../../../../dist/configuration/models/htmlTemplate/htmlTemplateConfiguration";
 import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../../dist/engine/engineVariables";
 import { RJS } from "../../../../../dist/pipelineSteps/loader/rjs";
@@ -29,8 +30,7 @@ describe("RJS", () => {
 
         fileSystemMock = new FileSystemMock();
         uniteConfigurationStub = new UniteConfiguration();
-        uniteConfigurationStub.moduleType = "AMD";
-        uniteConfigurationStub.unitTestRunner = "Karma";
+        uniteConfigurationStub.bundler = "RequireJS";
         uniteConfigurationStub.clientPackages = {};
 
         engineVariablesStub = new EngineVariables();
@@ -64,13 +64,40 @@ describe("RJS", () => {
     });
 
     describe("install", () => {
-        it("can be called with mismatched bundled loader and mismatched not bundler loader", async () => {
-            uniteConfigurationStub.bundler = "SystemJS";
+        it("can be called with matching bundled loader", async () => {
+            uniteConfigurationStub.bundler = "RequireJS";
             const obj = new RJS();
             const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDependencies: { [id: string]: string } = {};
+            engineVariablesStub.buildDependencies(uniteConfigurationStub, packageJsonDependencies);
+
+            Chai.expect(uniteConfigurationStub.clientPackages.requirejs.scriptIncludeMode).to.be.equal("both");
+            Chai.expect(packageJsonDependencies.requirejs).to.be.equal("1.2.3");
+        });
+
+        it("can be called with configuration", async () => {
+            uniteConfigurationStub.bundler = "RequireJS";
+            engineVariablesStub.setConfiguration("HTMLNoBundle", { body: [] });
+            const obj = new RJS();
+            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            Chai.expect(engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle").body.length).to.be.equal(7);
+        });
+    });
+
+    describe("uninstall", () => {
+        it("can be called", async () => {
+            uniteConfigurationStub.bundler = "RequireJS";
+            const obj = new RJS();
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            const packageJsonDependencies: { [id: string]: string } = {
+                requirejs: "1.2.3"
+            };
             engineVariablesStub.buildDependencies(uniteConfigurationStub, packageJsonDependencies);
 
             Chai.expect(packageJsonDependencies.requirejs).to.be.equal(undefined);

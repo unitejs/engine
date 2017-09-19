@@ -24,26 +24,19 @@ export class TypeScript extends PipelineStepBase {
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
+        return super.fileReadJson<TypeScriptConfiguration>(logger,
+                                                           fileSystem,
+                                                           engineVariables.wwwRootFolder,
+                                                           TypeScript.FILENAME,
+                                                           engineVariables.force,
+                                                           async (obj) => {
+            this._configuration = obj;
 
-        logger.info(`Initialising ${TypeScript.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
+            ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "ts", true);
+            this.configDefaults(engineVariables);
 
-        ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "ts", true);
-
-        if (!engineVariables.force) {
-            try {
-                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, TypeScript.FILENAME);
-                if (exists) {
-                    this._configuration = await fileSystem.fileReadJson<TypeScriptConfiguration>(engineVariables.wwwRootFolder, TypeScript.FILENAME);
-                }
-            } catch (err) {
-                logger.error(`Reading existing ${TypeScript.FILENAME} failed`, err);
-                return 1;
-            }
-        }
-
-        this.configDefaults(engineVariables);
-
-        return 0;
+            return 0;
+        });
     }
 
     public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
@@ -53,16 +46,13 @@ export class TypeScript extends PipelineStepBase {
     }
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        try {
-            logger.info(`Generating ${TypeScript.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
+        return super.fileWriteJson(logger,
+                                   fileSystem,
+                                   engineVariables.wwwRootFolder,
+                                   TypeScript.FILENAME,
+                                   engineVariables.force,
+                                   async() => this._configuration);
 
-            await fileSystem.fileWriteJson(engineVariables.wwwRootFolder, TypeScript.FILENAME, this._configuration);
-
-            return 0;
-        } catch (err) {
-            logger.error(`Generating ${TypeScript.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwRootFolder });
-            return 1;
-        }
     }
 
     public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
@@ -70,7 +60,7 @@ export class TypeScript extends PipelineStepBase {
 
         engineVariables.toggleDevDependency(["typescript", "unitejs-types"], false);
 
-        return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, TypeScript.FILENAME, engineVariables.force);
+        return await super.deleteFileJson(logger, fileSystem, engineVariables.wwwRootFolder, TypeScript.FILENAME, engineVariables.force);
     }
 
     private configDefaults(engineVariables: EngineVariables): void {

@@ -19,8 +19,6 @@ export class MochaChai extends PipelineStepBase {
     }
 
     public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        logger.info("Generating MochaChai Configuration");
-
         const isUnit = super.condition(uniteConfiguration.unitTestFramework, "MochaChai");
         const isE2E = super.condition(uniteConfiguration.e2eTestFramework, "MochaChai");
 
@@ -61,24 +59,25 @@ export class MochaChai extends PipelineStepBase {
         if (isE2E) {
             const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
             if (protractorConfiguration) {
-                protractorConfiguration.framework = "mocha";
+                ObjectHelper.addRemove(protractorConfiguration, "framework", "mocha", true);
 
                 const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.reportsFolder));
 
-                protractorConfiguration.mochaOpts = {
-                    reporter: "mochawesome-screenshots",
-                    reporterOptions: {
-                        reportDir: `${reportsFolder}/e2e/`,
-                        reportName: "index",
-                        takePassedScreenshot: true
-                    },
-                    timeout: 10000
-                };
+                ObjectHelper.addRemove(protractorConfiguration, "mochaOpts", {
+                                            reporter: "mochawesome-screenshots",
+                                            reporterOptions: {
+                                                reportDir: `${reportsFolder}/e2e/`,
+                                                reportName: "index",
+                                                takePassedScreenshot: true
+                                            },
+                                            timeout: 10000
+                                        },
+                                       true);
             }
 
             const webdriverIoConfiguration = engineVariables.getConfiguration<WebdriverIoConfiguration>("WebdriverIO");
             if (webdriverIoConfiguration) {
-                webdriverIoConfiguration.framework = "mocha";
+                ObjectHelper.addRemove(webdriverIoConfiguration, "framework", "mocha", true);
             }
         }
 
@@ -109,13 +108,13 @@ export class MochaChai extends PipelineStepBase {
 
         const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
         if (protractorConfiguration) {
-            protractorConfiguration.framework = undefined;
-            protractorConfiguration.mochaOpts = undefined;
+            ObjectHelper.addRemove(protractorConfiguration, "framework", "mocha", false);
+            ObjectHelper.addRemove(protractorConfiguration, "mochaOpts", undefined, false);
         }
 
         const webdriverIoConfiguration = engineVariables.getConfiguration<WebdriverIoConfiguration>("WebdriverIO");
         if (webdriverIoConfiguration) {
-            webdriverIoConfiguration.framework = undefined;
+            ObjectHelper.addRemove(webdriverIoConfiguration, "framework", "mocha", false);
         }
 
         return 0;

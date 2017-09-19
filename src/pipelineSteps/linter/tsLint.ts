@@ -26,24 +26,13 @@ export class TsLint extends PipelineStepBase {
             logger.error("You can only use TSLint when the source language is TypeScript");
             return 1;
         }
+        return super.fileReadJson<TsLintConfiguration>(logger, fileSystem, engineVariables.wwwRootFolder, TsLint.FILENAME, engineVariables.force, async (obj) => {
+            this._configuration = obj;
 
-        logger.info(`Initialising ${TsLint.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
+            this.configDefaults(engineVariables);
 
-        if (!engineVariables.force) {
-            try {
-                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, TsLint.FILENAME);
-                if (exists) {
-                    this._configuration = await fileSystem.fileReadJson<TsLintConfiguration>(engineVariables.wwwRootFolder, TsLint.FILENAME);
-                }
-            } catch (err) {
-                logger.error(`Reading existing ${TsLint.FILENAME} failed`, err);
-                return 1;
-            }
-        }
-
-        this.configDefaults(engineVariables);
-
-        return 0;
+            return 0;
+        });
     }
 
     public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
@@ -53,22 +42,19 @@ export class TsLint extends PipelineStepBase {
     }
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        try {
-            logger.info(`Generating ${TsLint.FILENAME}`);
+        return super.fileWriteJson(logger,
+                                   fileSystem,
+                                   engineVariables.wwwRootFolder,
+                                   TsLint.FILENAME,
+                                   engineVariables.force,
+                                   async() => this._configuration);
 
-            await fileSystem.fileWriteJson(engineVariables.wwwRootFolder, TsLint.FILENAME, this._configuration);
-
-            return 0;
-        } catch (err) {
-            logger.error(`Generating ${TsLint.FILENAME} failed`, err);
-            return 1;
-        }
     }
 
     public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["tslint"], false);
 
-        return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, TsLint.FILENAME, engineVariables.force);
+        return await super.deleteFileJson(logger, fileSystem, engineVariables.wwwRootFolder, TsLint.FILENAME, engineVariables.force);
     }
 
     private configDefaults(engineVariables: EngineVariables): void {

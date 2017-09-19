@@ -11,16 +11,14 @@ export class UniteConfigurationJson extends PipelineStepBase {
     private static FILENAME: string = "unite.json";
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        try {
-            logger.info(`Generating ${UniteConfigurationJson.FILENAME} in`, { rootFolder: engineVariables.rootFolder });
-
-            uniteConfiguration.uniteVersion = engineVariables.enginePackageJson.version;
-
-            await fileSystem.fileWriteJson(engineVariables.rootFolder, UniteConfigurationJson.FILENAME, uniteConfiguration);
-            return 0;
-        } catch (err) {
-            logger.error(`Generating ${UniteConfigurationJson.FILENAME} failed`, err, { rootFolder: engineVariables.rootFolder });
-            return 1;
-        }
+        return super.fileWriteJson(logger,
+                                   fileSystem,
+                                   engineVariables.rootFolder,
+                                   UniteConfigurationJson.FILENAME,
+                                   engineVariables.force,
+                                   async() => {
+                                        uniteConfiguration.uniteVersion = engineVariables.enginePackageJson.version;
+                                        return uniteConfiguration;
+                                   });
     }
 }

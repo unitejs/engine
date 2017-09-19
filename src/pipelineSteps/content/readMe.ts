@@ -11,29 +11,21 @@ export class ReadMe extends PipelineStepBase {
     private static FILENAME: string = "README.md";
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        try {
-            const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, ReadMe.FILENAME);
+        return super.fileWriteLines(logger,
+                                    fileSystem,
+                                    engineVariables.wwwRootFolder,
+                                    ReadMe.FILENAME,
+                                    engineVariables.force,
+                                    async () => {
+            const lines = await fileSystem.fileReadLines(engineVariables.engineAssetsFolder, ReadMe.FILENAME);
 
-            if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker" || engineVariables.force) {
-                logger.info(`Generating ${ReadMe.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder});
+            lines.unshift("");
+            lines.unshift(`# ${uniteConfiguration.title}`);
 
-                const lines = await fileSystem.fileReadLines(engineVariables.engineAssetsFolder, ReadMe.FILENAME);
+            lines.push("---");
+            lines.push(super.wrapGeneratedMarker("*", "* :zap:"));
 
-                lines.unshift("");
-                lines.unshift(`# ${uniteConfiguration.title}`);
-
-                lines.push("---");
-                lines.push(super.wrapGeneratedMarker("*", "* :zap:"));
-
-                await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, ReadMe.FILENAME, lines);
-            } else {
-                logger.info(`Skipping ${ReadMe.FILENAME} as it has no generated marker`);
-            }
-
-            return 0;
-        } catch (err) {
-            logger.error(`Generating ${ReadMe.FILENAME} failed`, err);
-            return 1;
-        }
+            return lines;
+        });
     }
 }

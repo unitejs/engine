@@ -385,10 +385,16 @@ describe("Engine", () => {
 
         it("can fail when pipeline module does not exist", async () => {
             uniteJson = undefined;
+            let counter = 0;
             const stub = fileSystemStub.directoryGetFiles = sandbox.stub();
             stub.callsFake(async (dir) => {
                 if (dir.indexOf("linter") >= 0) {
-                    return Promise.resolve([]);
+                    if (counter > 0) {
+                        return Promise.resolve([]);
+                    } else {
+                        counter++;
+                        return new ReadOnlyFileSystemMock().directoryGetFiles(dir);
+                    }
                 } else {
                     return new ReadOnlyFileSystemMock().directoryGetFiles(dir);
                 }

@@ -44,20 +44,14 @@ describe("AppScaffold", () => {
         Chai.should().exist(obj);
     });
 
-    describe("install", () => {
-        it("can throw an exception", async () => {
-            sandbox.stub(fileSystemMock, "directoryCreate").rejects("error");
+    describe("finalise", () => {
+        it("can be called", async () => {
             const obj = new AppScaffold();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(1);
-            Chai.expect(loggerErrorSpy.args[0][0]).contain("failed");
-        });
-
-        it("can succeed", async () => {
-            const obj = new AppScaffold();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(loggerInfoSpy.args[0][0]).contain("Creating");
+
+            const exists = await fileSystemMock.directoryExists("./test/unit/temp/www/src");
+            Chai.expect(exists).to.be.equal(true);
         });
     });
 });

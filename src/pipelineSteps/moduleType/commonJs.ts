@@ -16,8 +16,6 @@ export class CommonJs extends PipelineStepBase {
     }
 
     public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        logger.info("Generating Module Type CommonJS");
-
         uniteConfiguration.srcDistReplace = "(require)*?(..\/src\/)";
         uniteConfiguration.srcDistReplaceWith = "../dist/";
 

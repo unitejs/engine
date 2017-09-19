@@ -8,6 +8,8 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class Stylus extends PipelineStepBase {
+    private static FOLDER: string = "stylus";
+
     public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
         return super.condition(uniteConfiguration.cssPre, "Stylus");
     }
@@ -17,7 +19,7 @@ export class Stylus extends PipelineStepBase {
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
         uniteConfiguration.styleExtension = "styl";
-        engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "stylus");
+        engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, Stylus.FOLDER);
         return 0;
     }
 
@@ -28,31 +30,12 @@ export class Stylus extends PipelineStepBase {
     }
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        try {
-            logger.info("Creating Stylus folder", { cssSrcFolder: engineVariables.www.cssSrcFolder });
-
-            await fileSystem.directoryCreate(engineVariables.www.cssSrcFolder);
-
-            logger.info("Creating cssDist folder", { cssSrcFolder: engineVariables.www.cssDistFolder });
-
-            await fileSystem.directoryCreate(engineVariables.www.cssDistFolder);
-        } catch (err) {
-            logger.error("Generating Stylus folder failed", err, { cssSrcFolder: engineVariables.www.cssSrcFolder });
-            return 1;
-        }
-
-        return 0;
+        return await super.createFolder(logger, fileSystem, engineVariables.www.cssSrcFolder);
     }
 
     public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["stylus"], false);
 
-        try {
-            await fileSystem.directoryDelete(engineVariables.www.cssSrcFolder);
-        } catch (err) {
-            logger.error("Deleting Stylus folder failed", err, { cssSrcFolder: engineVariables.www.cssSrcFolder });
-            return 1;
-        }
-
-        return 0;
-    }}
+        return await super.deleteFolder(logger, fileSystem, fileSystem.pathCombine(engineVariables.wwwRootFolder, Stylus.FOLDER), engineVariables.force);
+    }
+}

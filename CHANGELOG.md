@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.0.2
+## v1.1.0
 
 * Improved error handling in gulp tasks
 * Added watches on source when running gulp serve task
@@ -15,6 +15,10 @@
 * Angular now supports templateUrl and styleUrls in components
 * Change pipeline step to have more phases and remove influences for ordering
 * Fixed SystemJS unite-bootstrap preloadModules
+* Fixed running configure from directory with no parameters successfully updates
+* Change pipeline steps enumerated from directories instead of fixed list
+* Change folder deletion looks for files without generated markers
+* Improved pipeline exception handling
 
 ## v1.0.1
 

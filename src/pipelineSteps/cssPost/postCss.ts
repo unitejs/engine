@@ -19,23 +19,17 @@ export class PostCss extends PipelineStepBase {
     }
 
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        logger.info(`Initialising ${PostCss.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
+        return super.fileReadJson<PostCssConfiguration>(logger,
+                                                        fileSystem,
+                                                        engineVariables.wwwRootFolder,
+                                                        PostCss.FILENAME,
+                                                        engineVariables.force,
+                                                        async (obj) => {
+            this._configuration = obj;
+            this.configDefaults(engineVariables);
 
-        if (!engineVariables.force) {
-            try {
-                const exists = await fileSystem.fileExists(engineVariables.wwwRootFolder, PostCss.FILENAME);
-                if (exists) {
-                    this._configuration = await fileSystem.fileReadJson<PostCssConfiguration>(engineVariables.wwwRootFolder, PostCss.FILENAME);
-                }
-            } catch (err) {
-                logger.error(`Reading existing ${PostCss.FILENAME} failed`, err);
-                return 1;
-            }
-        }
-
-        this.configDefaults(engineVariables);
-
-        return 0;
+            return 0;
+        });
     }
 
     public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
@@ -44,21 +38,18 @@ export class PostCss extends PipelineStepBase {
     }
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        try {
-            logger.info(`Generating ${PostCss.FILENAME}`, { wwwFolder: engineVariables.wwwRootFolder });
-
-            await fileSystem.fileWriteJson(engineVariables.wwwRootFolder, ".postcssrc.json", this._configuration);
-            return 0;
-        } catch (err) {
-            logger.error(`Generating ${PostCss.FILENAME} failed`, err, { wwwFolder: engineVariables.wwwRootFolder });
-            return 1;
-        }
+        return super.fileWriteJson(logger,
+                                   fileSystem,
+                                   engineVariables.wwwRootFolder,
+                                   PostCss.FILENAME,
+                                   engineVariables.force,
+                                   async() => this._configuration);
     }
 
     public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["postcss", "postcss-import", "autoprefixer", "cssnano"], false);
 
-        return await super.deleteFile(logger, fileSystem, engineVariables.wwwRootFolder, PostCss.FILENAME, engineVariables.force);
+        return await super.deleteFileJson(logger, fileSystem, engineVariables.wwwRootFolder, PostCss.FILENAME, engineVariables.force);
     }
 
     private configDefaults(engineVariables: EngineVariables): void {

@@ -13,7 +13,6 @@ export class BrowserSync extends PipelineStepBase {
     }
 
     public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        logger.info("Generating BrowserSync Configuration");
         engineVariables.toggleDevDependency(["browser-sync"], true);
 
         return 0;

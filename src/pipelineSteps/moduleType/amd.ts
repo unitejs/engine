@@ -16,8 +16,6 @@ export class Amd extends PipelineStepBase {
     }
 
     public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        logger.info("Generating Module Type AMD", {});
-
         uniteConfiguration.srcDistReplace = "(define)*?(..\/src\/)";
         uniteConfiguration.srcDistReplaceWith = "../dist/";
 

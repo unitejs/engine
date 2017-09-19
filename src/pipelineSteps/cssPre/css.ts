@@ -8,6 +8,8 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class Css extends PipelineStepBase {
+    private static FOLDER: string = "cssSrc";
+
     public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
         return super.condition(uniteConfiguration.cssPre, "Css");
     }
@@ -17,35 +19,15 @@ export class Css extends PipelineStepBase {
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
         uniteConfiguration.styleExtension = "css";
-        engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "cssSrc");
+        engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, Css.FOLDER);
         return 0;
     }
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        try {
-            logger.info("Creating cssSrc folder", { cssSrcFolder: engineVariables.www.cssSrcFolder });
-
-            await fileSystem.directoryCreate(engineVariables.www.cssSrcFolder);
-
-            logger.info("Creating cssDist folder", { cssSrcFolder: engineVariables.www.cssDistFolder });
-
-            await fileSystem.directoryCreate(engineVariables.www.cssDistFolder);
-
-            return 0;
-        } catch (err) {
-            logger.error("Generating css folder failed", err, { cssSrcFolder: engineVariables.www.cssSrcFolder });
-            return 1;
-        }
+        return await super.createFolder(logger, fileSystem, engineVariables.www.cssSrcFolder);
     }
 
     public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        try {
-            await fileSystem.directoryDelete(engineVariables.www.cssSrcFolder);
-        } catch (err) {
-            logger.error("Deleting css folder failed", err, { cssSrcFolder: engineVariables.www.cssSrcFolder });
-            return 1;
-        }
-
-        return 0;
+        return await super.deleteFolder(logger, fileSystem, fileSystem.pathCombine(engineVariables.wwwRootFolder, Css.FOLDER), engineVariables.force);
     }
 }

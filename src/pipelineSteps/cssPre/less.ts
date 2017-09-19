@@ -8,6 +8,8 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class Less extends PipelineStepBase {
+    private static FOLDER: string = "less";
+
     public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | null {
         return super.condition(uniteConfiguration.cssPre, "Less");
     }
@@ -17,7 +19,7 @@ export class Less extends PipelineStepBase {
                             uniteConfiguration: UniteConfiguration,
                             engineVariables: EngineVariables): Promise<number> {
         uniteConfiguration.styleExtension = "less";
-        engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "less");
+        engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, Less.FOLDER);
         return 0;
     }
 
@@ -28,32 +30,12 @@ export class Less extends PipelineStepBase {
     }
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        try {
-            logger.info("Creating Less folder", { cssSrcFolder: engineVariables.www.cssSrcFolder });
-
-            await fileSystem.directoryCreate(engineVariables.www.cssSrcFolder);
-
-            logger.info("Creating cssDist folder", { cssSrcFolder: engineVariables.www.cssDistFolder });
-
-            await fileSystem.directoryCreate(engineVariables.www.cssDistFolder);
-        } catch (err) {
-            logger.error("Generating Less folder failed", err, { cssSrcFolder: engineVariables.www.cssSrcFolder });
-            return 1;
-        }
-
-        return 0;
+        return await super.createFolder(logger, fileSystem, engineVariables.www.cssSrcFolder);
     }
 
     public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         engineVariables.toggleDevDependency(["less"], false);
 
-        try {
-            await fileSystem.directoryDelete(engineVariables.www.cssSrcFolder);
-        } catch (err) {
-            logger.error("Deleting Less folder failed", err, { cssSrcFolder: engineVariables.www.cssSrcFolder });
-            return 1;
-        }
-
-        return 0;
+        return await super.deleteFolder(logger, fileSystem, fileSystem.pathCombine(engineVariables.wwwRootFolder, Less.FOLDER), engineVariables.force);
     }
 }

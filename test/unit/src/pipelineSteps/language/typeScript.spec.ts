@@ -62,92 +62,69 @@ describe("TypeScript", () => {
         });
     });
 
-    describe("initialise", () => {
-        it("can fail when exception is thrown", async () => {
-            sandbox.stub(fileSystemMock, "fileExists").throws("error");
-
-            const obj = new TypeScript();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(1);
-            Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
-        });
-
-        it("can not setup the engine configuration if not TypeScript", async () => {
-            const obj = new TypeScript();
-            uniteConfigurationStub.sourceLanguage = "JavaScript";
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration("TypeScript")).to.be.equal(undefined);
-        });
-
-        it("can setup the engine configuration", async () => {
-            const obj = new TypeScript();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration("TypeScript")).not.to.be.deep.equal(undefined);
-        });
-
-        it("can setup the engine configuration from existing", async () => {
+    describe("intitialise", () => {
+        it("can succeed when file does exist", async () => {
             fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
-            fileSystemMock.fileReadJson = sandbox.stub().resolves({ exclude: [ "my-exclude"] });
+            fileSystemMock.fileReadJson = sandbox.stub().resolves({ compilerOptions: { target: "es6" } });
             const obj = new TypeScript();
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").exclude).to.be.deep.equal(["my-exclude"]);
+            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.target).to.be.equal("es6");
         });
 
-        it("can setup the engine configuration from existing not force", async () => {
-            fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
-            fileSystemMock.fileReadJson = sandbox.stub().resolves({ exclude: [ "my-exclude"] });
-            engineVariablesStub.force = true;
+        it("can succeed when file does not exist", async () => {
             const obj = new TypeScript();
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").exclude).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.target).to.be.equal("es5");
         });
-
     });
 
     describe("install", () => {
-        it("can fail if an exception is thrown", async () => {
-            sandbox.stub(fileSystemMock, "fileWriteJson").throws("error");
+        it("can be called", async () => {
             const obj = new TypeScript();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(1);
-            Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
-        });
-
-        it("can delete file if not TypeScript", async () => {
-            const stub = sandbox.stub(fileSystemMock, "fileExists").returns(false);
-            const obj = new TypeScript();
-            uniteConfigurationStub.sourceLanguage = "JavaScript";
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(stub.called).to.be.equal(true);
-
-            const packageJsonDevDependencies: { [id: string]: string } = {};
-            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
-
-            Chai.expect(packageJsonDevDependencies.typescript).to.be.equal(undefined);
-        });
-
-        it("can write file", async () => {
-            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
-
-            const obj = new TypeScript();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(loggerInfoSpy.args[1][0]).contains("Generating");
-
-            const json = await fileSystemMock.fileReadJson<TypeScriptConfiguration>("./test/unit/temp/www/", "tsconfig.json");
-            Chai.expect(json.compilerOptions.lib).to.be.deep.equal(["dom", "es2015"]);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
 
             Chai.expect(packageJsonDevDependencies.typescript).to.be.equal("1.2.3");
+            Chai.expect(packageJsonDevDependencies["unitejs-types"]).to.be.equal("1.2.3");
+        });
+    });
+
+    describe("finalise", () => {
+        it("can succeed writing", async () => {
+            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
+
+            const obj = new TypeScript();
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            const exists = await fileSystemMock.fileExists("./test/unit/temp/www/", "tsconfig.json");
+            Chai.expect(exists).to.be.equal(true);
+        });
+    });
+
+    describe("uninstall", () => {
+        it("can be called", async () => {
+            const obj = new TypeScript();
+            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(0);
+
+            const packageJsonDevDependencies: { [id: string]: string } = {
+                typescript: "1.2.3",
+                "unitejs-types": "1.2.3"
+            };
+            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
+
+            Chai.expect(packageJsonDevDependencies.tslint).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["unitejs-types"]).to.be.equal(undefined);
+
+            const exists = await fileSystemMock.fileExists("./test/unit/temp/www/", "tsconfig.json");
+            Chai.expect(exists).to.be.equal(false);
         });
     });
 });

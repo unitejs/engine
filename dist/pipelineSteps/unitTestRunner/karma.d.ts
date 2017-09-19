@@ -12,5 +12,5 @@ export declare class Karma extends PipelineStepBase {
     finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     private configDefaults(fileSystem, uniteConfiguration, engineVariables);
-    private generateConfig(fileSystem, uniteConfiguration, engineVariables, lines);
+    private generateConfig();
 }

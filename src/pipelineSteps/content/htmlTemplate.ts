@@ -53,54 +53,45 @@ export class HtmlTemplate extends PipelineStepBase {
                                 filename: string,
                                 engineVariablesHtml: HtmlTemplateConfiguration,
                                 isBundled: boolean): Promise<number> {
-        try {
-            const hasGeneratedMarker = await super.fileHasGeneratedMarker(fileSystem, engineVariables.wwwRootFolder, filename);
+        return super.fileWriteLines(logger,
+                                    fileSystem,
+                                    engineVariables.wwwRootFolder,
+                                    filename,
+                                    engineVariables.force,
+                                    async() => {
+            const lines: string[] = [];
+            let indent = 0;
+            this.addLine(indent, lines, "<!doctype html>");
+            this.addLine(indent, lines, "<html lang=\"en\">");
+            indent++;
+            this.addLine(indent, lines, "<head>");
+            indent++;
+            this.addLine(indent, lines, "<meta charset=\"utf-8\"/>");
+            this.addLine(indent, lines, "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\">");
+            this.addLine(indent, lines, `<title>${uniteConfiguration.title}</title>`);
+            this.addLine(indent, lines, "<link rel=\"stylesheet\" href=\"./css/style.css{CACHEBUST}\">");
+            lines.push("{THEME}");
+            lines.push("{SCRIPTINCLUDE}");
 
-            if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker" || engineVariables.force) {
-                logger.info(`Generating ${filename}`, { wwwFolder: engineVariables.wwwRootFolder });
+            engineVariablesHtml.head.forEach(head => {
+                this.addLine(indent, lines, head);
+            });
 
-                const lines: string[] = [];
-                let indent = 0;
-                this.addLine(indent, lines, "<!doctype html>");
-                this.addLine(indent, lines, "<html lang=\"en\">");
-                indent++;
-                this.addLine(indent, lines, "<head>");
-                indent++;
-                this.addLine(indent, lines, "<meta charset=\"utf-8\"/>");
-                this.addLine(indent, lines, "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\">");
-                this.addLine(indent, lines, `<title>${uniteConfiguration.title}</title>`);
-                this.addLine(indent, lines, "<link rel=\"stylesheet\" href=\"./css/style.css{CACHEBUST}\">");
-                lines.push("{THEME}");
-                lines.push("{SCRIPTINCLUDE}");
-
-                engineVariablesHtml.head.forEach(head => {
-                    this.addLine(indent, lines, head);
-                });
-
-                indent--;
-                this.addLine(indent, lines, "</head>");
-                this.addLine(indent, lines, "<body>");
-                indent++;
-                this.addLine(indent, lines, "<div id=\"root\"></div>");
-                engineVariablesHtml.body.forEach(body => {
-                    this.addLine(indent, lines, body);
-                });
-                indent--;
-                this.addLine(indent, lines, "</body>");
-                indent--;
-                this.addLine(indent, lines, "</html>");
-                this.addLine(indent, lines, super.wrapGeneratedMarker("<!-- ", " -->"));
-
-                await fileSystem.fileWriteLines(engineVariables.wwwRootFolder, filename, lines);
-            } else {
-                logger.info(`Skipping ${filename} as it has no generated marker`, { wwwFolder: engineVariables.wwwRootFolder });
-            }
-
-            return 0;
-        } catch (err) {
-            logger.error(`Generating ${filename} failed`, err, { wwwFolder: engineVariables.wwwRootFolder });
-            return 1;
-        }
+            indent--;
+            this.addLine(indent, lines, "</head>");
+            this.addLine(indent, lines, "<body>");
+            indent++;
+            this.addLine(indent, lines, "<div id=\"root\"></div>");
+            engineVariablesHtml.body.forEach(body => {
+                this.addLine(indent, lines, body);
+            });
+            indent--;
+            this.addLine(indent, lines, "</body>");
+            indent--;
+            this.addLine(indent, lines, "</html>");
+            this.addLine(indent, lines, super.wrapGeneratedMarker("<!-- ", " -->"));
+            return lines;
+        });
     }
 
     private addLine(indent: number, lines: string[], content: string): void {
