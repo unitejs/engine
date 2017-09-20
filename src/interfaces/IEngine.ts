@@ -25,7 +25,8 @@ export interface IEngine {
               cssPost: string | undefined | null,
               packageManager: string | undefined | null,
               applicationFramework: string | undefined | null,
-              force: boolean | undefined | null,
+              profile: string | undefined | null,
+              force: boolean | undefined,
               outputDirectory: string | undefined | null): Promise<number>;
 
     clientPackage(operation: string | undefined | null,
@@ -42,6 +43,7 @@ export interface IEngine {
                   map: string | undefined | null,
                   loaders: string | undefined | null,
                   noScript: boolean | undefined,
+                  profile: string | undefined | null,
                   packageManager: string | undefined | null,
                   outputDirectory: string | undefined | null): Promise<number>;
 

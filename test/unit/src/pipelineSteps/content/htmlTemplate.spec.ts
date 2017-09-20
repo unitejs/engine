@@ -84,7 +84,7 @@ describe("HtmlTemplate", () => {
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(loggerInfoSpy.args[0][0]).contains("Generating");
+            Chai.expect(loggerInfoSpy.args[0][0]).contains("Writing");
 
             const lines = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "index-no-bundle.html");
             Chai.expect(lines.length).to.be.equal(16);
@@ -103,7 +103,7 @@ describe("HtmlTemplate", () => {
 
             const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(loggerInfoSpy.args[0][0]).contains("Generating");
+            Chai.expect(loggerInfoSpy.args[0][0]).contains("Writing");
 
             const lines = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "index-no-bundle.html");
             Chai.expect(lines.length).to.be.equal(18);

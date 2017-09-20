@@ -134,7 +134,7 @@ describe("PackageJson", () => {
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(loggerInfoSpy.args[1][0]).contains("Generating");
+            Chai.expect(loggerInfoSpy.args[1][0]).contains("Writing");
 
             const json = await fileSystemMock.fileReadJson<PackageConfiguration>("./test/unit/temp/www/", "package.json");
             Chai.expect(json.name).to.be.equal("fred");

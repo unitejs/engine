@@ -4,6 +4,7 @@
 import { IncludeMode } from "./includeMode";
 import { ScriptIncludeMode } from "./scriptIncludeMode";
 export declare class UniteClientPackage {
+    name: string;
     version: string;
     preload: boolean;
     main: string;
@@ -22,4 +23,5 @@ export declare class UniteClientPackage {
     };
     scriptIncludeMode: ScriptIncludeMode;
     isModuleLoader: boolean;
+    noScript: boolean;
 }

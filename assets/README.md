@@ -1,4 +1,3 @@
-
 The main contents of the application are in the www folder, it is created this way to allow for platform packaged versions at a higher level.
 
 The following pre-requisities are needed

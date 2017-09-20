@@ -1,6 +1,7 @@
 /**
  * Main engine
  */
+import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { ParameterValidation } from "unitejs-framework/dist/helpers/parameterValidation";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
@@ -26,6 +27,7 @@ export class Engine implements IEngine {
     private _fileSystem: IFileSystem;
     private _engineRootFolder: string;
     private _engineAssetsFolder: string;
+    private _profilesFolder: string;
     private _pipelineStepFolder: string;
     private _enginePackageJson: PackageConfiguration;
 
@@ -37,6 +39,7 @@ export class Engine implements IEngine {
             this._fileSystem = fileSystem;
             this._engineRootFolder = this._fileSystem.pathCombine(__dirname, "../../");
             this._engineAssetsFolder = this._fileSystem.pathCombine(this._engineRootFolder, "/assets/");
+            this._profilesFolder = this._fileSystem.pathCombine(this._engineAssetsFolder, "/profiles/");
 
             this._enginePackageJson = await this._fileSystem.fileReadJson<PackageConfiguration>(this._engineRootFolder, "package.json");
 
@@ -51,7 +54,7 @@ export class Engine implements IEngine {
         }
     }
 
-    public version() : string {
+    public version(): string {
         return this._enginePackageJson ? this._enginePackageJson.version : "unknown";
     }
 
@@ -71,11 +74,13 @@ export class Engine implements IEngine {
                            cssPost: string | undefined | null,
                            packageManager: string | undefined | null,
                            applicationFramework: string | undefined | null,
-                           force: boolean | undefined | null,
+                           profile: string | undefined | null,
+                           force: boolean | undefined,
                            outputDirectory: string | undefined | null): Promise<number> {
         const newOutputDirectory = this.cleanupOutputDirectory(outputDirectory);
         const newForce = force === undefined || force === null ? false : force;
-        let uniteConfiguration = await this.loadConfiguration(newOutputDirectory, !!force);
+
+        let uniteConfiguration = await this.loadConfiguration(newOutputDirectory, "configure", profile, !!force);
         if (uniteConfiguration === undefined) {
             uniteConfiguration = new UniteConfiguration();
         } else if (uniteConfiguration === null) {
@@ -111,6 +116,10 @@ export class Engine implements IEngine {
         }
 
         uniteConfiguration.platforms = uniteConfiguration.platforms || { Web: {} };
+
+        if (profile) {
+            this._logger.info("profile", { profile });
+        }
 
         if (!ParameterValidation.checkPackageName(this._logger, "packageName", uniteConfiguration.packageName)) {
             return 1;
@@ -217,10 +226,11 @@ export class Engine implements IEngine {
                                map: string | undefined | null,
                                loaders: string | undefined | null,
                                noScript: boolean | undefined,
+                               profile: string | undefined | null,
                                packageManager: string | undefined | null,
                                outputDirectory: string | undefined | null): Promise<number> {
         const newOutputDirectory = this.cleanupOutputDirectory(outputDirectory);
-        const uniteConfiguration = await this.loadConfiguration(newOutputDirectory, false);
+        const uniteConfiguration = await this.loadConfiguration(newOutputDirectory, undefined, undefined, false);
 
         if (!uniteConfiguration) {
             this._logger.error("There is no unite.json to configure.");
@@ -233,9 +243,6 @@ export class Engine implements IEngine {
         if (!ParameterValidation.checkOneOf<ModuleOperation>(this._logger, "operation", operation, ["add", "remove"])) {
             return 1;
         }
-        if (!ParameterValidation.notEmpty(this._logger, "packageName", packageName)) {
-            return 1;
-        }
 
         if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("packageManager", uniteConfiguration.packageManager))) {
             return 1;
@@ -243,7 +250,7 @@ export class Engine implements IEngine {
 
         if (operation === "add") {
             return await this.clientPackageAdd(packageName, version, preload, includeMode, scriptIncludeMode,
-                                               main, mainMinified, testingAdditions, isPackage, assets, map, loaders, noScript,
+                                               main, mainMinified, testingAdditions, isPackage, assets, map, loaders, noScript, profile,
                                                newOutputDirectory, uniteConfiguration);
         } else {
             return await this.clientPackageRemove(packageName, newOutputDirectory, uniteConfiguration);
@@ -257,7 +264,7 @@ export class Engine implements IEngine {
                                     sourcemaps: boolean | undefined,
                                     outputDirectory: string | undefined | null): Promise<number> {
         const newOutputDirectory = this.cleanupOutputDirectory(outputDirectory);
-        const uniteConfiguration = await this.loadConfiguration(newOutputDirectory, false);
+        const uniteConfiguration = await this.loadConfiguration(newOutputDirectory, undefined, undefined, false);
 
         if (!uniteConfiguration) {
             this._logger.error("There is no unite.json to configure.");
@@ -286,7 +293,7 @@ export class Engine implements IEngine {
                           platformName: string | undefined | null,
                           outputDirectory: string | undefined | null): Promise<number> {
         const newOutputDirectory = this.cleanupOutputDirectory(outputDirectory);
-        const uniteConfiguration = await this.loadConfiguration(newOutputDirectory, false);
+        const uniteConfiguration = await this.loadConfiguration(newOutputDirectory, undefined, undefined, false);
 
         if (!uniteConfiguration) {
             this._logger.error("There is no unite.json to configure.");
@@ -330,16 +337,18 @@ export class Engine implements IEngine {
         return outputDir;
     }
 
-    private async loadConfiguration(outputDirectory: string, force: boolean): Promise<UniteConfiguration | undefined | null> {
-        let uniteConfiguration: UniteConfiguration | undefined | null;
+    private async loadConfiguration(outputDirectory: string, profileSource: string, profile: string | undefined | null, force: boolean): Promise<UniteConfiguration | undefined | null> {
+        let uniteConfiguration: UniteConfiguration | undefined | null = await this.loadProfile<UniteConfiguration>(profileSource, profile);
 
-        if (!force) {
+        if (!force && uniteConfiguration !== null) {
             // check if there is a unite.json we can load for default options
             try {
                 const exists = await this._fileSystem.fileExists(outputDirectory, "unite.json");
 
                 if (exists) {
-                    uniteConfiguration = await this._fileSystem.fileReadJson<UniteConfiguration>(outputDirectory, "unite.json");
+                    const existing = await this._fileSystem.fileReadJson<UniteConfiguration>(outputDirectory, "unite.json");
+
+                    uniteConfiguration = ObjectHelper.merge(uniteConfiguration, existing);
                 }
             } catch (e) {
                 this._logger.error("Reading existing unite.json", e);
@@ -348,6 +357,34 @@ export class Engine implements IEngine {
         }
 
         return uniteConfiguration;
+    }
+
+    private async loadProfile<T>(profileSource: string, profile: string | undefined | null): Promise<T | undefined | null> {
+        if (profileSource !== undefined && profileSource !== null && profile !== undefined && profile !== null) {
+            const configFile = `${profileSource}.json`;
+            try {
+
+                const exists = await this._fileSystem.fileExists(this._profilesFolder, configFile);
+                if (exists) {
+                    const profiles = await this._fileSystem.fileReadJson<{ [id: string]: T }>(this._profilesFolder, configFile);
+
+                    const profileLower = profile.toLowerCase();
+                    const keys = Object.keys(profiles);
+                    for (let i = 0; i < keys.length; i++) {
+                        if (profileLower === keys[i].toLowerCase()) {
+                            return profiles[keys[i]];
+                        }
+                    }
+                    this._logger.error(`Profile does not exist '${profile}'`);
+                    return null;
+                }
+            } catch (err) {
+                this._logger.error(`Reading profile file '${configFile}' failed`, err);
+                return null;
+            }
+        }
+
+        return undefined;
     }
 
     private async configureRun(outputDirectory: string, uniteConfiguration: UniteConfiguration, license: ISpdxLicense, force: boolean): Promise<number> {
@@ -376,7 +413,7 @@ export class Engine implements IEngine {
                                    version: string,
                                    preload: boolean | undefined,
                                    includeMode: IncludeMode,
-                                   scriptIncludeMode: ScriptIncludeMode | undefined,
+                                   scriptIncludeMode: ScriptIncludeMode | undefined | null,
                                    main: string | undefined | null,
                                    mainMinified: string | undefined | null,
                                    testingAdditions: string | undefined | null,
@@ -385,84 +422,122 @@ export class Engine implements IEngine {
                                    map: string | undefined | null,
                                    loaders: string | undefined | null,
                                    noScript: boolean | undefined,
+                                   profile: string | undefined | null,
                                    outputDirectory: string,
                                    uniteConfiguration: UniteConfiguration): Promise<number> {
-        const newIncludeMode = includeMode === undefined || includeMode === null || includeMode.length === 0 ? "both" : includeMode;
-        const newScriptIncludeMode = scriptIncludeMode === undefined || scriptIncludeMode === null || scriptIncludeMode.length === 0 ? "none" : scriptIncludeMode;
-        const newPreload = preload === undefined ? false : preload;
-        const newIsPackage = isPackage === undefined ? false : isPackage;
-
-        if (version) {
-            this._logger.info("version", { version });
+        let clientPackage = await this.loadProfile<UniteClientPackage>("clientPackage", profile);
+        if (clientPackage === undefined) {
+            clientPackage = new UniteClientPackage();
         }
 
-        this._logger.info("preload", { newPreload });
+        clientPackage.name = packageName || clientPackage.name;
+        clientPackage.version = version || clientPackage.version;
+        clientPackage.preload = preload || clientPackage.preload;
+        clientPackage.includeMode = includeMode || clientPackage.includeMode;
+        clientPackage.scriptIncludeMode = scriptIncludeMode || clientPackage.scriptIncludeMode;
+        clientPackage.main = main || clientPackage.main;
+        clientPackage.mainMinified = mainMinified || clientPackage.mainMinified;
+        clientPackage.isPackage = isPackage || clientPackage.isPackage;
+        clientPackage.noScript = noScript || clientPackage.noScript;
+        clientPackage.assets = assets || clientPackage.assets;
 
-        if (!ParameterValidation.checkOneOf<IncludeMode>(this._logger, "includeMode", newIncludeMode, ["app", "test", "both"])) {
+        try {
+            clientPackage.testingAdditions = this.mapParser(testingAdditions) || clientPackage.testingAdditions;
+            clientPackage.map = this.mapParser(map) || clientPackage.map;
+            clientPackage.loaders = this.mapParser(loaders) || clientPackage.loaders;
+        } catch (err) {
+            this._logger.error("Input failure", err);
             return 1;
         }
 
-        if (!ParameterValidation.checkOneOf<ScriptIncludeMode>(this._logger, "scriptIncludeMode", newScriptIncludeMode, ["none", "bundled", "notBundled", "both"])) {
+        clientPackage.includeMode = clientPackage.includeMode === undefined ||
+            clientPackage.includeMode === null ||
+            clientPackage.includeMode.length === 0 ?
+            "both" : clientPackage.includeMode;
+
+        clientPackage.scriptIncludeMode = clientPackage.scriptIncludeMode === undefined ||
+            clientPackage.scriptIncludeMode === null ||
+            clientPackage.scriptIncludeMode.length === 0 ?
+            "none" : clientPackage.scriptIncludeMode;
+
+        clientPackage.preload = clientPackage.preload === undefined ? false : clientPackage.preload;
+        clientPackage.isPackage = clientPackage.isPackage === undefined ? false : clientPackage.isPackage;
+
+        if (!ParameterValidation.notEmpty(this._logger, "packageName", clientPackage.name)) {
             return 1;
         }
 
-        if (main) {
-            if (noScript) {
+        if (profile) {
+            this._logger.info("profile", { profile });
+        }
+
+        if (clientPackage.version) {
+            this._logger.info("version", { version: clientPackage.version });
+        }
+
+        this._logger.info("preload", { preload: clientPackage.preload });
+
+        if (!ParameterValidation.checkOneOf<IncludeMode>(this._logger, "includeMode", clientPackage.includeMode, ["app", "test", "both"])) {
+            return 1;
+        }
+
+        if (!ParameterValidation.checkOneOf<ScriptIncludeMode>(this._logger, "scriptIncludeMode", clientPackage.scriptIncludeMode, ["none", "bundled", "notBundled", "both"])) {
+            return 1;
+        }
+
+        if (clientPackage.main) {
+            if (clientPackage.noScript) {
                 this._logger.error("You cannot combine the main and noScript arguments");
                 return 1;
             } else {
-                this._logger.info("main", { main });
+                this._logger.info("main", { main: clientPackage.main });
             }
         }
 
-        if (mainMinified) {
-            if (noScript) {
+        if (clientPackage.mainMinified) {
+            if (clientPackage.noScript) {
                 this._logger.error("You cannot combine the mainMinified and noScript arguments");
                 return 1;
             } else {
-                this._logger.info("mainMinified", { mainMinified });
+                this._logger.info("mainMinified", { mainMinified: clientPackage.mainMinified });
             }
         }
 
-        if (testingAdditions) {
-            this._logger.info("testingAdditions", { testingAdditions });
+        if (clientPackage.testingAdditions) {
+            this._logger.info("testingAdditions", { testingAdditions: clientPackage.testingAdditions });
         }
-        this._logger.info("isPackage", { newIsPackage });
-        if (assets) {
-            this._logger.info("assets", { assets });
+        this._logger.info("isPackage", { isPackage: clientPackage.isPackage  });
+        if (clientPackage.assets) {
+            this._logger.info("assets", { assets: clientPackage.assets });
         }
-        if (map) {
-            this._logger.info("map", { map });
+        if (clientPackage.map) {
+            this._logger.info("map", { map: clientPackage.map });
         }
-        if (loaders) {
-            this._logger.info("loaders", { loaders });
+        if (clientPackage.loaders) {
+            this._logger.info("loaders", { loaders: clientPackage .loaders });
         }
-        if (noScript) {
-            this._logger.info("noScript", { noScript });
+        if (clientPackage.noScript) {
+            this._logger.info("noScript", { noScript: clientPackage.noScript });
         }
 
         this._logger.info("");
 
-        if (uniteConfiguration.clientPackages[packageName]) {
+        if (uniteConfiguration.clientPackages[clientPackage.name]) {
             this._logger.error("Package has already been added.");
             return 1;
         }
 
         const engineVariables = new EngineVariables();
         this.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
-        const clientPackage = new UniteClientPackage();
-        clientPackage.version = version;
-        clientPackage.main = main;
-        clientPackage.mainMinified = mainMinified;
 
-        const missingVersion = version === null || version === undefined || version.length === 0;
-        const missingMain = (main === null || main === undefined || main.length === 0) && !noScript;
+        const missingVersion = clientPackage.version === null || clientPackage.version === undefined || clientPackage.version.length === 0;
+        const missingMain = (clientPackage.main === null || clientPackage.main === undefined || clientPackage.main.length === 0) && !clientPackage.noScript;
         if (missingVersion || missingMain) {
             try {
-                const packageInfo = await engineVariables.packageManager.info(this._logger, this._fileSystem, packageName, version);
+                const packageInfo = await engineVariables.packageManager.info(this._logger, this._fileSystem, clientPackage.name, clientPackage.version);
 
                 clientPackage.version = clientPackage.version || `^${packageInfo.version || "0.0.1"}`;
-                if (!noScript) {
+                if (!clientPackage.noScript) {
                     clientPackage.main = clientPackage.main || packageInfo.main;
                 }
             } catch (err) {
@@ -471,7 +546,7 @@ export class Engine implements IEngine {
             }
         }
 
-        if (!noScript) {
+        if (!clientPackage.noScript) {
             if (clientPackage.main) {
                 clientPackage.main = clientPackage.main.replace(/\\/g, "/");
                 clientPackage.main = clientPackage.main.replace(/\.\//, "/");
@@ -481,25 +556,11 @@ export class Engine implements IEngine {
                 clientPackage.mainMinified = clientPackage.mainMinified.replace(/\.\//, "/");
             }
         }
-        clientPackage.preload = newPreload;
-        clientPackage.isPackage = newIsPackage;
-        clientPackage.includeMode = newIncludeMode;
-        clientPackage.scriptIncludeMode = newScriptIncludeMode;
-        clientPackage.assets = assets;
+
+        uniteConfiguration.clientPackages[clientPackage.name] = clientPackage;
 
         try {
-            clientPackage.testingAdditions = this.mapParser(testingAdditions);
-            clientPackage.map = this.mapParser(map);
-            clientPackage.loaders = this.mapParser(loaders);
-        } catch (err) {
-            this._logger.error("Input failure", err);
-            return 1;
-        }
-
-        uniteConfiguration.clientPackages[packageName] = clientPackage;
-
-        try {
-            await engineVariables.packageManager.add(this._logger, this._fileSystem, engineVariables.wwwRootFolder, packageName, clientPackage.version, false);
+            await engineVariables.packageManager.add(this._logger, this._fileSystem, engineVariables.wwwRootFolder, clientPackage.name, clientPackage.version, false);
         } catch (err) {
             this._logger.error("Adding Package failed", err);
             return 1;
@@ -517,6 +578,10 @@ export class Engine implements IEngine {
     }
 
     private async clientPackageRemove(packageName: string, outputDirectory: string, uniteConfiguration: UniteConfiguration): Promise<number> {
+        if (!ParameterValidation.notEmpty(this._logger, "packageName", packageName)) {
+            return 1;
+        }
+
         if (!uniteConfiguration.clientPackages[packageName]) {
             this._logger.error("Package has not been added.");
             return 1;

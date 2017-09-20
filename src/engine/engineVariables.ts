@@ -147,6 +147,7 @@ export class EngineVariables {
                             loaders: { [id: string]: string},
                             isModuleLoader: boolean): void {
         const clientPackage = new UniteClientPackage();
+        clientPackage.name = name;
         clientPackage.includeMode = includeMode;
         clientPackage.preload = preload;
         clientPackage.main = main;

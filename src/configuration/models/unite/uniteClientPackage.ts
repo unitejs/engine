@@ -5,6 +5,7 @@ import { IncludeMode } from "./includeMode";
 import { ScriptIncludeMode } from "./scriptIncludeMode";
 
 export class UniteClientPackage {
+    public name: string;
     public version: string;
     public preload: boolean;
     public main: string;
@@ -17,4 +18,5 @@ export class UniteClientPackage {
     public loaders: { [id: string]: string };
     public scriptIncludeMode: ScriptIncludeMode;
     public isModuleLoader: boolean;
+    public noScript: boolean;
 }

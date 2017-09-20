@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.0.2
+## v1.1.0
 
 * Improved error handling in gulp tasks
 * Added watches on source when running gulp serve task
