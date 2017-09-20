@@ -90,7 +90,7 @@ describe("JavaScript", () => {
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
 
             Chai.expect(packageJsonDevDependencies["babel-core"]).to.be.equal("1.2.3");
-            Chai.expect(packageJsonDevDependencies["babel-preset-es2015"]).to.be.equal("1.2.3");
+            Chai.expect(packageJsonDevDependencies["babel-preset-env"]).to.be.equal("1.2.3");
         });
     });
 
@@ -116,12 +116,12 @@ describe("JavaScript", () => {
 
             const packageJsonDevDependencies: { [id: string]: string } = {
                 "babel-core": "1.2.3",
-                "babel-preset-es2015": "1.2.3"
+                "babel-preset-env": "1.2.3"
             };
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
 
             Chai.expect(packageJsonDevDependencies["babel-core"]).to.be.equal(undefined);
-            Chai.expect(packageJsonDevDependencies["babel-preset-es2015"]).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["babel-preset-env"]).to.be.equal(undefined);
 
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/", ".babelrc");
             Chai.expect(exists).to.be.equal(false);

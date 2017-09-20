@@ -20,6 +20,7 @@
 * Change folder deletion looks for files without generated markers
 * Improved pipeline exception handling
 * CSS Build for components moved earlier in the build task, so they can be inlined in transpilation
+* Change use babel-preset-env instead of babel-preset-es2015
 
 ## v1.0.1
 

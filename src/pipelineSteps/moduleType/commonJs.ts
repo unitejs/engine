@@ -26,11 +26,11 @@ export class CommonJs extends PipelineStepBase {
 
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
         if (babelConfiguration) {
-            const foundPreset = babelConfiguration.presets.find(preset => Array.isArray(preset) && preset.length > 0 && preset[0] === "es2015");
+            const foundPreset = babelConfiguration.presets.find(preset => Array.isArray(preset) && preset.length > 0 && preset[0] === "env");
             if (foundPreset) {
                 foundPreset[1] = { modules: "commonjs" };
             } else {
-                babelConfiguration.presets.push(["es2015", { modules: "commonjs" }]);
+                babelConfiguration.presets.push(["env", { modules: "commonjs" }]);
             }
         }
 
@@ -45,7 +45,7 @@ export class CommonJs extends PipelineStepBase {
 
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
         if (babelConfiguration) {
-            const foundPreset = babelConfiguration.presets.find(preset => Array.isArray(preset) && preset.length > 0 && preset[0] === "es2015");
+            const foundPreset = babelConfiguration.presets.find(preset => Array.isArray(preset) && preset.length > 0 && preset[0] === "env");
             if (foundPreset) {
                 foundPreset[1] = { modules: undefined };
             }

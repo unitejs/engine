@@ -39,7 +39,7 @@ export class JavaScript extends PipelineStepBase {
     }
 
     public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["babel-core", "babel-preset-es2015"], super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
+        engineVariables.toggleDevDependency(["babel-core", "babel-preset-env"], super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
 
         return 0;
     }
@@ -56,7 +56,7 @@ export class JavaScript extends PipelineStepBase {
 
     public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
         ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "js", false);
-        engineVariables.toggleDevDependency(["babel-core", "babel-preset-es2015"], false);
+        engineVariables.toggleDevDependency(["babel-core", "babel-preset-env"], false);
 
         return await super.deleteFileJson(logger, fileSystem, engineVariables.wwwRootFolder, JavaScript.FILENAME, engineVariables.force);
     }

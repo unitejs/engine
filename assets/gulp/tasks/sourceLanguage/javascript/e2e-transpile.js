@@ -38,7 +38,7 @@ gulp.task("e2e-transpile", async () => {
             "babelrc": false,
             "presets": [
                 [
-                    "es2015",
+                    "env",
                     {"modules": "commonjs"}
                 ]
             ]
