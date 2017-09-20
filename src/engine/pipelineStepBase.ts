@@ -282,7 +282,7 @@ export abstract class PipelineStepBase implements IPipelineStep {
             const hasGeneratedMarker = await this.fileHasGeneratedMarker(fileSystem, folder, filename);
 
             if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker" || force) {
-                logger.info(`Generating ${filename} in `, { folder });
+                logger.info(`Writing ${filename} in `, { folder });
 
                 const lines: string[] = await linesGenerator();
                 await fileSystem.fileWriteLines(folder, filename, lines);
@@ -290,7 +290,7 @@ export abstract class PipelineStepBase implements IPipelineStep {
                 logger.info(`Skipping ${filename} as it has no generated marker`);
             }
         } catch (err) {
-            logger.error(`Generating ${filename} failed`, err);
+            logger.error(`Writing ${filename} failed`, err);
             return 1;
         }
         return 0;
@@ -298,12 +298,12 @@ export abstract class PipelineStepBase implements IPipelineStep {
 
     public async fileWriteText(logger: ILogger, fileSystem: IFileSystem, folder: string, filename: string, force: boolean, textGenerator: () => Promise<string>): Promise<number> {
         try {
-            logger.info(`Generating ${filename} in `, { folder });
+            logger.info(`Writing ${filename} in `, { folder });
 
             const text: string = await textGenerator();
             await fileSystem.fileWriteText(folder, filename, text);
         } catch (err) {
-            logger.error(`Generating ${filename} failed`, err);
+            logger.error(`Writing ${filename} failed`, err);
             return 1;
         }
         return 0;
@@ -311,12 +311,12 @@ export abstract class PipelineStepBase implements IPipelineStep {
 
     public async fileWriteJson(logger: ILogger, fileSystem: IFileSystem, folder: string, filename: string, force: boolean, jsonGenerator: () => Promise<any>): Promise<number> {
         try {
-            logger.info(`Generating ${filename} in `, { folder });
+            logger.info(`Writing ${filename} in `, { folder });
 
             const obj = await jsonGenerator();
             await fileSystem.fileWriteJson(folder, filename, obj);
         } catch (err) {
-            logger.error(`Generating ${filename} failed`, err);
+            logger.error(`Writing ${filename} failed`, err);
             return 1;
         }
         return 0;

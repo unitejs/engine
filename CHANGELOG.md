@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.1.0
+## v1.0.2
 
 * Improved error handling in gulp tasks
 * Added watches on source when running gulp serve task
@@ -19,6 +19,7 @@
 * Change pipeline steps enumerated from directories instead of fixed list
 * Change folder deletion looks for files without generated markers
 * Improved pipeline exception handling
+* CSS Build for components moved earlier in the build task, so they can be inlined in transpilation
 
 ## v1.0.1
 

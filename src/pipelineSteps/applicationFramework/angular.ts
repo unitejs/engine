@@ -32,7 +32,12 @@ export class Angular extends SharedAppFramework {
         const usingGulp = super.condition(uniteConfiguration.taskManager, "Gulp");
         if (usingGulp) {
             engineVariables.buildTranspileInclude.push("const inline = require(\"gulp-inline-ng2-template\");");
-            engineVariables.buildTranspilePreBuild.push(".pipe(buildConfiguration.bundle ? inline({ useRelativePaths: true }) : gutil.noop())");
+            engineVariables.buildTranspilePreBuild.push(".pipe(buildConfiguration.bundle ? inline({");
+            engineVariables.buildTranspilePreBuild.push("                useRelativePaths: true,");
+            engineVariables.buildTranspilePreBuild.push("                removeLineBreaks: true,");
+            engineVariables.buildTranspilePreBuild.push("                customFilePath: (ext, inlinePath) => ext[0] === \".css\" ?");
+            engineVariables.buildTranspilePreBuild.push("                    inlinePath.replace(`\${path.sep}src\${path.sep}`, `\${path.sep}dist\${path.sep}`) : inlinePath");
+            engineVariables.buildTranspilePreBuild.push("        }) : gutil.noop())");
         }
 
         engineVariables.toggleDevDependency(["gulp-inline-ng2-template"], usingGulp);

@@ -182,12 +182,12 @@ gulp.task("build", async () => {
     try {
         await util.promisify(runSequence)(
             "build-clean",
+            "build-css-components",
+            "build-css-post-components",
             "build-transpile",
             "build-lint",
             "build-css-app",
             "build-css-post-app",
-            "build-css-components",
-            "build-css-post-components",
             "build-copy-components",
             "build-module-config",
             "build-html-min",
