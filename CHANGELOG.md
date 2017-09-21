@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.1
+
+* Refactored engine commands to make it easier to extend
+
 ## v1.1.0
 
 * Improved error handling in gulp tasks
