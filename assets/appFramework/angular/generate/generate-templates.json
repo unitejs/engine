@@ -1,0 +1,9 @@
+{
+    "component": {
+        "defaultFolder": "{GEN_NAME_SNAKE}",
+        "sourceFiles": ["{GEN_NAME_SNAKE}.component.{EXTENSION}"],
+        "viewFiles": ["{GEN_NAME_SNAKE}.component.{EXTENSION}"],
+        "styleFiles": ["{GEN_NAME_SNAKE}.component.{EXTENSION}"],
+        "unitTestFiles": ["{GEN_NAME_SNAKE}.component.spec.{EXTENSION}"]
+    }
+}
