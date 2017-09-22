@@ -6,6 +6,7 @@ import { IUniteGenerateTemplate } from "../configuration/models/unite/IUniteGene
 import { IUniteGenerateTemplates } from "../configuration/models/unite/IUniteGenerateTemplates";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { EngineCommandBase } from "../engine/engineCommandBase";
+import { TemplateHelper } from "../helpers/templateHelper";
 import { IEngineCommand } from "../interfaces/IEngineCommand";
 import { IGenerateCommandParams } from "../interfaces/IGenerateCommandParams";
 
@@ -29,7 +30,7 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
         this._logger.info("");
 
         try {
-            const generateTemplatesFolder = this._fileSystem.pathCombine(this._engineAssetsFolder, `appFramework/${uniteConfiguration.applicationFramework}/generate/`);
+            const generateTemplatesFolder = this._fileSystem.pathCombine(this._engineAssetsFolder, `appFramework/${uniteConfiguration.applicationFramework.toLowerCase()}/generate/`);
 
             const exists = await this._fileSystem.fileExists(generateTemplatesFolder, "generate-templates.json");
 
@@ -63,9 +64,10 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
                                        generateTemplatesFolder: string,
                                        generateTemplate: IUniteGenerateTemplate): Promise<number> {
 
-        const substitutions = this.generateSubstitutions(args.name, uniteConfiguration);
+        const substitutions = TemplateHelper.generateSubstitutions("GEN_NAME", args.name);
 
-        const subFolder = args.subFolder !== undefined && args.subFolder !== null ? args.subFolder : this.stringSubstitutions(substitutions, generateTemplate.defaultFolder);
+        const subFolder = args.subFolder !== undefined && args.subFolder !== null ? args.subFolder :
+            generateTemplate.defaultFolder !== undefined && generateTemplate.defaultFolder !== null ? TemplateHelper.replaceSubstitutions(substitutions, generateTemplate.defaultFolder) : "";
 
         substitutions.GEN_SUB_FOLDER = subFolder.length > 0 ? `${subFolder}/` : subFolder;
         substitutions.GEN_TEST_ROOT = "../".repeat(subFolder.split("/").length + 3);
@@ -110,6 +112,16 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
                                        substitutions);
         }
 
+        if (ret === 0 && uniteConfiguration.e2eTestRunner !== "None") {
+            ret = await this.copyFiles(generateTemplatesFolder,
+                                       generateTemplate.e2eTestFiles,
+                                       this._fileSystem.pathCombine(wwwRootFolder, uniteConfiguration.dirs.www.e2eTestSrc),
+                                       subFolder,
+                                       `${args.type}/e2e/${uniteConfiguration.unitTestFramework.toLowerCase()}`,
+                                       uniteConfiguration.sourceExtensions,
+                                       substitutions);
+        }
+
         if (ret === 0) {
             this._logger.banner("Successfully Completed.");
         }
@@ -134,16 +146,16 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
                 let doneCopy = false;
                 for (let j = 0; j < possibleExtensions.length && !doneCopy; j++) {
                     const srcFilename2 = srcFilename.replace("{EXTENSION}", possibleExtensions[j]);
-                    let destFilename = this.stringSubstitutions(substitutions, srcFilename);
+                    let destFilename = TemplateHelper.replaceSubstitutions(substitutions, srcFilename);
                     destFilename = destFilename.replace("{EXTENSION}", possibleExtensions[j]);
 
                     try {
-                        const exists = await this._fileSystem.fileReadText(srcFolder, srcFilename2);
+                        const exists = await this._fileSystem.fileExists(srcFolder, srcFilename2);
 
                         if (exists) {
                             let content = await this._fileSystem.fileReadText(srcFolder, srcFilename2);
 
-                            content = this.stringSubstitutions(substitutions, content);
+                            content = TemplateHelper.replaceSubstitutions(substitutions, content);
 
                             await this._fileSystem.directoryCreate(destFolder);
 
@@ -165,42 +177,5 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
         }
 
         return 0;
-    }
-
-    private generateSubstitutions(name: string, uniteConfiguration: UniteConfiguration): { [id: string]: string } {
-        const substitutions: { [id: string]: string } = {};
-
-        const words: string[] = [];
-
-        for (let i = 0; i < name.length; i++) {
-            const isLower = name[i].toLowerCase() === name[i];
-            if (isLower) {
-                if (words.length === 0) {
-                    words.push(name[i].toUpperCase());
-                } else {
-                    words[words.length - 1] += name[i];
-                }
-            } else {
-                words.push(name[i]);
-            }
-        }
-
-        substitutions.GEN_NAME = name;
-        substitutions.GEN_NAME_SNAKE = words.join("-").toLowerCase();
-        substitutions.GEN_NAME_CAMEL = words[0][0].toLowerCase() + words[0].substring(1) + words.slice(1).join("");
-        substitutions.GEN_NAME_PASCAL = words.join("");
-        substitutions.GEN_NAME_HUMAN = words.join(" ");
-
-        return substitutions;
-    }
-
-    private stringSubstitutions(substitutions: { [id: string]: string }, input: string): string {
-        let output = input;
-
-        Object.keys(substitutions).forEach(key => {
-            output = output.replace(new RegExp(`{${key}}`, "g"), substitutions[key]);
-        });
-
-        return output;
     }
 }
