@@ -63,10 +63,10 @@ describe("PhantomJs", () => {
         });
     });
 
-    describe("install", () => {
+    describe("configure", () => {
         it("can be called with no configurations", async () => {
             const obj = new PhantomJs();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
@@ -78,7 +78,7 @@ describe("PhantomJs", () => {
             engineVariablesStub.setConfiguration("Karma", { browsers: [], files: [ { pattern: "aaa" } ] });
 
             const obj = new PhantomJs();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
@@ -88,12 +88,10 @@ describe("PhantomJs", () => {
             Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma").browsers).contains("PhantomJS");
             Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma").files.length).to.be.equal(2);
         });
-    });
 
-    describe("uninstall", () => {
-        it("can be called with no configurations", async () => {
+        it("can be called with no configurations with false mainCondition", async () => {
             const obj = new PhantomJs();
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = { "karma-phantomjs-launcher": "1.2.3"};
@@ -101,11 +99,11 @@ describe("PhantomJs", () => {
             Chai.expect(packageJsonDevDependencies["karma-phantomjs-launcher"]).to.be.equal(undefined);
         });
 
-        it("can be called with configurations", async () => {
+        it("can be called with configurations with false mainCondition", async () => {
             engineVariablesStub.setConfiguration("Karma", { browsers: [ "PhantomJS" ], files: [ { pattern: "aaa" }, { pattern: "./node_modules/bluebird/js/browser/bluebird.js"} ] });
 
             const obj = new PhantomJs();
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = { "karma-phantomjs-launcher": "1.2.3"};

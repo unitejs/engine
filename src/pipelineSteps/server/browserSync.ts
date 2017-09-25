@@ -12,14 +12,8 @@ export class BrowserSync extends PipelineStepBase {
         return super.condition(uniteConfiguration.server, "BrowserSync");
     }
 
-    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["browser-sync"], true);
-
-        return 0;
-    }
-
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["browser-sync"], false);
+    public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        engineVariables.toggleDevDependency(["browser-sync"], mainCondition);
 
         return 0;
     }

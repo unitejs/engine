@@ -15,7 +15,8 @@
         "cssPost": "PostCss",
         "packageManager": "Npm",
         "taskManager": "Gulp",
-        "server": "BrowserSync"
+        "server": "BrowserSync",
+        "ide": "VSCode"
     },
     "AngularTypeScript": {
     	"license": "MIT",
@@ -33,7 +34,8 @@
         "cssPost": "PostCss",
         "packageManager": "Npm",
         "taskManager": "Gulp",
-        "server": "BrowserSync"
+        "server": "BrowserSync",
+        "ide": "VSCode"
     },
     "AureliaJavaScript": {
     	"license": "MIT",
@@ -51,7 +53,8 @@
         "cssPost": "PostCss",
         "packageManager": "Npm",
         "taskManager": "Gulp",
-        "server": "BrowserSync"
+        "server": "BrowserSync",
+        "ide": "VSCode"
     },
     "AureliaTypeScript": {
     	"license": "MIT",
@@ -69,7 +72,8 @@
         "cssPost": "PostCss",
         "packageManager": "Npm",
         "taskManager": "Gulp",
-        "server": "BrowserSync"
+        "server": "BrowserSync",
+        "ide": "VSCode"
     },
     "ReactJavaScript": {
     	"license": "MIT",
@@ -87,7 +91,8 @@
         "cssPost": "PostCss",
         "packageManager": "Npm",
         "taskManager": "Gulp",
-        "server": "BrowserSync"
+        "server": "BrowserSync",
+        "ide": "VSCode"
     },
     "ReactTypeScript": {
     	"license": "MIT",
@@ -105,6 +110,7 @@
         "cssPost": "PostCss",
         "packageManager": "Npm",
         "taskManager": "Gulp",
-        "server": "BrowserSync"
+        "server": "BrowserSync",
+        "ide": "VSCode"
     }
 }

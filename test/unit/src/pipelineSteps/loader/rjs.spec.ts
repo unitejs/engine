@@ -63,11 +63,11 @@ describe("RJS", () => {
         });
     });
 
-    describe("install", () => {
+    describe("configure", () => {
         it("can be called with matching bundled loader", async () => {
             uniteConfigurationStub.bundler = "RequireJS";
             const obj = new RJS();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDependencies: { [id: string]: string } = {};
@@ -81,18 +81,16 @@ describe("RJS", () => {
             uniteConfigurationStub.bundler = "RequireJS";
             engineVariablesStub.setConfiguration("HTMLNoBundle", { body: [] });
             const obj = new RJS();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             Chai.expect(engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle").body.length).to.be.equal(7);
         });
-    });
 
-    describe("uninstall", () => {
-        it("can be called", async () => {
+        it("can be called with false mainCondition", async () => {
             uniteConfigurationStub.bundler = "RequireJS";
             const obj = new RJS();
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDependencies: { [id: string]: string } = {

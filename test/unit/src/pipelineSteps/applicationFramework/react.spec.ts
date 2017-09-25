@@ -83,7 +83,7 @@ describe("React", () => {
     describe("initialise", () => {
         it("can be called with application framework matching and javascript", async () => {
             const obj = new React();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(uniteConfigurationStub.sourceExtensions).to.contain("jsx");
             Chai.expect(uniteConfigurationStub.sourceExtensions).to.not.contain("tsx");
@@ -93,7 +93,7 @@ describe("React", () => {
         it("can be called with application framework matching and typescript", async () => {
             uniteConfigurationStub.sourceLanguage = "TypeScript";
             const obj = new React();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(uniteConfigurationStub.sourceExtensions).to.not.contain("jsx");
             Chai.expect(uniteConfigurationStub.sourceExtensions).to.contain("tsx");
@@ -101,10 +101,10 @@ describe("React", () => {
         });
     });
 
-    describe("install", () => {
+    describe("configure", () => {
         it("can be called with no configurations", async () => {
             const obj = new React();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
 
             Chai.expect(res).to.be.equal(0);
         });
@@ -116,7 +116,7 @@ describe("React", () => {
             engineVariablesStub.setConfiguration("Babel", { presets: []});
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {}});
             engineVariablesStub.setConfiguration("ESLint", { parserOptions: { ecmaFeatures: {}}, extends: [], plugins: []});
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
 
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(2);
@@ -144,6 +144,32 @@ describe("React", () => {
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").plugins).contains("react");
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.jsx).to.be.equal("react");
         });
+
+        it("can be called with no configurations with false mainCondition", async () => {
+            const obj = new React();
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
+
+            Chai.expect(res).to.be.equal(0);
+        });
+
+        it("can be called with configurations with false mainCondition", async () => {
+            const obj = new React();
+            engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/unitejs-react-protractor-plugin" } ] });
+            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", ["unitejs-react-webdriver-plugin"]);
+            engineVariablesStub.setConfiguration("Babel", { presets: ["react"]});
+            engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: { jsx: true }});
+            engineVariablesStub.setConfiguration("ESLint", { parserOptions: { ecmaFeatures: { jsx: "react"}}, extends: ["plugin:react/recommended", "react"], plugins: ["react"]});
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
+
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins").length).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").presets).not.contains("react");
+            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parserOptions.ecmaFeatures.jsx).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").extends).not.contains("plugin:react/recommended");
+            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").plugins).not.contains("react");
+            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.jsx).to.be.equal(undefined);
+        });
     });
 
     describe("finalise", () => {
@@ -158,7 +184,7 @@ describe("React", () => {
             });
 
             const obj = new React();
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.jsx");
             Chai.expect(exists).to.be.equal(false);
@@ -175,7 +201,7 @@ describe("React", () => {
             });
 
             const obj = new React();
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
             let exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.jsx");
             Chai.expect(exists).to.be.equal(true);
@@ -195,7 +221,7 @@ describe("React", () => {
             });
 
             const obj = new React();
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
             let exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/e2e/src/", "app.spec.js");
             Chai.expect(exists).to.be.equal(true);
@@ -205,7 +231,7 @@ describe("React", () => {
 
         it("can complete with javascript", async () => {
             const obj = new React();
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/unit/src/", "app.spec.js");
             Chai.expect(exists).to.be.equal(true);
@@ -214,38 +240,10 @@ describe("React", () => {
         it("can complete with typescript", async () => {
             uniteConfigurationStub.sourceLanguage = "TypeScript";
             const obj = new React();
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/unit/src/", "app.spec.ts");
             Chai.expect(exists).to.be.equal(true);
-        });
-    });
-
-    describe("uninstall", () => {
-        it("can be called with no configurations", async () => {
-            const obj = new React();
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-
-            Chai.expect(res).to.be.equal(0);
-        });
-
-        it("can be called with configurations", async () => {
-            const obj = new React();
-            engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/unitejs-react-protractor-plugin" } ] });
-            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", ["unitejs-react-webdriver-plugin"]);
-            engineVariablesStub.setConfiguration("Babel", { presets: ["react"]});
-            engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: { jsx: true }});
-            engineVariablesStub.setConfiguration("ESLint", { parserOptions: { ecmaFeatures: { jsx: "react"}}, extends: ["plugin:react/recommended", "react"], plugins: ["react"]});
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins").length).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").presets).not.contains("react");
-            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parserOptions.ecmaFeatures.jsx).to.be.equal(undefined);
-            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").extends).not.contains("plugin:react/recommended");
-            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").plugins).not.contains("react");
-            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.jsx).to.be.equal(undefined);
         });
     });
 });

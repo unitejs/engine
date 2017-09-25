@@ -64,10 +64,10 @@ describe("SystemJs", () => {
         });
     });
 
-    describe("install", () => {
+    describe("configure", () => {
         it("can be called with no configurations", async () => {
             const obj = new SystemJs();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
         });
 
@@ -76,7 +76,7 @@ describe("SystemJs", () => {
             engineVariablesStub.setConfiguration("Babel", { presets: [ ["env", { modules: "blah" }] ] });
 
             const obj = new SystemJs();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.module).to.be.equal("system");
@@ -88,39 +88,37 @@ describe("SystemJs", () => {
             engineVariablesStub.setConfiguration("Babel", { presets: [] });
 
             const obj = new SystemJs();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.module).to.be.equal("system");
             Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").presets[0][1].modules).to.be.equal("systemjs");
         });
-    });
 
-    describe("uninstall", () => {
-        it("can be called with no configurations", async () => {
+        it("can be called with no configurations with false mainCondition", async () => {
             const obj = new SystemJs();
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
         });
 
-        it("can be called with configurations but no presets", async () => {
+        it("can be called with configurations but no presets with false mainCondition", async () => {
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: { module: "system"} });
             engineVariablesStub.setConfiguration("Babel", { presets: [ ["es2016", { modules: "blah" }] ] });
 
             const obj = new SystemJs();
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
 
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.module).to.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").presets[0][1].modules).to.be.equal("blah");
         });
 
-        it("can be called with configurations", async () => {
+        it("can be called with configurations with false mainCondition", async () => {
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: { module: "system"} });
             engineVariablesStub.setConfiguration("Babel", { presets: [ ["env", { modules: "systemjs" }] ] });
 
             const obj = new SystemJs();
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
 
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.module).to.be.equal(undefined);

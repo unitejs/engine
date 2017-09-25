@@ -14,23 +14,12 @@ export class ChromeHeadless extends PipelineStepBase {
         return super.condition(uniteConfiguration.unitTestEngine, "ChromeHeadless");
     }
 
-    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["karma-chrome-launcher"], super.condition(uniteConfiguration.unitTestRunner, "Karma"));
+    public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        engineVariables.toggleDevDependency(["karma-chrome-launcher"], mainCondition && super.condition(uniteConfiguration.unitTestRunner, "Karma"));
 
         const karmaConfiguration = engineVariables.getConfiguration<KarmaConfiguration>("Karma");
         if (karmaConfiguration) {
-            ArrayHelper.addRemove(karmaConfiguration.browsers, "ChromeHeadless", super.condition(uniteConfiguration.unitTestRunner, "Karma"));
-        }
-
-        return 0;
-    }
-
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["karma-chrome-launcher"], false);
-
-        const karmaConfiguration = engineVariables.getConfiguration<KarmaConfiguration>("Karma");
-        if (karmaConfiguration) {
-            ArrayHelper.addRemove(karmaConfiguration.browsers, "ChromeHeadless", false);
+            ArrayHelper.addRemove(karmaConfiguration.browsers, "ChromeHeadless", mainCondition && super.condition(uniteConfiguration.unitTestRunner, "Karma"));
         }
 
         return 0;

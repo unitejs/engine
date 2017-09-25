@@ -61,10 +61,10 @@ describe("None", () => {
         });
     });
 
-    describe("install", () => {
+    describe("configure", () => {
         it("can be called", async () => {
             const obj = new None();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
@@ -74,10 +74,10 @@ describe("None", () => {
         });
     });
 
-    describe("uninstall", () => {
+    describe("uninstall with false mainCondition", () => {
         it("can be called", async () => {
             const obj = new None();
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = { cssnano: "1.2.3"};

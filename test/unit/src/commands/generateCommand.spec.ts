@@ -111,7 +111,7 @@ describe("GenerateCommand", () => {
             taskManager: undefined,
             server: undefined,
             applicationFramework: "Angular",
-            ide: "",
+            ides: undefined,
             uniteVersion: undefined,
             sourceExtensions: ["ts"],
             viewExtensions: ["html"],
@@ -307,6 +307,21 @@ describe("GenerateCommand", () => {
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("Can not find a source for");
+        });
+
+        it("can fail when source file is not supported", async () => {
+            sandbox.stub(fileSystemStub, "fileReadText").resolves("!Message");
+
+            const obj = new GenerateCommand();
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            const res = await obj.run({
+                name: "Bob",
+                type: "component",
+                subFolder: undefined,
+                outputDirectory: "./test/unit/temp"
+            });
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("Message");
         });
 
         it("can fail when source files throws an exception", async () => {

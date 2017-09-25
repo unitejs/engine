@@ -15,146 +15,111 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { SharedAppFramework } from "../sharedAppFramework";
 
 export class Aurelia extends SharedAppFramework {
-    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined {
         return super.condition(uniteConfiguration.applicationFramework, "Aurelia");
     }
 
     public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
-                            engineVariables: EngineVariables): Promise<number> {
-        if (super.condition(uniteConfiguration.bundler, "Browserify") || super.condition(uniteConfiguration.bundler, "Webpack")) {
-            logger.error(`Aurelia does not currently support bundling with ${uniteConfiguration.bundler}`);
-            return 1;
+                            engineVariables: EngineVariables,
+                            mainCondition: boolean): Promise<number> {
+        if (mainCondition) {
+            if (super.condition(uniteConfiguration.bundler, "Browserify") || super.condition(uniteConfiguration.bundler, "Webpack")) {
+                logger.error(`Aurelia does not currently support bundling with ${uniteConfiguration.bundler}`);
+                return 1;
+            }
+            ArrayHelper.addRemove(uniteConfiguration.viewExtensions, "html", true);
         }
-        ArrayHelper.addRemove(uniteConfiguration.viewExtensions, "html", true);
         return 0;
     }
 
-    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         engineVariables.toggleDevDependency(["aurelia-protractor-plugin"],
-                                            super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
+                                            mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
         engineVariables.toggleDevDependency(["unitejs-aurelia-webdriver-plugin"],
-                                            super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
+                                            mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
 
         engineVariables.toggleDevDependency(["babel-plugin-transform-decorators-legacy"],
-                                            super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
+                                            mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
 
-        engineVariables.toggleDevDependency(["babel-eslint"], super.condition(uniteConfiguration.linter, "ESLint"));
+        engineVariables.toggleDevDependency(["babel-eslint"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
 
-        this.toggleAllPackages(uniteConfiguration, engineVariables, true);
+        this.toggleAllPackages(uniteConfiguration, engineVariables, mainCondition);
 
         const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
         if (protractorConfiguration) {
             const plugin = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
                                                                             fileSystem.pathCombine(engineVariables.www.packageFolder, "aurelia-protractor-plugin")));
-            ArrayHelper.addRemove(protractorConfiguration.plugins, { path: plugin }, true, (object, item) => object.path === item.path);
+            ArrayHelper.addRemove(protractorConfiguration.plugins, { path: plugin }, mainCondition, (object, item) => object.path === item.path);
         }
         const webdriverIoPlugins = engineVariables.getConfiguration<string[]>("WebdriverIO.Plugins");
         if (webdriverIoPlugins) {
-            ArrayHelper.addRemove(webdriverIoPlugins, "unitejs-aurelia-webdriver-plugin", true);
+            ArrayHelper.addRemove(webdriverIoPlugins, "unitejs-aurelia-webdriver-plugin", mainCondition);
         }
 
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
         if (babelConfiguration) {
-            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", true);
+            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", mainCondition);
         }
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
-            ObjectHelper.addRemove(esLintConfiguration, "parser", "babel-eslint", true);
+            ObjectHelper.addRemove(esLintConfiguration, "parser", "babel-eslint", mainCondition);
         }
 
         const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
         if (typeScriptConfiguration) {
-            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "experimentalDecorators", true, true);
+            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "experimentalDecorators", true, mainCondition);
         }
 
         const javaScriptConfiguration = engineVariables.getConfiguration<JavaScriptConfiguration>("JavaScript");
         if (javaScriptConfiguration) {
-            ObjectHelper.addRemove(javaScriptConfiguration.compilerOptions, "experimentalDecorators", true, true);
+            ObjectHelper.addRemove(javaScriptConfiguration.compilerOptions, "experimentalDecorators", true, mainCondition);
         }
 
         return 0;
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        const sourceExtension = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? ".ts" : ".js";
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        if (mainCondition) {
+            const sourceExtension = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? ".ts" : ".js";
 
-        let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables,
-                                               [
+            let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables,
+                                                   [
                                                     `app${sourceExtension}`,
                                                     `bootstrapper${sourceExtension}`,
                                                     `entryPoint${sourceExtension}`,
                                                     `child/child${sourceExtension}`
                                                 ]);
 
-        if (ret === 0) {
-            ret = await super.generateAppHtml(logger, fileSystem, uniteConfiguration, engineVariables, ["app.html", "child/child.html"]);
-
             if (ret === 0) {
-                ret = await super.generateAppCss(logger, fileSystem, uniteConfiguration, engineVariables, ["child/child"]);
+                ret = await super.generateAppHtml(logger, fileSystem, uniteConfiguration, engineVariables, ["app.html", "child/child.html"]);
 
                 if (ret === 0) {
-                    ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
+                    ret = await super.generateAppCss(logger, fileSystem, uniteConfiguration, engineVariables, ["child/child"]);
 
                     if (ret === 0) {
-                        ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`, `bootstrapper.spec${sourceExtension}`], true);
+                        ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
 
                         if (ret === 0) {
-                            ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
+                            ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`, `bootstrapper.spec${sourceExtension}`], true);
+
+                            if (ret === 0) {
+                                ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
+                            }
                         }
                     }
                 }
             }
-        }
 
-        return ret;
+            return ret;
+        } else {
+            return 0;
+        }
     }
 
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["aurelia-protractor-plugin"], false);
-        engineVariables.toggleDevDependency(["unitejs-aurelia-webdriver-plugin"], false);
-        engineVariables.toggleDevDependency(["babel-plugin-transform-decorators-legacy"], false);
-        engineVariables.toggleDevDependency(["babel-eslint"], false);
-
-        this.toggleAllPackages(uniteConfiguration, engineVariables, false);
-
-        const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
-        if (protractorConfiguration) {
-            const plugin = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
-                                                                            fileSystem.pathCombine(engineVariables.www.packageFolder, "aurelia-protractor-plugin")));
-            ArrayHelper.addRemove(protractorConfiguration.plugins, { path: plugin }, false, (object, item) => object.path === item.path);
-        }
-        const webdriverIoPlugins = engineVariables.getConfiguration<string[]>("WebdriverIO.Plugins");
-        if (webdriverIoPlugins) {
-            ArrayHelper.addRemove(webdriverIoPlugins, "unitejs-aurelia-webdriver-plugin", false);
-        }
-
-        const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
-        if (babelConfiguration) {
-            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", false);
-        }
-
-        const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
-        if (esLintConfiguration) {
-            ObjectHelper.addRemove(esLintConfiguration, "parser", "babel-eslint", false);
-        }
-
-        const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
-        if (typeScriptConfiguration) {
-            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "experimentalDecorators", true, false);
-        }
-
-        const javaScriptConfiguration = engineVariables.getConfiguration<JavaScriptConfiguration>("JavaScript");
-        if (javaScriptConfiguration) {
-            ObjectHelper.addRemove(javaScriptConfiguration.compilerOptions, "experimentalDecorators", true, true);
-        }
-
-        return 0;
-    }
-
-    private toggleAllPackages(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, toggle: boolean): void {
+    private toggleAllPackages(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): void {
         let location = "dist/";
 
         if (super.condition(uniteConfiguration.moduleType, "AMD")) {
@@ -210,7 +175,7 @@ export class Aurelia extends SharedAppFramework {
                 undefined,
                 undefined,
                 undefined,
-                toggle);
+                mainCondition);
         });
 
         engineVariables.toggleClientPackage(
@@ -226,7 +191,7 @@ export class Aurelia extends SharedAppFramework {
             undefined,
             undefined,
             undefined,
-            toggle);
+            mainCondition);
 
         engineVariables.toggleClientPackage(
             "requirejs-text",
@@ -241,7 +206,7 @@ export class Aurelia extends SharedAppFramework {
             { text: "requirejs-text" },
             undefined,
             undefined,
-            toggle && super.condition(uniteConfiguration.moduleType, "AMD"));
+            mainCondition && super.condition(uniteConfiguration.moduleType, "AMD"));
 
         engineVariables.toggleClientPackage(
             "systemjs-plugin-text",
@@ -256,6 +221,6 @@ export class Aurelia extends SharedAppFramework {
             { text: "systemjs-plugin-text" },
             undefined,
             undefined,
-            toggle && super.condition(uniteConfiguration.moduleType, "SystemJS"));
+            mainCondition && super.condition(uniteConfiguration.moduleType, "SystemJS"));
     }
 }

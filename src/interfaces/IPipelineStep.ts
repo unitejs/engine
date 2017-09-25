@@ -12,21 +12,18 @@ export interface IPipelineStep {
     initialise(logger: ILogger,
                fileSystem: IFileSystem,
                uniteConfiguration: UniteConfiguration,
-               engineVariables: EngineVariables): Promise<number>;
+               engineVariables: EngineVariables,
+               mainCondition: boolean): Promise<number>;
 
-    install(logger: ILogger,
-            fileSystem: IFileSystem,
-            uniteConfiguration: UniteConfiguration,
-            engineVariables: EngineVariables): Promise<number>;
+    configure(logger: ILogger,
+              fileSystem: IFileSystem,
+              uniteConfiguration: UniteConfiguration,
+              engineVariables: EngineVariables,
+              mainCondition: boolean): Promise<number>;
 
     finalise(logger: ILogger,
              fileSystem: IFileSystem,
              uniteConfiguration: UniteConfiguration,
-             engineVariables: EngineVariables): Promise<number>;
-
-    uninstall(logger: ILogger,
-              fileSystem: IFileSystem,
-              uniteConfiguration: UniteConfiguration,
-              engineVariables: EngineVariables): Promise<number>;
-
+             engineVariables: EngineVariables,
+             mainCondition: boolean): Promise<number>;
 }

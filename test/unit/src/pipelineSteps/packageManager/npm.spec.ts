@@ -61,40 +61,38 @@ describe("Npm", () => {
         });
     });
 
-    describe("install", () => {
+    describe("configure", () => {
         it("can succeed if not correct package manager", async () => {
             uniteConfigurationStub.packageManager = undefined;
             const obj = new Npm();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
         });
 
         it("can succeed if no gitignore", async () => {
             const obj = new Npm();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
         });
 
         it("can succeed and add to gitignore", async () => {
             engineVariablesStub.setConfiguration("GitIgnore", []);
             const obj = new Npm();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration("GitIgnore")).to.be.deep.equal(["node_modules"]);
         });
-    });
 
-    describe("uninstall", () => {
-        it("can be called with no configurations", async () => {
+        it("can be called with no configurations with false mainCondition", async () => {
             const obj = new Npm();
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
         });
 
-        it("can be called with configurations", async () => {
+        it("can be called with configurations with false mainCondition", async () => {
             engineVariablesStub.setConfiguration("GitIgnore", ["node_modules"]);
             const obj = new Npm();
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<string[]>("GitIgnore")).not.contains("node_modules");
         });

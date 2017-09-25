@@ -64,22 +64,22 @@ describe("Browserify", () => {
         it("can be called with bundler matching but failing moduleType", async () => {
             const obj = new Browserify();
             uniteConfigurationStub.moduleType = "AMD";
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("can only use");
         });
 
         it("can be called with bundler matching and working moduleType", async () => {
             const obj = new Browserify();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
         });
     });
 
-    describe("install", () => {
+    describe("configure", () => {
         it("can be called", async () => {
             const obj = new Browserify();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
@@ -87,12 +87,10 @@ describe("Browserify", () => {
 
             Chai.expect(packageJsonDevDependencies.browserify).to.be.equal("1.2.3");
         });
-    });
 
-    describe("uninstall", () => {
-        it("can be called", async () => {
+        it("can be called with false mainCondition", async () => {
             const obj = new Browserify();
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = { browserify: "1.2.3"};

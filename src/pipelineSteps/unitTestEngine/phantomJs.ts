@@ -14,36 +14,18 @@ export class PhantomJs extends PipelineStepBase {
         return super.condition(uniteConfiguration.unitTestEngine, "PhantomJS");
     }
 
-    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["karma-phantomjs-launcher", "bluebird"], super.condition(uniteConfiguration.unitTestRunner, "Karma"));
+    public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        engineVariables.toggleDevDependency(["karma-phantomjs-launcher", "bluebird"], mainCondition && super.condition(uniteConfiguration.unitTestRunner, "Karma"));
 
         const karmaConfiguration = engineVariables.getConfiguration<KarmaConfiguration>("Karma");
         if (karmaConfiguration) {
-            ArrayHelper.addRemove(karmaConfiguration.browsers, "PhantomJS", super.condition(uniteConfiguration.unitTestRunner, "Karma"));
+            ArrayHelper.addRemove(karmaConfiguration.browsers, "PhantomJS", mainCondition && super.condition(uniteConfiguration.unitTestRunner, "Karma"));
 
             const bbInclude = fileSystem.pathToWeb(
                 fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, "bluebird/js/browser/bluebird.js")));
 
             ArrayHelper.addRemove(karmaConfiguration.files, { pattern: bbInclude, included: true, includeType: "polyfill" },
-                                  super.condition(uniteConfiguration.unitTestRunner, "Karma"),
-                                  (obj, item) => obj.pattern === item.pattern);
-        }
-
-        return 0;
-    }
-
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["karma-phantomjs-launcher", "bluebird"], false);
-
-        const karmaConfiguration = engineVariables.getConfiguration<KarmaConfiguration>("Karma");
-        if (karmaConfiguration) {
-            ArrayHelper.addRemove(karmaConfiguration.browsers, "PhantomJS", false);
-
-            const bbInclude = fileSystem.pathToWeb(
-                fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, "bluebird/js/browser/bluebird.js")));
-
-            ArrayHelper.addRemove(karmaConfiguration.files, { pattern: bbInclude, included: true, includeType: "polyfill" },
-                                  false,
+                                  mainCondition && super.condition(uniteConfiguration.unitTestRunner, "Karma"),
                                   (obj, item) => obj.pattern === item.pattern);
         }
 

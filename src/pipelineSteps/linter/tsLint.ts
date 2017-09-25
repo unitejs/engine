@@ -14,47 +14,47 @@ export class TsLint extends PipelineStepBase {
 
     private _configuration: TsLintConfiguration;
 
-    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined {
         return super.condition(uniteConfiguration.linter, "TSLint");
     }
 
     public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
-                            engineVariables: EngineVariables): Promise<number> {
-        if (!super.condition(uniteConfiguration.sourceLanguage, "TypeScript")) {
-            logger.error("You can only use TSLint when the source language is TypeScript");
-            return 1;
-        }
-        return super.fileReadJson<TsLintConfiguration>(logger, fileSystem, engineVariables.wwwRootFolder, TsLint.FILENAME, engineVariables.force, async (obj) => {
-            this._configuration = obj;
+                            engineVariables: EngineVariables,
+                            mainCondition: boolean): Promise<number> {
+        if (mainCondition) {
+            if (!super.condition(uniteConfiguration.sourceLanguage, "TypeScript")) {
+                logger.error("You can only use TSLint when the source language is TypeScript");
+                return 1;
+            }
+            return super.fileReadJson<TsLintConfiguration>(logger, fileSystem, engineVariables.wwwRootFolder, TsLint.FILENAME, engineVariables.force, async (obj) => {
+                this._configuration = obj;
 
-            this.configDefaults(engineVariables);
+                this.configDefaults(engineVariables);
 
+                return 0;
+            });
+        } else {
             return 0;
-        });
+        }
     }
 
-    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["tslint"], true);
+    public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        engineVariables.toggleDevDependency(["tslint"], mainCondition);
 
         return 0;
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        return super.fileWriteJson(logger,
-                                   fileSystem,
-                                   engineVariables.wwwRootFolder,
-                                   TsLint.FILENAME,
-                                   engineVariables.force,
-                                   async() => this._configuration);
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        return super.fileToggleJson(logger,
+                                    fileSystem,
+                                    engineVariables.wwwRootFolder,
+                                    TsLint.FILENAME,
+                                    engineVariables.force,
+                                    mainCondition,
+                                    async () => this._configuration);
 
-    }
-
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["tslint"], false);
-
-        return await super.deleteFileJson(logger, fileSystem, engineVariables.wwwRootFolder, TsLint.FILENAME, engineVariables.force);
     }
 
     private configDefaults(engineVariables: EngineVariables): void {

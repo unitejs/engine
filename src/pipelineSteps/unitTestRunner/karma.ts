@@ -16,85 +16,70 @@ export class Karma extends PipelineStepBase {
 
     private _configuration: KarmaConfiguration;
 
-    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined {
         return super.condition(uniteConfiguration.unitTestRunner, "Karma");
     }
 
-    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        return super.fileReadText(logger,
-                                  fileSystem,
-                                  engineVariables.wwwRootFolder,
-                                  Karma.FILENAME,
-                                  engineVariables.force,
-                                  async (text) => {
-            if (text) {
-                const jsonMatches: RegExpExecArray = /config.set\(((.|\n|\r)*)\)/.exec(text);
-                if (jsonMatches && jsonMatches.length === 3) {
-                    this._configuration = JsonHelper.parseCode(jsonMatches[1]);
-                    if (this._configuration.files) {
-                        let keepFiles = this._configuration.files.filter(item => item.includeType === "polyfill");
-                        keepFiles = keepFiles.concat(this._configuration.files.filter(item => item.includeType === "fixed"));
-                        this._configuration.files = keepFiles;
+    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        if (mainCondition) {
+            return super.fileReadText(logger,
+                                      fileSystem,
+                                      engineVariables.wwwRootFolder,
+                                      Karma.FILENAME,
+                                      engineVariables.force,
+                                      async (text) => {
+                    if (text) {
+                        const jsonMatches: RegExpExecArray = /config.set\(((.|\n|\r)*)\)/.exec(text);
+                        if (jsonMatches && jsonMatches.length === 3) {
+                            this._configuration = JsonHelper.parseCode(jsonMatches[1]);
+                            if (this._configuration.files) {
+                                let keepFiles = this._configuration.files.filter(item => item.includeType === "polyfill");
+                                keepFiles = keepFiles.concat(this._configuration.files.filter(item => item.includeType === "fixed"));
+                                this._configuration.files = keepFiles;
+                            }
+                        } else {
+                            logger.error(`Reading existing ${Karma.FILENAME} regex failed to parse`);
+                            return 1;
+                        }
                     }
-                } else {
-                    logger.error(`Reading existing ${Karma.FILENAME} regex failed to parse`);
-                    return 1;
-                }
-            }
 
-            this.configDefaults(fileSystem, uniteConfiguration, engineVariables);
+                    this.configDefaults(fileSystem, uniteConfiguration, engineVariables);
 
+                    return 0;
+                });
+        } else {
             return 0;
-        });
+        }
     }
 
-    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         engineVariables.toggleDevDependency(["karma",
-                                            "karma-story-reporter",
-                                            "karma-html-reporter",
-                                            "karma-coverage",
-                                            "karma-coverage-allsources",
-                                            "karma-sourcemap-loader",
-                                            "karma-remap-istanbul",
-                                            "remap-istanbul",
-                                            "karma-chrome-launcher",
-                                            "karma-firefox-launcher",
-                                            "karma-phantomjs-launcher",
-                                            "karma-safari-launcher",
-                                            "karma-ie-launcher"
-                                        ],
-                                            true);
+            "karma-story-reporter",
+            "karma-html-reporter",
+            "karma-coverage",
+            "karma-coverage-allsources",
+            "karma-sourcemap-loader",
+            "karma-remap-istanbul",
+            "remap-istanbul",
+            "karma-chrome-launcher",
+            "karma-firefox-launcher",
+            "karma-phantomjs-launcher",
+            "karma-safari-launcher",
+            "karma-ie-launcher"
+        ],
+                                            mainCondition);
 
         return 0;
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        return super.fileWriteLines(logger,
-                                    fileSystem,
-                                    engineVariables.wwwRootFolder,
-                                    Karma.FILENAME,
-                                    engineVariables.force,
-                                    async() => this.generateConfig());
-    }
-
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["karma",
-                                            "karma-story-reporter",
-                                            "karma-html-reporter",
-                                            "karma-coverage",
-                                            "karma-coverage-allsources",
-                                            "karma-sourcemap-loader",
-                                            "karma-remap-istanbul",
-                                            "remap-istanbul",
-                                            "karma-chrome-launcher",
-                                            "karma-firefox-launcher",
-                                            "karma-phantomjs-launcher",
-                                            "karma-safari-launcher",
-                                            "karma-ie-launcher"
-                                        ],
-                                            false);
-
-        return await super.deleteFileLines(logger, fileSystem, engineVariables.wwwRootFolder, Karma.FILENAME, engineVariables.force);
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        return super.fileToggleLines(logger,
+                                     fileSystem,
+                                     engineVariables.wwwRootFolder,
+                                     Karma.FILENAME,
+                                     engineVariables.force,
+                                     mainCondition,
+                                     async () => this.generateConfig());
     }
 
     private configDefaults(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void {
@@ -148,54 +133,54 @@ export class Karma extends PipelineStepBase {
 
         ArrayHelper.addRemove(this._configuration.files,
                               {
-                                   pattern: srcInclude,
-                                   included: false,
-                                   watched: true,
-                                   includeType: "fixed"
-                              },
+                                    pattern: srcInclude,
+                                    included: false,
+                                    watched: true,
+                                    includeType: "fixed"
+                                },
                               true,
                               (object, item) => object.pattern === item.pattern);
 
         ArrayHelper.addRemove(this._configuration.files,
                               {
-                                   pattern: "../unite.json",
-                                   included: false,
-                                   watched: true,
-                                   includeType: "fixed"
-                              },
+                                    pattern: "../unite.json",
+                                    included: false,
+                                    watched: true,
+                                    includeType: "fixed"
+                                },
                               true,
                               (object, item) => object.pattern === item.pattern);
 
         ArrayHelper.addRemove(this._configuration.files,
                               {
-                                   pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
-                                                                                             fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "../unit-module-config.js"))),
-                                   included: true,
-                                   watched: true,
-                                   includeType: "fixed"
-                              },
+                                    pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
+                                                                                              fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "../unit-module-config.js"))),
+                                    included: true,
+                                    watched: true,
+                                    includeType: "fixed"
+                                },
                               true,
                               (object, item) => object.pattern === item.pattern);
 
         ArrayHelper.addRemove(this._configuration.files,
                               {
-                                   pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
-                                                                                             fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "../unit-bootstrap.js"))),
-                                   included: true,
-                                   watched: true,
-                                   includeType: "fixed"
-                              },
+                                    pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
+                                                                                              fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "../unit-bootstrap.js"))),
+                                    included: true,
+                                    watched: true,
+                                    includeType: "fixed"
+                                },
                               true,
                               (object, item) => object.pattern === item.pattern);
 
         ArrayHelper.addRemove(this._configuration.files,
                               {
-                                   pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
-                                                                                             fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "**/*.spec.js"))),
-                                   included: false,
-                                   watched: true,
-                                   includeType: "fixed"
-                              },
+                                    pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
+                                                                                              fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "**/*.spec.js"))),
+                                    included: false,
+                                    watched: true,
+                                    includeType: "fixed"
+                                },
                               true,
                               (object, item) => object.pattern === item.pattern);
 

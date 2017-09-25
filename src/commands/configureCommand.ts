@@ -36,9 +36,9 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
         uniteConfiguration.e2eTestFramework = args.e2eTestFramework || uniteConfiguration.e2eTestFramework;
         uniteConfiguration.linter = args.linter || uniteConfiguration.linter;
         uniteConfiguration.packageManager = args.packageManager || uniteConfiguration.packageManager || "Npm";
-        uniteConfiguration.taskManager = "Gulp";
-        uniteConfiguration.server = "BrowserSync";
-        uniteConfiguration.ide = "VSCode";
+        uniteConfiguration.taskManager = args.taskManager || uniteConfiguration.taskManager;
+        uniteConfiguration.server = args.server || uniteConfiguration.server;
+        uniteConfiguration.ides = args.ides || uniteConfiguration.ides || [];
         uniteConfiguration.applicationFramework = args.applicationFramework || uniteConfiguration.applicationFramework;
         uniteConfiguration.clientPackages = uniteConfiguration.clientPackages || {};
         uniteConfiguration.cssPre = args.cssPre || uniteConfiguration.cssPre;
@@ -135,7 +135,10 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
         if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("cssPost", uniteConfiguration.cssPost))) {
             return 1;
         }
-        if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("ide", uniteConfiguration.ide))) {
+        if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("server", uniteConfiguration.server))) {
+            return 1;
+        }
+        if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("taskManager", uniteConfiguration.taskManager))) {
             return 1;
         }
         if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("packageManager", uniteConfiguration.packageManager))) {

@@ -22,64 +22,45 @@ export class WebdriverIo extends PipelineStepBase {
         return super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO");
     }
 
-    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        this.configDefaults(fileSystem, engineVariables);
+    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        if (mainCondition) {
+            this.configDefaults(fileSystem, engineVariables);
+        }
 
         return 0;
     }
 
-    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         engineVariables.toggleDevDependency(["webdriverio",
                                             "wdio-spec-reporter",
                                             "wdio-allure-reporter",
                                             "browser-sync",
                                             "selenium-standalone",
                                             "allure-commandline"],
-                                            true);
+                                            mainCondition);
 
         engineVariables.toggleDevDependency(["@types/webdriverio"],
-                                            super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
+                                            mainCondition && super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
 
-        engineVariables.toggleDevDependency(["eslint-plugin-webdriverio"], super.condition(uniteConfiguration.linter, "ESLint"));
+        engineVariables.toggleDevDependency(["eslint-plugin-webdriverio"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
-            ArrayHelper.addRemove(esLintConfiguration.plugins, "webdriverio", true);
-            ObjectHelper.addRemove(esLintConfiguration.env, "webdriverio/wdio", true, true);
+            ArrayHelper.addRemove(esLintConfiguration.plugins, "webdriverio", mainCondition);
+            ObjectHelper.addRemove(esLintConfiguration.env, "webdriverio/wdio", true, mainCondition);
         }
 
         return 0;
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        return super.fileWriteLines(logger,
-                                    fileSystem,
-                                    engineVariables.wwwRootFolder,
-                                    WebdriverIo.FILENAME,
-                                    engineVariables.force,
-                                    async () => this.finaliseConfig(fileSystem, uniteConfiguration, engineVariables));
-    }
-
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["webdriverio",
-                                            "wdio-spec-reporter",
-                                            "wdio-allure-reporter",
-                                            "browser-sync",
-                                            "selenium-standalone",
-                                            "allure-commandline"],
-                                            false);
-
-        engineVariables.toggleDevDependency(["@types/webdriverio"], false);
-
-        engineVariables.toggleDevDependency(["eslint-plugin-webdriverio"], false);
-
-        const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
-        if (esLintConfiguration) {
-            ArrayHelper.addRemove(esLintConfiguration.plugins, "webdriverio", false);
-            ObjectHelper.addRemove(esLintConfiguration.env, "webdriverio/wdio", true, false);
-        }
-
-        return await super.deleteFileLines(logger, fileSystem, engineVariables.wwwRootFolder, WebdriverIo.FILENAME, engineVariables.force);
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        return super.fileToggleLines(logger,
+                                     fileSystem,
+                                     engineVariables.wwwRootFolder,
+                                     WebdriverIo.FILENAME,
+                                     engineVariables.force,
+                                     mainCondition,
+                                     async () => this.finaliseConfig(fileSystem, uniteConfiguration, engineVariables));
     }
 
     private configDefaults(fileSystem: IFileSystem, engineVariables: EngineVariables): void {

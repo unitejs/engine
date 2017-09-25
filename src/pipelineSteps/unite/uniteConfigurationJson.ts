@@ -10,13 +10,14 @@ import { PipelineStepBase } from "../../engine/pipelineStepBase";
 export class UniteConfigurationJson extends PipelineStepBase {
     private static FILENAME: string = "unite.json";
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        return super.fileWriteJson(logger,
-                                   fileSystem,
-                                   engineVariables.rootFolder,
-                                   UniteConfigurationJson.FILENAME,
-                                   engineVariables.force,
-                                   async() => {
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        return super.fileToggleJson(logger,
+                                    fileSystem,
+                                    engineVariables.rootFolder,
+                                    UniteConfigurationJson.FILENAME,
+                                    engineVariables.force,
+                                    mainCondition,
+                                    async() => {
                                         uniteConfiguration.uniteVersion = engineVariables.enginePackageJson.version;
                                         return uniteConfiguration;
                                    });

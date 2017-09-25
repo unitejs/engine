@@ -10,24 +10,27 @@ import { PipelineStepBase } from "../../engine/pipelineStepBase";
 export class Css extends PipelineStepBase {
     private static FOLDER: string = "cssSrc";
 
-    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+    private _cssSrcFolder: string;
+
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined {
         return super.condition(uniteConfiguration.cssPre, "Css");
     }
 
     public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
-                            engineVariables: EngineVariables): Promise<number> {
-        uniteConfiguration.styleExtension = "css";
-        engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, Css.FOLDER);
+                            engineVariables: EngineVariables,
+                            mainCondition: boolean): Promise<number> {
+        this._cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, Css.FOLDER);
+
+        if (mainCondition) {
+            uniteConfiguration.styleExtension = "css";
+            engineVariables.www.cssSrcFolder = this._cssSrcFolder;
+        }
         return 0;
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        return await super.createFolder(logger, fileSystem, engineVariables.www.cssSrcFolder);
-    }
-
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        return await super.deleteFolder(logger, fileSystem, fileSystem.pathCombine(engineVariables.wwwRootFolder, Css.FOLDER), engineVariables.force);
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        return await super.folderToggle(logger, fileSystem, this._cssSrcFolder, engineVariables.force, mainCondition);
     }
 }

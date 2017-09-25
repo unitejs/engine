@@ -74,15 +74,15 @@ describe("Gulp", () => {
     describe("intitialise", () => {
         it("can succeed", async () => {
             const obj = new Gulp();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
         });
     });
 
-    describe("install", () => {
+    describe("configure", () => {
         it("can be called", async () => {
             const obj = new Gulp();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
@@ -93,39 +93,10 @@ describe("Gulp", () => {
             Chai.expect(packageJsonDevDependencies["browser-sync"]).to.be.equal("1.2.3");
             Chai.expect(packageJsonDevDependencies["gulp-util"]).to.be.equal("1.2.3");
         });
-    });
 
-    describe("finalise", () => {
-        it("can be called with so that files are deleted", async () => {
-            uniteConfigurationStub.unitTestRunner = "None";
+        it("can be called with false mainCondition", async () => {
             const obj = new Gulp();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-        });
-
-        it("can be called with failing file operations", async () => {
-            sandbox.stub(fileSystemMock, "fileWriteText").rejects();
-            const obj = new Gulp();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(1);
-        });
-
-        it("can be called", async () => {
-            const obj = new Gulp();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-        });
-    });
-
-    describe("uninstall", () => {
-        it("can be called", async () => {
-            await fileSystemMock.directoryCreate("./test/unit/temp/build/tasks");
-
-            const obj = new Gulp();
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {
@@ -141,8 +112,42 @@ describe("Gulp", () => {
             Chai.expect(packageJsonDevDependencies["gulp-karma-runner"]).to.be.equal(undefined);
             Chai.expect(packageJsonDevDependencies["browser-sync"]).to.be.equal(undefined);
             Chai.expect(packageJsonDevDependencies["gulp-util"]).to.be.equal(undefined);
+        });
+    });
 
-            const exists = await fileSystemMock.directoryExists("./test/unit/temp/www/build/tasks");
+    describe("finalise", () => {
+        it("can be called with so that files are deleted", async () => {
+            uniteConfigurationStub.unitTestRunner = "None";
+            const obj = new Gulp();
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            Chai.expect(res).to.be.equal(0);
+        });
+
+        it("can be called with failing file operations", async () => {
+            sandbox.stub(fileSystemMock, "fileWriteText").rejects();
+            const obj = new Gulp();
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            Chai.expect(res).to.be.equal(1);
+        });
+
+        it("can be called", async () => {
+            const obj = new Gulp();
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            Chai.expect(res).to.be.equal(0);
+        });
+
+        it("can be called with false mainCondition", async () => {
+            await fileSystemMock.directoryCreate("./test/unit/temp/build/tasks");
+            await fileSystemMock.fileWriteText("./test/unit/temp/build/tasks", "build.js", "Generated by UniteJS");
+
+            const obj = new Gulp();
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
+            Chai.expect(res).to.be.equal(0);
+
+            const exists = await fileSystemMock.fileExists("./test/unit/temp/www/build/tasks", "build.js");
             Chai.expect(exists).to.be.equal(false);
         });
     });

@@ -16,21 +16,20 @@ export class SJS extends PipelineStepBase {
                super.condition(uniteConfiguration.bundler, "Webpack");
     }
 
-    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         const bundledLoaderCond = super.condition(uniteConfiguration.bundler, "SystemJsBuilder");
-        const notBundledLoaderCond = this.mainCondition(uniteConfiguration, engineVariables);
 
         let scriptIncludeMode: ScriptIncludeMode;
 
-        if (notBundledLoaderCond && bundledLoaderCond) {
+        if (mainCondition && bundledLoaderCond) {
             scriptIncludeMode = "both";
-        } else if (notBundledLoaderCond) {
+        } else if (mainCondition) {
             scriptIncludeMode = "notBundled";
         } else {
             scriptIncludeMode = "none";
         }
 
-        engineVariables.addClientPackage(
+        engineVariables.toggleClientPackage(
             "systemjs",
             "dist/system.src.js",
             "dist/system.js",
@@ -42,9 +41,10 @@ export class SJS extends PipelineStepBase {
             undefined,
             undefined,
             undefined,
-            true);
+            true,
+            mainCondition);
 
-        if (notBundledLoaderCond) {
+        if (mainCondition) {
             const htmlNoBundle = engineVariables.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle");
             if (htmlNoBundle) {
                 htmlNoBundle.body.push("<script src=\"./dist/app-module-config.js\"></script>");
@@ -57,12 +57,6 @@ export class SJS extends PipelineStepBase {
                 htmlNoBundle.body.push("</script>");
             }
         }
-
-        return 0;
-    }
-
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.removeClientPackage("systemjs");
 
         return 0;
     }

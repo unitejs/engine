@@ -18,45 +18,37 @@ export class Protractor extends PipelineStepBase {
     private _scriptStart: string[];
     private _scriptEnd: string[];
 
-    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined {
         return super.condition(uniteConfiguration.e2eTestRunner, "Protractor");
     }
 
-    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        this.configDefaults(fileSystem, engineVariables);
-
-        return 0;
-    }
-
-    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["protractor", "webdriver-manager", "browser-sync"], true);
-
-        const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
-        if (esLintConfiguration) {
-            ObjectHelper.addRemove(esLintConfiguration.env, "protractor", true, true);
+    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        if (mainCondition) {
+            this.configDefaults(fileSystem, engineVariables);
         }
 
         return 0;
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        return super.fileWriteLines(logger,
-                                    fileSystem,
-                                    engineVariables.wwwRootFolder,
-                                    Protractor.FILENAME,
-                                    engineVariables.force,
-                                    async () => this.createConfig());
-    }
-
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["protractor", "webdriver-manager", "browser-sync"], false);
+    public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        engineVariables.toggleDevDependency(["protractor", "webdriver-manager", "browser-sync"], mainCondition);
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
-            ObjectHelper.addRemove(esLintConfiguration.env, "protractor", true, false);
+            ObjectHelper.addRemove(esLintConfiguration.env, "protractor", true, mainCondition);
         }
 
-        return await super.deleteFileLines(logger, fileSystem, engineVariables.wwwRootFolder, Protractor.FILENAME, engineVariables.force);
+        return 0;
+    }
+
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        return super.fileToggleLines(logger,
+                                     fileSystem,
+                                     engineVariables.wwwRootFolder,
+                                     Protractor.FILENAME,
+                                     engineVariables.force,
+                                     mainCondition,
+                                     async () => this.createConfig());
     }
 
     private configDefaults(fileSystem: IFileSystem, engineVariables: EngineVariables): void {
@@ -71,7 +63,7 @@ export class Protractor extends PipelineStepBase {
         };
 
         defaultConfiguration.plugins = [];
-        defaultConfiguration.localSeleniumStandaloneOpts = { jvmArgs: []};
+        defaultConfiguration.localSeleniumStandaloneOpts = { jvmArgs: [] };
 
         this._configuration = ObjectHelper.merge(defaultConfiguration, this._configuration);
 

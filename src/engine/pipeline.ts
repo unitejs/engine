@@ -44,34 +44,20 @@ export class Pipeline {
             }
         }
 
-        const pipelineInstall: IPipelineStep[] = [];
-        const pipelineUninstall: IPipelineStep[] = [];
+        const pipelineAdd: IPipelineStep[] = [];
+        const pipelineRemove: IPipelineStep[] = [];
 
         for (const pipelineStep of pipeline) {
             const condition = pipelineStep.mainCondition(uniteConfiguration, engineVariables);
             if (condition || condition === undefined) {
-                pipelineInstall.push(pipelineStep);
+                pipelineAdd.push(pipelineStep);
             } else {
-                pipelineUninstall.push(pipelineStep);
+                pipelineRemove.push(pipelineStep);
             }
-        }
 
-        for (const pipelineStep of pipelineUninstall) {
-            try {
-                const ret = await pipelineStep.uninstall(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
-                if (ret !== 0) {
-                    return ret;
-                }
-            } catch (err) {
-                this._logger.error(`Exception uninstalling pipeline step '${ObjectHelper.getClassName(pipelineStep)}'`, err);
-                return 1;
-            }
-        }
-
-        for (const pipelineStep of pipelineInstall) {
             try {
                 this._logger.info("Initialising", { step: ObjectHelper.getClassName(pipelineStep) });
-                const ret = await pipelineStep.initialise(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
+                const ret = await pipelineStep.initialise(this._logger, this._fileSystem, uniteConfiguration, engineVariables, condition || condition === undefined);
                 if (ret !== 0) {
                     return ret;
                 }
@@ -81,10 +67,10 @@ export class Pipeline {
             }
         }
 
-        for (const pipelineStep of pipelineInstall) {
+        for (const pipelineStep of pipelineRemove) {
             try {
-                this._logger.info("Installing", { step: ObjectHelper.getClassName(pipelineStep) });
-                const ret = await pipelineStep.install(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
+                this._logger.info("Uninstalling", { step: ObjectHelper.getClassName(pipelineStep) });
+                const ret = await pipelineStep.configure(this._logger, this._fileSystem, uniteConfiguration, engineVariables, false);
                 if (ret !== 0) {
                     return ret;
                 }
@@ -94,10 +80,36 @@ export class Pipeline {
             }
         }
 
-        for (const pipelineStep of pipelineInstall) {
+        for (const pipelineStep of pipelineAdd) {
+            try {
+                this._logger.info("Installing", { step: ObjectHelper.getClassName(pipelineStep) });
+                const ret = await pipelineStep.configure(this._logger, this._fileSystem, uniteConfiguration, engineVariables, true);
+                if (ret !== 0) {
+                    return ret;
+                }
+            } catch (err) {
+                this._logger.error(`Exception installing pipeline step '${ObjectHelper.getClassName(pipelineStep)}'`, err);
+                return 1;
+            }
+        }
+
+        for (const pipelineStep of pipelineRemove) {
             try {
                 this._logger.info("Finalising", { step: ObjectHelper.getClassName(pipelineStep) });
-                const ret = await pipelineStep.finalise(this._logger, this._fileSystem, uniteConfiguration, engineVariables);
+                const ret = await pipelineStep.finalise(this._logger, this._fileSystem, uniteConfiguration, engineVariables, false);
+                if (ret !== 0) {
+                    return ret;
+                }
+            } catch (err) {
+                this._logger.error(`Exception finalising pipeline step '${ObjectHelper.getClassName(pipelineStep)}'`, err);
+                return 1;
+            }
+        }
+
+        for (const pipelineStep of pipelineAdd) {
+            try {
+                this._logger.info("Finalising", { step: ObjectHelper.getClassName(pipelineStep) });
+                const ret = await pipelineStep.finalise(this._logger, this._fileSystem, uniteConfiguration, engineVariables, true);
                 if (ret !== 0) {
                     return ret;
                 }

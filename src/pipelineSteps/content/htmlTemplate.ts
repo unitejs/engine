@@ -15,7 +15,7 @@ export class HtmlTemplate extends PipelineStepBase {
     private _htmlNoBundle: HtmlTemplateConfiguration;
     private _htmlBundle: HtmlTemplateConfiguration;
 
-    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         this._htmlNoBundle = {
             head: [],
             body: []
@@ -36,11 +36,11 @@ export class HtmlTemplate extends PipelineStepBase {
         return 0;
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        let ret = await this.createTemplate(logger, fileSystem, uniteConfiguration, engineVariables, HtmlTemplate.FILENAME_NO_BUNDLE, this._htmlNoBundle, false);
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        let ret = await this.createTemplate(logger, fileSystem, uniteConfiguration, engineVariables, HtmlTemplate.FILENAME_NO_BUNDLE, this._htmlNoBundle, false, mainCondition);
 
         if (ret === 0) {
-            ret = await this.createTemplate(logger, fileSystem, uniteConfiguration, engineVariables, HtmlTemplate.FILENAME_BUNDLE, this._htmlBundle, true);
+            ret = await this.createTemplate(logger, fileSystem, uniteConfiguration, engineVariables, HtmlTemplate.FILENAME_BUNDLE, this._htmlBundle, true, mainCondition);
         }
 
         return ret;
@@ -52,13 +52,15 @@ export class HtmlTemplate extends PipelineStepBase {
                                 engineVariables: EngineVariables,
                                 filename: string,
                                 engineVariablesHtml: HtmlTemplateConfiguration,
-                                isBundled: boolean): Promise<number> {
-        return super.fileWriteLines(logger,
-                                    fileSystem,
-                                    engineVariables.wwwRootFolder,
-                                    filename,
-                                    engineVariables.force,
-                                    async() => {
+                                isBundled: boolean,
+                                mainCondition: boolean): Promise<number> {
+        return super.fileToggleLines(logger,
+                                     fileSystem,
+                                     engineVariables.wwwRootFolder,
+                                     filename,
+                                     engineVariables.force,
+                                     mainCondition,
+                                     async() => {
             const lines: string[] = [];
             let indent = 0;
             this.addLine(indent, lines, "<!doctype html>");

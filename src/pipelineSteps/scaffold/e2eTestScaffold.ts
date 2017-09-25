@@ -12,11 +12,7 @@ export class E2eTestScaffold extends PipelineStepBase {
         return !super.condition(uniteConfiguration.e2eTestRunner, "None");
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        return await super.createFolder(logger, fileSystem, engineVariables.www.e2eTestFolder);
-    }
-
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        return super.deleteFolder(logger, fileSystem, engineVariables.www.e2eTestFolder, engineVariables.force);
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        return await super.folderToggle(logger, fileSystem, engineVariables.www.e2eTestFolder, engineVariables.force, mainCondition);
     }
 }

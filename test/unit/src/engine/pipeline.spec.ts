@@ -16,15 +16,13 @@ import { FileSystemMock } from "../fileSystem.mock";
 class TestStep extends PipelineStepBase {
     public mainCond: boolean | undefined;
     public initFail: number;
-    public uninstallFail: number;
-    public installFail: number;
+    public configureFail: number;
     public finaliseFail: number;
 
     constructor() {
         super();
         this.initFail = 0;
-        this.uninstallFail = 0;
-        this.installFail = 0;
+        this.configureFail = 0;
         this.finaliseFail = 0;
     }
 
@@ -32,32 +30,25 @@ class TestStep extends PipelineStepBase {
         return this.mainCond;
     }
 
-    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         if (this.initFail === 2) {
             throw(new Error("error!"));
         }
         return this.initFail;
     }
 
-    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        if (this.installFail === 2) {
+    public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        if (this.configureFail === 2) {
             throw(new Error("error!"));
         }
-        return this.installFail;
+        return this.configureFail;
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         if (this.finaliseFail === 2) {
             throw(new Error("error!"));
         }
         return this.finaliseFail;
-    }
-
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        if (this.uninstallFail === 2) {
-            throw(new Error("error!"));
-        }
-        return this.uninstallFail;
     }
 }
 
@@ -127,42 +118,6 @@ describe("Pipeline", () => {
             Chai.expect(ret).to.be.equal(0);
         });
 
-        it("can fail pipeline with step uninstall fail", async () => {
-            const obj = new Pipeline(loggerStub, fileSystemStub, modulePath);
-            obj.add("engine", "dummyStep.mock");
-            const testStep = new TestStep();
-            testStep.mainCond = false;
-            testStep.uninstallFail = 1;
-            obj.tryLoad = sandbox.stub().returns(true);
-            obj.getStep = sandbox.stub().returns(testStep);
-            const ret = await obj.run(uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(ret).to.be.equal(1);
-        });
-
-        it("can fail pipeline with step uninstall throws exception", async () => {
-            const obj = new Pipeline(loggerStub, fileSystemStub, modulePath);
-            obj.add("engine", "dummyStep.mock");
-            const testStep = new TestStep();
-            testStep.mainCond = false;
-            testStep.uninstallFail = 2;
-            obj.tryLoad = sandbox.stub().returns(true);
-            obj.getStep = sandbox.stub().returns(testStep);
-            const ret = await obj.run(uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(ret).to.be.equal(1);
-        });
-
-        it("can succeed pipeline with step uninstall", async () => {
-            const obj = new Pipeline(loggerStub, fileSystemStub, modulePath);
-            obj.add("engine", "dummyStep.mock");
-            const testStep = new TestStep();
-            testStep.mainCond = false;
-            testStep.uninstallFail = 0;
-            obj.tryLoad = sandbox.stub().returns(true);
-            obj.getStep = sandbox.stub().returns(testStep);
-            const ret = await obj.run(uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(ret).to.be.equal(0);
-        });
-
         it("can fail pipeline with step initialise fail", async () => {
             const obj = new Pipeline(loggerStub, fileSystemStub, modulePath);
             obj.add("engine", "dummyStep.mock");
@@ -196,40 +151,76 @@ describe("Pipeline", () => {
             Chai.expect(ret).to.be.equal(0);
         });
 
-        it("can fail pipeline with step install fail", async () => {
+        it("can fail pipeline with step configure mainCondition true fail", async () => {
             const obj = new Pipeline(loggerStub, fileSystemStub, modulePath);
             obj.add("engine", "dummyStep.mock");
             const testStep = new TestStep();
-            testStep.installFail = 1;
+            testStep.configureFail = 1;
             obj.tryLoad = sandbox.stub().returns(true);
             obj.getStep = sandbox.stub().returns(testStep);
             const ret = await obj.run(uniteConfigurationStub, engineVariablesStub);
             Chai.expect(ret).to.be.equal(1);
         });
 
-        it("can fail pipeline with step install throws exception", async () => {
+        it("can fail pipeline with step configure mainCondition true throws exception", async () => {
             const obj = new Pipeline(loggerStub, fileSystemStub, modulePath);
             obj.add("engine", "dummyStep.mock");
             const testStep = new TestStep();
-            testStep.installFail = 2;
+            testStep.configureFail = 2;
             obj.tryLoad = sandbox.stub().returns(true);
             obj.getStep = sandbox.stub().returns(testStep);
             const ret = await obj.run(uniteConfigurationStub, engineVariablesStub);
             Chai.expect(ret).to.be.equal(1);
         });
 
-        it("can succeed pipeline with step install", async () => {
+        it("can succeed pipeline with step configuremainCondition true ", async () => {
             const obj = new Pipeline(loggerStub, fileSystemStub, modulePath);
             obj.add("engine", "dummyStep.mock");
             const testStep = new TestStep();
-            testStep.installFail = 0;
+            testStep.configureFail = 0;
             obj.tryLoad = sandbox.stub().returns(true);
             obj.getStep = sandbox.stub().returns(testStep);
             const ret = await obj.run(uniteConfigurationStub, engineVariablesStub);
             Chai.expect(ret).to.be.equal(0);
         });
 
-        it("can fail pipeline with step finalise fail", async () => {
+        it("can fail pipeline with step configure mainCondition false fail", async () => {
+            const obj = new Pipeline(loggerStub, fileSystemStub, modulePath);
+            obj.add("engine", "dummyStep.mock");
+            const testStep = new TestStep();
+            testStep.configureFail = 1;
+            testStep.mainCond = false;
+            obj.tryLoad = sandbox.stub().returns(true);
+            obj.getStep = sandbox.stub().returns(testStep);
+            const ret = await obj.run(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(ret).to.be.equal(1);
+        });
+
+        it("can fail pipeline with step configure mainCondition false throws exception", async () => {
+            const obj = new Pipeline(loggerStub, fileSystemStub, modulePath);
+            obj.add("engine", "dummyStep.mock");
+            const testStep = new TestStep();
+            testStep.configureFail = 2;
+            testStep.mainCond = false;
+            obj.tryLoad = sandbox.stub().returns(true);
+            obj.getStep = sandbox.stub().returns(testStep);
+            const ret = await obj.run(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(ret).to.be.equal(1);
+        });
+
+        it("can succeed pipeline with step configure mainCondition false", async () => {
+            const obj = new Pipeline(loggerStub, fileSystemStub, modulePath);
+            obj.add("engine", "dummyStep.mock");
+            const testStep = new TestStep();
+            testStep.configureFail = 0;
+            testStep.mainCond = false;
+            obj.tryLoad = sandbox.stub().returns(true);
+            obj.getStep = sandbox.stub().returns(testStep);
+            const ret = await obj.run(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(ret).to.be.equal(0);
+        });
+
+        it("can fail pipeline with step finalise mainCondition false true", async () => {
             const obj = new Pipeline(loggerStub, fileSystemStub, modulePath);
             obj.add("engine", "dummyStep.mock");
             const testStep = new TestStep();
@@ -240,7 +231,7 @@ describe("Pipeline", () => {
             Chai.expect(ret).to.be.equal(1);
         });
 
-        it("can fail pipeline with step finalise throws exception", async () => {
+        it("can fail pipeline with step finalise mainCondition true throws exception", async () => {
             const obj = new Pipeline(loggerStub, fileSystemStub, modulePath);
             obj.add("engine", "dummyStep.mock");
             const testStep = new TestStep();
@@ -251,11 +242,47 @@ describe("Pipeline", () => {
             Chai.expect(ret).to.be.equal(1);
         });
 
-        it("can succeed pipeline with step finalise", async () => {
+        it("can succeed pipeline with step finalise mainCondition true", async () => {
             const obj = new Pipeline(loggerStub, fileSystemStub, modulePath);
             obj.add("engine", "dummyStep.mock");
             const testStep = new TestStep();
             testStep.finaliseFail = 0;
+            obj.tryLoad = sandbox.stub().returns(true);
+            obj.getStep = sandbox.stub().returns(testStep);
+            const ret = await obj.run(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(ret).to.be.equal(0);
+        });
+
+        it("can fail pipeline with step finalise mainCondition false fail", async () => {
+            const obj = new Pipeline(loggerStub, fileSystemStub, modulePath);
+            obj.add("engine", "dummyStep.mock");
+            const testStep = new TestStep();
+            testStep.finaliseFail = 1;
+            testStep.mainCond = false;
+            obj.tryLoad = sandbox.stub().returns(true);
+            obj.getStep = sandbox.stub().returns(testStep);
+            const ret = await obj.run(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(ret).to.be.equal(1);
+        });
+
+        it("can fail pipeline with step finalise mainCondition false throws exception", async () => {
+            const obj = new Pipeline(loggerStub, fileSystemStub, modulePath);
+            obj.add("engine", "dummyStep.mock");
+            const testStep = new TestStep();
+            testStep.finaliseFail = 2;
+            testStep.mainCond = false;
+            obj.tryLoad = sandbox.stub().returns(true);
+            obj.getStep = sandbox.stub().returns(testStep);
+            const ret = await obj.run(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(ret).to.be.equal(1);
+        });
+
+        it("can succeed pipeline with step finalise mainCondition false", async () => {
+            const obj = new Pipeline(loggerStub, fileSystemStub, modulePath);
+            obj.add("engine", "dummyStep.mock");
+            const testStep = new TestStep();
+            testStep.finaliseFail = 0;
+            testStep.mainCond = false;
             obj.tryLoad = sandbox.stub().returns(true);
             obj.getStep = sandbox.stub().returns(testStep);
             const ret = await obj.run(uniteConfigurationStub, engineVariablesStub);

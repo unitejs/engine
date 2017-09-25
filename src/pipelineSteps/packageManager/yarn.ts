@@ -18,39 +18,20 @@ export class Yarn extends PipelineStepBase implements IPackageManager {
         return super.condition(uniteConfiguration.packageManager, "Yarn");
     }
 
-    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         const gitIgnoreConfiguration = engineVariables.getConfiguration<string[]>("GitIgnore");
         if (gitIgnoreConfiguration) {
-            ArrayHelper.addRemove(gitIgnoreConfiguration, "node_modules", true);
+            ArrayHelper.addRemove(gitIgnoreConfiguration, "node_modules", mainCondition);
         }
 
         const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
         if (typeScriptConfiguration) {
-            ArrayHelper.addRemove(typeScriptConfiguration.exclude, "node_modules", true);
+            ArrayHelper.addRemove(typeScriptConfiguration.exclude, "node_modules", mainCondition);
         }
 
         const javaScriptConfiguration = engineVariables.getConfiguration<JavaScriptConfiguration>("JavaScript");
         if (javaScriptConfiguration) {
-            ArrayHelper.addRemove(javaScriptConfiguration.exclude, "node_modules", true);
-        }
-
-        return 0;
-    }
-
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        const gitIgnoreConfiguration = engineVariables.getConfiguration<string[]>("GitIgnore");
-        if (gitIgnoreConfiguration) {
-            ArrayHelper.addRemove(gitIgnoreConfiguration, "node_modules", false);
-        }
-
-        const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
-        if (typeScriptConfiguration) {
-            ArrayHelper.addRemove(typeScriptConfiguration.exclude, "node_modules", false);
-        }
-
-        const javaScriptConfiguration = engineVariables.getConfiguration<JavaScriptConfiguration>("JavaScript");
-        if (javaScriptConfiguration) {
-            ArrayHelper.addRemove(javaScriptConfiguration.exclude, "node_modules", false);
+            ArrayHelper.addRemove(javaScriptConfiguration.exclude, "node_modules", mainCondition);
         }
 
         return 0;

@@ -75,7 +75,7 @@ describe("MochaChai", () => {
         });
     });
 
-    describe("install", () => {
+    describe("configure", () => {
         it("can be called with unit framework defined", async () => {
             uniteConfigurationStub.sourceLanguage = "TypeScript";
             uniteConfigurationStub.unitTestRunner = "Karma";
@@ -84,7 +84,7 @@ describe("MochaChai", () => {
             engineVariablesStub.setConfiguration("Karma", { frameworks: [] });
 
             const obj = new MochaChai();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
@@ -111,7 +111,7 @@ describe("MochaChai", () => {
             engineVariablesStub.setConfiguration("Protractor", { framework: "", mochaOpts: {} });
 
             const obj = new MochaChai();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
@@ -138,7 +138,7 @@ describe("MochaChai", () => {
             engineVariablesStub.setConfiguration("WebdriverIO", { framework: "" });
 
             const obj = new MochaChai();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
@@ -156,12 +156,10 @@ describe("MochaChai", () => {
             Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor")).to.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<WebdriverIoConfiguration>("WebdriverIO").framework).to.be.equal("mocha");
         });
-    });
 
-    describe("uninstall", () => {
-        it("can be called with no configurations", async () => {
+        it("can be called with no configurations with false mainCondition", async () => {
             const obj = new MochaChai();
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {
@@ -190,7 +188,7 @@ describe("MochaChai", () => {
             engineVariablesStub.setConfiguration("WebdriverIO", { framework: "mocha"});
 
             const obj = new MochaChai();
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
 
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").env.mocha).to.be.equal(undefined);

@@ -8,14 +8,14 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class OutputDirectory extends PipelineStepBase {
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        let ret = await super.createFolder(logger, fileSystem, engineVariables.rootFolder);
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        let ret = await super.folderToggle(logger, fileSystem, engineVariables.rootFolder, engineVariables.force, mainCondition);
 
         if (ret === 0) {
-            ret = await super.createFolder(logger, fileSystem, engineVariables.wwwRootFolder);
+            ret = await super.folderToggle(logger, fileSystem, engineVariables.wwwRootFolder, engineVariables.force, mainCondition);
 
             if (ret === 0) {
-                ret = await super.createFolder(logger, fileSystem, engineVariables.packagedRootFolder);
+                ret = await super.folderToggle(logger, fileSystem, engineVariables.packagedRootFolder, engineVariables.force, mainCondition);
             }
         }
 

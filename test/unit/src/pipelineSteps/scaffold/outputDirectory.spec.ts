@@ -48,27 +48,27 @@ describe("OutputDirectory", () => {
         it("can throw an exception on first create", async () => {
             sandbox.stub(fileSystemMock, "directoryCreate").rejects("error");
             const obj = new OutputDirectory();
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
         });
 
         it("can throw an exception on second create", async () => {
             sandbox.stub(fileSystemMock, "directoryCreate").onSecondCall().rejects("error");
             const obj = new OutputDirectory();
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
         });
 
         it("can throw an exception on third create", async () => {
             sandbox.stub(fileSystemMock, "directoryCreate").onThirdCall().rejects("error");
             const obj = new OutputDirectory();
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
         });
 
         it("can succeed", async () => {
             const obj = new OutputDirectory();
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
         });
     });

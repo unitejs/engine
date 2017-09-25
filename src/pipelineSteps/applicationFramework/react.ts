@@ -15,31 +15,33 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { SharedAppFramework } from "../sharedAppFramework";
 
 export class React extends SharedAppFramework {
-    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined {
         return super.condition(uniteConfiguration.applicationFramework, "React");
     }
 
-    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        ArrayHelper.addRemove(uniteConfiguration.viewExtensions, "html", true);
+    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        if (mainCondition) {
+            ArrayHelper.addRemove(uniteConfiguration.viewExtensions, "html", true);
 
-        ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "tsx",
-                              super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
+            ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "tsx",
+                                  super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
 
-        ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "jsx",
-                              super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
+            ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "jsx",
+                                  super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
+        }
 
         return 0;
     }
 
-    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["babel-preset-react"], super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
-        engineVariables.toggleDevDependency(["eslint-plugin-react"], super.condition(uniteConfiguration.linter, "ESLint"));
+    public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        engineVariables.toggleDevDependency(["babel-preset-react"], mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
+        engineVariables.toggleDevDependency(["eslint-plugin-react"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
 
         engineVariables.toggleDevDependency(["@types/react", "@types/react-dom", "@types/react-router-dom"],
-                                            super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
+                                            mainCondition && super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
 
-        engineVariables.toggleDevDependency(["unitejs-react-protractor-plugin"], super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
-        engineVariables.toggleDevDependency(["unitejs-react-webdriver-plugin"], super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
+        engineVariables.toggleDevDependency(["unitejs-react-protractor-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
+        engineVariables.toggleDevDependency(["unitejs-react-webdriver-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
 
         engineVariables.toggleClientPackage(
             "react",
@@ -54,7 +56,7 @@ export class React extends SharedAppFramework {
             undefined,
             undefined,
             undefined,
-            true);
+            mainCondition);
 
         engineVariables.toggleClientPackage(
             "react-dom",
@@ -69,7 +71,7 @@ export class React extends SharedAppFramework {
             undefined,
             undefined,
             undefined,
-            true);
+            mainCondition);
 
         engineVariables.toggleClientPackage(
             "react-router-dom",
@@ -84,119 +86,71 @@ export class React extends SharedAppFramework {
             undefined,
             undefined,
             undefined,
-            true);
+            mainCondition);
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
-            ObjectHelper.addRemove(esLintConfiguration.parserOptions.ecmaFeatures, "jsx", true, true);
-            ArrayHelper.addRemove(esLintConfiguration.extends, "plugin:react/recommended", true);
-            ArrayHelper.addRemove(esLintConfiguration.plugins, "react", true);
+            ObjectHelper.addRemove(esLintConfiguration.parserOptions.ecmaFeatures, "jsx", true, mainCondition);
+            ArrayHelper.addRemove(esLintConfiguration.extends, "plugin:react/recommended", mainCondition);
+            ArrayHelper.addRemove(esLintConfiguration.plugins, "react", mainCondition);
         }
 
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
         if (babelConfiguration) {
-            ArrayHelper.addRemove(babelConfiguration.presets, "react", true);
+            ArrayHelper.addRemove(babelConfiguration.presets, "react", mainCondition);
         }
 
         const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
         if (protractorConfiguration) {
             const plugin = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
                                                                             fileSystem.pathCombine(engineVariables.www.packageFolder, "unitejs-react-protractor-plugin")));
-            ArrayHelper.addRemove(protractorConfiguration.plugins, { path: plugin }, true, (object, item) => object.path === item.path);
+            ArrayHelper.addRemove(protractorConfiguration.plugins, { path: plugin }, mainCondition, (object, item) => object.path === item.path);
         }
         const webdriverIoPlugins = engineVariables.getConfiguration<string[]>("WebdriverIO.Plugins");
         if (webdriverIoPlugins) {
-            ArrayHelper.addRemove(webdriverIoPlugins, "unitejs-react-webdriver-plugin", true);
+            ArrayHelper.addRemove(webdriverIoPlugins, "unitejs-react-webdriver-plugin", mainCondition);
         }
 
         const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
         if (typeScriptConfiguration) {
-            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "jsx", "react", true);
-            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "experimentalDecorators", true, true);
+            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "jsx", "react", mainCondition);
+            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "experimentalDecorators", true, mainCondition);
         }
 
         const javaScriptConfiguration = engineVariables.getConfiguration<JavaScriptConfiguration>("JavaScript");
         if (javaScriptConfiguration) {
-            ObjectHelper.addRemove(javaScriptConfiguration.compilerOptions, "experimentalDecorators", true, true);
+            ObjectHelper.addRemove(javaScriptConfiguration.compilerOptions, "experimentalDecorators", true, mainCondition);
         }
 
         return 0;
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        const sourceExtension = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? ".ts" : ".js";
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        if (mainCondition) {
+            const sourceExtension = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? ".ts" : ".js";
 
-        let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [
-            `app${sourceExtension}x`,
-            `child/child${sourceExtension}x`,
-            `bootstrapper${sourceExtension}`,
-            `entryPoint${sourceExtension}`
-        ]);
-
-        if (ret === 0) {
-            ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
+            let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [
+                `app${sourceExtension}x`,
+                `child/child${sourceExtension}x`,
+                `bootstrapper${sourceExtension}`,
+                `entryPoint${sourceExtension}`
+            ]);
 
             if (ret === 0) {
-                ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`, `bootstrapper.spec${sourceExtension}`], true);
+                ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
 
                 if (ret === 0) {
-                    ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
+                    ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`, `bootstrapper.spec${sourceExtension}`], true);
+
+                    if (ret === 0) {
+                        ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
+                    }
                 }
             }
+
+            return ret;
+        } else {
+            return 0;
         }
-
-        return ret;
-    }
-
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["babel-preset-react"], false);
-        engineVariables.toggleDevDependency(["eslint-plugin-react"], false);
-
-        engineVariables.toggleDevDependency(["@types/react", "@types/react-dom", "@types/react-router-dom"], false);
-
-        engineVariables.toggleDevDependency(["unitejs-react-protractor-plugin"], false);
-        engineVariables.toggleDevDependency(["unitejs-react-webdriver-plugin"], false);
-
-        engineVariables.removeClientPackage("react");
-
-        engineVariables.removeClientPackage("react-dom");
-
-        engineVariables.removeClientPackage("react-router-dom");
-
-        const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
-        if (esLintConfiguration) {
-            ObjectHelper.addRemove(esLintConfiguration.parserOptions.ecmaFeatures, "jsx", true, false);
-            ArrayHelper.addRemove(esLintConfiguration.extends, "plugin:react/recommended", false);
-            ArrayHelper.addRemove(esLintConfiguration.plugins, "react", false);
-        }
-
-        const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
-        if (babelConfiguration) {
-            ArrayHelper.addRemove(babelConfiguration.presets, "react", false);
-        }
-
-        const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
-        if (protractorConfiguration) {
-            const plugin = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
-                                                                            fileSystem.pathCombine(engineVariables.www.packageFolder, "unitejs-react-protractor-plugin")));
-            ArrayHelper.addRemove(protractorConfiguration.plugins, { path: plugin }, false, (object, item) => object.path === item.path);
-        }
-        const webdriverIoPlugins = engineVariables.getConfiguration<string[]>("WebdriverIO.Plugins");
-        if (webdriverIoPlugins) {
-            ArrayHelper.addRemove(webdriverIoPlugins, "unitejs-react-webdriver-plugin", false);
-        }
-
-        const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
-        if (typeScriptConfiguration) {
-            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "jsx", "react", false);
-            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "experimentalDecorators", true, false);
-        }
-
-        const javaScriptConfiguration = engineVariables.getConfiguration<JavaScriptConfiguration>("JavaScript");
-        if (javaScriptConfiguration) {
-            ObjectHelper.addRemove(javaScriptConfiguration.compilerOptions, "experimentalDecorators", true, false);
-        }
-
-        return 0;
     }
 }

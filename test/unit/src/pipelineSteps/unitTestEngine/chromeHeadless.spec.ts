@@ -63,10 +63,10 @@ describe("ChromeHeadless", () => {
         });
     });
 
-    describe("install", () => {
+    describe("configure", () => {
         it("can be called with no configurations", async () => {
             const obj = new ChromeHeadless();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
@@ -78,7 +78,7 @@ describe("ChromeHeadless", () => {
             engineVariablesStub.setConfiguration("Karma", { browsers: [] });
 
             const obj = new ChromeHeadless();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
@@ -87,12 +87,10 @@ describe("ChromeHeadless", () => {
 
             Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma").browsers).contains("ChromeHeadless");
         });
-    });
 
-    describe("uninstall", () => {
-        it("can be called with no configurations", async () => {
+        it("can be called with no configurations with false mainCondition", async () => {
             const obj = new ChromeHeadless();
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = { "karma-chrome-launcher": "1.2.3"};
@@ -100,11 +98,11 @@ describe("ChromeHeadless", () => {
             Chai.expect(packageJsonDevDependencies["karma-chrome-launcher"]).to.be.equal(undefined);
         });
 
-        it("can be called with configurations", async () => {
+        it("can be called with configuration with false mainConditions", async () => {
             engineVariablesStub.setConfiguration("Karma", { browsers: [ "ChromeHeadless" ] });
 
             const obj = new ChromeHeadless();
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = { "karma-chrome-launcher": "1.2.3"};

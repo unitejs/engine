@@ -11,16 +11,16 @@ export class Assets extends PipelineStepBase {
     private static FILENAME: string = "logo-tile.svg";
     private static FILENAME2: string = "logo-transparent.svg";
 
-    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["unitejs-image-cli"], true);
+    public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        engineVariables.toggleDevDependency(["unitejs-image-cli"], mainCondition);
         return 0;
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        let ret = await super.createFolder(logger, fileSystem, engineVariables.www.assetsSrcFolder);
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        let ret = await super.folderToggle(logger, fileSystem, engineVariables.www.assetsSrcFolder, engineVariables.force, mainCondition);
 
         if (ret === 0) {
-            ret = await super.createFolder(logger, fileSystem, engineVariables.www.assetsFolder);
+            ret = await super.folderToggle(logger, fileSystem, engineVariables.www.assetsFolder, engineVariables.force, mainCondition);
 
             if (ret === 0) {
                 const sourceThemeFolder = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "assetsSrc/theme/");
@@ -35,10 +35,5 @@ export class Assets extends PipelineStepBase {
         }
 
         return ret;
-    }
-
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["unitejs-image-cli"], false);
-        return 0;
     }
 }

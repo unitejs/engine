@@ -77,10 +77,10 @@ describe("SJS", () => {
         });
     });
 
-    describe("install", () => {
+    describe("configure", () => {
         it("can be called with matching bundled loader and non bundled loader", async () => {
             const obj = new SJS();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDependencies: { [id: string]: string } = {};
@@ -93,7 +93,7 @@ describe("SJS", () => {
         it("can be called with not matching bundled loader and matching non bundled loader", async () => {
             uniteConfigurationStub.bundler = "Browserify";
             const obj = new SJS();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDependencies: { [id: string]: string } = {};
@@ -103,33 +103,18 @@ describe("SJS", () => {
             Chai.expect(packageJsonDependencies.systemjs).to.be.equal("1.2.3");
         });
 
-        it("can be called with not matching bundled loader and not matching non bundled loader", async () => {
-            uniteConfigurationStub.bundler = "RequireJS";
-            const obj = new SJS();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-
-            const packageJsonDependencies: { [id: string]: string } = {};
-            engineVariablesStub.buildDependencies(uniteConfigurationStub, packageJsonDependencies);
-
-            Chai.expect(uniteConfigurationStub.clientPackages.systemjs.scriptIncludeMode).to.be.equal("none");
-            Chai.expect(packageJsonDependencies.systemjs).to.be.equal("1.2.3");
-        });
-
         it("can be called with configuration", async () => {
             engineVariablesStub.setConfiguration("HTMLNoBundle", { body: [] });
             const obj = new SJS();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             Chai.expect(engineVariablesStub.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle").body.length).to.be.equal(8);
         });
-    });
 
-    describe("uninstall", () => {
-        it("can be called", async () => {
+        it("can be called with false mainCondition", async () => {
             const obj = new SJS();
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDependencies: { [id: string]: string } = {

@@ -17,74 +17,70 @@ export class EsLint extends PipelineStepBase {
     private _configuration: EsLintConfiguration;
     private _ignore: string[];
 
-    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined {
         return super.condition(uniteConfiguration.linter, "ESLint");
     }
 
     public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
-                            engineVariables: EngineVariables): Promise<number> {
-        if (!super.condition(uniteConfiguration.sourceLanguage, "JavaScript")) {
-            logger.error("You can only use ESLint when the source language is JavaScript");
-            return 1;
+                            engineVariables: EngineVariables,
+                            mainCondition: boolean): Promise<number> {
+        if (mainCondition) {
+            if (!super.condition(uniteConfiguration.sourceLanguage, "JavaScript")) {
+                logger.error("You can only use ESLint when the source language is JavaScript");
+                return 1;
+            }
+
+            return super.fileReadJson<EsLintConfiguration>(logger,
+                                                           fileSystem,
+                                                           engineVariables.wwwRootFolder,
+                                                           EsLint.FILENAME,
+                                                           engineVariables.force,
+                                                           async (obj) => {
+                    this._configuration = obj;
+                    return super.fileReadLines(logger,
+                                               fileSystem,
+                                               engineVariables.wwwRootFolder,
+                                               EsLint.FILENAME2,
+                                               engineVariables.force,
+                                               async (lines) => {
+                            this._ignore = lines;
+                            this.configDefaults(engineVariables);
+                            return 0;
+                        });
+
+                });
+        } else {
+            return 0;
         }
-
-        return super.fileReadJson<EsLintConfiguration>(logger,
-                                                       fileSystem,
-                                                       engineVariables.wwwRootFolder,
-                                                       EsLint.FILENAME,
-                                                       engineVariables.force,
-                                                       async (obj) => {
-            this._configuration = obj;
-            return super.fileReadLines(logger,
-                                       fileSystem,
-                                       engineVariables.wwwRootFolder,
-                                       EsLint.FILENAME2,
-                                       engineVariables.force,
-                                       async (lines) => {
-                                            this._ignore = lines;
-                                            this.configDefaults(engineVariables);
-                                            return 0;
-                                        });
-
-        });
     }
 
-    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["eslint"], true);
+    public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        engineVariables.toggleDevDependency(["eslint"], mainCondition);
 
         return 0;
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        let ret = await super.fileWriteJson(logger,
-                                            fileSystem,
-                                            engineVariables.wwwRootFolder,
-                                            EsLint.FILENAME, engineVariables.force,
-                                            async () => this._configuration);
-
-        if (ret === 0) {
-            ret = await super.fileWriteLines(logger,
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        let ret = await super.fileToggleJson(logger,
                                              fileSystem,
                                              engineVariables.wwwRootFolder,
-                                             EsLint.FILENAME2,
-                                             engineVariables.force,
-                                             async () => {
-                                                    this._ignore.push(super.wrapGeneratedMarker("# ", ""));
-                                                    return this._ignore;
-                                                });
-        }
+                                             EsLint.FILENAME, engineVariables.force,
+                                             mainCondition,
+                                             async () => this._configuration);
 
-        return ret;
-    }
-
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["eslint"], false);
-
-        let ret = await super.deleteFileJson(logger, fileSystem, engineVariables.wwwRootFolder, EsLint.FILENAME, engineVariables.force);
         if (ret === 0) {
-            ret = await super.deleteFileLines(logger, fileSystem, engineVariables.wwwRootFolder, EsLint.FILENAME2, engineVariables.force);
+            ret = await super.fileToggleLines(logger,
+                                              fileSystem,
+                                              engineVariables.wwwRootFolder,
+                                              EsLint.FILENAME2,
+                                              engineVariables.force,
+                                              mainCondition,
+                                              async () => {
+                    this._ignore.push(super.wrapGeneratedMarker("# ", ""));
+                    return this._ignore;
+                });
         }
 
         return ret;

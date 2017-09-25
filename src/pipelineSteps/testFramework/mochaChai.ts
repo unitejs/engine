@@ -18,18 +18,18 @@ export class MochaChai extends PipelineStepBase {
         return super.condition(uniteConfiguration.unitTestFramework, "MochaChai") || super.condition(uniteConfiguration.e2eTestFramework, "MochaChai");
     }
 
-    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         const isUnit = super.condition(uniteConfiguration.unitTestFramework, "MochaChai");
         const isE2E = super.condition(uniteConfiguration.e2eTestFramework, "MochaChai");
 
-        engineVariables.toggleDevDependency(["mocha"], true);
-        engineVariables.toggleDevDependency(["@types/mocha", "@types/chai"], super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
+        engineVariables.toggleDevDependency(["mocha"], mainCondition);
+        engineVariables.toggleDevDependency(["@types/mocha", "@types/chai"], mainCondition && super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
 
-        engineVariables.toggleDevDependency(["karma-mocha", "karma-chai"], super.condition(uniteConfiguration.unitTestRunner, "Karma") && isUnit);
+        engineVariables.toggleDevDependency(["karma-mocha", "karma-chai"], mainCondition && super.condition(uniteConfiguration.unitTestRunner, "Karma") && isUnit);
 
-        engineVariables.toggleDevDependency(["mochawesome-screenshots"], super.condition(uniteConfiguration.e2eTestRunner, "Protractor") && isE2E);
+        engineVariables.toggleDevDependency(["mochawesome-screenshots"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "Protractor") && isE2E);
 
-        engineVariables.toggleDevDependency(["wdio-mocha-framework"], super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO") && isE2E);
+        engineVariables.toggleDevDependency(["wdio-mocha-framework"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO") && isE2E);
 
         engineVariables.toggleClientPackage(
             "chai",
@@ -44,77 +44,39 @@ export class MochaChai extends PipelineStepBase {
             undefined,
             undefined,
             undefined,
-            true);
+            mainCondition);
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
-            ObjectHelper.addRemove(esLintConfiguration.env, "mocha", true, true);
+            ObjectHelper.addRemove(esLintConfiguration.env, "mocha", true, mainCondition);
         }
 
         const karmaConfiguration = engineVariables.getConfiguration<KarmaConfiguration>("Karma");
         if (karmaConfiguration) {
-            ArrayHelper.addRemove(karmaConfiguration.frameworks, "mocha", isUnit);
-        }
-
-        if (isE2E) {
-            const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
-            if (protractorConfiguration) {
-                ObjectHelper.addRemove(protractorConfiguration, "framework", "mocha", true);
-
-                const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.reportsFolder));
-
-                ObjectHelper.addRemove(protractorConfiguration, "mochaOpts", {
-                                            reporter: "mochawesome-screenshots",
-                                            reporterOptions: {
-                                                reportDir: `${reportsFolder}/e2e/`,
-                                                reportName: "index",
-                                                takePassedScreenshot: true
-                                            },
-                                            timeout: 10000
-                                        },
-                                       true);
-            }
-
-            const webdriverIoConfiguration = engineVariables.getConfiguration<WebdriverIoConfiguration>("WebdriverIO");
-            if (webdriverIoConfiguration) {
-                ObjectHelper.addRemove(webdriverIoConfiguration, "framework", "mocha", true);
-            }
-        }
-
-        return 0;
-    }
-
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["mocha"], false);
-        engineVariables.toggleDevDependency(["@types/mocha", "@types/chai"], false);
-
-        engineVariables.toggleDevDependency(["karma-mocha", "karma-chai"], false);
-
-        engineVariables.toggleDevDependency(["mochawesome-screenshots"], false);
-
-        engineVariables.toggleDevDependency(["wdio-mocha-framework"], false);
-
-        engineVariables.removeClientPackage("chai");
-
-        const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
-        if (esLintConfiguration) {
-            ObjectHelper.addRemove(esLintConfiguration.env, "mocha", true, false);
-        }
-
-        const karmaConfiguration = engineVariables.getConfiguration<KarmaConfiguration>("Karma");
-        if (karmaConfiguration) {
-            ArrayHelper.addRemove(karmaConfiguration.frameworks, "mocha", false);
+            ArrayHelper.addRemove(karmaConfiguration.frameworks, "mocha", mainCondition && isUnit);
         }
 
         const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
         if (protractorConfiguration) {
-            ObjectHelper.addRemove(protractorConfiguration, "framework", "mocha", false);
-            ObjectHelper.addRemove(protractorConfiguration, "mochaOpts", undefined, false);
+            ObjectHelper.addRemove(protractorConfiguration, "framework", "mocha", mainCondition && isE2E);
+
+            const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.reportsFolder));
+
+            ObjectHelper.addRemove(protractorConfiguration, "mochaOpts", {
+                                        reporter: "mochawesome-screenshots",
+                                        reporterOptions: {
+                                            reportDir: `${reportsFolder}/e2e/`,
+                                            reportName: "index",
+                                            takePassedScreenshot: true
+                                        },
+                                        timeout: 10000
+                                    },
+                                   mainCondition && isE2E);
         }
 
         const webdriverIoConfiguration = engineVariables.getConfiguration<WebdriverIoConfiguration>("WebdriverIO");
         if (webdriverIoConfiguration) {
-            ObjectHelper.addRemove(webdriverIoConfiguration, "framework", "mocha", false);
+            ObjectHelper.addRemove(webdriverIoConfiguration, "framework", "mocha", mainCondition && isE2E);
         }
 
         return 0;

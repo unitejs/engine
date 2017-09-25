@@ -10,13 +10,14 @@ import { PipelineStepBase } from "../../engine/pipelineStepBase";
 export class License extends PipelineStepBase {
     private static FILENAME: string = "LICENSE";
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        return super.fileWriteText(logger,
-                                   fileSystem,
-                                   engineVariables.wwwRootFolder,
-                                   License.FILENAME,
-                                   engineVariables.force,
-                                   async() => {
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        return super.fileToggleText(logger,
+                                    fileSystem,
+                                    engineVariables.wwwRootFolder,
+                                    License.FILENAME,
+                                    engineVariables.force,
+                                    mainCondition,
+                                    async() => {
             const yearString = new Date().getFullYear().toString();
             return engineVariables.license.licenseText.replace(/<year>/gi, yearString);
         });

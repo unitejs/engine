@@ -12,10 +12,7 @@ export class UnitTestScaffold extends PipelineStepBase {
         return !super.condition(uniteConfiguration.unitTestRunner, "None");
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        return await super.createFolder(logger, fileSystem, engineVariables.www.unitTestFolder);
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        return await super.folderToggle(logger, fileSystem, engineVariables.www.unitTestFolder, engineVariables.force, mainCondition);
     }
-
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        return super.deleteFolder(logger, fileSystem, engineVariables.www.unitTestFolder, engineVariables.force);
-    }}
+}

@@ -19,17 +19,19 @@ export class Angular extends SharedAppFramework {
         return super.condition(uniteConfiguration.applicationFramework, "Angular");
     }
 
-    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        if (super.condition(uniteConfiguration.bundler, "RequireJS")) {
-            logger.error(`Angular does not currently support bundling with ${uniteConfiguration.bundler}`);
-            return 1;
+    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        if (mainCondition) {
+            if (super.condition(uniteConfiguration.bundler, "RequireJS")) {
+                logger.error(`Angular does not currently support bundling with ${uniteConfiguration.bundler}`);
+                return 1;
+            }
+            ArrayHelper.addRemove(uniteConfiguration.viewExtensions, "html", true);
         }
-        ArrayHelper.addRemove(uniteConfiguration.viewExtensions, "html", true);
         return 0;
     }
 
-    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        this.toggleDependencies(logger, uniteConfiguration, engineVariables, true);
+    public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        this.toggleDependencies(logger, uniteConfiguration, engineVariables, mainCondition);
 
         const usingGulp = super.condition(uniteConfiguration.taskManager, "Gulp");
         if (usingGulp) {
@@ -42,128 +44,90 @@ export class Angular extends SharedAppFramework {
             engineVariables.buildTranspilePreBuild.push("        }) : gutil.noop())");
         }
 
-        engineVariables.toggleDevDependency(["gulp-inline-ng2-template"], usingGulp);
+        engineVariables.toggleDevDependency(["gulp-inline-ng2-template"], mainCondition && usingGulp);
 
         engineVariables.toggleDevDependency(["babel-plugin-transform-decorators-legacy"],
-                                            super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
-        engineVariables.toggleDevDependency(["babel-eslint"], super.condition(uniteConfiguration.linter, "ESLint"));
+                                            mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
+        engineVariables.toggleDevDependency(["babel-eslint"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
         engineVariables.toggleDevDependency(["@types/systemjs"],
-                                            super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
+                                            mainCondition && super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
 
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
         if (babelConfiguration) {
-            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", true);
+            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", mainCondition);
         }
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
-            ObjectHelper.addRemove(esLintConfiguration.globals, "__moduleName", true, true);
-            ObjectHelper.addRemove(esLintConfiguration.globals, "module", true, true);
-            ObjectHelper.addRemove(esLintConfiguration, "parser", "babel-eslint", true);
-            ObjectHelper.addRemove(esLintConfiguration.rules, "no-unused-vars", 1, true);
+            ObjectHelper.addRemove(esLintConfiguration.globals, "__moduleName", true, mainCondition);
+            ObjectHelper.addRemove(esLintConfiguration.globals, "module", true, mainCondition);
+            ObjectHelper.addRemove(esLintConfiguration, "parser", "babel-eslint", mainCondition);
+            ObjectHelper.addRemove(esLintConfiguration.rules, "no-unused-vars", 1, mainCondition);
         }
 
         const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
         if (typeScriptConfiguration) {
-            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "experimentalDecorators", true, true);
+            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "experimentalDecorators", true, mainCondition);
         }
 
         const javaScriptConfiguration = engineVariables.getConfiguration<JavaScriptConfiguration>("JavaScript");
         if (javaScriptConfiguration) {
-            ObjectHelper.addRemove(javaScriptConfiguration.compilerOptions, "experimentalDecorators", true, true);
+            ObjectHelper.addRemove(javaScriptConfiguration.compilerOptions, "experimentalDecorators", true, mainCondition);
         }
 
         const tsLintConfiguration = engineVariables.getConfiguration<TsLintConfiguration>("TSLint");
         if (tsLintConfiguration) {
-            ObjectHelper.addRemove(tsLintConfiguration.rules, "no-empty", { severity: "warning" }, true);
-            ObjectHelper.addRemove(tsLintConfiguration.rules, "no-empty-interface", { severity: "warning" }, true);
-            ObjectHelper.addRemove(tsLintConfiguration.rules, "interface-name", false, true);
+            ObjectHelper.addRemove(tsLintConfiguration.rules, "no-empty", { severity: "warning" }, mainCondition);
+            ObjectHelper.addRemove(tsLintConfiguration.rules, "no-empty-interface", { severity: "warning" }, mainCondition);
+            ObjectHelper.addRemove(tsLintConfiguration.rules, "interface-name", false, mainCondition);
         }
 
         return 0;
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        const sourceExtension = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? ".ts" : ".js";
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        if (mainCondition) {
+            const sourceExtension = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? ".ts" : ".js";
 
-        let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [
-            `app.component${sourceExtension}`,
-            `app.module${sourceExtension}`,
-            `child/child.component${sourceExtension}`,
-            `bootstrapper${sourceExtension}`,
-            `entryPoint${sourceExtension}`
-        ]);
-
-        if (ret === 0) {
-            ret = await super.generateAppHtml(logger, fileSystem, uniteConfiguration, engineVariables, ["app.component.html", "child/child.component.html"]);
+            let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [
+                `app.component${sourceExtension}`,
+                `app.module${sourceExtension}`,
+                `child/child.component${sourceExtension}`,
+                `bootstrapper${sourceExtension}`,
+                `entryPoint${sourceExtension}`
+            ]);
 
             if (ret === 0) {
-                ret = await super.generateAppCss(logger, fileSystem, uniteConfiguration, engineVariables, ["app.component", "child/child.component"]);
+                ret = await super.generateAppHtml(logger, fileSystem, uniteConfiguration, engineVariables, ["app.component.html", "child/child.component.html"]);
 
                 if (ret === 0) {
-                    ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
+                    ret = await super.generateAppCss(logger, fileSystem, uniteConfiguration, engineVariables, ["app.component", "child/child.component"]);
 
                     if (ret === 0) {
-                        ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`bootstrapper.spec${sourceExtension}`], true);
+                        ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
 
                         if (ret === 0) {
-                            ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.module.spec${sourceExtension}`], false);
+                            ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`bootstrapper.spec${sourceExtension}`], true);
 
                             if (ret === 0) {
-                                ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
+                                ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.module.spec${sourceExtension}`], false);
+
+                                if (ret === 0) {
+                                    ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
-        return ret;
+            return ret;
+        } else {
+            return 0;
+        }
     }
 
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        this.toggleDependencies(logger, uniteConfiguration, engineVariables, false);
-
-        engineVariables.toggleDevDependency(["gulp-inline-ng2-template"], false);
-
-        engineVariables.toggleDevDependency(["babel-plugin-transform-decorators-legacy"], false);
-        engineVariables.toggleDevDependency(["babel-eslint"], false);
-        engineVariables.toggleDevDependency(["@types/systemjs"], false);
-
-        const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
-        if (babelConfiguration) {
-            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", false);
-        }
-
-        const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
-        if (esLintConfiguration) {
-            ObjectHelper.addRemove(esLintConfiguration.globals, "__moduleName", true, false);
-            ObjectHelper.addRemove(esLintConfiguration.globals, "module", true, false);
-            ObjectHelper.addRemove(esLintConfiguration, "parser", "babel-eslint", false);
-            ObjectHelper.addRemove(esLintConfiguration.rules, "no-unused-vars", 1, false);
-        }
-
-        const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
-        if (typeScriptConfiguration) {
-            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "experimentalDecorators", true, false);
-        }
-
-        const javaScriptConfiguration = engineVariables.getConfiguration<JavaScriptConfiguration>("JavaScript");
-        if (javaScriptConfiguration) {
-            ObjectHelper.addRemove(javaScriptConfiguration.compilerOptions, "experimentalDecorators", true, false);
-        }
-
-        const tsLintConfiguration = engineVariables.getConfiguration<TsLintConfiguration>("TSLint");
-        if (tsLintConfiguration) {
-            ObjectHelper.addRemove(tsLintConfiguration.rules, "no-empty", undefined, false);
-            ObjectHelper.addRemove(tsLintConfiguration.rules, "no-empty-interface", undefined, false);
-            ObjectHelper.addRemove(tsLintConfiguration.rules, "interface-name", undefined, false);
-        }
-
-        return 0;
-    }
-
-    public toggleDependencies(logger: ILogger, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, toggle: boolean): void {
+    public toggleDependencies(logger: ILogger, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): void {
         const packages = ["core", "common", "compiler", "platform-browser", "platform-browser-dynamic", "http", "router", "forms"];
 
         packages.forEach(pkg => {
@@ -185,7 +149,7 @@ export class Angular extends SharedAppFramework {
                 undefined,
                 undefined,
                 undefined,
-                toggle);
+                mainCondition);
         });
 
         engineVariables.toggleClientPackage(
@@ -201,7 +165,7 @@ export class Angular extends SharedAppFramework {
             undefined,
             undefined,
             undefined,
-            toggle);
+            mainCondition);
 
         engineVariables.toggleClientPackage(
             "core-js",
@@ -216,7 +180,7 @@ export class Angular extends SharedAppFramework {
             undefined,
             undefined,
             undefined,
-            toggle);
+            mainCondition);
 
         engineVariables.toggleClientPackage(
             "zone.js",
@@ -238,7 +202,7 @@ export class Angular extends SharedAppFramework {
             undefined,
             undefined,
             undefined,
-            toggle);
+            mainCondition);
 
         engineVariables.toggleClientPackage(
             "reflect-metadata",
@@ -253,6 +217,6 @@ export class Angular extends SharedAppFramework {
             undefined,
             undefined,
             undefined,
-            toggle);
+            mainCondition);
     }
 }

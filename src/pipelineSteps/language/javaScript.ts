@@ -15,52 +15,51 @@ export class JavaScript extends PipelineStepBase {
 
     private _configuration: BabelConfiguration;
 
-    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined {
         return super.condition(uniteConfiguration.sourceLanguage, "JavaScript");
     }
 
     public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
-                            engineVariables: EngineVariables): Promise<number> {
-        return super.fileReadJson<BabelConfiguration>(logger,
-                                                      fileSystem,
-                                                      engineVariables.wwwRootFolder,
-                                                      JavaScript.FILENAME,
-                                                      engineVariables.force,
-                                                      async (obj) => {
-            this._configuration = obj;
+                            engineVariables: EngineVariables,
+                            mainCondition: boolean): Promise<number> {
+        if (mainCondition) {
+            return super.fileReadJson<BabelConfiguration>(logger,
+                                                          fileSystem,
+                                                          engineVariables.wwwRootFolder,
+                                                          JavaScript.FILENAME,
+                                                          engineVariables.force,
+                                                          async (obj) => {
+                    this._configuration = obj;
 
-            ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "js", true);
-            this.configDefaults(engineVariables);
+                    ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "js", true);
+                    this.configDefaults(engineVariables);
 
+                    return 0;
+                });
+        } else {
             return 0;
-        });
+        }
     }
 
-    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        // Removing and old dependency always false
         engineVariables.toggleDevDependency(["babel-preset-es2015"], false);
-        engineVariables.toggleDevDependency(["babel-core", "babel-preset-env"], super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
+        engineVariables.toggleDevDependency(["babel-core", "babel-preset-env"], mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
 
         return 0;
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        return super.fileWriteJson(logger,
-                                   fileSystem,
-                                   engineVariables.wwwRootFolder,
-                                   JavaScript.FILENAME,
-                                   engineVariables.force,
-                                   async() => this._configuration);
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        return super.fileToggleJson(logger,
+                                    fileSystem,
+                                    engineVariables.wwwRootFolder,
+                                    JavaScript.FILENAME,
+                                    engineVariables.force,
+                                    mainCondition,
+                                    async () => this._configuration);
 
-    }
-
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "js", false);
-        engineVariables.toggleDevDependency(["babel-preset-es2015"], false);
-        engineVariables.toggleDevDependency(["babel-core", "babel-preset-env"], false);
-
-        return await super.deleteFileJson(logger, fileSystem, engineVariables.wwwRootFolder, JavaScript.FILENAME, engineVariables.force);
     }
 
     private configDefaults(engineVariables: EngineVariables): void {

@@ -24,7 +24,7 @@ class TestSharedAppFramework extends SharedAppFramework {
         this.appCssFiles = ["child/child"];
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [`${this.appModuleName}.js`]);
 
         if (ret === 0) {
@@ -113,7 +113,7 @@ describe("SharedAppFramework", () => {
             });
 
             const obj = new TestSharedAppFramework();
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.js");
             Chai.expect(exists).to.be.equal(false);
@@ -130,7 +130,7 @@ describe("SharedAppFramework", () => {
             });
 
             const obj = new TestSharedAppFramework();
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
             let exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.js");
             Chai.expect(exists).to.be.equal(true);
@@ -149,7 +149,7 @@ describe("SharedAppFramework", () => {
             });
 
             const obj = new TestSharedAppFramework();
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
             let exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.html");
             Chai.expect(exists).to.be.equal(true);
@@ -168,7 +168,7 @@ describe("SharedAppFramework", () => {
             });
 
             const obj = new TestSharedAppFramework();
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
             let exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/child/", "child.css");
             Chai.expect(exists).to.be.equal(true);
@@ -188,7 +188,7 @@ describe("SharedAppFramework", () => {
             });
 
             const obj = new TestSharedAppFramework();
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
             let exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/e2e/src/", "app.spec.js");
             Chai.expect(exists).to.be.equal(true);
@@ -207,7 +207,7 @@ describe("SharedAppFramework", () => {
             });
 
             const obj = new TestSharedAppFramework();
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
             let exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/unit/src/", "app.spec.js");
             Chai.expect(exists).to.be.equal(true);
@@ -218,7 +218,7 @@ describe("SharedAppFramework", () => {
         it("can succeed with no unit test runner", async () => {
             const obj = new TestSharedAppFramework();
             uniteConfigurationStub.unitTestRunner = "None";
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/unit/src/", "app.spec.js");
             Chai.expect(exists).to.be.equal(false);
@@ -227,7 +227,7 @@ describe("SharedAppFramework", () => {
         it("can succeed with no e2e test runner", async () => {
             const obj = new TestSharedAppFramework();
             uniteConfigurationStub.e2eTestRunner = "None";
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/e2e/src/", "app.spec.js");
             Chai.expect(exists).to.be.equal(false);
@@ -241,7 +241,7 @@ describe("SharedAppFramework", () => {
             obj.customUnitTests = true;
             uniteConfigurationStub.applicationFramework = "Angular";
 
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.module.js");
             Chai.expect(exists).to.be.equal(true);
@@ -249,7 +249,7 @@ describe("SharedAppFramework", () => {
 
         it("can succeed", async () => {
             const obj = new TestSharedAppFramework();
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/cssSrc/", "reset.css");
             Chai.expect(exists).to.be.equal(true);

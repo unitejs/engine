@@ -14,7 +14,7 @@ export class UniteThemeConfigurationJson extends PipelineStepBase {
 
     private _configuration: UniteThemeConfiguration;
 
-    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         return super.fileReadJson<UniteThemeConfiguration>(logger,
                                                            fileSystem,
                                                            fileSystem.pathCombine(engineVariables.www.assetsSrcFolder, "theme/"),
@@ -29,13 +29,14 @@ export class UniteThemeConfigurationJson extends PipelineStepBase {
         });
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        return super.fileWriteJson(logger,
-                                   fileSystem,
-                                   fileSystem.pathCombine(engineVariables.www.assetsSrcFolder, "theme/"),
-                                   UniteThemeConfigurationJson.FILENAME,
-                                   engineVariables.force,
-                                   async() => this._configuration);
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        return super.fileToggleJson(logger,
+                                    fileSystem,
+                                    fileSystem.pathCombine(engineVariables.www.assetsSrcFolder, "theme/"),
+                                    UniteThemeConfigurationJson.FILENAME,
+                                    engineVariables.force,
+                                    mainCondition,
+                                    async() => this._configuration);
     }
 
     private configDefaults(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void {

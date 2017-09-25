@@ -63,20 +63,18 @@ describe("E2eTestScaffold", () => {
     describe("finalise", () => {
         it("can be called", async () => {
             const obj = new E2eTestScaffold();
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const exists = await fileSystemMock.directoryExists("./test/unit/temp/www/test/e2e");
             Chai.expect(exists).to.be.equal(true);
         });
-    });
 
-    describe("uninstall", () => {
-        it("can be called", async () => {
+        it("can be called with false mainCondition", async () => {
             await fileSystemMock.directoryCreate("./test/unit/temp/www/test/e2e");
 
             const obj = new E2eTestScaffold();
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
 
             const exists = await fileSystemMock.directoryExists("./test/unit/temp/www/test/e2e");

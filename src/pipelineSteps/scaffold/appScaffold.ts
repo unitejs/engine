@@ -8,7 +8,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class AppScaffold extends PipelineStepBase {
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        return await super.createFolder(logger, fileSystem, engineVariables.www.srcFolder);
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        return await super.folderToggle(logger, fileSystem, engineVariables.www.srcFolder, engineVariables.force, mainCondition);
     }
 }

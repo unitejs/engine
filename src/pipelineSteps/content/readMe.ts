@@ -10,13 +10,14 @@ import { PipelineStepBase } from "../../engine/pipelineStepBase";
 export class ReadMe extends PipelineStepBase {
     private static FILENAME: string = "README.md";
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        return super.fileWriteLines(logger,
-                                    fileSystem,
-                                    engineVariables.wwwRootFolder,
-                                    ReadMe.FILENAME,
-                                    engineVariables.force,
-                                    async () => {
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        return super.fileToggleLines(logger,
+                                     fileSystem,
+                                     engineVariables.wwwRootFolder,
+                                     ReadMe.FILENAME,
+                                     engineVariables.force,
+                                     mainCondition,
+                                     async () => {
             const lines = await fileSystem.fileReadLines(engineVariables.engineAssetsFolder, ReadMe.FILENAME);
 
             lines.unshift("");

@@ -47,7 +47,7 @@ describe("AppScaffold", () => {
     describe("finalise", () => {
         it("can be called", async () => {
             const obj = new AppScaffold();
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const exists = await fileSystemMock.directoryExists("./test/unit/temp/www/src");

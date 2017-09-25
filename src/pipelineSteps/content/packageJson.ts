@@ -17,27 +17,29 @@ export class PackageJson extends PipelineStepBase {
     public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
-                            engineVariables: EngineVariables): Promise<number> {
+                            engineVariables: EngineVariables,
+                            mainCondition: boolean): Promise<number> {
         return super.fileReadJson<PackageConfiguration>(logger,
                                                         fileSystem,
                                                         engineVariables.wwwRootFolder,
                                                         PackageJson.FILENAME,
                                                         engineVariables.force,
                                                         async (obj) => {
-            this._configuration = obj;
-            this.configDefaults(uniteConfiguration, engineVariables);
+                this._configuration = obj;
+                this.configDefaults(uniteConfiguration, engineVariables);
 
-            return 0;
-        });
+                return 0;
+            });
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        return super.fileWriteJson(logger,
-                                   fileSystem,
-                                   engineVariables.wwwRootFolder,
-                                   PackageJson.FILENAME,
-                                   engineVariables.force,
-                                   async () => {
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        return super.fileToggleJson(logger,
+                                    fileSystem,
+                                    engineVariables.wwwRootFolder,
+                                    PackageJson.FILENAME,
+                                    engineVariables.force,
+                                    mainCondition,
+                                    async () => {
                 engineVariables.buildDependencies(uniteConfiguration, this._configuration.dependencies);
                 engineVariables.buildDevDependencies(this._configuration.devDependencies);
 

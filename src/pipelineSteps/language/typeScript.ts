@@ -16,51 +16,49 @@ export class TypeScript extends PipelineStepBase {
 
     private _configuration: TypeScriptConfiguration;
 
-    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined {
         return super.condition(uniteConfiguration.sourceLanguage, "TypeScript");
     }
 
     public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
-                            engineVariables: EngineVariables): Promise<number> {
-        return super.fileReadJson<TypeScriptConfiguration>(logger,
-                                                           fileSystem,
-                                                           engineVariables.wwwRootFolder,
-                                                           TypeScript.FILENAME,
-                                                           engineVariables.force,
-                                                           async (obj) => {
-            this._configuration = obj;
+                            engineVariables: EngineVariables,
+                            mainCondition: boolean): Promise<number> {
+        if (mainCondition) {
+            return super.fileReadJson<TypeScriptConfiguration>(logger,
+                                                               fileSystem,
+                                                               engineVariables.wwwRootFolder,
+                                                               TypeScript.FILENAME,
+                                                               engineVariables.force,
+                                                               async (obj) => {
+                    this._configuration = obj;
 
-            ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "ts", true);
-            this.configDefaults(fileSystem, engineVariables);
+                    ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "ts", true);
+                    this.configDefaults(fileSystem, engineVariables);
 
+                    return 0;
+                });
+        } else {
             return 0;
-        });
+        }
     }
 
-    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["typescript", "unitejs-types"], super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
+    public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        engineVariables.toggleDevDependency(["typescript", "unitejs-types"], mainCondition && super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
 
         return 0;
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        return super.fileWriteJson(logger,
-                                   fileSystem,
-                                   engineVariables.wwwRootFolder,
-                                   TypeScript.FILENAME,
-                                   engineVariables.force,
-                                   async() => this._configuration);
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        return super.fileToggleJson(logger,
+                                    fileSystem,
+                                    engineVariables.wwwRootFolder,
+                                    TypeScript.FILENAME,
+                                    engineVariables.force,
+                                    mainCondition,
+                                    async () => this._configuration);
 
-    }
-
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "ts", false);
-
-        engineVariables.toggleDevDependency(["typescript", "unitejs-types"], false);
-
-        return await super.deleteFileJson(logger, fileSystem, engineVariables.wwwRootFolder, TypeScript.FILENAME, engineVariables.force);
     }
 
     private configDefaults(fileSystem: IFileSystem, engineVariables: EngineVariables): void {

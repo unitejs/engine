@@ -65,22 +65,33 @@ describe("Stylus", () => {
     describe("initialise", () => {
         it("can setup the engine configuration", async () => {
             const obj = new Stylus();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(uniteConfigurationStub.styleExtension).to.be.equal("styl");
         });
     });
 
-    describe("install", () => {
+    describe("configure", () => {
         it("can be called", async () => {
             const obj = new Stylus();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
             Chai.expect(packageJsonDevDependencies.stylus).to.be.equal("1.2.3");
+        });
+
+        it("can be called with false mainCondition", async () => {
+            const obj = new Stylus();
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
+            Chai.expect(res).to.be.equal(0);
+
+            const packageJsonDevDependencies: { [id: string]: string } = { stylus: "1.2.3"};
+            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
+            Chai.expect(packageJsonDevDependencies.stylus).to.be.equal(undefined);
         });
     });
 
@@ -88,7 +99,7 @@ describe("Stylus", () => {
         it("can fail if an exception is thrown", async () => {
             sandbox.stub(fileSystemMock, "directoryCreate").throws("error");
             const obj = new Stylus();
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
         });
@@ -97,27 +108,21 @@ describe("Stylus", () => {
             await fileSystemMock.directoryCreate("./test/unit/temp/www/");
 
             const obj = new Stylus();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const exists = await fileSystemMock.directoryExists("./test/unit/temp/www/stylus");
             Chai.expect(exists).to.be.equal(true);
         });
-    });
 
-    describe("uninstall", () => {
-        it("can delete dirs", async () => {
+        it("can delete dirs with false mainCondition", async () => {
             await fileSystemMock.directoryCreate("./test/unit/temp/www/stylus");
 
             const obj = new Stylus();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
-
-            const packageJsonDevDependencies: { [id: string]: string } = { stylus: "1.2.3"};
-            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
-            Chai.expect(packageJsonDevDependencies.stylus).to.be.equal(undefined);
 
             const exists = await fileSystemMock.directoryExists("./test/unit/temp/www/stylus");
             Chai.expect(exists).to.be.equal(false);

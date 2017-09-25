@@ -13,7 +13,7 @@ export class GitIgnore extends PipelineStepBase {
 
     private _ignore: string[];
 
-    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         return super.fileReadLines(logger,
                                    fileSystem,
                                    engineVariables.wwwRootFolder,
@@ -26,13 +26,14 @@ export class GitIgnore extends PipelineStepBase {
                                     });
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        return super.fileWriteLines(logger,
-                                    fileSystem,
-                                    engineVariables.wwwRootFolder,
-                                    GitIgnore.FILENAME,
-                                    engineVariables.force,
-                                    async () => {
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        return super.fileToggleLines(logger,
+                                     fileSystem,
+                                     engineVariables.wwwRootFolder,
+                                     GitIgnore.FILENAME,
+                                     engineVariables.force,
+                                     mainCondition,
+                                     async () => {
                                         this._ignore.push(super.wrapGeneratedMarker("# ", ""));
                                         return this._ignore;
                                     });

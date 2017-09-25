@@ -16,45 +16,35 @@ export class Electron extends PipelineStepBase {
         return super.objectCondition(uniteConfiguration.platforms, Electron.PLATFORM);
     }
 
-    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
+    public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         engineVariables.toggleDevDependency(["archiver",
                                             "electron-packager",
                                             "unitejs-image-cli"],
-                                            super.condition(uniteConfiguration.taskManager, "Gulp"));
+                                            mainCondition && super.condition(uniteConfiguration.taskManager, "Gulp"));
 
         return 0;
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        if (super.condition(uniteConfiguration.taskManager, "Gulp")) {
-            const buildTasks = fileSystem.pathCombine(engineVariables.www.buildFolder, "/tasks/");
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        const buildTasks = fileSystem.pathCombine(engineVariables.www.buildFolder, "/tasks/");
+        const buildAssetPlatform = fileSystem.pathCombine(engineVariables.www.buildFolder, "/assets/platform/electron/");
+
+        if (mainCondition && super.condition(uniteConfiguration.taskManager, "Gulp")) {
             const assetTasksPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/platform/");
             let ret = await this.copyFile(logger, fileSystem, assetTasksPlatform, Electron.FILENAME, buildTasks, Electron.FILENAME, engineVariables.force);
 
             if (ret === 0) {
-                const buildAssetPlatform = fileSystem.pathCombine(engineVariables.www.buildFolder, "/assets/platform/electron/");
                 const assetPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/assets/platform/electron/");
                 ret = await this.copyFile(logger, fileSystem, assetPlatform, Electron.FILENAME2, buildAssetPlatform, Electron.FILENAME2, engineVariables.force);
             }
 
             return ret;
+        } else {
+            let ret = await super.fileDeleteText(logger, fileSystem, buildTasks, Electron.FILENAME, engineVariables.force);
+            if (ret === 0) {
+                ret = await super.fileDeleteText(logger, fileSystem, buildAssetPlatform, Electron.FILENAME2, engineVariables.force);
+            }
+            return ret;
         }
-
-        return 0;
-    }
-
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["archiver",
-                                            "electron-packager",
-                                            "unitejs-image-cli"],
-                                            false);
-
-        const buildTasks = fileSystem.pathCombine(engineVariables.www.buildFolder, "/tasks/");
-        let ret = await super.deleteFileText(logger, fileSystem, buildTasks, Electron.FILENAME, engineVariables.force);
-        if (ret === 0) {
-            const buildAssetPlatform = fileSystem.pathCombine(engineVariables.www.buildFolder, "/assets/platform/electron/");
-            ret = await super.deleteFileText(logger, fileSystem, buildAssetPlatform, Electron.FILENAME2, engineVariables.force);
-        }
-        return ret;
     }
 }

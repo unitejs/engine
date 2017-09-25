@@ -14,42 +14,41 @@ export class PostCss extends PipelineStepBase {
 
     private _configuration: PostCssConfiguration;
 
-    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined {
         return super.condition(uniteConfiguration.cssPost, "PostCss");
     }
 
-    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        return super.fileReadJson<PostCssConfiguration>(logger,
-                                                        fileSystem,
-                                                        engineVariables.wwwRootFolder,
-                                                        PostCss.FILENAME,
-                                                        engineVariables.force,
-                                                        async (obj) => {
-            this._configuration = obj;
-            this.configDefaults(engineVariables);
+    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        if (mainCondition) {
+            return super.fileReadJson<PostCssConfiguration>(logger,
+                                                            fileSystem,
+                                                            engineVariables.wwwRootFolder,
+                                                            PostCss.FILENAME,
+                                                            engineVariables.force,
+                                                            async (obj) => {
+                    this._configuration = obj;
+                    this.configDefaults(engineVariables);
 
+                    return 0;
+                });
+        } else {
             return 0;
-        });
+        }
     }
 
-    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["postcss", "postcss-import", "autoprefixer", "cssnano"], true);
+    public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        engineVariables.toggleDevDependency(["postcss", "postcss-import", "autoprefixer", "cssnano"], mainCondition);
         return 0;
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        return super.fileWriteJson(logger,
-                                   fileSystem,
-                                   engineVariables.wwwRootFolder,
-                                   PostCss.FILENAME,
-                                   engineVariables.force,
-                                   async() => this._configuration);
-    }
-
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["postcss", "postcss-import", "autoprefixer", "cssnano"], false);
-
-        return await super.deleteFileJson(logger, fileSystem, engineVariables.wwwRootFolder, PostCss.FILENAME, engineVariables.force);
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        return super.fileToggleJson(logger,
+                                    fileSystem,
+                                    engineVariables.wwwRootFolder,
+                                    PostCss.FILENAME,
+                                    engineVariables.force,
+                                    mainCondition,
+                                    async () => this._configuration);
     }
 
     private configDefaults(engineVariables: EngineVariables): void {

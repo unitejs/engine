@@ -67,23 +67,23 @@ describe("TypeScript", () => {
             fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
             fileSystemMock.fileReadJson = sandbox.stub().resolves({ compilerOptions: { target: "es6" } });
             const obj = new TypeScript();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.target).to.be.equal("es6");
         });
 
         it("can succeed when file does not exist", async () => {
             const obj = new TypeScript();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.target).to.be.equal("es5");
         });
     });
 
-    describe("install", () => {
+    describe("configure", () => {
         it("can be called", async () => {
             const obj = new TypeScript();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
@@ -92,26 +92,10 @@ describe("TypeScript", () => {
             Chai.expect(packageJsonDevDependencies.typescript).to.be.equal("1.2.3");
             Chai.expect(packageJsonDevDependencies["unitejs-types"]).to.be.equal("1.2.3");
         });
-    });
 
-    describe("finalise", () => {
-        it("can succeed writing", async () => {
-            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
-
+        it("can be called with false mainCondition", async () => {
             const obj = new TypeScript();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            Chai.expect(res).to.be.equal(0);
-
-            const exists = await fileSystemMock.fileExists("./test/unit/temp/www/", "tsconfig.json");
-            Chai.expect(exists).to.be.equal(true);
-        });
-    });
-
-    describe("uninstall", () => {
-        it("can be called", async () => {
-            const obj = new TypeScript();
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {
@@ -122,6 +106,29 @@ describe("TypeScript", () => {
 
             Chai.expect(packageJsonDevDependencies.tslint).to.be.equal(undefined);
             Chai.expect(packageJsonDevDependencies["unitejs-types"]).to.be.equal(undefined);
+        });
+    });
+
+    describe("finalise", () => {
+        it("can succeed writing", async () => {
+            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
+
+            const obj = new TypeScript();
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            Chai.expect(res).to.be.equal(0);
+
+            const exists = await fileSystemMock.fileExists("./test/unit/temp/www/", "tsconfig.json");
+            Chai.expect(exists).to.be.equal(true);
+        });
+
+        it("can be called with false mainCondition", async () => {
+            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
+            await fileSystemMock.fileWriteJson("./test/unit/temp/www/", "tsconfig.json", {});
+
+            const obj = new TypeScript();
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
+            Chai.expect(res).to.be.equal(0);
 
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/", "tsconfig.json");
             Chai.expect(exists).to.be.equal(false);

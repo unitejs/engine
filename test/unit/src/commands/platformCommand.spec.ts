@@ -104,7 +104,7 @@ describe("PlatformCommand", () => {
             taskManager: "Gulp",
             server: "BrowserSync",
             applicationFramework: "PlainApp",
-            ide: "",
+            ides: ["VSCode"],
             uniteVersion: "0.0.0",
             sourceExtensions: [],
             viewExtensions: [],

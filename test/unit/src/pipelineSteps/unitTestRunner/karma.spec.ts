@@ -67,7 +67,7 @@ describe("Karma", () => {
         it("can fail when exception is thrown on config", async () => {
             fileSystemMock.fileExists = sandbox.stub().throws("error");
             const obj = new Karma();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(engineVariablesStub.getConfiguration("Karma")).to.be.equal(undefined);
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
@@ -77,17 +77,24 @@ describe("Karma", () => {
             fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
             fileSystemMock.fileReadText = sandbox.stub().resolves("{ reporters: [\"story2\"] }");
             const obj = new Karma();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(engineVariablesStub.getConfiguration("Karma")).to.be.equal(undefined);
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed to parse");
+        });
+
+        it("can setup the engine configuration when mainCondition is not set", async () => {
+            const obj = new Karma();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration("Karma")).to.be.equal(undefined);
         });
 
         it("can succeed when file does exist", async () => {
             fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
             fileSystemMock.fileReadText = sandbox.stub().resolves("config.set({ reporters: [\"story2\"] });");
             const obj = new Karma();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma").reporters).to.contain("story2");
         });
@@ -102,23 +109,34 @@ describe("Karma", () => {
             ];
             fileSystemMock.fileReadText = sandbox.stub().resolves(`config.set({ files: ${JsonHelper.codify(data)} });`);
             const obj = new Karma();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma").files[0].pattern).to.be.equal("blah");
             Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma").files[1].pattern).to.be.equal("doh");
         });
     });
 
-    describe("install", () => {
+    describe("configure", () => {
         it("can be called", async () => {
             const obj = new Karma();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
             Chai.expect(packageJsonDevDependencies.karma).to.be.equal("1.2.3");
+        });
+
+        it("can complete with false mainCondition", async () => {
+            const obj = new Karma();
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
+            Chai.expect(res).to.be.equal(0);
+
+            const packageJsonDevDependencies: { [id: string]: string } = { karma: "1.2.3"};
+            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
+            Chai.expect(packageJsonDevDependencies.karma).to.be.equal(undefined);
         });
     });
 
@@ -127,28 +145,22 @@ describe("Karma", () => {
             await fileSystemMock.directoryCreate("./test/unit/temp/www/");
 
             const obj = new Karma();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/", "karma.conf.js");
             Chai.expect(exists).to.be.equal(true);
         });
-    });
 
-    describe("uninstall", () => {
-        it("can complete", async () => {
+        it("can complete with false mainCondition", async () => {
             await fileSystemMock.directoryCreate("./test/unit/temp/www/");
             await fileSystemMock.fileWriteText("./test/unit/temp/www/", "karma.conf.js", "Generated by UniteJS");
 
             const obj = new Karma();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
-
-            const packageJsonDevDependencies: { [id: string]: string } = { karma: "1.2.3"};
-            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
-            Chai.expect(packageJsonDevDependencies.karma).to.be.equal(undefined);
 
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/", "karma.conf.js");
             Chai.expect(exists).to.be.equal(false);

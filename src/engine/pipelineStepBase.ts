@@ -18,28 +18,24 @@ export abstract class PipelineStepBase implements IPipelineStep {
     public async initialise(logger: ILogger,
                             fileSystem: IFileSystem,
                             uniteConfiguration: UniteConfiguration,
-                            engineVariables: EngineVariables): Promise<number> {
+                            engineVariables: EngineVariables,
+                            mainCondition: boolean): Promise<number> {
         return 0;
     }
 
-    public async install(logger: ILogger,
-                         fileSystem: IFileSystem,
-                         uniteConfiguration: UniteConfiguration,
-                         engineVariables: EngineVariables): Promise<number> {
-        return 0;
-    }
-
-    public async uninstall(logger: ILogger,
+    public async configure(logger: ILogger,
                            fileSystem: IFileSystem,
                            uniteConfiguration: UniteConfiguration,
-                           engineVariables: EngineVariables): Promise<number> {
+                           engineVariables: EngineVariables,
+                           mainCondition: boolean): Promise<number> {
         return 0;
     }
 
     public async finalise(logger: ILogger,
                           fileSystem: IFileSystem,
                           uniteConfiguration: UniteConfiguration,
-                          engineVariables: EngineVariables): Promise<number> {
+                          engineVariables: EngineVariables,
+                          mainCondition: boolean): Promise<number> {
         return 0;
     }
 
@@ -50,7 +46,7 @@ export abstract class PipelineStepBase implements IPipelineStep {
                           destFolder: string,
                           destFilename: string,
                           force: boolean,
-                          replacements?: { [id: string]: string[]}): Promise<number> {
+                          replacements?: { [id: string]: string[] }): Promise<number> {
         const sourceFileExists = await fileSystem.fileExists(sourceFolder, sourceFilename);
 
         if (sourceFileExists) {
@@ -91,69 +87,20 @@ export abstract class PipelineStepBase implements IPipelineStep {
         }
     }
 
-    public async deleteFileText(logger: ILogger, fileSystem: IFileSystem,
-                                folder: string, filename: string, force: boolean): Promise<number> {
-        const hasGeneratedMarker = await this.fileHasGeneratedMarker(fileSystem, folder, filename);
-
-        if (hasGeneratedMarker === "HasMarker" || (hasGeneratedMarker !== "FileNotExist" && force)) {
-            try {
-                logger.info(`Deleting ${filename}`, { from: folder });
-                await fileSystem.fileDelete(folder, filename);
-                return 0;
-            } catch (err) {
-                logger.error(`Deleting ${filename} failed`, err);
-                return 1;
-            }
-        } else if (hasGeneratedMarker === "NoMarker") {
-            logger.warning(`Skipping Delete of ${filename} as it has no generated marker`, { from: folder });
-            return 0;
+    public async folderToggle(logger: ILogger, fileSystem: IFileSystem, folder: string, force: boolean, mainCondition: boolean): Promise<number> {
+        if (mainCondition) {
+            return this.folderCreate(logger, fileSystem, folder);
         } else {
-            return 0;
+            return this.folderDelete(logger, fileSystem, folder, force);
         }
     }
 
-    public async deleteFileLines(logger: ILogger, fileSystem: IFileSystem,
-                                 folder: string, filename: string, force: boolean): Promise<number> {
-        const hasGeneratedMarker = await this.fileHasGeneratedMarker(fileSystem, folder, filename);
-
-        if (hasGeneratedMarker === "HasMarker" || (hasGeneratedMarker !== "FileNotExist" && force)) {
-            try {
-                logger.info(`Deleting ${filename}`, { from: folder });
-                await fileSystem.fileDelete(folder, filename);
-                return 0;
-            } catch (err) {
-                logger.error(`Deleting ${filename} failed`, err);
-                return 1;
-            }
-        } else if (hasGeneratedMarker === "NoMarker") {
-            logger.warning(`Skipping Delete of ${filename} as it has no generated marker`, { from: folder });
-            return 0;
-        } else {
-            return 0;
-        }
-    }
-
-    public async deleteFileJson(logger: ILogger, fileSystem: IFileSystem,
-                                folder: string, filename: string, force: boolean): Promise<number> {
-        try {
-            const exists = await fileSystem.fileExists(folder, filename);
-            if (exists) {
-                logger.info(`Deleting ${filename}`, { from: folder });
-                await fileSystem.fileDelete(folder, filename);
-            }
-            return 0;
-        } catch (err) {
-            logger.error(`Deleting ${filename} failed`, err);
-            return 1;
-        }
-    }
-
-    public async createFolder(logger: ILogger, fileSystem: IFileSystem, folder: string): Promise<number> {
+    public async folderCreate(logger: ILogger, fileSystem: IFileSystem, folder: string): Promise<number> {
         logger.info(`Creating Folder`, { folder });
 
         try {
             await fileSystem.directoryCreate(folder);
-        }  catch (err) {
+        } catch (err) {
             logger.error(`Creating Folder ${folder} failed`, err);
             return 1;
         }
@@ -161,8 +108,7 @@ export abstract class PipelineStepBase implements IPipelineStep {
         return 0;
     }
 
-    public async deleteFolder(logger: ILogger, fileSystem: IFileSystem,
-                              folder: string, force: boolean): Promise<number> {
+    public async folderDelete(logger: ILogger, fileSystem: IFileSystem, folder: string, force: boolean): Promise<number> {
         try {
             const exists = await fileSystem.directoryExists(folder);
 
@@ -277,7 +223,55 @@ export abstract class PipelineStepBase implements IPipelineStep {
         }
     }
 
-    public async fileWriteLines(logger: ILogger, fileSystem: IFileSystem, folder: string, filename: string, force: boolean, linesGenerator: () => Promise<string[]>): Promise<number> {
+    public async fileToggleLines(logger: ILogger,
+                                 fileSystem: IFileSystem,
+                                 folder: string,
+                                 filename: string,
+                                 force: boolean,
+                                 mainCondition: boolean,
+                                 linesGenerator: () => Promise<string[]>): Promise<number> {
+
+        if (mainCondition) {
+            return this.fileWriteLines(logger, fileSystem, folder, filename, force, linesGenerator);
+        } else {
+            return this.fileDeleteLines(logger, fileSystem, folder, filename, force);
+        }
+    }
+
+    public async fileToggleText(logger: ILogger,
+                                fileSystem: IFileSystem,
+                                folder: string,
+                                filename: string,
+                                force: boolean,
+                                mainCondition: boolean,
+                                textGenerator: () => Promise<string>): Promise<number> {
+        if (mainCondition) {
+            return this.fileWriteText(logger, fileSystem, folder, filename, force, textGenerator);
+        } else {
+            return this.fileDeleteText(logger, fileSystem, folder, filename, force);
+        }
+    }
+
+    public async fileToggleJson(logger: ILogger,
+                                fileSystem: IFileSystem,
+                                folder: string,
+                                filename: string,
+                                force: boolean,
+                                mainCondition: boolean,
+                                jsonGenerator: () => Promise<any>): Promise<number> {
+        if (mainCondition) {
+            return this.fileWriteJson(logger, fileSystem, folder, filename, force, jsonGenerator);
+        } else {
+            return this.fileDeleteJson(logger, fileSystem, folder, filename, force);
+        }
+    }
+
+    public async fileWriteLines(logger: ILogger,
+                                fileSystem: IFileSystem,
+                                folder: string,
+                                filename: string,
+                                force: boolean,
+                                linesGenerator: () => Promise<string[]>): Promise<number> {
         try {
             const hasGeneratedMarker = await this.fileHasGeneratedMarker(fileSystem, folder, filename);
 
@@ -296,7 +290,12 @@ export abstract class PipelineStepBase implements IPipelineStep {
         return 0;
     }
 
-    public async fileWriteText(logger: ILogger, fileSystem: IFileSystem, folder: string, filename: string, force: boolean, textGenerator: () => Promise<string>): Promise<number> {
+    public async fileWriteText(logger: ILogger,
+                               fileSystem: IFileSystem,
+                               folder: string,
+                               filename: string,
+                               force: boolean,
+                               textGenerator: () => Promise<string>): Promise<number> {
         try {
             logger.info(`Writing ${filename} in `, { folder });
 
@@ -309,7 +308,12 @@ export abstract class PipelineStepBase implements IPipelineStep {
         return 0;
     }
 
-    public async fileWriteJson(logger: ILogger, fileSystem: IFileSystem, folder: string, filename: string, force: boolean, jsonGenerator: () => Promise<any>): Promise<number> {
+    public async fileWriteJson(logger: ILogger,
+                               fileSystem: IFileSystem,
+                               folder: string,
+                               filename: string,
+                               force: boolean,
+                               jsonGenerator: () => Promise<any>): Promise<number> {
         try {
             logger.info(`Writing ${filename} in `, { folder });
 
@@ -320,6 +324,63 @@ export abstract class PipelineStepBase implements IPipelineStep {
             return 1;
         }
         return 0;
+    }
+
+    public async fileDeleteText(logger: ILogger, fileSystem: IFileSystem,
+                                folder: string, filename: string, force: boolean): Promise<number> {
+        const hasGeneratedMarker = await this.fileHasGeneratedMarker(fileSystem, folder, filename);
+
+        if (hasGeneratedMarker === "HasMarker" || (hasGeneratedMarker !== "FileNotExist" && force)) {
+            try {
+                logger.info(`Deleting ${filename}`, { from: folder });
+                await fileSystem.fileDelete(folder, filename);
+                return 0;
+            } catch (err) {
+                logger.error(`Deleting ${filename} failed`, err);
+                return 1;
+            }
+        } else if (hasGeneratedMarker === "NoMarker") {
+            logger.warning(`Skipping Delete of ${filename} as it has no generated marker`, { from: folder });
+            return 0;
+        } else {
+            return 0;
+        }
+    }
+
+    public async fileDeleteLines(logger: ILogger, fileSystem: IFileSystem,
+                                 folder: string, filename: string, force: boolean): Promise<number> {
+        const hasGeneratedMarker = await this.fileHasGeneratedMarker(fileSystem, folder, filename);
+
+        if (hasGeneratedMarker === "HasMarker" || (hasGeneratedMarker !== "FileNotExist" && force)) {
+            try {
+                logger.info(`Deleting ${filename}`, { from: folder });
+                await fileSystem.fileDelete(folder, filename);
+                return 0;
+            } catch (err) {
+                logger.error(`Deleting ${filename} failed`, err);
+                return 1;
+            }
+        } else if (hasGeneratedMarker === "NoMarker") {
+            logger.warning(`Skipping Delete of ${filename} as it has no generated marker`, { from: folder });
+            return 0;
+        } else {
+            return 0;
+        }
+    }
+
+    public async fileDeleteJson(logger: ILogger, fileSystem: IFileSystem,
+                                folder: string, filename: string, force: boolean): Promise<number> {
+        try {
+            const exists = await fileSystem.fileExists(folder, filename);
+            if (exists) {
+                logger.info(`Deleting ${filename}`, { from: folder });
+                await fileSystem.fileDelete(folder, filename);
+            }
+            return 0;
+        } catch (err) {
+            logger.error(`Deleting ${filename} failed`, err);
+            return 1;
+        }
     }
 
     public condition(uniteConfigurationKey: string, value: string): boolean {
@@ -338,33 +399,41 @@ export abstract class PipelineStepBase implements IPipelineStep {
             Object.keys(uniteConfigurationObject).map(key => key.toLowerCase()).indexOf(value.toLowerCase()) >= 0;
     }
 
+    public arrayCondition(uniteConfigurationArray: string[], value: string): boolean {
+        return uniteConfigurationArray !== undefined &&
+            uniteConfigurationArray !== null &&
+            value !== undefined &&
+            value !== null &&
+            uniteConfigurationArray.map(key => key.toLowerCase()).indexOf(value.toLowerCase()) >= 0;
+    }
+
     public async internalDeleteFolder(logger: ILogger, fileSystem: IFileSystem,
                                       folder: string): Promise<number> {
-         let remaining = 0;
+        let remaining = 0;
 
-         const subDirs = await fileSystem.directoryGetFolders(folder);
-         for (let i = 0; i < subDirs.length; i++) {
-             const subDir = fileSystem.pathCombine(folder, subDirs[i]);
-             const dirRemaining = await this.internalDeleteFolder(logger, fileSystem, subDir);
+        const subDirs = await fileSystem.directoryGetFolders(folder);
+        for (let i = 0; i < subDirs.length; i++) {
+            const subDir = fileSystem.pathCombine(folder, subDirs[i]);
+            const dirRemaining = await this.internalDeleteFolder(logger, fileSystem, subDir);
 
-             if (dirRemaining === 0) {
-                 await fileSystem.directoryDelete(subDir);
-             } else {
-                 remaining += dirRemaining;
-             }
-         }
+            if (dirRemaining === 0) {
+                await fileSystem.directoryDelete(subDir);
+            } else {
+                remaining += dirRemaining;
+            }
+        }
 
-         const files = await fileSystem.directoryGetFiles(folder);
-         for (let i = 0; i < files.length; i++) {
-             const hasGeneratedMarker = await this.fileHasGeneratedMarker(fileSystem, folder, files[i]);
+        const files = await fileSystem.directoryGetFiles(folder);
+        for (let i = 0; i < files.length; i++) {
+            const hasGeneratedMarker = await this.fileHasGeneratedMarker(fileSystem, folder, files[i]);
 
-             if (hasGeneratedMarker === "NoMarker") {
+            if (hasGeneratedMarker === "NoMarker") {
                 remaining++;
-             } else {
+            } else {
                 await fileSystem.fileDelete(folder, files[i]);
             }
-         }
+        }
 
-         return remaining;
+        return remaining;
     }
 }

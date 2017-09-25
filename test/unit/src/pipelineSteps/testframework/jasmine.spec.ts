@@ -75,7 +75,7 @@ describe("Jasmine", () => {
         });
     });
 
-    describe("install", () => {
+    describe("configure", () => {
         it("can be called with unit framework defined", async () => {
             uniteConfigurationStub.sourceLanguage = "TypeScript";
             uniteConfigurationStub.unitTestRunner = "Karma";
@@ -84,7 +84,7 @@ describe("Jasmine", () => {
             engineVariablesStub.setConfiguration("Karma", { frameworks: [] });
 
             const obj = new Jasmine();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
@@ -114,7 +114,7 @@ describe("Jasmine", () => {
             engineVariablesStub.setConfiguration("Protractor.ScriptEnd", []);
 
             const obj = new Jasmine();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
@@ -142,7 +142,7 @@ describe("Jasmine", () => {
             engineVariablesStub.setConfiguration("WebdriverIO", { framework: "" });
 
             const obj = new Jasmine();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
@@ -161,12 +161,10 @@ describe("Jasmine", () => {
             Chai.expect(engineVariablesStub.getConfiguration<string[]>("Protractor.ScriptEnd")).to.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<WebdriverIoConfiguration>("WebdriverIO").framework).to.be.equal("jasmine");
         });
-    });
 
-    describe("uninstall", () => {
-        it("can be called with no configurations", async () => {
+        it("can be called with no configurations with false mainCondition", async () => {
             const obj = new Jasmine();
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {
@@ -193,7 +191,7 @@ describe("Jasmine", () => {
             engineVariablesStub.setConfiguration("WebdriverIO", { framework: "jasmine"});
 
             const obj = new Jasmine();
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
 
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").env.mocha).to.be.equal(undefined);

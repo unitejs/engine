@@ -67,7 +67,7 @@ describe("TsLint", () => {
         it("can be called with mismatched language", async () => {
             uniteConfigurationStub.sourceLanguage = "JavaScript";
             const obj = new TsLint();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(engineVariablesStub.getConfiguration("TSLint")).to.be.equal(undefined);
             Chai.expect(loggerErrorSpy.args[0][0]).contains("TypeScript");
@@ -77,29 +77,40 @@ describe("TsLint", () => {
             fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
             fileSystemMock.fileReadJson = sandbox.stub().resolves({ extends: "tslint:recommended2" });
             const obj = new TsLint();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<TsLintConfiguration>("TSLint").extends).to.be.equal("tslint:recommended2");
         });
 
         it("can succeed when file does not exist", async () => {
             const obj = new TsLint();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<TsLintConfiguration>("TSLint").extends).to.be.equal("tslint:recommended");
         });
     });
 
-    describe("install", () => {
+    describe("configure", () => {
         it("can be called", async () => {
             const obj = new TsLint();
-            const res = await obj.install(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
 
             Chai.expect(packageJsonDevDependencies.tslint).to.be.equal("1.2.3");
+        });
+
+        it("can be called with false mainCondition", async () => {
+            const obj = new TsLint();
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
+            Chai.expect(res).to.be.equal(0);
+
+            const packageJsonDevDependencies: { [id: string]: string } = { tslint: "1.2.3"};
+            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
+
+            Chai.expect(packageJsonDevDependencies.tslint).to.be.equal(undefined);
         });
     });
 
@@ -108,25 +119,21 @@ describe("TsLint", () => {
             await fileSystemMock.directoryCreate("./test/unit/temp/www/");
 
             const obj = new TsLint();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/", "tslint.json");
             Chai.expect(exists).to.be.equal(true);
         });
-    });
 
-    describe("uninstall", () => {
-        it("can be called", async () => {
+        it("can be called with false mainCondition", async () => {
+            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
+            await fileSystemMock.fileWriteJson("./test/unit/temp/www/", "tslint.json", {});
+
             const obj = new TsLint();
-            const res = await obj.uninstall(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
-
-            const packageJsonDevDependencies: { [id: string]: string } = { tslint: "1.2.3"};
-            engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
-
-            Chai.expect(packageJsonDevDependencies.tslint).to.be.equal(undefined);
 
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/", "tslint.json");
             Chai.expect(exists).to.be.equal(false);

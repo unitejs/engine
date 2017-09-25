@@ -50,7 +50,7 @@ describe("UniteThemeConfigurationJson", () => {
         it("can fail when exception is thrown", async () => {
             fileSystemMock.fileExists = sandbox.stub().throws("error");
             const obj = new UniteThemeConfigurationJson();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(engineVariablesStub.getConfiguration("UniteTheme")).to.be.equal(undefined);
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
@@ -60,7 +60,7 @@ describe("UniteThemeConfigurationJson", () => {
             fileSystemMock.fileExists = sandbox.stub().resolves(false);
             uniteConfigurationStub.title = undefined;
             const obj = new UniteThemeConfigurationJson();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<UniteThemeConfiguration>("UniteTheme").themeColor).to.be.equal("#339933");
         });
@@ -69,7 +69,7 @@ describe("UniteThemeConfigurationJson", () => {
             fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
             fileSystemMock.fileReadJson = sandbox.stub().resolves({ themeColor: "#112211" });
             const obj = new UniteThemeConfigurationJson();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<UniteThemeConfiguration>("UniteTheme").themeColor).to.be.equal("#112211");
             Chai.expect(engineVariablesStub.getConfiguration<UniteThemeConfiguration>("UniteTheme").metaDescription).to.be.equal("This Is My Title");
@@ -81,7 +81,7 @@ describe("UniteThemeConfigurationJson", () => {
         it("can fail writing", async () => {
             sandbox.stub(fileSystemMock, "fileWriteJson").rejects("error");
             const obj = new UniteThemeConfigurationJson();
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
         });
@@ -89,8 +89,8 @@ describe("UniteThemeConfigurationJson", () => {
         it("can succeed writing", async () => {
             const stub = sandbox.stub(fileSystemMock, "fileWriteJson").resolves();
             const obj = new UniteThemeConfigurationJson();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub);
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 
             Chai.expect(stub.called).to.be.equal(true);

@@ -2,9 +2,9 @@
 
 ## v1.1.1
 
-* Refactored engine commands to make it easier to extend
 * Added generate command
 * Added Angular generate class, component, directive, enum, guard, interface, module, pipe, service
+* Refactored engine commands to make it easier to extend
 * Added jsconfig.json is now generated for JavaScript=sourceLanguage and ide=VSCode
 * Added ide property to UniteConfiguration
 * Added exclude node_modules to jsconfig.json and tsconfig.json

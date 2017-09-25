@@ -15,25 +15,19 @@ export class Web extends PipelineStepBase {
         return super.objectCondition(uniteConfiguration.platforms, Web.PLATFORM);
     }
 
-    public async install(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["archiver"], super.condition(uniteConfiguration.taskManager, "Gulp"));
+    public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        engineVariables.toggleDevDependency(["archiver"], mainCondition && super.condition(uniteConfiguration.taskManager, "Gulp"));
 
         return 0;
     }
 
-    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        if (super.condition(uniteConfiguration.taskManager, "Gulp")) {
-            const buildTasks = fileSystem.pathCombine(engineVariables.www.buildFolder, "/tasks/");
+    public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        const buildTasks = fileSystem.pathCombine(engineVariables.www.buildFolder, "/tasks/");
+        if (mainCondition && super.condition(uniteConfiguration.taskManager, "Gulp")) {
             const assetTasksPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/platform/");
             return await this.copyFile(logger, fileSystem, assetTasksPlatform, Web.FILENAME, buildTasks, Web.FILENAME, engineVariables.force);
+        } else {
+            return await super.fileDeleteText(logger, fileSystem, buildTasks, Web.FILENAME, engineVariables.force);
         }
-        return 0;
-    }
-
-    public async uninstall(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number> {
-        engineVariables.toggleDevDependency(["archiver"], false);
-
-        const buildTasks = fileSystem.pathCombine(engineVariables.www.buildFolder, "/tasks/");
-        return await super.deleteFileText(logger, fileSystem, buildTasks, Web.FILENAME, engineVariables.force);
     }
 }
