@@ -38,6 +38,7 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
         uniteConfiguration.packageManager = args.packageManager || uniteConfiguration.packageManager || "Npm";
         uniteConfiguration.taskManager = "Gulp";
         uniteConfiguration.server = "BrowserSync";
+        uniteConfiguration.ide = "VSCode";
         uniteConfiguration.applicationFramework = args.applicationFramework || uniteConfiguration.applicationFramework;
         uniteConfiguration.clientPackages = uniteConfiguration.clientPackages || {};
         uniteConfiguration.cssPre = args.cssPre || uniteConfiguration.cssPre;
@@ -132,6 +133,9 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
             return 1;
         }
         if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("cssPost", uniteConfiguration.cssPost))) {
+            return 1;
+        }
+        if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("ide", uniteConfiguration.ide))) {
             return 1;
         }
         if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("packageManager", uniteConfiguration.packageManager))) {

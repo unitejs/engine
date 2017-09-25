@@ -10,6 +10,7 @@ import { EsLintConfiguration } from "../../configuration/models/eslint/esLintCon
 import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
 import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
+import { JavaScriptConfiguration } from "../../configuration/models/vscode/javaScriptConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
 import { SharedAppFramework } from "../sharedAppFramework";
 
@@ -67,6 +68,11 @@ export class Aurelia extends SharedAppFramework {
         const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
         if (typeScriptConfiguration) {
             ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "experimentalDecorators", true, true);
+        }
+
+        const javaScriptConfiguration = engineVariables.getConfiguration<JavaScriptConfiguration>("JavaScript");
+        if (javaScriptConfiguration) {
+            ObjectHelper.addRemove(javaScriptConfiguration.compilerOptions, "experimentalDecorators", true, true);
         }
 
         return 0;
@@ -138,6 +144,11 @@ export class Aurelia extends SharedAppFramework {
         const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
         if (typeScriptConfiguration) {
             ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "experimentalDecorators", true, false);
+        }
+
+        const javaScriptConfiguration = engineVariables.getConfiguration<JavaScriptConfiguration>("JavaScript");
+        if (javaScriptConfiguration) {
+            ObjectHelper.addRemove(javaScriptConfiguration.compilerOptions, "experimentalDecorators", true, true);
         }
 
         return 0;

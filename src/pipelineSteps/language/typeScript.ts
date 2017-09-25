@@ -33,7 +33,7 @@ export class TypeScript extends PipelineStepBase {
             this._configuration = obj;
 
             ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "ts", true);
-            this.configDefaults(engineVariables);
+            this.configDefaults(fileSystem, engineVariables);
 
             return 0;
         });
@@ -63,7 +63,7 @@ export class TypeScript extends PipelineStepBase {
         return await super.deleteFileJson(logger, fileSystem, engineVariables.wwwRootFolder, TypeScript.FILENAME, engineVariables.force);
     }
 
-    private configDefaults(engineVariables: EngineVariables): void {
+    private configDefaults(fileSystem: IFileSystem, engineVariables: EngineVariables): void {
         const defaultConfiguration = new TypeScriptConfiguration();
 
         defaultConfiguration.compilerOptions = new TypeScriptCompilerOptions();
@@ -75,6 +75,12 @@ export class TypeScript extends PipelineStepBase {
         defaultConfiguration.compilerOptions.noImplicitReturns = true;
 
         defaultConfiguration.compilerOptions.lib = ["dom", "es2015"];
+        defaultConfiguration.include = [
+            `${fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.srcFolder))}**/*`,
+            `${fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.unitTestSrcFolder))}**/*`,
+            `${fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.e2eTestSrcFolder))}**/*`
+        ];
+        defaultConfiguration.exclude = [];
 
         this._configuration = ObjectHelper.merge(defaultConfiguration, this._configuration);
 

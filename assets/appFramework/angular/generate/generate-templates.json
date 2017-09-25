@@ -1,9 +1,41 @@
 {
+    "class": {
+        "sourceFiles": ["{GEN_NAME_SNAKE}.{EXTENSION}"],
+        "unitTestFiles": ["{GEN_NAME_SNAKE}.spec.{EXTENSION}"]
+    },
     "component": {
         "defaultFolder": "{GEN_NAME_SNAKE}",
         "sourceFiles": ["{GEN_NAME_SNAKE}.component.{EXTENSION}"],
         "viewFiles": ["{GEN_NAME_SNAKE}.component.{EXTENSION}"],
         "styleFiles": ["{GEN_NAME_SNAKE}.component.{EXTENSION}"],
         "unitTestFiles": ["{GEN_NAME_SNAKE}.component.spec.{EXTENSION}"]
+    },
+    "directive": {
+        "sourceFiles": ["{GEN_NAME_SNAKE}.directive.{EXTENSION}"],
+        "unitTestFiles": ["{GEN_NAME_SNAKE}.directive.spec.{EXTENSION}"]
+    },
+    "enum": {
+        "sourceFiles": ["{GEN_NAME_SNAKE}.enum.{EXTENSION}"],
+        "unitTestFiles": ["{GEN_NAME_SNAKE}.enum.spec.{EXTENSION}"]
+    },
+    "guard": {
+        "sourceFiles": ["{GEN_NAME_SNAKE}.guard.{EXTENSION}"],
+        "unitTestFiles": ["{GEN_NAME_SNAKE}.guard.spec.{EXTENSION}"]
+    },
+    "interface": {
+        "sourceFiles": ["{GEN_NAME_SNAKE}.{EXTENSION}"]
+    },
+    "module": {
+        "defaultFolder": "{GEN_NAME_SNAKE}",
+        "sourceFiles": ["{GEN_NAME_SNAKE}.module.{EXTENSION}"],
+        "unitTestFiles": ["{GEN_NAME_SNAKE}.module.spec.{EXTENSION}"]
+    },
+    "pipe": {
+        "sourceFiles": ["{GEN_NAME_SNAKE}.pipe.{EXTENSION}"],
+        "unitTestFiles": ["{GEN_NAME_SNAKE}.pipe.spec.{EXTENSION}"]
+    },
+    "service": {
+        "sourceFiles": ["{GEN_NAME_SNAKE}.service.{EXTENSION}"],
+        "unitTestFiles": ["{GEN_NAME_SNAKE}.service.spec.{EXTENSION}"]
     }
 }

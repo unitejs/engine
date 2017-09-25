@@ -111,6 +111,7 @@ describe("GenerateCommand", () => {
             taskManager: undefined,
             server: undefined,
             applicationFramework: "Angular",
+            ide: "",
             uniteVersion: undefined,
             sourceExtensions: ["ts"],
             viewExtensions: ["html"],

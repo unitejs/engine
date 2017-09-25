@@ -5,5 +5,6 @@
 import { TypeScriptCompilerOptions } from "./typeScriptCompilerOptions";
 export declare class TypeScriptConfiguration {
     compilerOptions: TypeScriptCompilerOptions;
+    include: string[];
     exclude: string[];
 }

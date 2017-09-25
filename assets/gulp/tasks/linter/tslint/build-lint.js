@@ -18,7 +18,9 @@ gulp.task("build-lint", async () => {
         `**/*.${uc.extensionMap(uniteConfig.sourceExtensions)}`
     ))
         .pipe(tslint({"formatter": "verbose"}))
-        .pipe(tslint.report())
+        .pipe(tslint.report({
+            "allowWarnings": true
+        }))
         .on("error", () => {
             process.exit(1);
         }));

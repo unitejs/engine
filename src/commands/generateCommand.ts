@@ -70,7 +70,7 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
             generateTemplate.defaultFolder !== undefined && generateTemplate.defaultFolder !== null ? TemplateHelper.replaceSubstitutions(substitutions, generateTemplate.defaultFolder) : "";
 
         substitutions.GEN_SUB_FOLDER = subFolder.length > 0 ? `${subFolder}/` : subFolder;
-        substitutions.GEN_TEST_ROOT = "../".repeat(subFolder.split("/").length + 3);
+        substitutions.GEN_TEST_ROOT = "../".repeat((subFolder.length > 0 ? subFolder.split("/").length : 0) + 3);
 
         const wwwRootFolder = this._fileSystem.pathCombine(args.outputDirectory, uniteConfiguration.dirs.wwwRoot);
 
@@ -155,13 +155,18 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
                         if (exists) {
                             let content = await this._fileSystem.fileReadText(srcFolder, srcFilename2);
 
-                            content = TemplateHelper.replaceSubstitutions(substitutions, content);
+                            if (content.startsWith("!")) {
+                                this._logger.error(content.substr(1));
+                                return 1;
+                            } else {
+                                content = TemplateHelper.replaceSubstitutions(substitutions, content);
 
-                            await this._fileSystem.directoryCreate(destFolder);
+                                await this._fileSystem.directoryCreate(destFolder);
 
-                            await this._fileSystem.fileWriteText(destFolder, destFilename, content);
+                                await this._fileSystem.fileWriteText(destFolder, destFilename, content);
 
-                            doneCopy = true;
+                                doneCopy = true;
+                            }
                         }
                     } catch (err) {
                         this._logger.error(`There was an generating from the template`, err, { srcFolder, srcFilename2, destFolder, destFilename });

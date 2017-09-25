@@ -21,7 +21,7 @@ gulp.task("build-lint", async () => {
         .pipe(eslint())
         .pipe(eslint.format())
         .pipe(eslint.results(result => {
-            if (result.errorCount === 0 && result.warningCount === 0) {
+            if (result.errorCount === 0) {
                 localResolve();
             } else {
                 process.exit(1);

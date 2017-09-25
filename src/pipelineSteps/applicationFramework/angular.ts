@@ -7,13 +7,15 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { BabelConfiguration } from "../../configuration/models/babel/babelConfiguration";
 import { EsLintConfiguration } from "../../configuration/models/eslint/esLintConfiguration";
+import { TsLintConfiguration } from "../../configuration/models/tslint/tsLintConfiguration";
 import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
+import { JavaScriptConfiguration } from "../../configuration/models/vscode/javaScriptConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
 import { SharedAppFramework } from "../sharedAppFramework";
 
 export class Angular extends SharedAppFramework {
-    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
+    public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined {
         return super.condition(uniteConfiguration.applicationFramework, "Angular");
     }
 
@@ -58,11 +60,24 @@ export class Angular extends SharedAppFramework {
             ObjectHelper.addRemove(esLintConfiguration.globals, "__moduleName", true, true);
             ObjectHelper.addRemove(esLintConfiguration.globals, "module", true, true);
             ObjectHelper.addRemove(esLintConfiguration, "parser", "babel-eslint", true);
+            ObjectHelper.addRemove(esLintConfiguration.rules, "no-unused-vars", 1, true);
         }
 
         const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
         if (typeScriptConfiguration) {
             ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "experimentalDecorators", true, true);
+        }
+
+        const javaScriptConfiguration = engineVariables.getConfiguration<JavaScriptConfiguration>("JavaScript");
+        if (javaScriptConfiguration) {
+            ObjectHelper.addRemove(javaScriptConfiguration.compilerOptions, "experimentalDecorators", true, true);
+        }
+
+        const tsLintConfiguration = engineVariables.getConfiguration<TsLintConfiguration>("TSLint");
+        if (tsLintConfiguration) {
+            ObjectHelper.addRemove(tsLintConfiguration.rules, "no-empty", { severity: "warning" }, true);
+            ObjectHelper.addRemove(tsLintConfiguration.rules, "no-empty-interface", { severity: "warning" }, true);
+            ObjectHelper.addRemove(tsLintConfiguration.rules, "interface-name", false, true);
         }
 
         return 0;
@@ -125,11 +140,24 @@ export class Angular extends SharedAppFramework {
             ObjectHelper.addRemove(esLintConfiguration.globals, "__moduleName", true, false);
             ObjectHelper.addRemove(esLintConfiguration.globals, "module", true, false);
             ObjectHelper.addRemove(esLintConfiguration, "parser", "babel-eslint", false);
+            ObjectHelper.addRemove(esLintConfiguration.rules, "no-unused-vars", 1, false);
         }
 
         const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
         if (typeScriptConfiguration) {
             ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "experimentalDecorators", true, false);
+        }
+
+        const javaScriptConfiguration = engineVariables.getConfiguration<JavaScriptConfiguration>("JavaScript");
+        if (javaScriptConfiguration) {
+            ObjectHelper.addRemove(javaScriptConfiguration.compilerOptions, "experimentalDecorators", true, false);
+        }
+
+        const tsLintConfiguration = engineVariables.getConfiguration<TsLintConfiguration>("TSLint");
+        if (tsLintConfiguration) {
+            ObjectHelper.addRemove(tsLintConfiguration.rules, "no-empty", undefined, false);
+            ObjectHelper.addRemove(tsLintConfiguration.rules, "no-empty-interface", undefined, false);
+            ObjectHelper.addRemove(tsLintConfiguration.rules, "interface-name", undefined, false);
         }
 
         return 0;

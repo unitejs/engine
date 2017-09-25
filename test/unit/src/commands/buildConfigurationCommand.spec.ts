@@ -96,6 +96,7 @@ describe("BuildConfigurationCommand", () => {
             taskManager: "Gulp",
             server: "BrowserSync",
             applicationFramework: "PlainApp",
+            ide: "",
             uniteVersion: "0.0.0",
             sourceExtensions: [],
             viewExtensions: [],

@@ -25,6 +25,7 @@ export class UniteConfiguration {
     public server: string;
     public taskManager: string;
     public packageManager: string;
+    public ide: string;
 
     public sourceExtensions: string[];
     public viewExtensions: string[];

@@ -3,6 +3,15 @@
 ## v1.1.1
 
 * Refactored engine commands to make it easier to extend
+* Added generate command
+* Added Angular generate class, component, directive, enum, guard, interface, module, pipe, service
+* Added jsconfig.json is now generated for JavaScript=sourceLanguage and ide=VSCode
+* Added ide property to UniteConfiguration
+* Added exclude node_modules to jsconfig.json and tsconfig.json
+* Added experminental decorators flag for react
+* Populated include and exclude properties in tsconfig.json and jsconfig.json
+* ESLint does not terminate on warnings
+* TSLint does not terminate on warnings
 
 ## v1.1.0
 

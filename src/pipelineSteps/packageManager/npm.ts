@@ -5,7 +5,9 @@ import { ArrayHelper } from "unitejs-framework/dist/helpers/arrayHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { PackageConfiguration } from "../../configuration/models/packages/packageConfiguration";
+import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
+import { JavaScriptConfiguration } from "../../configuration/models/vscode/javaScriptConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 import { IPackageManager } from "../../interfaces/IPackageManager";
@@ -21,6 +23,17 @@ export class Npm extends PipelineStepBase implements IPackageManager {
         if (gitIgnoreConfiguration) {
             ArrayHelper.addRemove(gitIgnoreConfiguration, "node_modules", true);
         }
+
+        const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
+        if (typeScriptConfiguration) {
+            ArrayHelper.addRemove(typeScriptConfiguration.exclude, "node_modules", true);
+        }
+
+        const javaScriptConfiguration = engineVariables.getConfiguration<JavaScriptConfiguration>("JavaScript");
+        if (javaScriptConfiguration) {
+            ArrayHelper.addRemove(javaScriptConfiguration.exclude, "node_modules", true);
+        }
+
         return 0;
     }
 
@@ -29,6 +42,17 @@ export class Npm extends PipelineStepBase implements IPackageManager {
         if (gitIgnoreConfiguration) {
             ArrayHelper.addRemove(gitIgnoreConfiguration, "node_modules", false);
         }
+
+        const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
+        if (typeScriptConfiguration) {
+            ArrayHelper.addRemove(typeScriptConfiguration.exclude, "node_modules", false);
+        }
+
+        const javaScriptConfiguration = engineVariables.getConfiguration<JavaScriptConfiguration>("JavaScript");
+        if (javaScriptConfiguration) {
+            ArrayHelper.addRemove(javaScriptConfiguration.exclude, "node_modules", false);
+        }
+
         return 0;
     }
 
