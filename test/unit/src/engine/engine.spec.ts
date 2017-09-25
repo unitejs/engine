@@ -300,6 +300,19 @@ describe("Engine", () => {
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
         });
 
+        it("can call with www/src outputDirectory", async () => {
+            uniteJson = undefined;
+            packageInfo = "{}";
+            const obj = new Engine(loggerStub, fileSystemStub);
+            await obj.initialise();
+            const res = await obj.command<IPlatformCommandParams>("platform", {
+                operation: "add",
+                platformName: "web",
+                outputDirectory: "./test/unit/temp/www/src"
+            });
+            Chai.expect(res).to.be.equal(1);
+        });
+
         it("can call as unknown", async () => {
             packageInfo = "{}";
             const obj = new Engine(loggerStub, fileSystemStub);

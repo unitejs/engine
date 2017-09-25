@@ -66,18 +66,35 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
 
         const substitutions = TemplateHelper.generateSubstitutions("GEN_NAME", args.name);
 
+        // See where we are in relation to the www folder
+        const baseDirectory = this._fileSystem.pathAbsolute("./");
+        const wwwFolder = this._fileSystem.pathAbsolute(this._fileSystem.pathCombine(args.outputDirectory, uniteConfiguration.dirs.wwwRoot));
+        const srcFolder = this._fileSystem.pathAbsolute(this._fileSystem.pathCombine(wwwFolder, uniteConfiguration.dirs.www.src));
+
+        // If we are somewhere in the srcFolder use that as a starting point, otherwise just use src root
+        const startSrcFolder = baseDirectory.startsWith(srcFolder) ? baseDirectory : srcFolder;
+
+        // Calculate any subFolder based on arg or default with substitutions
         const subFolder = args.subFolder !== undefined && args.subFolder !== null ? args.subFolder :
             generateTemplate.defaultFolder !== undefined && generateTemplate.defaultFolder !== null ? TemplateHelper.replaceSubstitutions(substitutions, generateTemplate.defaultFolder) : "";
 
-        substitutions.GEN_SUB_FOLDER = subFolder.length > 0 ? `${subFolder}/` : subFolder;
-        substitutions.GEN_TEST_ROOT = "../".repeat((subFolder.length > 0 ? subFolder.split("/").length : 0) + 3);
+        // Now combine the output folder
+        const srcOutputFolder = this._fileSystem.pathCombine(startSrcFolder, subFolder);
+
+        // Find the relativee from srcFolder to srcOutputFolder so we can combine for other folder structures
+        const srcRelative = this._fileSystem.pathFileRelative(srcFolder, srcOutputFolder);
+
+        /* tslint:disable */
+        console.log("startSrcFolder", startSrcFolder);
+        console.log("srcRelative", srcRelative);
+        console.log("subFolder", subFolder);
+        console.log("srcOutputFolder", srcOutputFolder);
 
         const wwwRootFolder = this._fileSystem.pathCombine(args.outputDirectory, uniteConfiguration.dirs.wwwRoot);
 
         let ret = await this.copyFiles(generateTemplatesFolder,
                                        generateTemplate.sourceFiles,
-                                       this._fileSystem.pathCombine(wwwRootFolder, uniteConfiguration.dirs.www.src),
-                                       subFolder,
+                                       srcOutputFolder,
                                        `${args.type}/src`,
                                        uniteConfiguration.sourceExtensions,
                                        substitutions);
@@ -85,8 +102,7 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
         if (ret === 0) {
             ret = await this.copyFiles(generateTemplatesFolder,
                                        generateTemplate.viewFiles,
-                                       this._fileSystem.pathCombine(wwwRootFolder, uniteConfiguration.dirs.www.src),
-                                       subFolder,
+                                       srcOutputFolder,
                                        `${args.type}/view`,
                                        uniteConfiguration.viewExtensions,
                                        substitutions);
@@ -95,28 +111,39 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
         if (ret === 0) {
             ret = await this.copyFiles(generateTemplatesFolder,
                                        generateTemplate.styleFiles,
-                                       this._fileSystem.pathCombine(wwwRootFolder, uniteConfiguration.dirs.www.src),
-                                       subFolder,
+                                       srcOutputFolder,
                                        `${args.type}/style`,
                                        [ uniteConfiguration.styleExtension ],
                                        substitutions);
         }
 
         if (ret === 0 && uniteConfiguration.unitTestRunner !== "None") {
+            const unitSrcFolder = this._fileSystem.pathAbsolute(this._fileSystem.pathCombine(wwwFolder, uniteConfiguration.dirs.www.unitTestSrc));
+            const unitSrcOutputFolder = this._fileSystem.pathCombine(unitSrcFolder, srcRelative);
+            substitutions.GEN_TEST_RELATIVE = this._fileSystem.pathToWeb(this._fileSystem.pathDirectoryRelative(unitSrcOutputFolder, srcOutputFolder));
+            if (substitutions.GEN_TEST_RELATIVE.startsWith("./")) {
+                substitutions.GEN_TEST_RELATIVE = substitutions.GEN_TEST_RELATIVE.substring(2);
+            }
+
+            console.log("unitSrcFolder", unitSrcFolder);
+            console.log("unitSrcOutputFolder", unitSrcOutputFolder);
+            console.log("GEN_TEST_RELATIVE", substitutions.GEN_TEST_RELATIVE);
+            
             ret = await this.copyFiles(generateTemplatesFolder,
                                        generateTemplate.unitTestFiles,
-                                       this._fileSystem.pathCombine(wwwRootFolder, uniteConfiguration.dirs.www.unitTestSrc),
-                                       subFolder,
+                                       unitSrcOutputFolder,
                                        `${args.type}/unit/${uniteConfiguration.unitTestFramework.toLowerCase()}`,
                                        uniteConfiguration.sourceExtensions,
                                        substitutions);
         }
 
         if (ret === 0 && uniteConfiguration.e2eTestRunner !== "None") {
+            const e2eSrcFolder = this._fileSystem.pathAbsolute(this._fileSystem.pathCombine(wwwFolder, uniteConfiguration.dirs.www.e2eTestSrc));
+            const e2eSrcOutputFolder = this._fileSystem.pathCombine(e2eSrcFolder, srcRelative);
+
             ret = await this.copyFiles(generateTemplatesFolder,
                                        generateTemplate.e2eTestFiles,
-                                       this._fileSystem.pathCombine(wwwRootFolder, uniteConfiguration.dirs.www.e2eTestSrc),
-                                       subFolder,
+                                       e2eSrcOutputFolder,
                                        `${args.type}/e2e/${uniteConfiguration.unitTestFramework.toLowerCase()}`,
                                        uniteConfiguration.sourceExtensions,
                                        substitutions);
@@ -131,14 +158,12 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
 
     private async copyFiles(generateTemplatesFolder: string,
                             filenames: string[],
-                            destRootFolder: string,
-                            subFolder: string,
+                            destFolder: string,
                             templateSubFolder: string,
                             possibleExtensions: string[],
                             substitutions: { [id: string]: string }): Promise<number> {
         if (filenames && filenames.length > 0) {
             const srcFolder = this._fileSystem.pathCombine(generateTemplatesFolder, templateSubFolder);
-            const destFolder = this._fileSystem.pathCombine(destRootFolder, subFolder);
 
             for (let i = 0; i < filenames.length; i++) {
                 const srcFilename = filenames[i];

@@ -12,6 +12,7 @@
 * Populated include and exclude properties in tsconfig.json and jsconfig.json
 * ESLint does not terminate on warnings
 * TSLint does not terminate on warnings
+* Async gulp stream wrapping switched to use stream-to-promise
 
 ## v1.1.0
 

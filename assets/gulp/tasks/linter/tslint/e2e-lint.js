@@ -30,7 +30,9 @@ gulp.task("e2e-lint", async () => {
         `**/${options.grep}.${uc.extensionMap(uniteConfig.sourceExtensions)}`
     ))
         .pipe(tslint({"formatter": "verbose"}))
-        .pipe(tslint.report())
+        .pipe(tslint.report({
+            "allowWarnings": true
+        }))
         .on("error", () => {
             process.exit(1);
         }));

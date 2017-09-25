@@ -53,7 +53,7 @@ export class Engine implements IEngine {
             const engineCommand: IEngineCommand<T> = new instance.constructor();
 
             engineCommand.create(this._logger, this._fileSystem, this._engineRootFolder, this._enginePackageJson);
-            args.outputDirectory = this.cleanupOutputDirectory(args.outputDirectory);
+            args.outputDirectory = await this.findConfigFolder(args.outputDirectory);
             return engineCommand.run(args);
         } catch (err) {
             this._logger.error("Error loading command module", undefined, { command: commandName, args });
@@ -61,7 +61,7 @@ export class Engine implements IEngine {
         }
     }
 
-    private cleanupOutputDirectory(outputDirectory: string | null | undefined): string {
+    private async findConfigFolder(outputDirectory: string | null | undefined): Promise<string> {
         let outputDir;
         if (outputDirectory === undefined || outputDirectory === null || outputDirectory.length === 0) {
             // no output directory specified so use current
@@ -70,12 +70,24 @@ export class Engine implements IEngine {
             outputDir = this._fileSystem.pathAbsolute(outputDirectory);
         }
 
-        // check to see if this folder is called www, if it is then we should traverse up one folder
-        // to where the unite.json is
-        const dirName = this._fileSystem.pathGetFilename(outputDir);
-        if (dirName === "www") {
-            outputDir = this._fileSystem.pathCombine(outputDir, "../");
+        // check to see if this folder contains unite.json if it doesn't then keep recursing up
+        // until we find it
+        let searchComplete = false;
+        do {
+            searchComplete = await this._fileSystem.fileExists(outputDir, "unite.json");
+
+            if (!searchComplete) {
+                const newOutputDir = this._fileSystem.pathCombine(outputDir, "../");
+
+                // recursing up didn't move so we have reached the end of our search
+                if (newOutputDir === outputDir) {
+                    searchComplete = true;
+                } else {
+                    outputDir = newOutputDir;
+                }
+            }
         }
+        while (!searchComplete);
 
         return outputDir;
     }

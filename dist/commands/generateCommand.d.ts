@@ -4,5 +4,5 @@ import { IGenerateCommandParams } from "../interfaces/IGenerateCommandParams";
 export declare class GenerateCommand extends EngineCommandBase implements IEngineCommand<IGenerateCommandParams> {
     run(args: IGenerateCommandParams): Promise<number>;
     private generateFromTemplate(args, uniteConfiguration, generateTemplatesFolder, generateTemplate);
-    private copyFiles(generateTemplatesFolder, filenames, destRootFolder, subFolder, templateSubFolder, possibleExtensions, substitutions);
+    private copyFiles(generateTemplatesFolder, filenames, destFolder, templateSubFolder, possibleExtensions, substitutions);
 }
