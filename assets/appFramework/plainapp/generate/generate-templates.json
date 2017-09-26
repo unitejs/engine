@@ -1,0 +1,11 @@
+{
+    "class": {
+        "isShared": true
+    },
+    "enum": {
+        "isShared": true
+    },
+    "interface": {
+        "isShared": true
+    }
+}

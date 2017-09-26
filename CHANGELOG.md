@@ -6,6 +6,7 @@
 * Added Angular generate class, component, directive, enum, guard, interface, module, pipe, service
 * Added Aurelia generate attribute, binding-behavior, class, component, element, enum, interface, pipeline-step, value-converter
 * Added React generate class, component, enum, interface
+* Added PlainApp generate class, enum, interface
 * Refactored engine commands to make it easier to extend
 * Added jsconfig.json is now generated for JavaScript=sourceLanguage and ides contains VSCode
 * Added ides property to UniteConfiguration
