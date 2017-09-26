@@ -115,7 +115,7 @@ describe("Angular", () => {
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(1);
             Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(6);
-            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins.length).to.be.equal(1);
+            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins.length).to.be.equal(2);
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parser).to.be.equal("babel-eslint");
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript")).to.be.equal(undefined);
             const packageJsonDependencies: { [id: string]: string } = {};

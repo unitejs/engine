@@ -34,7 +34,7 @@ export class Angular extends SharedAppFramework {
         this.toggleDependencies(logger, uniteConfiguration, engineVariables, mainCondition);
 
         const usingGulp = super.condition(uniteConfiguration.taskManager, "Gulp");
-        if (usingGulp) {
+        if (mainCondition && usingGulp) {
             engineVariables.buildTranspileInclude.push("const inline = require(\"gulp-inline-ng2-template\");");
             engineVariables.buildTranspilePreBuild.push(".pipe(buildConfiguration.bundle ? inline({");
             engineVariables.buildTranspilePreBuild.push("                useRelativePaths: true,");
@@ -46,7 +46,7 @@ export class Angular extends SharedAppFramework {
 
         engineVariables.toggleDevDependency(["gulp-inline-ng2-template"], mainCondition && usingGulp);
 
-        engineVariables.toggleDevDependency(["babel-plugin-transform-decorators-legacy"],
+        engineVariables.toggleDevDependency(["babel-plugin-transform-decorators-legacy", "babel-plugin-transform-class-properties"],
                                             mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
         engineVariables.toggleDevDependency(["babel-eslint"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
         engineVariables.toggleDevDependency(["@types/systemjs"],
@@ -55,6 +55,7 @@ export class Angular extends SharedAppFramework {
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
         if (babelConfiguration) {
             ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", mainCondition);
+            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-class-properties", mainCondition);
         }
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");

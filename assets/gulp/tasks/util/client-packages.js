@@ -164,18 +164,17 @@ function buildModuleConfig (uniteConfig, includeModes, isMinified) {
                         moduleConfig.preload.push(key);
                     }
                 }
+            }
+            if (pkg.map) {
+                Object.keys(pkg.map).forEach(mapKey => {
+                    moduleConfig.map[mapKey] = pkg.map[mapKey];
+                });
+            }
 
-                if (pkg.map) {
-                    Object.keys(pkg.map).forEach(mapKey => {
-                        moduleConfig.map[mapKey] = pkg.map[mapKey];
-                    });
-                }
-
-                if (pkg.loaders) {
-                    Object.keys(pkg.loaders).forEach(loaderKey => {
-                        moduleConfig.loaders[loaderKey] = pkg.loaders[loaderKey];
-                    });
-                }
+            if (pkg.loaders) {
+                Object.keys(pkg.loaders).forEach(loaderKey => {
+                    moduleConfig.loaders[loaderKey] = `${uniteConfig.dirs.www.package}${key}/${pkg.loaders[loaderKey]}`;
+                });
             }
         }
     });

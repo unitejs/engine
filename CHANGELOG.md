@@ -1,18 +1,20 @@
 # Changelog
 
-## v1.1.1
+## v1.2.0
 
 * Added generate command
 * Added Angular generate class, component, directive, enum, guard, interface, module, pipe, service
+* Added Aurelia generate attribute, binding-behavior, class, component, element, enum, interface, pipeline-step, value-converter
+* Added React generate class, component, enum, interface
 * Refactored engine commands to make it easier to extend
-* Added jsconfig.json is now generated for JavaScript=sourceLanguage and ide=VSCode
-* Added ide property to UniteConfiguration
+* Added jsconfig.json is now generated for JavaScript=sourceLanguage and ides contains VSCode
+* Added ides property to UniteConfiguration
 * Added exclude node_modules to jsconfig.json and tsconfig.json
-* Added experminental decorators flag for react
+* Added experimental decorators flag for react
 * Populated include and exclude properties in tsconfig.json and jsconfig.json
 * ESLint does not terminate on warnings
 * TSLint does not terminate on warnings
-* Async gulp stream wrapping switched to use stream-to-promise
+* Async gulp stream wrapping switched to use stream-to-promise for some streams (eslint)
 
 ## v1.1.0
 

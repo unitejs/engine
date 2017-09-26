@@ -8,6 +8,7 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { BabelConfiguration } from "../../configuration/models/babel/babelConfiguration";
 import { EsLintConfiguration } from "../../configuration/models/eslint/esLintConfiguration";
 import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
+import { TsLintConfiguration } from "../../configuration/models/tslint/tsLintConfiguration";
 import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { JavaScriptConfiguration } from "../../configuration/models/vscode/javaScriptConfiguration";
@@ -40,7 +41,7 @@ export class Aurelia extends SharedAppFramework {
         engineVariables.toggleDevDependency(["unitejs-aurelia-webdriver-plugin"],
                                             mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
 
-        engineVariables.toggleDevDependency(["babel-plugin-transform-decorators-legacy"],
+        engineVariables.toggleDevDependency(["babel-plugin-transform-decorators-legacy", "babel-plugin-transform-class-properties"],
                                             mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
 
         engineVariables.toggleDevDependency(["babel-eslint"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
@@ -61,11 +62,13 @@ export class Aurelia extends SharedAppFramework {
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
         if (babelConfiguration) {
             ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", mainCondition);
+            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-class-properties", mainCondition);
         }
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
             ObjectHelper.addRemove(esLintConfiguration, "parser", "babel-eslint", mainCondition);
+            ObjectHelper.addRemove(esLintConfiguration.rules, "no-unused-vars", 1, mainCondition);
         }
 
         const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
@@ -76,6 +79,13 @@ export class Aurelia extends SharedAppFramework {
         const javaScriptConfiguration = engineVariables.getConfiguration<JavaScriptConfiguration>("JavaScript");
         if (javaScriptConfiguration) {
             ObjectHelper.addRemove(javaScriptConfiguration.compilerOptions, "experimentalDecorators", true, mainCondition);
+        }
+
+        const tsLintConfiguration = engineVariables.getConfiguration<TsLintConfiguration>("TSLint");
+        if (tsLintConfiguration) {
+            ObjectHelper.addRemove(tsLintConfiguration.rules, "no-empty", { severity: "warning" }, mainCondition);
+            ObjectHelper.addRemove(tsLintConfiguration.rules, "no-empty-interface", { severity: "warning" }, mainCondition);
+            ObjectHelper.addRemove(tsLintConfiguration.rules, "variable-name", [ true, "allow-leading-underscore" ], mainCondition);
         }
 
         return 0;

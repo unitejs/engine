@@ -1,41 +1,46 @@
 {
     "class": {
-        "sourceFiles": ["{GEN_NAME_SNAKE}.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}.spec.{EXTENSION}"]
+        "isShared": true
     },
     "component": {
         "defaultFolder": "{GEN_NAME_SNAKE}",
-        "sourceFiles": ["{GEN_NAME_SNAKE}.component.{EXTENSION}"],
-        "viewFiles": ["{GEN_NAME_SNAKE}.component.{EXTENSION}"],
-        "styleFiles": ["{GEN_NAME_SNAKE}.component.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}.component.spec.{EXTENSION}"]
+        "additionalExtension": "component",
+        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
+        "viewFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
+        "styleFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
+        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
     },
     "directive": {
-        "sourceFiles": ["{GEN_NAME_SNAKE}.directive.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}.directive.spec.{EXTENSION}"]
+        "additionalExtension": "directive",
+        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
+        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
     },
     "enum": {
-        "sourceFiles": ["{GEN_NAME_SNAKE}.enum.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}.enum.spec.{EXTENSION}"]
+        "isShared": true,
+        "additionalExtension": "enum"
     },
     "guard": {
-        "sourceFiles": ["{GEN_NAME_SNAKE}.guard.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}.guard.spec.{EXTENSION}"]
+        "additionalExtension": "guard",
+        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
+        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
     },
     "interface": {
-        "sourceFiles": ["{GEN_NAME_SNAKE}.{EXTENSION}"]
+        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"]
     },
     "module": {
         "defaultFolder": "{GEN_NAME_SNAKE}",
-        "sourceFiles": ["{GEN_NAME_SNAKE}.module.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}.module.spec.{EXTENSION}"]
+        "additionalExtension": "module",
+        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
+        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
     },
     "pipe": {
-        "sourceFiles": ["{GEN_NAME_SNAKE}.pipe.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}.pipe.spec.{EXTENSION}"]
+        "additionalExtension": "pipe",
+        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
+        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
     },
     "service": {
-        "sourceFiles": ["{GEN_NAME_SNAKE}.service.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}.service.spec.{EXTENSION}"]
+        "additionalExtension": "directive",
+        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
+        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
     }
 }

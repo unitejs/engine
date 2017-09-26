@@ -13,7 +13,7 @@ gulp.task("build-lint", async () => {
 
     const uniteConfig = await uc.getUniteConfig();
 
-    return asyncUtil.stream(gulp.src(path.join(
+    return asyncUtil.streamToPromise(gulp.src(path.join(
         uniteConfig.dirs.www.src,
         `**/*.${uc.extensionMap(uniteConfig.sourceExtensions)}`
     ))

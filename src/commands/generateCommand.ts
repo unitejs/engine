@@ -1,6 +1,7 @@
 /**
  * Generate Command
  */
+import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { ParameterValidation } from "unitejs-framework/dist/helpers/parameterValidation";
 import { IUniteGenerateTemplate } from "../configuration/models/unite/IUniteGenerateTemplate";
 import { IUniteGenerateTemplates } from "../configuration/models/unite/IUniteGenerateTemplates";
@@ -44,7 +45,26 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
                 const templateKey = keys.find(k => k.toLowerCase() === typeLower);
 
                 if (templateKey) {
-                    return await this.generateFromTemplate(args, uniteConfiguration, generateTemplatesFolder, generateTemplates[templateKey]);
+                    let template = generateTemplates[templateKey];
+                    const sharedGenerateTemplatesFolder = this._fileSystem.pathCombine(this._engineAssetsFolder, `appFramework/shared/generate/`);
+                    if (generateTemplates[templateKey].isShared) {
+                        const sharedExists = await this._fileSystem.fileExists(sharedGenerateTemplatesFolder, "generate-templates.json");
+
+                        if (sharedExists) {
+                            const sharedGenerateTemplates = await this._fileSystem.fileReadJson<IUniteGenerateTemplates>(sharedGenerateTemplatesFolder, "generate-templates.json");
+
+                            if (sharedGenerateTemplates[templateKey]) {
+                                template = ObjectHelper.merge(template, sharedGenerateTemplates[templateKey]);
+                            } else {
+                                this._logger.error(`Can not find a type of '${args.type}' in the shared templates'`);
+                                return 1;
+                            }
+                        } else {
+                            this._logger.error(`There are no shared generate-templates and shared template '${args.type}' is required`);
+                            return 1;
+                        }
+                    }
+                    return await this.generateFromTemplate(args, uniteConfiguration, generateTemplates[templateKey].isShared ? sharedGenerateTemplatesFolder : generateTemplatesFolder, template);
                 } else {
                     this._logger.error(`Can not find a type of '${args.type}' for applicationFramework '${uniteConfiguration.applicationFramework}, possible values are [${keys.join(", ")}]'`);
                     return 1;
@@ -65,6 +85,9 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
                                        generateTemplate: IUniteGenerateTemplate): Promise<number> {
 
         const substitutions = TemplateHelper.generateSubstitutions("GEN_NAME", args.name);
+        substitutions.ADDITIONAL_EXTENSION = generateTemplate.additionalExtension !== undefined &&
+            generateTemplate.additionalExtension !== null &&
+            generateTemplate.additionalExtension.length > 0 ? `.${generateTemplate.additionalExtension}` : "";
 
         // See where we are in relation to the www folder
         const baseDirectory = this._fileSystem.pathAbsolute("./");
@@ -83,14 +106,6 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
 
         // Find the relativee from srcFolder to srcOutputFolder so we can combine for other folder structures
         const srcRelative = this._fileSystem.pathFileRelative(srcFolder, srcOutputFolder);
-
-        /* tslint:disable */
-        console.log("startSrcFolder", startSrcFolder);
-        console.log("srcRelative", srcRelative);
-        console.log("subFolder", subFolder);
-        console.log("srcOutputFolder", srcOutputFolder);
-
-        const wwwRootFolder = this._fileSystem.pathCombine(args.outputDirectory, uniteConfiguration.dirs.wwwRoot);
 
         let ret = await this.copyFiles(generateTemplatesFolder,
                                        generateTemplate.sourceFiles,
@@ -113,22 +128,18 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
                                        generateTemplate.styleFiles,
                                        srcOutputFolder,
                                        `${args.type}/style`,
-                                       [ uniteConfiguration.styleExtension ],
+                                       [uniteConfiguration.styleExtension],
                                        substitutions);
         }
 
         if (ret === 0 && uniteConfiguration.unitTestRunner !== "None") {
             const unitSrcFolder = this._fileSystem.pathAbsolute(this._fileSystem.pathCombine(wwwFolder, uniteConfiguration.dirs.www.unitTestSrc));
             const unitSrcOutputFolder = this._fileSystem.pathCombine(unitSrcFolder, srcRelative);
-            substitutions.GEN_TEST_RELATIVE = this._fileSystem.pathToWeb(this._fileSystem.pathDirectoryRelative(unitSrcOutputFolder, srcOutputFolder));
-            if (substitutions.GEN_TEST_RELATIVE.startsWith("./")) {
-                substitutions.GEN_TEST_RELATIVE = substitutions.GEN_TEST_RELATIVE.substring(2);
+            substitutions.GEN_UNIT_TEST_RELATIVE = this._fileSystem.pathToWeb(this._fileSystem.pathDirectoryRelative(unitSrcOutputFolder, srcOutputFolder));
+            if (substitutions.GEN_UNIT_TEST_RELATIVE.startsWith("./")) {
+                substitutions.GEN_UNIT_TEST_RELATIVE = substitutions.GEN_UNIT_TEST_RELATIVE.substring(2);
             }
 
-            console.log("unitSrcFolder", unitSrcFolder);
-            console.log("unitSrcOutputFolder", unitSrcOutputFolder);
-            console.log("GEN_TEST_RELATIVE", substitutions.GEN_TEST_RELATIVE);
-            
             ret = await this.copyFiles(generateTemplatesFolder,
                                        generateTemplate.unitTestFiles,
                                        unitSrcOutputFolder,
@@ -140,6 +151,10 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
         if (ret === 0 && uniteConfiguration.e2eTestRunner !== "None") {
             const e2eSrcFolder = this._fileSystem.pathAbsolute(this._fileSystem.pathCombine(wwwFolder, uniteConfiguration.dirs.www.e2eTestSrc));
             const e2eSrcOutputFolder = this._fileSystem.pathCombine(e2eSrcFolder, srcRelative);
+            substitutions.GEN_E2E_TEST_RELATIVE = this._fileSystem.pathToWeb(this._fileSystem.pathDirectoryRelative(e2eSrcOutputFolder, srcOutputFolder));
+            if (substitutions.GEN_E2E_TEST_RELATIVE.startsWith("./")) {
+                substitutions.GEN_E2E_TEST_RELATIVE = substitutions.GEN_E2E_TEST_RELATIVE.substring(2);
+            }
 
             ret = await this.copyFiles(generateTemplatesFolder,
                                        generateTemplate.e2eTestFiles,
@@ -170,7 +185,8 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
 
                 let doneCopy = false;
                 for (let j = 0; j < possibleExtensions.length && !doneCopy; j++) {
-                    const srcFilename2 = srcFilename.replace("{EXTENSION}", possibleExtensions[j]);
+                    let srcFilename2 = srcFilename.replace("{EXTENSION}", possibleExtensions[j]);
+                    srcFilename2 = srcFilename2.replace("{ADDITIONAL_EXTENSION}", "");
                     let destFilename = TemplateHelper.replaceSubstitutions(substitutions, srcFilename);
                     destFilename = destFilename.replace("{EXTENSION}", possibleExtensions[j]);
 
@@ -197,11 +213,10 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
                         this._logger.error(`There was an generating from the template`, err, { srcFolder, srcFilename2, destFolder, destFilename });
                         return 1;
                     }
-
-                    if (!doneCopy) {
-                        this._logger.error(`Can not find a source for '${srcFilename}' with the possible extensions [${possibleExtensions.join(", ")}]`);
-                        return 1;
-                    }
+                }
+                if (!doneCopy) {
+                    this._logger.error(`Can not find a source for '${srcFilename}' with the possible extensions [${possibleExtensions.join(", ")}]`);
+                    return 1;
                 }
             }
         }

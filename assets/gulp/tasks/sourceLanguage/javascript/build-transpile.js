@@ -31,7 +31,9 @@ gulp.task("build-transpile", async () => {
         {TRANSPILEPOSTBUILD}
         .on("error", (err) => {
             display.error(err.message);
-            display.error(`\n${err.codeFrame}`);
+            if (err.codeFrame) {
+                display.error(`\n${err.codeFrame}`);
+            }
             errorCount++;
         })
         .on("error", errorUtil.handleErrorEvent)

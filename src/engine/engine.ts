@@ -62,21 +62,26 @@ export class Engine implements IEngine {
     }
 
     private async findConfigFolder(outputDirectory: string | null | undefined): Promise<string> {
-        let outputDir;
+        let initialDir;
         if (outputDirectory === undefined || outputDirectory === null || outputDirectory.length === 0) {
             // no output directory specified so use current
-            outputDir = this._fileSystem.pathAbsolute("./");
+            initialDir = this._fileSystem.pathAbsolute("./");
         } else {
-            outputDir = this._fileSystem.pathAbsolute(outputDirectory);
+            initialDir = this._fileSystem.pathAbsolute(outputDirectory);
         }
+
+        let outputDir = initialDir;
 
         // check to see if this folder contains unite.json if it doesn't then keep recursing up
         // until we find it
         let searchComplete = false;
+        let found = false;
         do {
-            searchComplete = await this._fileSystem.fileExists(outputDir, "unite.json");
+            found = await this._fileSystem.fileExists(outputDir, "unite.json");
 
-            if (!searchComplete) {
+            if (found) {
+                searchComplete = true;
+            } else {
                 const newOutputDir = this._fileSystem.pathCombine(outputDir, "../");
 
                 // recursing up didn't move so we have reached the end of our search
@@ -88,6 +93,11 @@ export class Engine implements IEngine {
             }
         }
         while (!searchComplete);
+
+        // not found at all so set outputDir back to initialDir in case this is a new creation
+        if (!found) {
+            outputDir = initialDir;
+        }
 
         return outputDir;
     }

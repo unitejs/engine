@@ -25,7 +25,7 @@ gulp.task("e2e-lint", async () => {
 
     const uniteConfig = await uc.getUniteConfig();
 
-    return asyncUtil.stream(gulp.src(path.join(
+    return asyncUtil.streamToPromise(gulp.src(path.join(
         uniteConfig.dirs.www.e2eTestSrc,
         `**/${options.grep}.${uc.extensionMap(uniteConfig.sourceExtensions)}`
     ))

@@ -1,0 +1,45 @@
+{
+    "attribute": {
+        "defaultFolder": "resources/attributes",
+        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
+        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
+    },
+    "binding-behavior": {
+        "defaultFolder": "resources/binding-behaviors",
+        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
+        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
+    },
+    "class": {
+        "isShared": true
+    },
+    "component": {
+        "defaultFolder": "components/{GEN_NAME_SNAKE}",
+        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
+        "viewFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
+        "styleFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
+        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
+    },
+    "element": {
+        "defaultFolder": "resources/elements/{GEN_NAME_SNAKE}",
+        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
+        "viewFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
+        "styleFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
+        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
+    },
+    "enum": {
+        "isShared": true
+    },
+    "interface": {
+        "isShared": true
+    },
+    "pipeline-step": {
+        "defaultFolder": "pipeline-steps",
+        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
+        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
+    },
+    "value-converter": {
+        "defaultFolder": "resources/value-converters",
+        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
+        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
+    }
+}

@@ -21,14 +21,11 @@ describe("GenerateCommand", () => {
     let loggerWarningSpy: Sinon.SinonSpy;
     let loggerBannerSpy: Sinon.SinonSpy;
     let uniteJson: UniteConfiguration;
-    let uniteJsonWritten: UniteConfiguration;
-    let packageJsonErrors: boolean;
-    let spdxErrors: boolean;
-    let fileWriteJsonErrors: boolean;
-    let packageInfo: string;
-    let failPackageAdd: boolean;
     let enginePackageConfiguration: PackageConfiguration;
     let generateTemplates: IUniteGenerateTemplates;
+    let sharedGenerateTemplates: IUniteGenerateTemplates;
+    let generateTemplatesExist: boolean;
+    let sharedGenerateTemplatesExist: boolean;
 
     beforeEach(async () => {
         sandbox = Sinon.sandbox.create();
@@ -46,13 +43,10 @@ describe("GenerateCommand", () => {
         loggerBannerSpy = sandbox.spy(loggerStub, "banner");
 
         uniteJson = undefined;
-        packageJsonErrors = false;
-        spdxErrors = false;
-        fileWriteJsonErrors = false;
-        packageInfo = undefined;
-        uniteJsonWritten = undefined;
-        failPackageAdd = false;
         generateTemplates = undefined;
+        sharedGenerateTemplates = undefined;
+        generateTemplatesExist = true;
+        sharedGenerateTemplatesExist = true;
 
         const originalFileExists = fileSystemStub.fileExists;
         const stubExists = sandbox.stub(fileSystemStub, "fileExists");
@@ -61,6 +55,12 @@ describe("GenerateCommand", () => {
                 return Promise.resolve(uniteJson === undefined ? false : true);
             } else if (filename === "doesnotexist.ts") {
                 return Promise.resolve(false);
+            } else if (filename === "generate-templates.json") {
+                if (folder.indexOf("shared") > 0) {
+                    return Promise.resolve(sharedGenerateTemplatesExist);
+                } else {
+                    return Promise.resolve(generateTemplatesExist);
+                }
             } else {
                 return originalFileExists(folder, filename);
             }
@@ -71,24 +71,13 @@ describe("GenerateCommand", () => {
             if (filename === "unite.json") {
                 return uniteJson === null ? Promise.reject("err") : Promise.resolve(uniteJson);
             } else if (filename === "generate-templates.json") {
-                return generateTemplates ? generateTemplates : originalFileReadJson(folder, filename);
+                if (folder.indexOf("shared") > 0) {
+                    return sharedGenerateTemplates ? sharedGenerateTemplates : originalFileReadJson(folder, filename);
+                } else {
+                    return generateTemplates ? generateTemplates : originalFileReadJson(folder, filename);
+                }
             } else {
                 return originalFileReadJson(folder, filename);
-            }
-        });
-        const originalFileWriteJson = fileSystemStub.fileWriteJson;
-        const stubWriteJson = sandbox.stub(fileSystemStub, "fileWriteJson");
-        stubWriteJson.callsFake(async (folder, filename, obj) => {
-            if (fileWriteJsonErrors) {
-                return Promise.reject("error");
-
-            } else {
-                if (filename === "unite.json") {
-                    uniteJsonWritten = obj;
-                    return Promise.resolve();
-                } else {
-                    return originalFileWriteJson(folder, filename, obj);
-                }
             }
         });
 
@@ -115,7 +104,7 @@ describe("GenerateCommand", () => {
             uniteVersion: undefined,
             sourceExtensions: ["ts"],
             viewExtensions: ["html"],
-            styleExtension: "sass",
+            styleExtension: "scss",
             clientPackages: undefined,
             dirs: {
                 wwwRoot: "./www/",
@@ -197,6 +186,7 @@ describe("GenerateCommand", () => {
 
         it("can fail when no generate-templates for framework", async () => {
             uniteJson.applicationFramework = "Aurelia";
+            generateTemplatesExist = false;
             const obj = new GenerateCommand();
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
             const res = await obj.run({
@@ -237,6 +227,50 @@ describe("GenerateCommand", () => {
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("There was an error loading generate-templates");
+        });
+
+        it("can fail when shared template and shared not exists", async () => {
+            sharedGenerateTemplatesExist = false;
+            const obj = new GenerateCommand();
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            const res = await obj.run({
+                name: "fred",
+                type: "class",
+                subFolder: undefined,
+                outputDirectory: undefined
+
+            });
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("no shared generate-templates");
+        });
+
+        it("can fail when shared template and shared base not exists", async () => {
+            sharedGenerateTemplates = {};
+            const obj = new GenerateCommand();
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            const res = await obj.run({
+                name: "fred",
+                type: "class",
+                subFolder: undefined,
+                outputDirectory: undefined
+
+            });
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("Can not find a type of");
+        });
+
+        it("can succeed with shared template", async () => {
+            const obj = new GenerateCommand();
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            const res = await obj.run({
+                name: "fred",
+                type: "class",
+                subFolder: undefined,
+                outputDirectory: undefined
+
+            });
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
         });
 
         it("can succeed when calling with name and type", async () => {
@@ -280,6 +314,48 @@ describe("GenerateCommand", () => {
 
         it("can succeed when generate-templates has no files", async () => {
             generateTemplates = { component: {}};
+            const obj = new GenerateCommand();
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            const res = await obj.run({
+                name: "Bob",
+                type: "component",
+                subFolder: undefined,
+                outputDirectory: "./test/unit/temp"
+            });
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
+        });
+
+        it("can succeed when not in source folder", async () => {
+            const wwwFolder = fileSystemStub.pathAbsolute(fileSystemStub.pathCombine("./test/unit/temp", uniteJson.dirs.wwwRoot));
+            const srcFolder = fileSystemStub.pathAbsolute(fileSystemStub.pathCombine(wwwFolder, uniteJson.dirs.www.src));
+
+            const originalPathAbsolute = fileSystemStub.pathAbsolute;
+            const stub = sandbox.stub(fileSystemStub, "pathAbsolute");
+            stub.callsFake((dir) => {
+                if (dir === "./") {
+                    return fileSystemStub.pathAbsolute(fileSystemStub.pathCombine(srcFolder, "blah"));
+                }
+
+                return originalPathAbsolute(dir);
+            });
+
+            const obj = new GenerateCommand();
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            const res = await obj.run({
+                name: "Bob",
+                type: "component",
+                subFolder: undefined,
+                outputDirectory: "./test/unit/temp"
+            });
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
+        });
+
+        it("can succeed when path to web is not ./", async () => {
+            const stub = sandbox.stub(fileSystemStub, "pathToWeb");
+            stub.callsFake((dir) => dir);
+
             const obj = new GenerateCommand();
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
             const res = await obj.run({

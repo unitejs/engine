@@ -69,13 +69,12 @@ export class Pipeline {
 
         for (const pipelineStep of pipelineRemove) {
             try {
-                this._logger.info("Uninstalling", { step: ObjectHelper.getClassName(pipelineStep) });
                 const ret = await pipelineStep.configure(this._logger, this._fileSystem, uniteConfiguration, engineVariables, false);
                 if (ret !== 0) {
                     return ret;
                 }
             } catch (err) {
-                this._logger.error(`Exception installing pipeline step '${ObjectHelper.getClassName(pipelineStep)}'`, err);
+                this._logger.error(`Exception uninstalling pipeline step '${ObjectHelper.getClassName(pipelineStep)}'`, err);
                 return 1;
             }
         }
