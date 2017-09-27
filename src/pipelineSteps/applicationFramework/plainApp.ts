@@ -2,9 +2,12 @@
  * Pipeline step to generate scaffolding for plain application.
  */
 import { ArrayHelper } from "unitejs-framework/dist/helpers/arrayHelper";
+import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
+import { EsLintConfiguration } from "../../configuration/models/eslint/esLintConfiguration";
 import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
+import { TsLintConfiguration } from "../../configuration/models/tslint/tsLintConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
 import { SharedAppFramework } from "../sharedAppFramework";
@@ -25,6 +28,18 @@ export class PlainApp extends SharedAppFramework {
         engineVariables.toggleDevDependency(["unitejs-plain-protractor-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
 
         engineVariables.toggleDevDependency(["unitejs-plain-webdriver-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
+
+        const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
+        if (esLintConfiguration) {
+            ObjectHelper.addRemove(esLintConfiguration.rules, "no-unused-vars", 1, mainCondition);
+        }
+
+        const tsLintConfiguration = engineVariables.getConfiguration<TsLintConfiguration>("TSLint");
+        if (tsLintConfiguration) {
+            ObjectHelper.addRemove(tsLintConfiguration.rules, "no-empty", { severity: "warning" }, mainCondition);
+            ObjectHelper.addRemove(tsLintConfiguration.rules, "no-empty-interface", { severity: "warning" }, mainCondition);
+            ObjectHelper.addRemove(tsLintConfiguration.rules, "variable-name", [ true, "allow-leading-underscore" ], mainCondition);
+        }
 
         const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
         if (protractorConfiguration) {

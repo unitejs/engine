@@ -8,6 +8,7 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { BabelConfiguration } from "../../configuration/models/babel/babelConfiguration";
 import { EsLintConfiguration } from "../../configuration/models/eslint/esLintConfiguration";
 import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
+import { TsLintConfiguration } from "../../configuration/models/tslint/tsLintConfiguration";
 import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { JavaScriptConfiguration } from "../../configuration/models/vscode/javaScriptConfiguration";
@@ -93,6 +94,14 @@ export class React extends SharedAppFramework {
             ObjectHelper.addRemove(esLintConfiguration.parserOptions.ecmaFeatures, "jsx", true, mainCondition);
             ArrayHelper.addRemove(esLintConfiguration.extends, "plugin:react/recommended", mainCondition);
             ArrayHelper.addRemove(esLintConfiguration.plugins, "react", mainCondition);
+            ObjectHelper.addRemove(esLintConfiguration.rules, "no-unused-vars", 1, mainCondition);
+        }
+
+        const tsLintConfiguration = engineVariables.getConfiguration<TsLintConfiguration>("TSLint");
+        if (tsLintConfiguration) {
+            ObjectHelper.addRemove(tsLintConfiguration.rules, "no-empty", { severity: "warning" }, mainCondition);
+            ObjectHelper.addRemove(tsLintConfiguration.rules, "no-empty-interface", { severity: "warning" }, mainCondition);
+            ObjectHelper.addRemove(tsLintConfiguration.rules, "variable-name", [ true, "allow-leading-underscore" ], mainCondition);
         }
 
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");

@@ -56,7 +56,9 @@ export class Pipeline {
             }
 
             try {
-                this._logger.info("Initialising", { step: ObjectHelper.getClassName(pipelineStep) });
+                if (condition || condition === undefined) {
+                    this._logger.info("Initialising", { step: ObjectHelper.getClassName(pipelineStep) });
+                }
                 const ret = await pipelineStep.initialise(this._logger, this._fileSystem, uniteConfiguration, engineVariables, condition || condition === undefined);
                 if (ret !== 0) {
                     return ret;
@@ -74,7 +76,7 @@ export class Pipeline {
                     return ret;
                 }
             } catch (err) {
-                this._logger.error(`Exception uninstalling pipeline step '${ObjectHelper.getClassName(pipelineStep)}'`, err);
+                this._logger.error(`Exception unconfiguring pipeline step '${ObjectHelper.getClassName(pipelineStep)}'`, err);
                 return 1;
             }
         }
@@ -94,13 +96,12 @@ export class Pipeline {
 
         for (const pipelineStep of pipelineRemove) {
             try {
-                this._logger.info("Finalising", { step: ObjectHelper.getClassName(pipelineStep) });
                 const ret = await pipelineStep.finalise(this._logger, this._fileSystem, uniteConfiguration, engineVariables, false);
                 if (ret !== 0) {
                     return ret;
                 }
             } catch (err) {
-                this._logger.error(`Exception finalising pipeline step '${ObjectHelper.getClassName(pipelineStep)}'`, err);
+                this._logger.error(`Exception unfinalising pipeline step '${ObjectHelper.getClassName(pipelineStep)}'`, err);
                 return 1;
             }
         }

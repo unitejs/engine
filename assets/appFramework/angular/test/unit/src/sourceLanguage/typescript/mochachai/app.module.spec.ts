@@ -3,7 +3,8 @@
  */
 import * as coreTesting from "@angular/core/testing";
 import * as browserTesting from "@angular/platform-browser-dynamic/testing";
-import chai from "chai";
+import * as chaiModule from "chai";
+const chai = (chaiModule as any).default || chaiModule;
 import {AppModule} from "../../../src/app.module";
 
 describe("AppModule", () => {

@@ -1,7 +1,8 @@
 /**
  * Tests for {GEN_NAME_PASCAL}ValueConverter.
  */
-import chai from "chai";
+import * as chaiModule from "chai";
+const chai = (chaiModule as any).default || chaiModule;
 import { {GEN_NAME_PASCAL}ValueConverter } from "{GEN_UNIT_TEST_RELATIVE}{GEN_NAME_SNAKE}";
 
 describe("{GEN_NAME_PASCAL}ValueConverter", () => {
