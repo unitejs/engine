@@ -22,7 +22,7 @@ gulp.task("build-css-post-components", async () => {
     if (buildConfiguration.minify) {
         await asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.dist, "**/*.css"))
             .pipe(cssnano())
-            .pipe(gulp.dest(uniteConfig.dirs.www.cssDist)));
+            .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
     }
 });
 

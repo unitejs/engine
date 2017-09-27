@@ -190,25 +190,6 @@ describe("React", () => {
             Chai.expect(exists).to.be.equal(false);
         });
 
-        it("can fail with no css", async () => {
-            const stub = sandbox.stub(fileSystemMock, "fileReadText");
-            stub.callsFake(async (directoryName, fileName) => {
-                if (fileName.endsWith("css")) {
-                    return Promise.reject("error");
-                } else {
-                    return new FileSystemMock().fileReadText(directoryName, fileName);
-                }
-            });
-
-            const obj = new React();
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
-            Chai.expect(res).to.be.equal(1);
-            let exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.jsx");
-            Chai.expect(exists).to.be.equal(true);
-            exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/child/", "child.css");
-            Chai.expect(exists).to.be.equal(false);
-        });
-
         it("can fail with no e2e tests", async () => {
             const stub = sandbox.stub(fileSystemMock, "fileReadText");
             stub.callsFake(async (directoryName, fileName) => {
@@ -222,7 +203,7 @@ describe("React", () => {
             const obj = new React();
             const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
-            let exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/child/", "child.css");
+            let exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.jsx");
             Chai.expect(exists).to.be.equal(true);
             exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/e2e/src/", "app.spec.js");
             Chai.expect(exists).to.be.equal(false);

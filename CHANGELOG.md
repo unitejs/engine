@@ -16,6 +16,7 @@
 * ESLint does not terminate on warnings
 * TSLint does not terminate on warnings
 * Async gulp stream wrapping switched to use stream-to-promise for some streams (eslint)
+* Fixed build-css-post-components copying to wrong location
 
 ## v1.1.0
 
