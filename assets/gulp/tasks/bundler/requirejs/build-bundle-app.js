@@ -32,7 +32,7 @@ function performAppOptimize (uniteConfig, buildConfiguration, moduleConfig, path
                 "out": path.join(uniteConfig.dirs.www.dist, "app-bundle.js"),
                 "paths": moduleConfig.paths,
                 map,
-                "exclude": [moduleConfig.map.text]
+                "exclude": [moduleConfig.map.text, moduleConfig.map.css]
             }, async (result) => {
                 display.log(result);
 
@@ -80,7 +80,10 @@ gulp.task("build-bundle-app", async () => {
             buildConfiguration.minify
         );
 
-        const files = await bundle.findAppFiles(uniteConfig, true, "text!", "text!");
+        const textPrefix = moduleConfig.map.text === undefined ? "" : "text!";
+        const cssPrefix = moduleConfig.map.css === undefined ? textPrefix : "css!";
+
+        const files = await bundle.findAppFiles(uniteConfig, true, textPrefix, cssPrefix);
 
         try {
             await util.promisify(fs.writeFile)(
@@ -94,7 +97,7 @@ gulp.task("build-bundle-app", async () => {
 
         const paths = {};
         for (const key in moduleConfig.paths) {
-            if (key === moduleConfig.map.text) {
+            if (key === moduleConfig.map.text || key === moduleConfig.map.css) {
                 moduleConfig.paths[key] = moduleConfig.paths[key].replace(/(\.js)$/, "");
                 paths[key] = `${uniteConfig.dirs.www.dist}vendor-bundle`;
             } else {

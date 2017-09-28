@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.2.1
+
+* Added React components can use extenal css files
+* Change React updated to v16
+* Fixed SystemJS loader not working with html views in some configurations
+* Added error if trying to run unit tests on a bundled build
+
 ## v1.2.0
 
 * Added generate command

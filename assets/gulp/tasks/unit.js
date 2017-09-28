@@ -10,6 +10,7 @@ const util = require("util");
 const del = require("del");
 const runSequence = require("run-sequence");
 const moduleConfig = require("./util/module-config");
+const asyncUtil = require("./util/async-util");
 require("./unit-transpile");
 require("./unit-runner");
 require("./unit-lint");
@@ -49,13 +50,22 @@ gulp.task("unit-module-config", async () => {
 
 gulp.task("unit", async () => {
     try {
-        await util.promisify(runSequence)(
-            "unit-clean",
-            "unit-lint",
-            "unit-transpile",
-            "unit-module-config",
-            "unit-run-test"
-        );
+        const uniteConfig = await uc.getUniteConfig();
+
+        const bundleExists = await asyncUtil.fileExists(path.join(uniteConfig.dirs.www.dist, "app-bundle.js"));
+
+        if (bundleExists) {
+            display.error("Unit tests can not be run on a bundled build.");
+            display.error("Run gulp build with a non bundled configuration.");
+        } else {
+            await util.promisify(runSequence)(
+                "unit-clean",
+                "unit-lint",
+                "unit-transpile",
+                "unit-module-config",
+                "unit-run-test"
+            );
+        }
     } catch (err) {
         display.error("Unhandled error during task", err);
         process.exit(1);

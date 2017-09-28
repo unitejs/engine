@@ -51,7 +51,7 @@ function createSystemJS (uniteConfig, includeModes, isBundle, mapBase) {
         "packages": {},
         "map": {},
         "meta": {
-            "dist/*": {
+            "dist/*.js": {
                 format
             },
             "dist/app-module-config.js": {
@@ -71,6 +71,9 @@ function createSystemJS (uniteConfig, includeModes, isBundle, mapBase) {
     });
     Object.keys(moduleConfig.map).forEach(key => {
         moduleConfig.map[key] = moduleConfig.map[key].replace(/\.\//, mapBase);
+
+        const distKey = `dist/*/${moduleConfig.paths[moduleConfig.map[key]]}.js`;
+        sjsConfig.meta[distKey] = {"format": "global"};
     });
     moduleConfig.packages.forEach((pkg) => {
         moduleConfig.paths[pkg.name] = pkg.location.replace(/\.\//, "");

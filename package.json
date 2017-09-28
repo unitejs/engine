@@ -212,6 +212,7 @@
         "react-router-dom": "^4.2.2",
         "reflect-metadata": "^0.1.10",
         "remap-istanbul": "^0.9.5",
+        "require-css": "^0.1.10",
         "require-dir": "^0.3.2",
         "requirejs": "^2.3.5",
         "requirejs-text": "^2.0.15",

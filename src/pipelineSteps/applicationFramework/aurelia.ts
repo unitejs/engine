@@ -205,7 +205,7 @@ export class Aurelia extends SharedAppFramework {
 
         engineVariables.toggleClientPackage(
             "requirejs-text",
-            "text.js",
+            "text",
             undefined,
             undefined,
             false,

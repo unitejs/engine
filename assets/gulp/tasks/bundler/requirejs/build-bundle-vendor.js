@@ -54,6 +54,7 @@ gulp.task("build-bundle-vendor", async () => {
             delete modulesConfig.paths.requirejs;
         }
         for (const key in modulesConfig.paths) {
+            modulesConfig.paths[key] = modulesConfig.paths[key].replace(/.\//, "");
             modulesConfig.paths[key] = `../${modulesConfig.paths[key].replace(/(\.js)$/, "")}`;
             keys.push(key);
         }

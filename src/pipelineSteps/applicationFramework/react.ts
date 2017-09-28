@@ -46,8 +46,8 @@ export class React extends SharedAppFramework {
 
         engineVariables.toggleClientPackage(
             "react",
-            "dist/react.js",
-            "dist/react.min.js",
+            "umd/react.development.js",
+            "umd/react.production.min.js",
             undefined,
             false,
             "both",
@@ -61,8 +61,8 @@ export class React extends SharedAppFramework {
 
         engineVariables.toggleClientPackage(
             "react-dom",
-            "dist/react-dom.js",
-            "dist/react-dom.min.js",
+            "umd/react-dom.development.js",
+            "umd/react-dom.production.min.js",
             undefined,
             false,
             "both",
@@ -88,6 +88,26 @@ export class React extends SharedAppFramework {
             undefined,
             undefined,
             mainCondition);
+
+        engineVariables.toggleClientPackage(
+            "require-css",
+            "css.js",
+            undefined,
+            undefined,
+            false,
+            "both",
+            "none",
+            false,
+            undefined,
+            { css: "require-css" },
+            undefined,
+            undefined,
+            mainCondition && super.condition(uniteConfiguration.bundler, "RequireJS"));
+
+        if (mainCondition && super.condition(uniteConfiguration.taskManager, "Gulp") && super.condition(uniteConfiguration.bundler, "RequireJS")) {
+            engineVariables.buildTranspileInclude.push("const replace = require(\"gulp-replace\");");
+            engineVariables.buildTranspilePreBuild.push(".pipe(replace(/import \"\.\\/(.*?).css\";/g, `import \"css!./$1.css\";`))");
+        }
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
@@ -146,13 +166,17 @@ export class React extends SharedAppFramework {
             ]);
 
             if (ret === 0) {
-                ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
+                ret = await super.generateAppCss(logger, fileSystem, uniteConfiguration, engineVariables, [`child/child`]);
 
                 if (ret === 0) {
-                    ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`, `bootstrapper.spec${sourceExtension}`], true);
+                    ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
 
                     if (ret === 0) {
-                        ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
+                        ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`, `bootstrapper.spec${sourceExtension}`], true);
+
+                        if (ret === 0) {
+                            ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
+                        }
                     }
                 }
             }

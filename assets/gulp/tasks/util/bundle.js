@@ -3,6 +3,7 @@
  */
 const glob = require("glob");
 const display = require("./display");
+const uc = require("./unite-config");
 const path = require("path");
 const util = require("util");
 
@@ -16,21 +17,21 @@ async function findAppFiles (uniteConfig, stripJsExtension, htmlPrefixPostfix, c
             "**/!(app-bundle|vendor-bundle|app-bundle-init|vendor-bundle-init|app-module-config).js"
         ));
 
-        const htmlFiles = await globAsync(path.join(
+        const viewFiles = await globAsync(path.join(
             uniteConfig.dirs.www.dist,
-            "**/!(app-bundle|vendor-bundle).html"
+            `**/!(app-bundle|vendor-bundle).${uc.extensionMap(uniteConfig.viewExtensions)}`
         ));
         const cssFiles = await globAsync(path.join(uniteConfig.dirs.www.dist, "**/*.css"));
 
         files = stripJsExtension ? jsFiles.map(file => file.replace(/(\.js)$/, "")) : jsFiles;
         if (htmlPrefixPostfix && htmlPrefixPostfix.length > 0) {
             if (htmlPrefixPostfix[0] === "!") {
-                files = files.concat(htmlFiles.map(file => `${file}${htmlPrefixPostfix}`));
+                files = files.concat(viewFiles.map(file => `${file}${htmlPrefixPostfix}`));
             } else {
-                files = files.concat(htmlFiles.map(file => `${htmlPrefixPostfix}${file}`));
+                files = files.concat(viewFiles.map(file => `${htmlPrefixPostfix}${file}`));
             }
         } else {
-            files = files.concat(htmlFiles.map(file => `${file}`));
+            files = files.concat(viewFiles.map(file => `${file}`));
         }
         if (cssPrefixPostfix && cssPrefixPostfix.length > 0) {
             if (cssPrefixPostfix[0] === "!") {

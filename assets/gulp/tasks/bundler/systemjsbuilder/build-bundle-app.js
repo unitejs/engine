@@ -72,7 +72,7 @@ gulp.task("build-bundle-app", async () => {
 
         if (hasText) {
             packageFiles.push(` + ${dist}**/*.${uc.extensionMap(uniteConfig.viewExtensions)}!text`);
-            packageFiles.push(` + ${dist}**/*.${uniteConfig.styleExtension}!text`);
+            packageFiles.push(` + ${dist}**/*.css!text`);
         }
 
         packageFiles.push(` - ${dist}vendor-bundle.js`);

@@ -102,7 +102,7 @@ export class Gulp extends PipelineStepBase {
         engineVariables.toggleDevDependency(["gulp-sass"], mainCondition && super.condition(uniteConfiguration.cssPre, "Sass"));
         engineVariables.toggleDevDependency(["gulp-stylus"], mainCondition && super.condition(uniteConfiguration.cssPre, "Stylus"));
         engineVariables.toggleDevDependency(["gulp-postcss"], mainCondition && super.condition(uniteConfiguration.cssPost, "PostCss"));
-        engineVariables.toggleDevDependency(["gulp-cssnano"], mainCondition && super.condition(uniteConfiguration.cssPost, "None"));
+        engineVariables.toggleDevDependency(["gulp-cssnano"], mainCondition);
     }
 
     private generateBuildFiles(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): void {

@@ -10,7 +10,7 @@ const postcss = require("gulp-postcss");
 const uc = require("./util/unite-config");
 const asyncUtil = require("./util/async-util");
 const gutil = require("gulp-util");
-const cssnano = require("cssnano");
+const cssnano = require("gulp-cssnano");
 const errorUtil = require("./util/error-util");
 
 gulp.task("build-css-post-app", async () => {
@@ -30,7 +30,7 @@ gulp.task("build-css-post-app", async () => {
             errorCount++;
         })
         .on("error", errorUtil.handleErrorEvent)
-        .pipe(buildConfiguration.minify ? postcss([cssnano()]) : gutil.noop())
+        .pipe(buildConfiguration.minify ? cssnano() : gutil.noop())
         .pipe(buildConfiguration.sourcemaps ? sourcemaps.write({
             "includeContent": true,
             "sourceRoot": "./src"
