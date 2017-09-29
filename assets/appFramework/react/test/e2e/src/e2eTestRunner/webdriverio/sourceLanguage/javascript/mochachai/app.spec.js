@@ -1,7 +1,7 @@
 /**
  * Tests for App.
  */
-import {expect} from "chai";
+import { expect } from "chai";
 
 describe("App", () => {
     it("the title is set", () => {
@@ -21,6 +21,16 @@ describe("App", () => {
             .getText()
             .then((rootContent) => {
                 expect(rootContent).to.equal("Hello UniteJS World!");
+            });
+    });
+
+    it("the font size is set", () => {
+        return browser
+            .loadAndWaitForReactPage("/")
+            .element(".child-style")
+            .getCssProperty("font-size")
+            .then((fontSize) => {
+                expect(fontSize.value).to.equal("20px");
             });
     });
 });

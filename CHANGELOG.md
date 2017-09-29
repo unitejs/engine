@@ -7,6 +7,8 @@
 * Fixed SystemJS loader not working with html views in some configurations
 * Added error if trying to run unit tests on a bundled build
 * Fixed build-css-post-components failing to read source files with correct extension
+* Added E2E Tests for font-size for all platform configuration combinations
+* Fixed Angular __moduleName || module.id substitution
 
 ## v1.2.0
 

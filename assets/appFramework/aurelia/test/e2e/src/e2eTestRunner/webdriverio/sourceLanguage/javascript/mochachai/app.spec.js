@@ -1,7 +1,7 @@
 /**
  * Tests for App.
  */
-import {expect} from "chai";
+import { expect } from "chai";
 
 describe("App", () => {
     it("the title is set", () => {
@@ -14,13 +14,23 @@ describe("App", () => {
             });
     });
 
-    it("the router text is set", () => {
+    it("the root text is set", () => {
         return browser
             .loadAndWaitForAureliaPage("/")
             .element("router-view")
             .getText()
             .then((routerContent) => {
                 expect(routerContent).to.equal("Hello UniteJS World!");
+            });
+    });
+
+    it("the font size is set", () => {
+        return browser
+            .loadAndWaitForAureliaPage("/")
+            .element(".child-style")
+            .getCssProperty("font-size")
+            .then((fontSize) => {
+                expect(fontSize.value).to.equal("20px");
             });
     });
 });

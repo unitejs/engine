@@ -36,12 +36,20 @@ export class Angular extends SharedAppFramework {
         const usingGulp = super.condition(uniteConfiguration.taskManager, "Gulp");
         if (mainCondition && usingGulp) {
             engineVariables.buildTranspileInclude.push("const inline = require(\"gulp-inline-ng2-template\");");
+            engineVariables.buildTranspileInclude.push("const replace = require(\"gulp-replace\");");
             engineVariables.buildTranspilePreBuild.push(".pipe(buildConfiguration.bundle ? inline({");
             engineVariables.buildTranspilePreBuild.push("                useRelativePaths: true,");
             engineVariables.buildTranspilePreBuild.push("                removeLineBreaks: true,");
             engineVariables.buildTranspilePreBuild.push("                customFilePath: (ext, inlinePath) => ext[0] === \".css\" ?");
             engineVariables.buildTranspilePreBuild.push("                    inlinePath.replace(`\${path.sep}src\${path.sep}`, `\${path.sep}dist\${path.sep}`) : inlinePath");
             engineVariables.buildTranspilePreBuild.push("        }) : gutil.noop())");
+
+            if (super.condition(uniteConfiguration.moduleType, "SystemJS")) {
+                engineVariables.buildTranspilePreBuild.push("        .pipe(replace(/moduleId: __moduleName \\|\\| module.id/, \"moduleId: __moduleName\"))");
+            }
+            if (super.condition(uniteConfiguration.moduleType, "CommonJS")) {
+                engineVariables.buildTranspilePreBuild.push("        .pipe(replace(/moduleId: __moduleName \\|\\| module.id/, \"moduleId: module.id\"))");
+            }
         }
 
         engineVariables.toggleDevDependency(["gulp-inline-ng2-template"], mainCondition && usingGulp);

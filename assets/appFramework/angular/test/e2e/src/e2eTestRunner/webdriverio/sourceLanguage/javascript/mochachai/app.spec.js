@@ -1,7 +1,7 @@
 /**
  * Tests for App.
  */
-import {expect} from "chai";
+import { expect } from "chai";
 
 describe("App", () => {
     it("the title is set", () => {
@@ -20,9 +20,20 @@ describe("App", () => {
             .waitForText("#root > ng-component > div", 20000)
             .element("#root > ng-component > div")
             .getText()
-                .then((rootContent) => {
-                    expect(rootContent).to.equal("Hello UniteJS World!");
-                });
+            .then((rootContent) => {
+                expect(rootContent).to.equal("Hello UniteJS World!");
+            });
+    });
+
+    it("the font size is set", () => {
+        return browser
+            .url("/")
+            .waitForText("#root > ng-component > div", 20000)
+            .element(".child-style")
+            .getCssProperty("font-size")
+            .then((fontSize) => {
+                expect(fontSize.value).to.equal("20px");
+            });
     });
 });
 

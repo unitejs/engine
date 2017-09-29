@@ -17,12 +17,23 @@ describe("App", () => {
             });
     });
 
-    it("the router text is set", (done) => {
+    it("the root text is set", (done) => {
         browser.loadAndWaitForAureliaPage("/")
             .then(() => {
                 $("router-view").getText()
                     .then((routerContent) => {
                         expect(routerContent).to.equal("Hello UniteJS World!");
+                        done();
+                    });
+            });
+    });
+
+    it("the font size is set", (done) => {
+        browser.loadAndWaitForAureliaPage("/")
+            .then(() => {
+                $(".child-style").getCssValue("font-size")
+                    .then((fontSize) => {
+                        expect(fontSize).to.equal("20px");
                         done();
                     });
             });
