@@ -19,7 +19,7 @@ gulp.task("build-css-components", async () => {
 
     let errorCount = 0;
 
-    return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.src, "**/*.scss"))
+    return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.src, `**/*.${uniteConfig.styleExtension}`))
         .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : gutil.noop())
         .pipe(sass())
         .on("error", (err) => {

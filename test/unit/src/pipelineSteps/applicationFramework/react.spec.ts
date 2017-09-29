@@ -8,8 +8,10 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { BabelConfiguration } from "../../../../../dist/configuration/models/babel/babelConfiguration";
 import { EsLintConfiguration } from "../../../../../dist/configuration/models/eslint/esLintConfiguration";
 import { ProtractorConfiguration } from "../../../../../dist/configuration/models/protractor/protractorConfiguration";
+import { TsLintConfiguration } from "../../../../../dist/configuration/models/tslint/tsLintConfiguration";
 import { TypeScriptConfiguration } from "../../../../../dist/configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
+import { JavaScriptConfiguration } from "../../../../../dist/configuration/models/vscode/javaScriptConfiguration";
 import { EngineVariables } from "../../../../../dist/engine/engineVariables";
 import { React } from "../../../../../dist/pipelineSteps/applicationFramework/react";
 import { FileSystemMock } from "../../fileSystem.mock";
@@ -41,6 +43,7 @@ describe("React", () => {
         uniteConfigurationStub.e2eTestRunner = "Protractor";
         uniteConfigurationStub.e2eTestFramework = "Jasmine";
         uniteConfigurationStub.sourceLanguage = "JavaScript";
+        uniteConfigurationStub.taskManager = "Gulp";
         uniteConfigurationStub.linter = "ESLint";
         uniteConfigurationStub.cssPre = "Css";
         uniteConfigurationStub.cssPost = "None";
@@ -81,6 +84,15 @@ describe("React", () => {
     });
 
     describe("initialise", () => {
+        it("can be called with false main condition", async () => {
+            const obj = new React();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(uniteConfigurationStub.sourceExtensions).to.not.contain("jsx");
+            Chai.expect(uniteConfigurationStub.sourceExtensions).to.not.contain("tsx");
+            Chai.expect(uniteConfigurationStub.viewExtensions.length).to.be.equal(0);
+        });
+
         it("can be called with application framework matching and javascript", async () => {
             const obj = new React();
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
@@ -115,7 +127,9 @@ describe("React", () => {
             engineVariablesStub.setConfiguration("WebdriverIO.Plugins", []);
             engineVariablesStub.setConfiguration("Babel", { presets: []});
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {}});
+            engineVariablesStub.setConfiguration("JavaScript", { compilerOptions: {}});
             engineVariablesStub.setConfiguration("ESLint", { parserOptions: { ecmaFeatures: {}}, extends: [], plugins: []});
+            engineVariablesStub.setConfiguration("TSLint", { rules: { } });
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
 
             Chai.expect(res).to.be.equal(0);
@@ -142,6 +156,8 @@ describe("React", () => {
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parserOptions.ecmaFeatures.jsx).to.be.equal(true);
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").extends).contains("plugin:react/recommended");
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").plugins).contains("react");
+            Chai.expect(engineVariablesStub.getConfiguration<TsLintConfiguration>("TSLint").rules["no-empty"]).not.to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<JavaScriptConfiguration>("JavaScript").compilerOptions.experimentalDecorators).to.be.equal(true);
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.jsx).to.be.equal("react");
         });
 
@@ -190,6 +206,25 @@ describe("React", () => {
             Chai.expect(exists).to.be.equal(false);
         });
 
+        it("can fail with no css", async () => {
+            const stub = sandbox.stub(fileSystemMock, "fileReadText");
+            stub.callsFake(async (directoryName, fileName) => {
+                if (fileName.endsWith(".css")) {
+                    return Promise.reject("error");
+                } else {
+                    return new FileSystemMock().fileReadText(directoryName, fileName);
+                }
+            });
+
+            const obj = new React();
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            Chai.expect(res).to.be.equal(1);
+            let exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.jsx");
+            Chai.expect(exists).to.be.equal(true);
+            exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/child/", "child.css");
+            Chai.expect(exists).to.be.equal(false);
+        });
+
         it("can fail with no e2e tests", async () => {
             const stub = sandbox.stub(fileSystemMock, "fileReadText");
             stub.callsFake(async (directoryName, fileName) => {
@@ -203,7 +238,7 @@ describe("React", () => {
             const obj = new React();
             const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
-            let exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.jsx");
+            let exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/child/", "child.css");
             Chai.expect(exists).to.be.equal(true);
             exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/e2e/src/", "app.spec.js");
             Chai.expect(exists).to.be.equal(false);
@@ -235,6 +270,14 @@ describe("React", () => {
             Chai.expect(res).to.be.equal(0);
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/unit/src/", "app.spec.js");
             Chai.expect(exists).to.be.equal(true);
+        });
+
+        it("can complete with false main condition", async () => {
+            const obj = new React();
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
+            Chai.expect(res).to.be.equal(0);
+            const exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/unit/src/", "app.spec.js");
+            Chai.expect(exists).to.be.equal(false);
         });
 
         it("can complete with typescript", async () => {

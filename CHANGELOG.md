@@ -2,10 +2,11 @@
 
 ## v1.2.1
 
-* Added React components can use extenal css files
+* Added React components can use external css files
 * Change React updated to v16
 * Fixed SystemJS loader not working with html views in some configurations
 * Added error if trying to run unit tests on a bundled build
+* Fixed build-css-post-components failing to read source files with correct extension
 
 ## v1.2.0
 

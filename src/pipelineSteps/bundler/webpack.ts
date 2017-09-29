@@ -28,7 +28,7 @@ export class Webpack extends PipelineStepBase {
     }
 
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
-        engineVariables.toggleDevDependency(["webpack", "source-map-loader", "uglifyjs-webpack-plugin"], mainCondition);
+        engineVariables.toggleDevDependency(["webpack", "source-map-loader", "uglifyjs-webpack-plugin", "style-loader", "css-loader"], mainCondition);
 
         return 0;
     }

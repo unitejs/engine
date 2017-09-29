@@ -104,9 +104,29 @@ export class React extends SharedAppFramework {
             undefined,
             mainCondition && super.condition(uniteConfiguration.bundler, "RequireJS"));
 
+        engineVariables.toggleClientPackage(
+            "systemjs-plugin-css",
+            "css.js",
+            undefined,
+            undefined,
+            false,
+            "both",
+            "none",
+            false,
+            undefined,
+            undefined,
+            { "*.css" : "systemjs-plugin-css" },
+            undefined,
+            mainCondition &&
+            (super.condition(uniteConfiguration.bundler, "Browserify") ||
+             super.condition(uniteConfiguration.bundler, "SystemJSBuilder") ||
+             super.condition(uniteConfiguration.bundler, "Webpack")));
+
         if (mainCondition && super.condition(uniteConfiguration.taskManager, "Gulp") && super.condition(uniteConfiguration.bundler, "RequireJS")) {
             engineVariables.buildTranspileInclude.push("const replace = require(\"gulp-replace\");");
-            engineVariables.buildTranspilePreBuild.push(".pipe(replace(/import \"\.\\/(.*?).css\";/g, `import \"css!./$1.css\";`))");
+            engineVariables.buildTranspileInclude.push("const clientPackages = require(\"./util/client-packages\");");
+            engineVariables.buildTranspilePreBuild.push(".pipe(replace(/import \"\.\\/(.*?).css\";/g,");
+            engineVariables.buildTranspilePreBuild.push("    `import \"\${clientPackages.getTypeMap(uniteConfig, \"css\", buildConfiguration.minify)}!./$1\";`))");
         }
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");

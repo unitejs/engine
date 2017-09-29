@@ -7,7 +7,7 @@ const uc = require("./unite-config");
 const path = require("path");
 const util = require("util");
 
-async function findAppFiles (uniteConfig, stripJsExtension, htmlPrefixPostfix, cssPrefixPostfix) {
+async function findAppFiles (uniteConfig, stripJsExtension, htmlPrefixPostfix, cssPrefixPostfix, stripCssExtension) {
     const globAsync = util.promisify(glob);
     let files = null;
 
@@ -21,7 +21,8 @@ async function findAppFiles (uniteConfig, stripJsExtension, htmlPrefixPostfix, c
             uniteConfig.dirs.www.dist,
             `**/!(app-bundle|vendor-bundle).${uc.extensionMap(uniteConfig.viewExtensions)}`
         ));
-        const cssFiles = await globAsync(path.join(uniteConfig.dirs.www.dist, "**/*.css"));
+        let cssFiles = await globAsync(path.join(uniteConfig.dirs.www.dist, "**/*.css"));
+        cssFiles = stripCssExtension ? cssFiles.map(file => file.replace(/(\.css)$/, "")) : cssFiles;
 
         files = stripJsExtension ? jsFiles.map(file => file.replace(/(\.js)$/, "")) : jsFiles;
         if (htmlPrefixPostfix && htmlPrefixPostfix.length > 0) {

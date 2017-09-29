@@ -12,7 +12,7 @@ gulp.task("build-css-components", async () => {
 
     const uniteConfig = await uc.getUniteConfig();
 
-    return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.src, "**/*.css"))
+    return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.src, `**/*.${uniteConfig.styleExtension}`))
         .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
 });
 

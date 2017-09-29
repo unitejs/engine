@@ -26,6 +26,8 @@ gulp.task("build-bundle-app", async () => {
             "entries": `./${path.join(uniteConfig.dirs.www.dist, "entryPoint.js")}`
         });
 
+        bApp.transform("browserify-css", {"autoInject": true});
+
         const keys = clientPackages.getModuleIds(uniteConfig, ["app", "both"]);
 
         keys.forEach((key) => {

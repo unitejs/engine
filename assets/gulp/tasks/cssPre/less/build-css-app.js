@@ -19,7 +19,7 @@ gulp.task("build-css-app", async () => {
 
     let errorCount = 0;
 
-    return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.cssSrc, "main.less"))
+    return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.cssSrc, `main.${uniteConfig.styleExtension}`))
         .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : gutil.noop())
         .pipe(less())
         .on("error", (err) => {

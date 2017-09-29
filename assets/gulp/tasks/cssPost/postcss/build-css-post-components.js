@@ -20,10 +20,7 @@ gulp.task("build-css-post-components", async () => {
 
     let errorCount = 0;
 
-    return asyncUtil.stream(gulp.src(path.join(
-        uniteConfig.dirs.www.dist,
-        `**/*.${uniteConfig.styleExtension}`
-    ))
+    return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.dist, "**/*.css"))
         .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : gutil.noop())
         .pipe(postcss())
         .on("error", (err) => {

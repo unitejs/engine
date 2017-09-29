@@ -22,12 +22,8 @@ gulp.task("build-bundle-app", async () => {
         const entry = {};
         const plugins = [];
 
-        const keys = clientPackages.getModuleIds(uniteConfig, ["app", "both"]);
-
-        const idx = keys.indexOf("systemjs");
-        if (idx >= 0) {
-            keys.splice(idx, 1);
-        }
+        const keys = clientPackages.getModuleIds(uniteConfig, ["app", "both"])
+            .filter(key => key.toLowerCase().indexOf("systemjs") < 0);
 
         if (keys.length > 0) {
             entry.vendor = keys;
@@ -38,8 +34,13 @@ gulp.task("build-bundle-app", async () => {
         }));
 
         if (buildConfiguration.minify) {
-            plugins.push(new UglifyJSPlugin());
             process.env.NODE_ENV = "production";
+            plugins.push(new UglifyJSPlugin());
+            plugins.push(new webpack.DefinePlugin({
+                "process.env": {
+                    "NODE_ENV": JSON.stringify(process.env.NODE_ENV)
+                }
+            }));
         }
 
         entry.app = `./${path.join(uniteConfig.dirs.www.dist, "entryPoint.js")}`;
@@ -50,20 +51,24 @@ gulp.task("build-bundle-app", async () => {
                 "devtoolModuleFilenameTemplate": "[resource-path]",
                 "filename": "app-bundle.js"
             },
-            plugins
+            plugins,
+            "module": {
+                "rules": [
+                    {
+                        "test": /\.css$/,
+                        "use": ["style-loader", "css-loader"]
+                    }
+                ]
+            }
         };
 
         if (buildConfiguration.sourcemaps) {
             webpackOptions.devtool = "inline-source-map";
-            webpackOptions.module = {
-                "rules": [
-                    {
-                        "enforce": "pre",
-                        "loader": "source-map-loader",
-                        "test": /\.js$/
-                    }
-                ]
-            };
+            webpackOptions.module.rules.push({
+                "test": /\.js$/,
+                "enforce": "pre",
+                "loader": "source-map-loader"
+            });
         }
 
         return asyncUtil.stream(gulp.src(entry.app)
