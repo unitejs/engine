@@ -21,17 +21,17 @@ export class PhantomJs extends PipelineStepBase {
         if (karmaConfiguration) {
             ArrayHelper.addRemove(karmaConfiguration.browsers, "PhantomJS", mainCondition && super.condition(uniteConfiguration.unitTestRunner, "Karma"));
 
-            const bbInclude = fileSystem.pathToWeb(
-                fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, "bluebird/js/browser/bluebird.js")));
-
-            ArrayHelper.addRemove(karmaConfiguration.files, { pattern: bbInclude, included: true, includeType: "polyfill" },
-                                  mainCondition && super.condition(uniteConfiguration.unitTestRunner, "Karma"),
-                                  (obj, item) => obj.pattern === item.pattern);
-
             const es6ShimInclude = fileSystem.pathToWeb(
                 fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, "es6-shim/es6-shim.js")));
 
             ArrayHelper.addRemove(karmaConfiguration.files, { pattern: es6ShimInclude, included: true, includeType: "polyfill" },
+                                  mainCondition && super.condition(uniteConfiguration.unitTestRunner, "Karma"),
+                                  (obj, item) => obj.pattern === item.pattern);
+
+            const bbInclude = fileSystem.pathToWeb(
+                fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, "bluebird/js/browser/bluebird.js")));
+
+            ArrayHelper.addRemove(karmaConfiguration.files, { pattern: bbInclude, included: true, includeType: "polyfill" },
                                   mainCondition && super.condition(uniteConfiguration.unitTestRunner, "Karma"),
                                   (obj, item) => obj.pattern === item.pattern);
         }

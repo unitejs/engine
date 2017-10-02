@@ -55,6 +55,8 @@ describe("GenerateCommand", () => {
                 return Promise.resolve(uniteJson === undefined ? false : true);
             } else if (filename === "doesnotexist.ts") {
                 return Promise.resolve(false);
+            } else if (filename === "already-exists.component.ts") {
+                return Promise.resolve(true);
             } else if (filename === "generate-templates.json") {
                 if (folder.indexOf("shared") > 0) {
                     return Promise.resolve(sharedGenerateTemplatesExist);
@@ -368,9 +370,22 @@ describe("GenerateCommand", () => {
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
         });
 
+        it("can fail when dest file exists", async () => {
+            const obj = new GenerateCommand();
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            const res = await obj.run({
+                name: "AlreadyExists",
+                type: "component",
+                subFolder: undefined,
+                outputDirectory: "./test/unit/temp"
+            });
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("Destination file exists");
+        });
+
         it("can fail when source files does not exist", async () => {
             generateTemplates = { component: {
-                sourceFiles: ["filenotexist.ts"]
+                sourceFiles: ["doesnotexist.ts"]
             }};
 
             const obj = new GenerateCommand();

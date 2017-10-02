@@ -2,14 +2,15 @@
 
 ## v1.2.1
 
-* Added React components can use external css files
 * Change React updated to v16
-* Fixed SystemJS loader not working with html views in some configurations
+* Added React components can use external css files
 * Added error if trying to run unit tests on a bundled build
-* Fixed build-css-post-components failing to read source files with correct extension
 * Added E2E Tests for font-size for all platform configuration combinations
-* Fixed Angular __moduleName || module.id substitution
 * Added es6-shim dependency for PhantomJS
+* Added Generate command now aborts if item already exists
+* Fixed SystemJS loader not working with html views in some configurations
+* Fixed build-css-post-components failing to read source files with correct extension
+* Fixed Angular __moduleName || module.id substitution for CommonJS/SystemJS modules
 
 ## v1.2.0
 

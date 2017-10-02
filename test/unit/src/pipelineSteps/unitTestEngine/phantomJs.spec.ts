@@ -86,7 +86,7 @@ describe("PhantomJs", () => {
             Chai.expect(packageJsonDevDependencies["karma-phantomjs-launcher"]).to.be.equal("1.2.3");
 
             Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma").browsers).contains("PhantomJS");
-            Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma").files.length).to.be.equal(2);
+            Chai.expect(engineVariablesStub.getConfiguration<KarmaConfiguration>("Karma").files.length).to.be.equal(3);
         });
 
         it("can be called with no configurations with false mainCondition", async () => {

@@ -191,22 +191,29 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
                     destFilename = destFilename.replace("{EXTENSION}", possibleExtensions[j]);
 
                     try {
-                        const exists = await this._fileSystem.fileExists(srcFolder, srcFilename2);
+                        const destExists = await this._fileSystem.fileExists(destFolder, destFilename);
 
-                        if (exists) {
-                            let content = await this._fileSystem.fileReadText(srcFolder, srcFilename2);
+                        if (destExists) {
+                            this._logger.error(`Destination file exists, aborting`, undefined, { srcFolder, srcFilename2, destFolder, destFilename });
+                            return 1;
+                        } else {
+                            const exists = await this._fileSystem.fileExists(srcFolder, srcFilename2);
 
-                            if (content.startsWith("!")) {
-                                this._logger.error(content.substr(1));
-                                return 1;
-                            } else {
-                                content = TemplateHelper.replaceSubstitutions(substitutions, content);
+                            if (exists) {
+                                let content = await this._fileSystem.fileReadText(srcFolder, srcFilename2);
 
-                                await this._fileSystem.directoryCreate(destFolder);
+                                if (content.startsWith("!")) {
+                                    this._logger.error(content.substr(1));
+                                    return 1;
+                                } else {
+                                    content = TemplateHelper.replaceSubstitutions(substitutions, content);
 
-                                await this._fileSystem.fileWriteText(destFolder, destFilename, content);
+                                    await this._fileSystem.directoryCreate(destFolder);
 
-                                doneCopy = true;
+                                    await this._fileSystem.fileWriteText(destFolder, destFilename, content);
+
+                                    doneCopy = true;
+                                }
                             }
                         }
                     } catch (err) {
