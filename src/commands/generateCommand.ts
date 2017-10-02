@@ -135,10 +135,8 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
         if (ret === 0 && uniteConfiguration.unitTestRunner !== "None") {
             const unitSrcFolder = this._fileSystem.pathAbsolute(this._fileSystem.pathCombine(wwwFolder, uniteConfiguration.dirs.www.unitTestSrc));
             const unitSrcOutputFolder = this._fileSystem.pathCombine(unitSrcFolder, srcRelative);
-            substitutions.GEN_UNIT_TEST_RELATIVE = this._fileSystem.pathToWeb(this._fileSystem.pathDirectoryRelative(unitSrcOutputFolder, srcOutputFolder));
-            if (substitutions.GEN_UNIT_TEST_RELATIVE.startsWith("./")) {
-                substitutions.GEN_UNIT_TEST_RELATIVE = substitutions.GEN_UNIT_TEST_RELATIVE.substring(2);
-            }
+            substitutions.GEN_UNIT_TEST_RELATIVE = this._fileSystem.pathToWeb(this._fileSystem.pathDirectoryRelative(unitSrcOutputFolder, srcOutputFolder))
+                .replace(/^\.\//, "");
 
             ret = await this.copyFiles(generateTemplatesFolder,
                                        generateTemplate.unitTestFiles,
@@ -151,10 +149,8 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
         if (ret === 0 && uniteConfiguration.e2eTestRunner !== "None") {
             const e2eSrcFolder = this._fileSystem.pathAbsolute(this._fileSystem.pathCombine(wwwFolder, uniteConfiguration.dirs.www.e2eTestSrc));
             const e2eSrcOutputFolder = this._fileSystem.pathCombine(e2eSrcFolder, srcRelative);
-            substitutions.GEN_E2E_TEST_RELATIVE = this._fileSystem.pathToWeb(this._fileSystem.pathDirectoryRelative(e2eSrcOutputFolder, srcOutputFolder));
-            if (substitutions.GEN_E2E_TEST_RELATIVE.startsWith("./")) {
-                substitutions.GEN_E2E_TEST_RELATIVE = substitutions.GEN_E2E_TEST_RELATIVE.substring(2);
-            }
+            substitutions.GEN_E2E_TEST_RELATIVE = this._fileSystem.pathToWeb(this._fileSystem.pathDirectoryRelative(e2eSrcOutputFolder, srcOutputFolder))
+                .replace(/^\.\//, "");
 
             ret = await this.copyFiles(generateTemplatesFolder,
                                        generateTemplate.e2eTestFiles,

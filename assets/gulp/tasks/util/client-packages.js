@@ -197,7 +197,7 @@ function getTypeMap (uniteConfig, type, isMinified) {
                     if (pkgMain) {
                         const pkgMainNoJs = pkgMain.replace(/(\.js)$/, "");
                         const pkgMainFullPath = `${uniteConfig.dirs.www.package}${moduleKey}/${pkgMainNoJs}`;
-                        return pkgMainFullPath.replace(/\.\//, "");
+                        return pkgMainFullPath.replace(/^\.\//, "");
                     }
                 }
             }

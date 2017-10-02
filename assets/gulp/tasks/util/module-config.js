@@ -67,16 +67,16 @@ function createSystemJS (uniteConfig, includeModes, isBundle, mapBase) {
     sjsConfig.packages[""] = {"defaultExtension": "js"};
 
     Object.keys(moduleConfig.paths).forEach(key => {
-        moduleConfig.paths[key] = moduleConfig.paths[key].replace(/\.\//, "");
+        moduleConfig.paths[key] = moduleConfig.paths[key].replace(/^\.\//, "");
     });
     Object.keys(moduleConfig.map).forEach(key => {
-        moduleConfig.map[key] = moduleConfig.map[key].replace(/\.\//, mapBase);
+        moduleConfig.map[key] = moduleConfig.map[key].replace(/^\.\//, mapBase);
 
         const distKey = `dist/*/${moduleConfig.paths[moduleConfig.map[key]]}.js`;
         sjsConfig.meta[distKey] = {"format": "global"};
     });
     moduleConfig.packages.forEach((pkg) => {
-        moduleConfig.paths[pkg.name] = pkg.location.replace(/\.\//, "");
+        moduleConfig.paths[pkg.name] = pkg.location.replace(/^\.\//, "");
         sjsConfig.packages[pkg.name] = {
             "main": pkg.main
         };

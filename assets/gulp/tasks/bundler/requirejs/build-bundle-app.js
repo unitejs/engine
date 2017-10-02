@@ -43,7 +43,7 @@ function performAppOptimize (uniteConfig, buildConfiguration, moduleConfig) {
                 "baseUrl": "./",
                 "generateSourceMaps": buildConfiguration.sourcemaps,
                 "logLevel": 2,
-                "name": `${uniteConfig.dirs.www.dist.replace(/\.\//, "")}app-bundle-init`,
+                "name": `${uniteConfig.dirs.www.dist.replace(/^\.\//, "")}app-bundle-init`,
                 "optimize": buildConfiguration.minify ? "uglify" : "none",
                 "out": path.join(uniteConfig.dirs.www.dist, "app-bundle.js"),
                 "paths": moduleConfig.paths,
@@ -59,7 +59,7 @@ function performAppOptimize (uniteConfig, buildConfiguration, moduleConfig) {
                 if (moduleConfig.preload.length > 0) {
                     bootstrap += `require(${JSON.stringify(moduleConfig.preload)}, function() {`;
                 }
-                bootstrap += `require(['${uniteConfig.dirs.www.dist.replace(/\.\//, "")}entryPoint']);`;
+                bootstrap += `require(['${uniteConfig.dirs.www.dist.replace(/^\.\//, "")}entryPoint']);`;
                 if (moduleConfig.preload.length > 0) {
                     bootstrap += "});";
                 }
