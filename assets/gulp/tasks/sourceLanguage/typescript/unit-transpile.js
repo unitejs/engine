@@ -32,10 +32,16 @@ gulp.task("unit-transpile", async () => {
     const tsProject = typescript.createProject("tsconfig.json");
     let errorCount = 0;
 
-    return asyncUtil.stream(gulp.src(path.join(
-        uniteConfig.dirs.www.unitTestSrc,
-        `**/${options.grep}.spec.${uc.extensionMap(uniteConfig.sourceExtensions)}`
-    ))
+    return asyncUtil.stream(gulp.src([
+        path.join(
+            uniteConfig.dirs.www.unitTestSrc,
+            `**/${options.grep}.spec.${uc.extensionMap(uniteConfig.sourceExtensions)}`
+        ),
+        path.join(
+            uniteConfig.dirs.www.unitTestSrc,
+            `**/*.mock.${uc.extensionMap(uniteConfig.sourceExtensions)}`
+        )
+    ])
         .pipe(sourcemaps.init())
         .pipe(tsProject(typescript.reporter.nullReporter()))
         .on("error", (err) => {

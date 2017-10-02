@@ -133,7 +133,6 @@ export class Gulp extends PipelineStepBase {
     }
 
     private generateUnitDependencies(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): void {
-        engineVariables.toggleDevDependency(["gulp-karma-runner"], mainCondition && super.condition(uniteConfiguration.unitTestRunner, "Karma"));
     }
 
     private generateUnitFiles(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): void {

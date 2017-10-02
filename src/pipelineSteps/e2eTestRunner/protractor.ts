@@ -83,7 +83,7 @@ export class Protractor extends PipelineStepBase {
         lines.push("const path = require('path');");
         lines.push("const webDriverPath = path.resolve('./node_modules/webdriver-manager/selenium/');");
         lines.push(`exports.config = ${JsonHelper.codify(this._configuration)};`);
-        lines.push("const files = fs.readdirSync((webDriverPath));");
+        lines.push("const files = fs.readdirSync(webDriverPath);");
         lines.push("const jvmArgs = [];");
         lines.push("files.forEach(file => {");
         lines.push("    const lowerFile = file.toLowerCase();");

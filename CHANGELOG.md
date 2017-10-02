@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.2.2
+
+* Added Jest Support
+* Added JSDom engine for Karma
+* Change unit test transpilation includes .mock.js files as well as .spec.js
+
 ## v1.2.1
 
 * Change React updated to v16
