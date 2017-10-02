@@ -29,7 +29,7 @@ describe("App", () => {
         return browser
             .url("/")
             .waitForText("#root > ng-component > div", 20000)
-            .element(".child-style")
+            .element(".child")
             .getCssProperty("font-size")
             .then((fontSize) => {
                 expect(fontSize.value).to.equal("20px");

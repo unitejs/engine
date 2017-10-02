@@ -15,7 +15,7 @@ export class PhantomJs extends PipelineStepBase {
     }
 
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
-        engineVariables.toggleDevDependency(["karma-phantomjs-launcher", "bluebird"], mainCondition && super.condition(uniteConfiguration.unitTestRunner, "Karma"));
+        engineVariables.toggleDevDependency(["karma-phantomjs-launcher", "bluebird", "es6-shim"], mainCondition && super.condition(uniteConfiguration.unitTestRunner, "Karma"));
 
         const karmaConfiguration = engineVariables.getConfiguration<KarmaConfiguration>("Karma");
         if (karmaConfiguration) {
@@ -25,6 +25,13 @@ export class PhantomJs extends PipelineStepBase {
                 fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, "bluebird/js/browser/bluebird.js")));
 
             ArrayHelper.addRemove(karmaConfiguration.files, { pattern: bbInclude, included: true, includeType: "polyfill" },
+                                  mainCondition && super.condition(uniteConfiguration.unitTestRunner, "Karma"),
+                                  (obj, item) => obj.pattern === item.pattern);
+
+            const es6ShimInclude = fileSystem.pathToWeb(
+                fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, "es6-shim/es6-shim.js")));
+
+            ArrayHelper.addRemove(karmaConfiguration.files, { pattern: es6ShimInclude, included: true, includeType: "polyfill" },
                                   mainCondition && super.condition(uniteConfiguration.unitTestRunner, "Karma"),
                                   (obj, item) => obj.pattern === item.pattern);
         }

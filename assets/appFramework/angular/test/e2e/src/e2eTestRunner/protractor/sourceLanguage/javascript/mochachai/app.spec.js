@@ -30,7 +30,7 @@ describe("App", () => {
     it("the font size is set", (done) => {
         browser.get("/")
             .then(() => {
-                $(".child-style").getCssValue("font-size")
+                $(".child").getCssValue("font-size")
                     .then((fontSize) => {
                         expect(fontSize).to.equal("20px");
                         done();

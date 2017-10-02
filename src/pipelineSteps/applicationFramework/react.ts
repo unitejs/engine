@@ -22,10 +22,6 @@ export class React extends SharedAppFramework {
 
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         if (mainCondition) {
-            if (super.condition(uniteConfiguration.unitTestEngine, "PhantomJS")) {
-                logger.error(`React does not currently support testing with ${uniteConfiguration.unitTestEngine}`);
-                return 1;
-            }
             ArrayHelper.addRemove(uniteConfiguration.viewExtensions, "html", true);
 
             ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "tsx",

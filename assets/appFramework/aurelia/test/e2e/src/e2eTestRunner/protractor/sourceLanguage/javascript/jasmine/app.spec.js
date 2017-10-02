@@ -28,7 +28,7 @@ describe("App", () => {
     it("the font size is set", (done) => {
         browser.loadAndWaitForAureliaPage("/")
             .then(() => {
-               $(".child-style").getCssValue("font-size")
+               $(".child").getCssValue("font-size")
                     .then((fontSize) => {
                         expect(fontSize).toEqual("20px");
                         done();

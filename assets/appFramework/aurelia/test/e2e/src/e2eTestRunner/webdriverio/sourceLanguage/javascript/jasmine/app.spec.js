@@ -25,7 +25,7 @@ describe("App", () => {
     it("the font size is set", () => {
         return browser
             .loadAndWaitForAureliaPage("/")
-            .element(".child-style")
+            .element(".child")
             .getCssProperty("font-size")
             .then((fontSize) => {
                 expect(fontSize.value).toEqual("20px");

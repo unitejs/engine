@@ -9,6 +9,7 @@
 * Fixed build-css-post-components failing to read source files with correct extension
 * Added E2E Tests for font-size for all platform configuration combinations
 * Fixed Angular __moduleName || module.id substitution
+* Added es6-shim dependency for PhantomJS
 
 ## v1.2.0
 

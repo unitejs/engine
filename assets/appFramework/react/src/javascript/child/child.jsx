@@ -6,7 +6,7 @@ import "./child.css";
 
 export class Child extends React.Component {
     render () {
-        return (<span className="child-style">Hello UniteJS World!</span>);
+        return (<span className="child">Hello UniteJS World!</span>);
     }
 }
 
