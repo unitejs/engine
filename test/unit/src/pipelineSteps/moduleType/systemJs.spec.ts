@@ -5,11 +5,11 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { BabelConfiguration } from "../../../../../dist/configuration/models/babel/babelConfiguration";
-import { TypeScriptConfiguration } from "../../../../../dist/configuration/models/typeScript/typeScriptConfiguration";
-import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
-import { EngineVariables } from "../../../../../dist/engine/engineVariables";
-import { SystemJs } from "../../../../../dist/pipelineSteps/moduleType/systemJs";
+import { BabelConfiguration } from "../../../../../src/configuration/models/babel/babelConfiguration";
+import { TypeScriptConfiguration } from "../../../../../src/configuration/models/typeScript/typeScriptConfiguration";
+import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
+import { EngineVariables } from "../../../../../src/engine/engineVariables";
+import { SystemJs } from "../../../../../src/pipelineSteps/moduleType/systemJs";
 import { FileSystemMock } from "../../fileSystem.mock";
 
 describe("SystemJs", () => {

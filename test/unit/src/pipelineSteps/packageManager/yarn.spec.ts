@@ -5,10 +5,10 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
-import { EngineVariables } from "../../../../../dist/engine/engineVariables";
-import { Yarn } from "../../../../../dist/pipelineSteps/packageManager/yarn";
-import { PackageUtils } from "../../../../../dist/pipelineSteps/packageUtils";
+import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
+import { EngineVariables } from "../../../../../src/engine/engineVariables";
+import { Yarn } from "../../../../../src/pipelineSteps/packageManager/yarn";
+import { PackageUtils } from "../../../../../src/pipelineSteps/packageUtils";
 import { FileSystemMock } from "../../fileSystem.mock";
 
 describe("Yarn", () => {

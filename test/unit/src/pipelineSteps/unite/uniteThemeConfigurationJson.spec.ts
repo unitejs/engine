@@ -5,10 +5,10 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
-import { UniteThemeConfiguration } from "../../../../../dist/configuration/models/uniteTheme/uniteThemeConfiguration";
-import { EngineVariables } from "../../../../../dist/engine/engineVariables";
-import { UniteThemeConfigurationJson } from "../../../../../dist/pipelineSteps/unite/uniteThemeConfigurationJson";
+import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
+import { UniteThemeConfiguration } from "../../../../../src/configuration/models/uniteTheme/uniteThemeConfiguration";
+import { EngineVariables } from "../../../../../src/engine/engineVariables";
+import { UniteThemeConfigurationJson } from "../../../../../src/pipelineSteps/unite/uniteThemeConfigurationJson";
 import { FileSystemMock } from "../../fileSystem.mock";
 
 describe("UniteThemeConfigurationJson", () => {

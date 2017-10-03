@@ -2,7 +2,7 @@
  * Tests for ProtractorCapabilities.
  */
 import * as Chai from "chai";
-import { ProtractorCapabilities } from "../../../../../../dist/configuration/models/protractor/protractorCapabilities";
+import { ProtractorCapabilities } from "../../../../../../src/configuration/models/protractor/protractorCapabilities";
 
 describe("ProtractorCapabilities", () => {
     it("can be created", async() => {

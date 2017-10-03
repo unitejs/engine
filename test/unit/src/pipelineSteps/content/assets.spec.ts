@@ -5,9 +5,9 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
-import { EngineVariables } from "../../../../../dist/engine/engineVariables";
-import { Assets } from "../../../../../dist/pipelineSteps/content/assets";
+import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
+import { EngineVariables } from "../../../../../src/engine/engineVariables";
+import { Assets } from "../../../../../src/pipelineSteps/content/assets";
 import { FileSystemMock } from "../../fileSystem.mock";
 
 describe("Assets", () => {

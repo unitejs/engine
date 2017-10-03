@@ -2,8 +2,8 @@
  * Tests for EngineVariables.
  */
 import * as Chai from "chai";
-import { UniteConfiguration } from "../../../../dist/configuration/models/unite/uniteConfiguration";
-import { EngineVariables } from "../../../../dist/engine/engineVariables";
+import { UniteConfiguration } from "../../../../src/configuration/models/unite/uniteConfiguration";
+import { EngineVariables } from "../../../../src/engine/engineVariables";
 
 describe("EngineVariables", () => {
     let uniteConfiguration: UniteConfiguration;

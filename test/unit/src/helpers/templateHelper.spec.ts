@@ -2,7 +2,7 @@
  * Tests for Template Helper
  */
 import * as Chai from "chai";
-import { TemplateHelper } from "../../../../dist/helpers/templateHelper";
+import { TemplateHelper } from "../../../../src/helpers/templateHelper";
 
 describe("TemplateHelper", () => {
     describe("generateSubstitutions", () => {

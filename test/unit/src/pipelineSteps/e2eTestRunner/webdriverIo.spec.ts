@@ -5,10 +5,10 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { EsLintConfiguration } from "../../../../../dist/configuration/models/eslint/esLintConfiguration";
-import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
-import { EngineVariables } from "../../../../../dist/engine/engineVariables";
-import { WebdriverIo } from "../../../../../dist/pipelineSteps/e2eTestRunner/webdriverIo";
+import { EsLintConfiguration } from "../../../../../src/configuration/models/eslint/esLintConfiguration";
+import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
+import { EngineVariables } from "../../../../../src/engine/engineVariables";
+import { WebdriverIo } from "../../../../../src/pipelineSteps/e2eTestRunner/webdriverIo";
 import { FileSystemMock } from "../../fileSystem.mock";
 
 describe("WebdriverIo", () => {

@@ -2,7 +2,7 @@
  * Tests for PostCssConfiguration.
  */
 import * as Chai from "chai";
-import { PostCssConfiguration } from "../../../../../../dist/configuration/models/postcss/postCssConfiguration";
+import { PostCssConfiguration } from "../../../../../../src/configuration/models/postcss/postCssConfiguration";
 
 describe("PostCssConfiguration", () => {
     it("can be created", async() => {

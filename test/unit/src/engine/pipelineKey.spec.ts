@@ -2,7 +2,7 @@
  * Tests for PipelineKey.
  */
 import * as Chai from "chai";
-import { PipelineKey } from "../../../../dist/engine/pipelineKey";
+import { PipelineKey } from "../../../../src/engine/pipelineKey";
 
 describe("PipelineKey", () => {
     it("can be created", () => {

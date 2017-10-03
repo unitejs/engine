@@ -17,8 +17,8 @@ export class CommonJs extends PipelineStepBase {
 
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         if (mainCondition) {
-            uniteConfiguration.srcDistReplace = "(require)*?(..\/src\/)";
-            uniteConfiguration.srcDistReplaceWith = "../dist/";
+            uniteConfiguration.srcDistReplace = "(require.*?)(\.\.\/src\/)";
+            uniteConfiguration.srcDistReplaceWith = "$1../dist/";
         }
 
         const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");

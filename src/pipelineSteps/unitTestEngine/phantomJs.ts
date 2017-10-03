@@ -14,20 +14,6 @@ export class PhantomJs extends PipelineStepBase {
         return super.condition(uniteConfiguration.unitTestEngine, "PhantomJS");
     }
 
-    public async initialise(logger: ILogger,
-                            fileSystem: IFileSystem,
-                            uniteConfiguration: UniteConfiguration,
-                            engineVariables: EngineVariables,
-                            mainCondition: boolean): Promise<number> {
-        if (mainCondition) {
-            if (!super.condition(uniteConfiguration.unitTestRunner, "Karma")) {
-                logger.error("You can only use PhantomJS unit test engine when the Unit Test runner is Karma");
-                return 1;
-            }
-        }
-        return 0;
-    }
-
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         engineVariables.toggleDevDependency(["karma-phantomjs-launcher", "bluebird", "es6-shim"], mainCondition && super.condition(uniteConfiguration.unitTestRunner, "Karma"));
 

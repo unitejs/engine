@@ -5,13 +5,13 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { EsLintConfiguration } from "../../../../../dist/configuration/models/eslint/esLintConfiguration";
-import { KarmaConfiguration } from "../../../../../dist/configuration/models/karma/karmaConfiguration";
-import { ProtractorConfiguration } from "../../../../../dist/configuration/models/protractor/protractorConfiguration";
-import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
-import { WebdriverIoConfiguration } from "../../../../../dist/configuration/models/webdriverIo/webdriverIoConfiguration";
-import { EngineVariables } from "../../../../../dist/engine/engineVariables";
-import { Jasmine } from "../../../../../dist/pipelineSteps/testFramework/jasmine";
+import { EsLintConfiguration } from "../../../../../src/configuration/models/eslint/esLintConfiguration";
+import { KarmaConfiguration } from "../../../../../src/configuration/models/karma/karmaConfiguration";
+import { ProtractorConfiguration } from "../../../../../src/configuration/models/protractor/protractorConfiguration";
+import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
+import { WebdriverIoConfiguration } from "../../../../../src/configuration/models/webdriverIo/webdriverIoConfiguration";
+import { EngineVariables } from "../../../../../src/engine/engineVariables";
+import { Jasmine } from "../../../../../src/pipelineSteps/testFramework/jasmine";
 import { FileSystemMock } from "../../fileSystem.mock";
 
 describe("Jasmine", () => {

@@ -5,10 +5,10 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { KarmaConfiguration } from "../../../../../dist/configuration/models/karma/karmaConfiguration";
-import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
-import { EngineVariables } from "../../../../../dist/engine/engineVariables";
-import { ChromeHeadless } from "../../../../../dist/pipelineSteps/unitTestEngine/chromeHeadless";
+import { KarmaConfiguration } from "../../../../../src/configuration/models/karma/karmaConfiguration";
+import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
+import { EngineVariables } from "../../../../../src/engine/engineVariables";
+import { ChromeHeadless } from "../../../../../src/pipelineSteps/unitTestEngine/chromeHeadless";
 import { FileSystemMock } from "../../fileSystem.mock";
 
 describe("ChromeHeadless", () => {

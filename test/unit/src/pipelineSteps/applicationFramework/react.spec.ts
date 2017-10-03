@@ -5,15 +5,15 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { BabelConfiguration } from "../../../../../dist/configuration/models/babel/babelConfiguration";
-import { EsLintConfiguration } from "../../../../../dist/configuration/models/eslint/esLintConfiguration";
-import { ProtractorConfiguration } from "../../../../../dist/configuration/models/protractor/protractorConfiguration";
-import { TsLintConfiguration } from "../../../../../dist/configuration/models/tslint/tsLintConfiguration";
-import { TypeScriptConfiguration } from "../../../../../dist/configuration/models/typeScript/typeScriptConfiguration";
-import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
-import { JavaScriptConfiguration } from "../../../../../dist/configuration/models/vscode/javaScriptConfiguration";
-import { EngineVariables } from "../../../../../dist/engine/engineVariables";
-import { React } from "../../../../../dist/pipelineSteps/applicationFramework/react";
+import { BabelConfiguration } from "../../../../../src/configuration/models/babel/babelConfiguration";
+import { EsLintConfiguration } from "../../../../../src/configuration/models/eslint/esLintConfiguration";
+import { ProtractorConfiguration } from "../../../../../src/configuration/models/protractor/protractorConfiguration";
+import { TsLintConfiguration } from "../../../../../src/configuration/models/tslint/tsLintConfiguration";
+import { TypeScriptConfiguration } from "../../../../../src/configuration/models/typeScript/typeScriptConfiguration";
+import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
+import { JavaScriptConfiguration } from "../../../../../src/configuration/models/vscode/javaScriptConfiguration";
+import { EngineVariables } from "../../../../../src/engine/engineVariables";
+import { React } from "../../../../../src/pipelineSteps/applicationFramework/react";
 import { FileSystemMock } from "../../fileSystem.mock";
 
 describe("React", () => {

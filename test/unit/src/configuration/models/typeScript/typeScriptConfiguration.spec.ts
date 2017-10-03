@@ -2,7 +2,7 @@
  * Tests for TypeScriptConfiguration.
  */
 import * as Chai from "chai";
-import { TypeScriptConfiguration } from "../../../../../../dist/configuration/models/typeScript/typeScriptConfiguration";
+import { TypeScriptConfiguration } from "../../../../../../src/configuration/models/typeScript/typeScriptConfiguration";
 
 describe("TypeScriptConfiguration", () => {
     it("can be created", async() => {

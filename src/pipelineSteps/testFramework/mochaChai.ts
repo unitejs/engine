@@ -18,20 +18,6 @@ export class MochaChai extends PipelineStepBase {
         return super.condition(uniteConfiguration.unitTestFramework, "MochaChai") || super.condition(uniteConfiguration.e2eTestFramework, "MochaChai");
     }
 
-    public async initialise(logger: ILogger,
-                            fileSystem: IFileSystem,
-                            uniteConfiguration: UniteConfiguration,
-                            engineVariables: EngineVariables,
-                            mainCondition: boolean): Promise<number> {
-        if (mainCondition) {
-            if (!super.condition(uniteConfiguration.unitTestRunner, "Karma")) {
-                logger.error("You can only use MochaChai Unit Test Framerwork when the Unit Test runner is Karma");
-                return 1;
-            }
-        }
-        return 0;
-    }
-
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         const isUnit = super.condition(uniteConfiguration.unitTestFramework, "MochaChai");
         const isE2E = super.condition(uniteConfiguration.e2eTestFramework, "MochaChai");

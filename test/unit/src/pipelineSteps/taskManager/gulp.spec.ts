@@ -5,9 +5,9 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
-import { EngineVariables } from "../../../../../dist/engine/engineVariables";
-import { Gulp } from "../../../../../dist/pipelineSteps/taskManager/gulp";
+import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
+import { EngineVariables } from "../../../../../src/engine/engineVariables";
+import { Gulp } from "../../../../../src/pipelineSteps/taskManager/gulp";
 import { FileSystemMock } from "../../fileSystem.mock";
 
 describe("Gulp", () => {
@@ -89,7 +89,6 @@ describe("Gulp", () => {
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
             Chai.expect(packageJsonDevDependencies.gulp).to.be.equal("1.2.3");
             Chai.expect(packageJsonDevDependencies.del).to.be.equal("1.2.3");
-            Chai.expect(packageJsonDevDependencies["gulp-karma-runner"]).to.be.equal("1.2.3");
             Chai.expect(packageJsonDevDependencies["browser-sync"]).to.be.equal("1.2.3");
             Chai.expect(packageJsonDevDependencies["gulp-util"]).to.be.equal("1.2.3");
         });
@@ -102,14 +101,12 @@ describe("Gulp", () => {
             const packageJsonDevDependencies: { [id: string]: string } = {
                 gulp: "1.2.3",
                 del: "1.2.3",
-                "gulp-karma-runner": "1.2.3",
                 "browser-sync": "1.2.3",
                 "gulp-util": "1.2.3"
             };
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
             Chai.expect(packageJsonDevDependencies.gulp).to.be.equal(undefined);
             Chai.expect(packageJsonDevDependencies.del).to.be.equal(undefined);
-            Chai.expect(packageJsonDevDependencies["gulp-karma-runner"]).to.be.equal(undefined);
             Chai.expect(packageJsonDevDependencies["browser-sync"]).to.be.equal(undefined);
             Chai.expect(packageJsonDevDependencies["gulp-util"]).to.be.equal(undefined);
         });

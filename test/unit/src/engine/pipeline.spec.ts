@@ -5,12 +5,12 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { UniteConfiguration } from "../../../../dist/configuration/models/unite/uniteConfiguration";
-import { EngineVariables } from "../../../../dist/engine/engineVariables";
-import { Pipeline } from "../../../../dist/engine/pipeline";
-import { PipelineKey } from "../../../../dist/engine/pipelineKey";
-import { PipelineStepBase } from "../../../../dist/engine/pipelineStepBase";
-import { IPipelineStep } from "../../../../dist/interfaces/IPipelineStep";
+import { UniteConfiguration } from "../../../../src/configuration/models/unite/uniteConfiguration";
+import { EngineVariables } from "../../../../src/engine/engineVariables";
+import { Pipeline } from "../../../../src/engine/pipeline";
+import { PipelineKey } from "../../../../src/engine/pipelineKey";
+import { PipelineStepBase } from "../../../../src/engine/pipelineStepBase";
+import { IPipelineStep } from "../../../../src/interfaces/IPipelineStep";
 import { FileSystemMock } from "../fileSystem.mock";
 
 class TestStep extends PipelineStepBase {

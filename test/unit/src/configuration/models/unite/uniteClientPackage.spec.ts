@@ -2,7 +2,7 @@
  * Tests for UniteClientPackage.
  */
 import * as Chai from "chai";
-import { UniteClientPackage } from "../../../../../../dist/configuration/models/unite/uniteClientPackage";
+import { UniteClientPackage } from "../../../../../../src/configuration/models/unite/uniteClientPackage";
 
 describe("UniteClientPackage", () => {
     it("can be created", async() => {

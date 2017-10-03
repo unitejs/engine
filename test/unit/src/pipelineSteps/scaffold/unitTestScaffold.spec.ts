@@ -5,9 +5,9 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
-import { EngineVariables } from "../../../../../dist/engine/engineVariables";
-import { UnitTestScaffold } from "../../../../../dist/pipelineSteps/scaffold/unitTestScaffold";
+import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
+import { EngineVariables } from "../../../../../src/engine/engineVariables";
+import { UnitTestScaffold } from "../../../../../src/pipelineSteps/scaffold/unitTestScaffold";
 import { FileSystemMock } from "../../fileSystem.mock";
 
 describe("UnitTestScaffold", () => {

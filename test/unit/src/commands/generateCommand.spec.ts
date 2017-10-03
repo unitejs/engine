@@ -5,10 +5,10 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { GenerateCommand } from "../../../../dist/commands/generateCommand";
-import { PackageConfiguration } from "../../../../dist/configuration/models/packages/packageConfiguration";
-import { IUniteGenerateTemplates } from "../../../../dist/configuration/models/unite/IUniteGenerateTemplates";
-import { UniteConfiguration } from "../../../../dist/configuration/models/unite/uniteConfiguration";
+import { GenerateCommand } from "../../../../src/commands/generateCommand";
+import { PackageConfiguration } from "../../../../src/configuration/models/packages/packageConfiguration";
+import { IUniteGenerateTemplates } from "../../../../src/configuration/models/unite/IUniteGenerateTemplates";
+import { UniteConfiguration } from "../../../../src/configuration/models/unite/uniteConfiguration";
 import { FileSystemMock } from "../fileSystem.mock";
 import { ReadOnlyFileSystemMock } from "../readOnlyFileSystem.mock";
 

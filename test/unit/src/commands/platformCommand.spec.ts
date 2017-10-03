@@ -5,9 +5,9 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { PlatformCommand } from "../../../../dist/commands/platformCommand";
-import { PackageConfiguration } from "../../../../dist/configuration/models/packages/packageConfiguration";
-import { UniteConfiguration } from "../../../../dist/configuration/models/unite/uniteConfiguration";
+import { PlatformCommand } from "../../../../src/commands/platformCommand";
+import { PackageConfiguration } from "../../../../src/configuration/models/packages/packageConfiguration";
+import { UniteConfiguration } from "../../../../src/configuration/models/unite/uniteConfiguration";
 import { FileSystemMock } from "../fileSystem.mock";
 import { ReadOnlyFileSystemMock } from "../readOnlyFileSystem.mock";
 

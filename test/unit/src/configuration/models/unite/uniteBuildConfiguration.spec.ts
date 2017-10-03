@@ -2,7 +2,7 @@
  * Tests for UniteBuildConfiguration.
  */
 import * as Chai from "chai";
-import { UniteBuildConfiguration } from "../../../../../../dist/configuration/models/unite/uniteBuildConfiguration";
+import { UniteBuildConfiguration } from "../../../../../../src/configuration/models/unite/uniteBuildConfiguration";
 
 describe("UniteBuildConfiguration", () => {
     it("can be created", async() => {

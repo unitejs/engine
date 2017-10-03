@@ -17,8 +17,8 @@ export class Amd extends PipelineStepBase {
 
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         if (mainCondition) {
-            uniteConfiguration.srcDistReplace = "(define)*?(..\/src\/)";
-            uniteConfiguration.srcDistReplaceWith = "../dist/";
+            uniteConfiguration.srcDistReplace = "(define.*?)(\.\.\/src\/)";
+            uniteConfiguration.srcDistReplaceWith = "$1../dist/";
         }
 
         const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");

@@ -5,10 +5,10 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { HtmlTemplateConfiguration } from "../../../../../dist/configuration/models/htmlTemplate/htmlTemplateConfiguration";
-import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
-import { EngineVariables } from "../../../../../dist/engine/engineVariables";
-import { SJS } from "../../../../../dist/pipelineSteps/loader/sjs";
+import { HtmlTemplateConfiguration } from "../../../../../src/configuration/models/htmlTemplate/htmlTemplateConfiguration";
+import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
+import { EngineVariables } from "../../../../../src/engine/engineVariables";
+import { SJS } from "../../../../../src/pipelineSteps/loader/sjs";
 import { FileSystemMock } from "../../fileSystem.mock";
 
 describe("SJS", () => {

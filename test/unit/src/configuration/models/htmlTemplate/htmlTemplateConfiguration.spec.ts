@@ -2,7 +2,7 @@
  * Tests for HtmlTemplateConfiguration.
  */
 import * as Chai from "chai";
-import { HtmlTemplateConfiguration } from "../../../../../../dist/configuration/models/htmlTemplate/htmlTemplateConfiguration";
+import { HtmlTemplateConfiguration } from "../../../../../../src/configuration/models/htmlTemplate/htmlTemplateConfiguration";
 
 describe("HtmlTemplateConfiguration", () => {
     it("can be created", async() => {

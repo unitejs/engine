@@ -5,13 +5,13 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { BabelConfiguration } from "../../../../../dist/configuration/models/babel/babelConfiguration";
-import { EsLintConfiguration } from "../../../../../dist/configuration/models/eslint/esLintConfiguration";
-import { ProtractorConfiguration } from "../../../../../dist/configuration/models/protractor/protractorConfiguration";
-import { TypeScriptConfiguration } from "../../../../../dist/configuration/models/typeScript/typeScriptConfiguration";
-import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
-import { EngineVariables } from "../../../../../dist/engine/engineVariables";
-import { Aurelia } from "../../../../../dist/pipelineSteps/applicationFramework/aurelia";
+import { BabelConfiguration } from "../../../../../src/configuration/models/babel/babelConfiguration";
+import { EsLintConfiguration } from "../../../../../src/configuration/models/eslint/esLintConfiguration";
+import { ProtractorConfiguration } from "../../../../../src/configuration/models/protractor/protractorConfiguration";
+import { TypeScriptConfiguration } from "../../../../../src/configuration/models/typeScript/typeScriptConfiguration";
+import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
+import { EngineVariables } from "../../../../../src/engine/engineVariables";
+import { Aurelia } from "../../../../../src/pipelineSteps/applicationFramework/aurelia";
 import { FileSystemMock } from "../../fileSystem.mock";
 
 describe("Aurelia", () => {

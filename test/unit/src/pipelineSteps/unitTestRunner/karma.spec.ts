@@ -6,10 +6,10 @@ import * as Sinon from "sinon";
 import { JsonHelper } from "unitejs-framework/dist/helpers/jsonHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { KarmaConfiguration } from "../../../../../dist/configuration/models/karma/karmaConfiguration";
-import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
-import { EngineVariables } from "../../../../../dist/engine/engineVariables";
-import { Karma } from "../../../../../dist/pipelineSteps/unitTestRunner/karma";
+import { KarmaConfiguration } from "../../../../../src/configuration/models/karma/karmaConfiguration";
+import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
+import { EngineVariables } from "../../../../../src/engine/engineVariables";
+import { Karma } from "../../../../../src/pipelineSteps/unitTestRunner/karma";
 import { FileSystemMock } from "../../fileSystem.mock";
 
 describe("Karma", () => {

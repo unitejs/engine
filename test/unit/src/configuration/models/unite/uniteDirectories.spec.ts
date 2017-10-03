@@ -2,7 +2,7 @@
  * Tests for UniteDirectories.
  */
 import * as Chai from "chai";
-import { UniteDirectories } from "../../../../../../dist/configuration/models/unite/uniteDirectories";
+import { UniteDirectories } from "../../../../../../src/configuration/models/unite/uniteDirectories";
 
 describe("UniteDirectories", () => {
     it("can be created", async() => {

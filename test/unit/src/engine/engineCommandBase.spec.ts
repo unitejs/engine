@@ -5,9 +5,9 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { UniteConfiguration } from "../../../../dist/configuration/models/unite/uniteConfiguration";
-import { EngineCommandBase } from "../../../../dist/engine/engineCommandBase";
-import { EngineVariables } from "../../../../dist/engine/engineVariables";
+import { UniteConfiguration } from "../../../../src/configuration/models/unite/uniteConfiguration";
+import { EngineCommandBase } from "../../../../src/engine/engineCommandBase";
+import { EngineVariables } from "../../../../src/engine/engineVariables";
 import { ReadOnlyFileSystemMock } from "../readOnlyFileSystem.mock";
 
 class TestCommand extends EngineCommandBase {

@@ -5,10 +5,10 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { TsLintConfiguration } from "../../../../../dist/configuration/models/tslint/tsLintConfiguration";
-import { UniteConfiguration } from "../../../../../dist/configuration/models/unite/uniteConfiguration";
-import { EngineVariables } from "../../../../../dist/engine/engineVariables";
-import { TsLint } from "../../../../../dist/pipelineSteps/linter/tsLint";
+import { TsLintConfiguration } from "../../../../../src/configuration/models/tslint/tsLintConfiguration";
+import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
+import { EngineVariables } from "../../../../../src/engine/engineVariables";
+import { TsLint } from "../../../../../src/pipelineSteps/linter/tsLint";
 import { FileSystemMock } from "../../fileSystem.mock";
 
 describe("TsLint", () => {

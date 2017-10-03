@@ -2,7 +2,7 @@
  * Tests for UniteConfiguration.
  */
 import * as Chai from "chai";
-import { UniteConfiguration } from "../../../../../../dist/configuration/models/unite/uniteConfiguration";
+import { UniteConfiguration } from "../../../../../../src/configuration/models/unite/uniteConfiguration";
 
 describe("UniteConfiguration", () => {
     it("can be created", async() => {

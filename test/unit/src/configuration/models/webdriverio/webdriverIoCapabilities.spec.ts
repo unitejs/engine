@@ -2,7 +2,7 @@
  * Tests for WebdriverIoCapabilities.
  */
 import * as Chai from "chai";
-import { WebdriverIoCapabilities } from "../../../../../../dist/configuration/models/webdriverIo/webdriverIoCapabilities";
+import { WebdriverIoCapabilities } from "../../../../../../src/configuration/models/webdriverIo/webdriverIoCapabilities";
 
 describe("WebdriverIoCapabilities", () => {
     it("can be created", async() => {

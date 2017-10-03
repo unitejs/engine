@@ -6,7 +6,7 @@ import * as child from "child_process";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { PackageUtils } from "../../../../dist/pipelineSteps/packageUtils";
+import { PackageUtils } from "../../../../src/pipelineSteps/packageUtils";
 
 describe("PackageUtils", () => {
     let sandbox: Sinon.SinonSandbox;
