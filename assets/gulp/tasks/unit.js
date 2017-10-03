@@ -32,19 +32,18 @@ gulp.task("unit-clean", async () => {
 gulp.task("unit-module-config", async () => {
     const uniteConfig = await uc.getUniteConfig();
 
-    const config = moduleConfig.create(
-        uniteConfig, ["test", "both"], false,
-        uniteConfig.unitTestRunner.toLowerCase() === "karma" ? "/base/" : ""
-    );
+    if (uniteConfig.unitTestRunner.toLowerCase() === "karma") {
+        const config = moduleConfig.create(uniteConfig, ["test", "both"], false, "/base/");
 
-    try {
-        await util.promisify(fs.writeFile)(
-            path.join(uniteConfig.dirs.www.unitTest, "unit-module-config.js"),
-            config
-        );
-    } catch (err) {
-        display.error("Writing unit-module-config.js", err);
-        process.exit(1);
+        try {
+            await util.promisify(fs.writeFile)(
+                path.join(uniteConfig.dirs.www.unitTest, "unit-module-config.js"),
+                config
+            );
+        } catch (err) {
+            display.error("Writing unit-module-config.js", err);
+            process.exit(1);
+        }
     }
 });
 

@@ -2,9 +2,13 @@
 
 ## v1.2.2
 
-* Added Jest Support
-* Added JSDom engine for Karma
-* Change unit test transpilation includes .mock.js files as well as .spec.js
+* Added Jest support for Unit Test Runners
+* Added JSDom support for Unit Test Engines
+* Updated Reacts profile to use Jest and Yarn
+* React TypeScript imports changed to Default import style
+* Added unit test transpilation to include .mock.js files as well as .spec.js
+* Change improved regex replace for src/dist replace
+* Change unit-module-config only generated for karma
 
 ## v1.2.1
 
