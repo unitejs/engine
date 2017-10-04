@@ -9,6 +9,7 @@
 * Added unit test transpilation to include .mock.js files as well as .spec.js
 * Change improved regex replace for src/dist replace
 * Change unit-module-config only generated for karma
+* Change E2E tests default to running chrome headless as the browser
 
 ## v1.2.1
 

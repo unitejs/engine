@@ -59,7 +59,10 @@ export class Protractor extends PipelineStepBase {
             fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.e2eTestDistFolder, "**/*.spec.js")))
         ];
         defaultConfiguration.capabilities = {
-            browserName: "chrome"
+            browserName: "chrome",
+            chromeOptions: {
+                args: ["--headless", "--disable-gpu"]
+            }
         };
 
         defaultConfiguration.plugins = [];

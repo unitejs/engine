@@ -74,7 +74,10 @@ export class WebdriverIo extends PipelineStepBase {
         ];
         defaultConfiguration.capabilities = [
             {
-                browserName: "chrome"
+                browserName: "chrome",
+                chromeOptions: {
+                    args: ["headless", "disable-gpu"]
+                }
             }
         ];
         defaultConfiguration.sync = false;

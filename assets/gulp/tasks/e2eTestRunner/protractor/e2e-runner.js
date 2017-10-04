@@ -34,6 +34,8 @@ gulp.task("e2e-run-test", async () => {
         options.browser = "internet explorer";
     } else if (options.browser === "edge") {
         options.browser = "MicrosoftEdge";
+    } else if (options.browser.toLowerCase() === "chrome") {
+        options.browser = "chrome";
     }
 
     let url = options.secure ? "https://" : "http://";

@@ -3,4 +3,5 @@
  */
 export class ProtractorCapabilities {
     public browserName: string;
+    public chromeOptions: { [id: string]: string[]};
 }

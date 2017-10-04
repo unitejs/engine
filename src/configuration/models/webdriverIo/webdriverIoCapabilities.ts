@@ -11,4 +11,5 @@ export class WebdriverIoCapabilities {
     public tags?: string[];
     public name?: string;
     public pageLoadStrategy?: "normal" | "eager" | "none";
+    public chromeOptions: { [id: string]: string[] };
 }
