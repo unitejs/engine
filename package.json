@@ -209,7 +209,7 @@
         "less": "^2.7.2",
         "minimist": "^1.2.0",
         "mkdirp": "^0.5.1",
-        "mocha": "^4.0.0",
+        "mocha": "^3.5.3",
         "mochawesome-screenshots": "^1.5.3",
         "node-glob": "^1.2.0",
         "node-sass": "^4.5.3",

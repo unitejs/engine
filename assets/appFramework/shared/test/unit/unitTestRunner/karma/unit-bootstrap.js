@@ -11,7 +11,7 @@ Object.keys(window.__karma__.files).forEach(function (file) {
 });
 
 if (window.SystemJS) {
-    Promise.all(preloadModules.map(function (module) { return window.SystemJS.import(module) }))
+    Promise.all(window.preloadModules.map(function (module) { return window.SystemJS.import(module) }))
         .then(function () {
             Promise.all(allTestFiles.map(function (module) { return window.SystemJS.import(module) }))
                 .then(function (modules) {
@@ -19,7 +19,7 @@ if (window.SystemJS) {
                 });
         });
 } else if (window.require) {
-    window.require(preloadModules, function () {
+    window.require(window.preloadModules, function () {
         window.require(allTestFiles, function () {
             window.__karma__.start();
         });
