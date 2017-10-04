@@ -3,8 +3,8 @@
  */
 import {BrowserRouter, Route} from "react-router-dom";
 import {Child} from "./child/child";
-import React from "react";
-import ReactDOM from "react-dom";
+import {SYNTHETIC_IMPORT}React from "react";
+import {SYNTHETIC_IMPORT}ReactDOM from "react-dom";
 
 export class App {
     run (rootElement) {

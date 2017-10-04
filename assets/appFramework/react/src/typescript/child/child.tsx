@@ -1,7 +1,7 @@
 /**
  * Child class.
  */
-import React from "react";
+import {SYNTHETIC_IMPORT}React from "react";
 import "./child.css";
 
 export class Child extends React.Component {

@@ -15,6 +15,13 @@ export class CommonJs extends PipelineStepBase {
         return super.condition(uniteConfiguration.moduleType, "CommonJS");
     }
 
+    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        if (mainCondition) {
+            engineVariables.syntheticImport = "* as ";
+        }
+        return 0;
+    }
+
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         if (mainCondition) {
             uniteConfiguration.srcDistReplace = "(require.*?)(\.\.\/src\/)";

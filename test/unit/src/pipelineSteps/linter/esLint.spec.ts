@@ -73,6 +73,14 @@ describe("EsLint", () => {
             Chai.expect(loggerErrorSpy.args[0][0]).contains("JavaScript");
         });
 
+        it("can be called with mismatched main condition", async () => {
+            const obj = new EsLint();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration("EsLint")).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint")).to.be.equal(undefined);
+        });
+
         it("can succeed when file does exist", async () => {
             fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
             fileSystemMock.fileReadJson = sandbox.stub().resolves({ extends: ["eslint:recommended2" ] });

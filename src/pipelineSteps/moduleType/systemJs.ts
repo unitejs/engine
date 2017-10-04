@@ -15,6 +15,13 @@ export class SystemJs extends PipelineStepBase {
         return super.condition(uniteConfiguration.moduleType, "SystemJS");
     }
 
+    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        if (mainCondition) {
+            engineVariables.syntheticImport = "";
+        }
+        return 0;
+    }
+
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         if (mainCondition) {
             uniteConfiguration.srcDistReplace = "(System.register.*?)(\.\.\/src\/)";

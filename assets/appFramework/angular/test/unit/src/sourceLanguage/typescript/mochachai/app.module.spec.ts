@@ -3,8 +3,7 @@
  */
 import * as coreTesting from "@angular/core/testing";
 import * as browserTesting from "@angular/platform-browser-dynamic/testing";
-import * as chaiModule from "chai";
-const chai = (chaiModule as any).default || chaiModule;
+import {SYNTHETIC_IMPORT}chai from "chai";
 import {AppModule} from "../../../src/app.module";
 
 describe("AppModule", () => {

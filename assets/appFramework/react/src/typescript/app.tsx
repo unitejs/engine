@@ -1,8 +1,8 @@
 /**
  * Main application class.
  */
-import React from "react";
-import ReactDOM from "react-dom";
+import {SYNTHETIC_IMPORT}React from "react";
+import {SYNTHETIC_IMPORT}ReactDOM from "react-dom";
 import { BrowserRouter, Route } from "react-router-dom";
 import { Child } from "./child/child";
 

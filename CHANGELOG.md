@@ -5,7 +5,7 @@
 * Added Jest support for Unit Test Runners
 * Added JSDom support for Unit Test Engines
 * Updated Reacts profile to use Jest and Yarn
-* React TypeScript imports changed to Default import style
+* Added Synthetic import template substitutions based on module type
 * Added unit test transpilation to include .mock.js files as well as .spec.js
 * Change improved regex replace for src/dist replace
 * Change unit-module-config only generated for karma

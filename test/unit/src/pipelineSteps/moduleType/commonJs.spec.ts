@@ -64,6 +64,23 @@ describe("CommonJs", () => {
         });
     });
 
+    describe("initialise", () => {
+        it("can be called with not matching condition", async () => {
+            engineVariablesStub.syntheticImport = "foo";
+            const obj = new CommonJs();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.syntheticImport).to.be.equal("foo");
+        });
+
+        it("can be called with matching condition", async () => {
+            const obj = new CommonJs();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.syntheticImport).to.be.equal("* as ");
+        });
+    });
+
     describe("configure", () => {
         it("can be called with no configurations", async () => {
             const obj = new CommonJs();

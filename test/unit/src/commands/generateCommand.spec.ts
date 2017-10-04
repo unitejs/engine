@@ -261,6 +261,21 @@ describe("GenerateCommand", () => {
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("Can not find a type of");
         });
 
+        it("can fail when pipeline throws an error", async () => {
+            fileSystemStub.directoryGetFiles = sandbox.stub().throws();
+
+            const obj = new GenerateCommand();
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            const res = await obj.run({
+                name: "fred",
+                type: "class",
+                subFolder: undefined,
+                outputDirectory: undefined
+
+            });
+            Chai.expect(res).to.be.equal(1);
+        });
+
         it("can succeed with shared template", async () => {
             const obj = new GenerateCommand();
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);

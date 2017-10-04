@@ -1,8 +1,7 @@
 /**
  * Tests for Bootstrapper.
  */
-import * as chaiModule from "chai";
-const chai = (chaiModule as any).default || chaiModule;
+import {SYNTHETIC_IMPORT}chai from "chai";
 import { bootstrap } from "../../../src/bootstrapper";
 
 describe("Bootstrapper", () => {

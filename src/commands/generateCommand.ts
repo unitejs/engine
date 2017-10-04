@@ -7,6 +7,7 @@ import { IUniteGenerateTemplate } from "../configuration/models/unite/IUniteGene
 import { IUniteGenerateTemplates } from "../configuration/models/unite/IUniteGenerateTemplates";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { EngineCommandBase } from "../engine/engineCommandBase";
+import { EngineVariables } from "../engine/engineVariables";
 import { TemplateHelper } from "../helpers/templateHelper";
 import { IEngineCommand } from "../interfaces/IEngineCommand";
 import { IGenerateCommandParams } from "../interfaces/IGenerateCommandParams";
@@ -31,6 +32,9 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
         this._logger.info("");
 
         try {
+            const engineVariables = new EngineVariables();
+            super.createEngineVariables(args.outputDirectory, uniteConfiguration, engineVariables);
+
             const generateTemplatesFolder = this._fileSystem.pathCombine(this._engineAssetsFolder, `appFramework/${uniteConfiguration.applicationFramework.toLowerCase()}/generate/`);
 
             const exists = await this._fileSystem.fileExists(generateTemplatesFolder, "generate-templates.json");
@@ -64,7 +68,23 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
                             return 1;
                         }
                     }
-                    return await this.generateFromTemplate(args, uniteConfiguration, generateTemplates[templateKey].isShared ? sharedGenerateTemplatesFolder : generateTemplatesFolder, template);
+
+                    // need this for syntehtic import flags
+                    this._pipeline.add("moduleType", "CommonJS");
+                    this._pipeline.add("moduleType", "SystemJS");
+                    this._pipeline.add("moduleType", "AMD");
+
+                    let ret = await this._pipeline.run(uniteConfiguration, engineVariables, ["initialise"], false);
+
+                    if (ret === 0) {
+                        ret = await this.generateFromTemplate(args,
+                                                              uniteConfiguration,
+                                                              engineVariables,
+                                                              generateTemplates[templateKey].isShared ? sharedGenerateTemplatesFolder : generateTemplatesFolder,
+                                                              template);
+                    }
+
+                    return ret;
                 } else {
                     this._logger.error(`Can not find a type of '${args.type}' for applicationFramework '${uniteConfiguration.applicationFramework}, possible values are [${keys.join(", ")}]'`);
                     return 1;
@@ -81,6 +101,7 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
 
     private async generateFromTemplate(args: IGenerateCommandParams,
                                        uniteConfiguration: UniteConfiguration,
+                                       engineVariables: EngineVariables,
                                        generateTemplatesFolder: string,
                                        generateTemplate: IUniteGenerateTemplate): Promise<number> {
 
@@ -88,6 +109,8 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
         substitutions.ADDITIONAL_EXTENSION = generateTemplate.additionalExtension !== undefined &&
             generateTemplate.additionalExtension !== null &&
             generateTemplate.additionalExtension.length > 0 ? `.${generateTemplate.additionalExtension}` : "";
+
+        substitutions.SYNTHETIC_IMPORT = engineVariables.syntheticImport;
 
         // See where we are in relation to the www folder
         const baseDirectory = this._fileSystem.pathAbsolute("./");
