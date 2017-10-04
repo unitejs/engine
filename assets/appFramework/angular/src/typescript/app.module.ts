@@ -8,20 +8,18 @@ import { AppComponent } from "./app.component";
 import { ChildComponent } from "./child/child.component";
 
 const appRoutes = [
-  { path: "", component: ChildComponent }
+    { path: "", component: ChildComponent }
 ];
 
 @NgModule({
-  imports: [BrowserModule,
-    RouterModule.forRoot(
-      appRoutes
-    )
-  ],
-  declarations: [
-    AppComponent,
-    ChildComponent
-  ],
-  bootstrap: [AppComponent]
+    imports: [BrowserModule,
+        RouterModule.forRoot(appRoutes)
+    ],
+    declarations: [
+        AppComponent,
+        ChildComponent
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule {
 }

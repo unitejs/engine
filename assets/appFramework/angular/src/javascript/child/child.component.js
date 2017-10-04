@@ -8,7 +8,6 @@ import {Component} from "@angular/core";
     templateUrl: "./child.component.html",
     styleUrls: ["./child.component.css"]
 })
-
 export class ChildComponent {
     constructor () {
         this.message = "Hello UniteJS World!";
