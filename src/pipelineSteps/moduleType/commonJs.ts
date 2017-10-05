@@ -18,6 +18,7 @@ export class CommonJs extends PipelineStepBase {
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         if (mainCondition) {
             engineVariables.syntheticImport = "* as ";
+            engineVariables.moduleId = "module.id.toString()";
         }
         return 0;
     }

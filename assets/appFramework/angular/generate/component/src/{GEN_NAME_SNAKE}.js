@@ -4,7 +4,7 @@
 import { Component } from "@angular/core";
 
 @Component({
-    moduleId: __moduleName || module.id,
+    moduleId: {MODULE_ID},
     templateUrl: "./{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.html",
     styleUrls: ["./{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.css"]
 })

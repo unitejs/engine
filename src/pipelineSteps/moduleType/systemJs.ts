@@ -18,6 +18,7 @@ export class SystemJs extends PipelineStepBase {
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         if (mainCondition) {
             engineVariables.syntheticImport = "";
+            engineVariables.moduleId = "__moduleName";
         }
         return 0;
     }

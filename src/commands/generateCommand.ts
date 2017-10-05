@@ -111,6 +111,7 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
             generateTemplate.additionalExtension.length > 0 ? `.${generateTemplate.additionalExtension}` : "";
 
         substitutions.SYNTHETIC_IMPORT = engineVariables.syntheticImport;
+        substitutions.MODULE_ID = engineVariables.moduleId;
 
         // See where we are in relation to the www folder
         const baseDirectory = this._fileSystem.pathAbsolute("./");

@@ -4,7 +4,7 @@
 import {Component} from "@angular/core";
 
 @Component({
-    moduleId: __moduleName || module.id,
+    moduleId: {MODULE_ID},
     templateUrl: "./child.component.html",
     styleUrls: ["./child.component.css"]
 })

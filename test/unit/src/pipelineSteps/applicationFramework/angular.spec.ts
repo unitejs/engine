@@ -107,32 +107,14 @@ describe("Angular", () => {
     });
 
     describe("configure", () => {
-        it("can be called with javascript SystemJS", async () => {
+        it("can be called with javascript", async () => {
             engineVariablesStub.setConfiguration("Babel", { plugins: []});
             engineVariablesStub.setConfiguration("ESLint", { parser: "espree"});
-            uniteConfigurationStub.moduleType = "SystemJS";
             const obj = new Angular();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(2);
-            Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(7);
-            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins.length).to.be.equal(2);
-            Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parser).to.be.equal("babel-eslint");
-            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript")).to.be.equal(undefined);
-            const packageJsonDependencies: { [id: string]: string } = {};
-            engineVariablesStub.buildDependencies(uniteConfigurationStub, packageJsonDependencies);
-            Chai.expect(uniteConfigurationStub.clientPackages["zone.js"].testingAdditions["runner-patch"]).to.be.equal("dist/jasmine-patch.js");
-        });
-
-        it("can be called with javascript CommonJS", async () => {
-            engineVariablesStub.setConfiguration("Babel", { plugins: []});
-            engineVariablesStub.setConfiguration("ESLint", { parser: "espree"});
-            uniteConfigurationStub.moduleType = "CommonJS";
-            const obj = new Angular();
-            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(2);
-            Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(7);
+            Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(1);
+            Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(6);
             Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins.length).to.be.equal(2);
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parser).to.be.equal("babel-eslint");
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript")).to.be.equal(undefined);
@@ -148,7 +130,7 @@ describe("Angular", () => {
             const obj = new Angular();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(2);
+            Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(1);
             Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(6);
             Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel")).to.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint")).to.be.equal(undefined);

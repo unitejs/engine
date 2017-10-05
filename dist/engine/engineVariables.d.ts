@@ -39,6 +39,7 @@ export declare class EngineVariables {
     buildTranspilePreBuild: string[];
     buildTranspilePostBuild: string[];
     syntheticImport: string;
+    moduleId: string;
     packageManager: IPackageManager;
     private _configuration;
     private _requiredDevDependencies;

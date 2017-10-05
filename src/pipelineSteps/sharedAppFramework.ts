@@ -26,7 +26,8 @@ export abstract class SharedAppFramework extends PipelineStepBase {
                                             file,
                                             engineVariables.force,
                                             {
-                                                SYNTHETIC_IMPORT: [engineVariables.syntheticImport]
+                                                SYNTHETIC_IMPORT: [engineVariables.syntheticImport],
+                                                MODULE_ID: [engineVariables.moduleId]
                                             });
 
             if (ret !== 0) {
@@ -112,7 +113,8 @@ export abstract class SharedAppFramework extends PipelineStepBase {
                                                 `${spec}`,
                                                 engineVariables.force,
                                                 {
-                                                    SYNTHETIC_IMPORT: [engineVariables.syntheticImport]
+                                                    SYNTHETIC_IMPORT: [engineVariables.syntheticImport],
+                                                    MODULE_ID: [engineVariables.moduleId]
                                                 });
                 if (ret !== 0) {
                     return ret;
