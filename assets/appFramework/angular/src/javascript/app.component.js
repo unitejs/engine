@@ -4,8 +4,8 @@
 import {Component} from "@angular/core";
 
 @Component({
-    moduleId: {MODULE_ID},
     selector: "#root",
+    moduleId: {MODULE_ID},
     templateUrl: "./app.component.html",
     styleUrls: ["./app.component.css"]
 })

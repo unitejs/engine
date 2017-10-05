@@ -7,6 +7,7 @@
 * Updated Reacts profile to use Jest and Yarn
 * Added Synthetic import template substitutions based on module type
 * Added module id template substitutions based on module type
+* Added strip module id defnitions for angular on bundled builds as views and styles are inlined
 * Added unit test transpilation to include .mock.js files as well as .spec.js
 * Change improved regex replace for src/dist replace
 * Change unit-module-config only generated for karma

@@ -113,8 +113,8 @@ describe("Angular", () => {
             const obj = new Angular();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(1);
-            Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(6);
+            Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(2);
+            Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(7);
             Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins.length).to.be.equal(2);
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parser).to.be.equal("babel-eslint");
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript")).to.be.equal(undefined);
@@ -130,8 +130,8 @@ describe("Angular", () => {
             const obj = new Angular();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(1);
-            Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(6);
+            Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(2);
+            Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(7);
             Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel")).to.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint")).to.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.experimentalDecorators).to.be.equal(true);
