@@ -6,7 +6,6 @@ import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { GenerateCommand } from "../../../../src/commands/generateCommand";
-import { PackageConfiguration } from "../../../../src/configuration/models/packages/packageConfiguration";
 import { IUniteGenerateTemplates } from "../../../../src/configuration/models/unite/IUniteGenerateTemplates";
 import { UniteConfiguration } from "../../../../src/configuration/models/unite/uniteConfiguration";
 import { FileSystemMock } from "../fileSystem.mock";
@@ -21,7 +20,7 @@ describe("GenerateCommand", () => {
     let loggerWarningSpy: Sinon.SinonSpy;
     let loggerBannerSpy: Sinon.SinonSpy;
     let uniteJson: UniteConfiguration;
-    let enginePackageConfiguration: PackageConfiguration;
+    let enginePeerPackages: { [id: string]: string};
     let generateTemplates: IUniteGenerateTemplates;
     let sharedGenerateTemplates: IUniteGenerateTemplates;
     let generateTemplatesExist: boolean;
@@ -135,7 +134,7 @@ describe("GenerateCommand", () => {
             platforms: undefined
         };
 
-        enginePackageConfiguration = await fileSystemStub.fileReadJson<PackageConfiguration>(fileSystemStub.pathCombine(__dirname, "../../../../"), "package.json");
+        enginePeerPackages = await fileSystemStub.fileReadJson<{ [id: string ]: string}>(fileSystemStub.pathCombine(__dirname, "../../../../assets/"), "peerPackages.json");
     });
 
     afterEach(async () => {
@@ -148,7 +147,7 @@ describe("GenerateCommand", () => {
         it("can fail when calling with no unite.json", async () => {
             uniteJson = undefined;
             const obj = new GenerateCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 name: undefined,
                 type: undefined,
@@ -161,7 +160,7 @@ describe("GenerateCommand", () => {
 
         it("can fail when calling with undefined name", async () => {
             const obj = new GenerateCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 name: undefined,
                 type: undefined,
@@ -174,7 +173,7 @@ describe("GenerateCommand", () => {
 
         it("can fail when calling with undefined type", async () => {
             const obj = new GenerateCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 name: "fred",
                 type: undefined,
@@ -190,7 +189,7 @@ describe("GenerateCommand", () => {
             uniteJson.applicationFramework = "Aurelia";
             generateTemplatesExist = false;
             const obj = new GenerateCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 name: "fred",
                 type: "component",
@@ -204,7 +203,7 @@ describe("GenerateCommand", () => {
 
         it("can fail when no type for framework", async () => {
             const obj = new GenerateCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 name: "fred",
                 type: "blah",
@@ -219,7 +218,7 @@ describe("GenerateCommand", () => {
         it("can fail when throws and exception", async () => {
             uniteJson.applicationFramework = undefined;
             const obj = new GenerateCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 name: "fred",
                 type: "blah",
@@ -234,7 +233,7 @@ describe("GenerateCommand", () => {
         it("can fail when shared template and shared not exists", async () => {
             sharedGenerateTemplatesExist = false;
             const obj = new GenerateCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 name: "fred",
                 type: "class",
@@ -249,7 +248,7 @@ describe("GenerateCommand", () => {
         it("can fail when shared template and shared base not exists", async () => {
             sharedGenerateTemplates = {};
             const obj = new GenerateCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 name: "fred",
                 type: "class",
@@ -265,7 +264,7 @@ describe("GenerateCommand", () => {
             fileSystemStub.directoryGetFiles = sandbox.stub().throws();
 
             const obj = new GenerateCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 name: "fred",
                 type: "class",
@@ -278,7 +277,7 @@ describe("GenerateCommand", () => {
 
         it("can succeed with shared template", async () => {
             const obj = new GenerateCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 name: "fred",
                 type: "class",
@@ -292,7 +291,7 @@ describe("GenerateCommand", () => {
 
         it("can succeed when calling with name and type", async () => {
             const obj = new GenerateCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 name: "Bob",
                 type: "component",
@@ -305,7 +304,7 @@ describe("GenerateCommand", () => {
 
         it("can succeed when calling with name and type and subfolder", async () => {
             const obj = new GenerateCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 name: "Bob",
                 type: "component",
@@ -318,7 +317,7 @@ describe("GenerateCommand", () => {
 
         it("can succeed when calling with name and type and empty subfolder", async () => {
             const obj = new GenerateCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 name: "Bob",
                 type: "component",
@@ -332,7 +331,7 @@ describe("GenerateCommand", () => {
         it("can succeed when generate-templates has no files", async () => {
             generateTemplates = { component: {}};
             const obj = new GenerateCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 name: "Bob",
                 type: "component",
@@ -358,7 +357,7 @@ describe("GenerateCommand", () => {
             });
 
             const obj = new GenerateCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 name: "Bob",
                 type: "component",
@@ -374,7 +373,7 @@ describe("GenerateCommand", () => {
             stub.callsFake((dir) => dir);
 
             const obj = new GenerateCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 name: "Bob",
                 type: "component",
@@ -387,7 +386,7 @@ describe("GenerateCommand", () => {
 
         it("can fail when dest file exists", async () => {
             const obj = new GenerateCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 name: "AlreadyExists",
                 type: "component",
@@ -404,7 +403,7 @@ describe("GenerateCommand", () => {
             }};
 
             const obj = new GenerateCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 name: "Bob",
                 type: "component",
@@ -419,7 +418,7 @@ describe("GenerateCommand", () => {
             sandbox.stub(fileSystemStub, "fileReadText").resolves("!Message");
 
             const obj = new GenerateCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 name: "Bob",
                 type: "component",
@@ -434,7 +433,7 @@ describe("GenerateCommand", () => {
             sandbox.stub(fileSystemStub, "fileReadText").throws();
 
             const obj = new GenerateCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 name: "Bob",
                 type: "component",

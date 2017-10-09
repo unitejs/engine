@@ -162,6 +162,21 @@ describe("Engine", () => {
     });
 
     describe("initialise", () => {
+        it("can fail when node version is too low", async () => {
+            sandbox.stub(process, "version").value("v7.0.0");
+            const obj = new Engine(loggerStub, fileSystemStub);
+            const res = await obj.initialise();
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("higher is required");
+        });
+
+        it("can succeed when node version is 8 or higher", async () => {
+            sandbox.stub(process, "version").value("v8.0.0");
+            const obj = new Engine(loggerStub, fileSystemStub);
+            const res = await obj.initialise();
+            Chai.expect(res).to.be.equal(0);
+        });
+
         it("can fail when missing package dependencies", async () => {
             uniteJson = undefined;
             packageJsonErrors = true;

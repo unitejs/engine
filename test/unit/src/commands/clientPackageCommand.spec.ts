@@ -6,7 +6,6 @@ import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { ClientPackageCommand } from "../../../../src/commands/clientPackageCommand";
-import { PackageConfiguration } from "../../../../src/configuration/models/packages/packageConfiguration";
 import { UniteClientPackage } from "../../../../src/configuration/models/unite/uniteClientPackage";
 import { UniteConfiguration } from "../../../../src/configuration/models/unite/uniteConfiguration";
 import { PackageUtils } from "../../../../src/pipelineSteps/packageUtils";
@@ -28,7 +27,7 @@ describe("ClientPackageCommand", () => {
     let fileWriteJsonErrors: boolean;
     let packageInfo: string;
     let failPackageAdd: boolean;
-    let enginePackageConfiguration: PackageConfiguration;
+    let enginePeerPackages: { [id: string]: string};
 
     beforeEach(async () => {
         sandbox = Sinon.sandbox.create();
@@ -131,7 +130,7 @@ describe("ClientPackageCommand", () => {
             platforms: undefined
         };
 
-        enginePackageConfiguration = await fileSystemStub.fileReadJson<PackageConfiguration>(fileSystemStub.pathCombine(__dirname, "../../../../"), "package.json");
+        enginePeerPackages = await fileSystemStub.fileReadJson<{ [id: string ]: string}>(fileSystemStub.pathCombine(__dirname, "../../../../assets/"), "peerPackages.json");
     });
 
     afterEach(async () => {
@@ -144,7 +143,7 @@ describe("ClientPackageCommand", () => {
         it("can fail when calling with no unite.json", async () => {
             uniteJson = undefined;
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: undefined,
                 packageName: undefined,
@@ -170,7 +169,7 @@ describe("ClientPackageCommand", () => {
 
         it("can fail when calling with undefined operation", async () => {
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: undefined,
                 packageName: undefined,
@@ -196,7 +195,7 @@ describe("ClientPackageCommand", () => {
 
         it("can fail when calling with undefined packageName", async () => {
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 packageName: undefined,
@@ -223,7 +222,7 @@ describe("ClientPackageCommand", () => {
         it("can fail when calling with undefined packageManager", async () => {
             uniteJson.packageManager = undefined;
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 packageName: "moment",
@@ -250,7 +249,7 @@ describe("ClientPackageCommand", () => {
         it("can fail if invalid includeMode", async () => {
             uniteJson.clientPackages = { moment: new UniteClientPackage() };
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 packageName: "moment",
@@ -277,7 +276,7 @@ describe("ClientPackageCommand", () => {
         it("can fail if invalid scriptIncludeMode", async () => {
             uniteJson.clientPackages = { moment: new UniteClientPackage() };
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 packageName: "moment",
@@ -304,7 +303,7 @@ describe("ClientPackageCommand", () => {
         it("can fail if main and noScript", async () => {
             uniteJson.clientPackages = { moment: new UniteClientPackage() };
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 packageName: "moment",
@@ -331,7 +330,7 @@ describe("ClientPackageCommand", () => {
         it("can fail if mainMinified and noScript", async () => {
             uniteJson.clientPackages = { moment: new UniteClientPackage() };
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 packageName: "moment",
@@ -358,7 +357,7 @@ describe("ClientPackageCommand", () => {
         it("can fail if package already exists", async () => {
             uniteJson.clientPackages = { moment: new UniteClientPackage() };
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 packageName: "moment",
@@ -385,7 +384,7 @@ describe("ClientPackageCommand", () => {
         it("can fail if packageManager gets info errors", async () => {
             packageInfo = null;
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 packageName: "moment",
@@ -413,7 +412,7 @@ describe("ClientPackageCommand", () => {
             packageInfo = "{ \"version\": \"1.2.3\", \"main\": \"index.js\"}";
             fileWriteJsonErrors = true;
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 packageName: "moment",
@@ -440,7 +439,7 @@ describe("ClientPackageCommand", () => {
         it("can fail with badly formed testAdditions", async () => {
             packageInfo = "{ \"version\": \"1.2.3\", \"main\": \"index.js\"}";
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 packageName: "moment",
@@ -468,7 +467,7 @@ describe("ClientPackageCommand", () => {
             packageInfo = "{ \"version\": \"1.2.3\", \"main\": \"index.js\"}";
             failPackageAdd = true;
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 packageName: "moment",
@@ -495,7 +494,7 @@ describe("ClientPackageCommand", () => {
         it("can succeed with just profile", async () => {
             packageInfo = JSON.stringify({ version: "1.2.3" });
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 packageName: undefined,
@@ -527,7 +526,7 @@ describe("ClientPackageCommand", () => {
         it("can succeed with no packageManager info", async () => {
             packageInfo = "{}";
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 packageName: "moment",
@@ -557,7 +556,7 @@ describe("ClientPackageCommand", () => {
         it("can succeed with noScript", async () => {
             packageInfo = "{ \"version\": \"1.2.3\", \"main\": \"index.js\"}";
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 packageName: "moment",
@@ -587,7 +586,7 @@ describe("ClientPackageCommand", () => {
         it("can succeed with packageManager info", async () => {
             packageInfo = "{ \"version\": \"1.2.3\", \"main\": \"index.js\"}";
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 packageName: "moment",
@@ -617,7 +616,7 @@ describe("ClientPackageCommand", () => {
         it("can succeed with override version packageManager info", async () => {
             packageInfo = "{ \"version\": \"1.2.3\", \"main\": \"index.js\"}";
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 packageName: "moment",
@@ -647,7 +646,7 @@ describe("ClientPackageCommand", () => {
         it("can succeed with override main packageManager info", async () => {
             packageInfo = "{ \"version\": \"1.2.3\", \"main\": \"index.js\"}";
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 packageName: "moment",
@@ -677,7 +676,7 @@ describe("ClientPackageCommand", () => {
         it("can succeed with override main and version packageManager info", async () => {
             packageInfo = "{ \"version\": \"1.2.3\", \"main\": \"index.js\"}";
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 packageName: "moment",
@@ -707,7 +706,7 @@ describe("ClientPackageCommand", () => {
         it("can succeed with override mainMinified and version packageManager info", async () => {
             packageInfo = "{ \"version\": \"1.2.3\", \"main\": \"index.js\"}";
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 packageName: "moment",
@@ -738,7 +737,7 @@ describe("ClientPackageCommand", () => {
         it("can succeed with all parameters", async () => {
             packageInfo = "{ \"version\": \"1.2.3\", \"main\": \"index.js\"}";
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 packageName: "moment",
@@ -778,7 +777,7 @@ describe("ClientPackageCommand", () => {
         it("can fail when calling with no unite.json", async () => {
             uniteJson = undefined;
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: undefined,
                 packageName: undefined,
@@ -804,7 +803,7 @@ describe("ClientPackageCommand", () => {
 
         it("can fail when calling with undefined operation", async () => {
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: undefined,
                 packageName: undefined,
@@ -830,7 +829,7 @@ describe("ClientPackageCommand", () => {
 
         it("can fail when calling with undefined packageName", async () => {
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "remove",
                 packageName: undefined,
@@ -857,7 +856,7 @@ describe("ClientPackageCommand", () => {
         it("can fail when calling with undefined packageManager", async () => {
             uniteJson.packageManager = undefined;
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "remove",
                 packageName: "moment",
@@ -883,7 +882,7 @@ describe("ClientPackageCommand", () => {
 
         it("can fail if package does not exist", async () => {
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "remove",
                 packageName: "moment",
@@ -912,7 +911,7 @@ describe("ClientPackageCommand", () => {
             uniteJson.clientPackages = { moment: new UniteClientPackage() };
 
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "remove",
                 packageName: "moment",
@@ -940,7 +939,7 @@ describe("ClientPackageCommand", () => {
             uniteJson.clientPackages = { moment: new UniteClientPackage() };
 
             const obj = new ClientPackageCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "remove",
                 packageName: "moment",

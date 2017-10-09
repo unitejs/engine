@@ -6,7 +6,6 @@ import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { BuildConfigurationCommand } from "../../../../src/commands/buildConfigurationCommand";
-import { PackageConfiguration } from "../../../../src/configuration/models/packages/packageConfiguration";
 import { UniteBuildConfiguration } from "../../../../src/configuration/models/unite/uniteBuildConfiguration";
 import { UniteConfiguration } from "../../../../src/configuration/models/unite/uniteConfiguration";
 import { FileSystemMock } from "../fileSystem.mock";
@@ -23,7 +22,7 @@ describe("BuildConfigurationCommand", () => {
     let uniteJson: UniteConfiguration;
     let uniteJsonWritten: UniteConfiguration;
     let fileWriteJsonErrors: boolean;
-    let enginePackageConfiguration: PackageConfiguration;
+    let enginePeerPackages: { [id: string]: string};
 
     beforeEach(async () => {
         sandbox = Sinon.sandbox.create();
@@ -109,7 +108,7 @@ describe("BuildConfigurationCommand", () => {
             platforms: undefined
         };
 
-        enginePackageConfiguration = await fileSystemStub.fileReadJson<PackageConfiguration>(fileSystemStub.pathCombine(__dirname, "../../../../"), "package.json");
+        enginePeerPackages = await fileSystemStub.fileReadJson<{ [id: string ]: string}>(fileSystemStub.pathCombine(__dirname, "../../../../assets/"), "peerPackages.json");
     });
 
     afterEach(async () => {
@@ -122,7 +121,7 @@ describe("BuildConfigurationCommand", () => {
         it("can fail when calling with no unite.json", async () => {
             uniteJson = undefined;
             const obj = new BuildConfigurationCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: undefined,
                 configurationName: undefined,
@@ -137,7 +136,7 @@ describe("BuildConfigurationCommand", () => {
 
         it("can fail when calling with undefined operation", async () => {
             const obj = new BuildConfigurationCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: undefined,
                 configurationName: undefined,
@@ -152,7 +151,7 @@ describe("BuildConfigurationCommand", () => {
 
         it("can fail when calling with undefined configurationName", async () => {
             const obj = new BuildConfigurationCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 configurationName: undefined,
@@ -169,7 +168,7 @@ describe("BuildConfigurationCommand", () => {
             fileWriteJsonErrors = true;
 
             const obj = new BuildConfigurationCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 configurationName: "myconfig",
@@ -184,7 +183,7 @@ describe("BuildConfigurationCommand", () => {
 
         it("can succeed when calling with configurationName", async () => {
             const obj = new BuildConfigurationCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 configurationName: "myconfig",
@@ -202,7 +201,7 @@ describe("BuildConfigurationCommand", () => {
 
         it("can succeed when calling all params", async () => {
             const obj = new BuildConfigurationCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 configurationName: "myconfig",
@@ -223,7 +222,7 @@ describe("BuildConfigurationCommand", () => {
         it("can fail when calling with no unite.json", async () => {
             uniteJson = undefined;
             const obj = new BuildConfigurationCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: undefined,
                 configurationName: undefined,
@@ -238,7 +237,7 @@ describe("BuildConfigurationCommand", () => {
 
         it("can fail when calling with undefined operation", async () => {
             const obj = new BuildConfigurationCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: undefined,
                 configurationName: undefined,
@@ -253,7 +252,7 @@ describe("BuildConfigurationCommand", () => {
 
         it("can fail when calling with undefined configurationName", async () => {
             const obj = new BuildConfigurationCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "remove",
                 configurationName: undefined,
@@ -271,7 +270,7 @@ describe("BuildConfigurationCommand", () => {
             uniteJson.buildConfigurations = { myconfig: new UniteBuildConfiguration() };
 
             const obj = new BuildConfigurationCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "remove",
                 configurationName: "myconfig",
@@ -286,7 +285,7 @@ describe("BuildConfigurationCommand", () => {
 
         it("can fail when configurationName does not exist", async () => {
             const obj = new BuildConfigurationCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "remove",
                 configurationName: "myconfig",
@@ -302,7 +301,7 @@ describe("BuildConfigurationCommand", () => {
         it("can succeed when calling with configurationName", async () => {
             uniteJson.buildConfigurations = { myconfig: new UniteBuildConfiguration() };
             const obj = new BuildConfigurationCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "remove",
                 configurationName: "myconfig",
@@ -319,7 +318,7 @@ describe("BuildConfigurationCommand", () => {
         it("can succeed when calling all params", async () => {
             uniteJson.buildConfigurations = { myconfig: new UniteBuildConfiguration() };
             const obj = new BuildConfigurationCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "remove",
                 configurationName: "myconfig",

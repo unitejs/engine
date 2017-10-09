@@ -9,7 +9,8 @@ export declare class Engine implements IEngine {
     private _logger;
     private _fileSystem;
     private _engineRootFolder;
-    private _enginePackageJson;
+    private _engineVersion;
+    private _engineDependencies;
     constructor(logger: ILogger, fileSystem: IFileSystem);
     initialise(): Promise<number>;
     version(): string;

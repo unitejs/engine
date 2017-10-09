@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.2.3
+
+* Added Preact support
+* Added node version check on initialisation
+* Change Split peerDependencies into separate asset peerPackages.json to remove npm/yarn warning about unmet peer dependencies
+* Change generated Enum types no longer postfixed with Enum
+
 ## v1.2.2
 
 * Added Jest support for Unit Test Runners

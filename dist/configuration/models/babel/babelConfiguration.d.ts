@@ -25,7 +25,7 @@ export declare class BabelConfiguration {
     moduleRoot: string;
     only: string;
     parserOpts: {};
-    plugins: string[];
+    plugins: (string | any[])[];
     presets: any[];
     retainLines: boolean;
     resolveModuleSource: string;

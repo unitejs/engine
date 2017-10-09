@@ -104,6 +104,7 @@ export class EsLint extends PipelineStepBase {
         };
         defaultConfiguration.rules = {};
         defaultConfiguration.plugins = [];
+        defaultConfiguration.settings = {};
 
         const defaultIgnore = [
             "dist/*",

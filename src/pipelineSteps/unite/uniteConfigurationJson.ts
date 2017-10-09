@@ -18,7 +18,7 @@ export class UniteConfigurationJson extends PipelineStepBase {
                                     engineVariables.force,
                                     mainCondition,
                                     async() => {
-                                        uniteConfiguration.uniteVersion = engineVariables.enginePackageJson.version;
+                                        uniteConfiguration.uniteVersion = engineVariables.engineVersion;
                                         return uniteConfiguration;
                                    });
     }

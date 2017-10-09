@@ -12,7 +12,8 @@ export class Engine implements IEngine {
     private _logger: ILogger;
     private _fileSystem: IFileSystem;
     private _engineRootFolder: string;
-    private _enginePackageJson: PackageConfiguration;
+    private _engineVersion: string;
+    private _engineDependencies: { [id: string]: string };
 
     public constructor(logger: ILogger, fileSystem: IFileSystem) {
         this._logger = logger;
@@ -21,9 +22,20 @@ export class Engine implements IEngine {
 
     public async initialise(): Promise<number> {
         try {
+            const nodeVersionParts = process.version.replace("v", "").split(".");
+
+            if (parseInt(nodeVersionParts[0], 10) < 8) {
+                this._logger.error("Node Version 8 or higher is required", undefined, { nodeVersion: process.version });
+                return 1;
+            }
+
             this._engineRootFolder = this._fileSystem.pathCombine(__dirname, "../../");
 
-            this._enginePackageJson = await this._fileSystem.fileReadJson<PackageConfiguration>(this._engineRootFolder, "package.json");
+            const enginePackageJson = await this._fileSystem.fileReadJson<PackageConfiguration>(this._engineRootFolder, "package.json");
+            this._engineVersion = enginePackageJson.version;
+
+            const assetFolder = this._fileSystem.pathCombine(this._engineRootFolder, "assets");
+            this._engineDependencies = await this._fileSystem.fileReadJson<{ [id: string]: string }>(assetFolder, "peerPackages.json");
 
             return 0;
         } catch (err) {
@@ -33,7 +45,7 @@ export class Engine implements IEngine {
     }
 
     public version(): string {
-        return this._enginePackageJson ? this._enginePackageJson.version : "unknown";
+        return this._engineVersion ? this._engineVersion : "unknown";
     }
 
     public async command<T extends IEngineCommandParams>(commandName: string, args: T): Promise<number> {
@@ -52,7 +64,7 @@ export class Engine implements IEngine {
             const instance = Object.create(module[className].prototype);
             const engineCommand: IEngineCommand<T> = new instance.constructor();
 
-            engineCommand.create(this._logger, this._fileSystem, this._engineRootFolder, this._enginePackageJson);
+            engineCommand.create(this._logger, this._fileSystem, this._engineRootFolder, this._engineVersion, this._engineDependencies);
             args.outputDirectory = await this.findConfigFolder(args.outputDirectory);
             return engineCommand.run(args);
         } catch (err) {

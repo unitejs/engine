@@ -6,7 +6,6 @@ import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { PlatformCommand } from "../../../../src/commands/platformCommand";
-import { PackageConfiguration } from "../../../../src/configuration/models/packages/packageConfiguration";
 import { UniteConfiguration } from "../../../../src/configuration/models/unite/uniteConfiguration";
 import { FileSystemMock } from "../fileSystem.mock";
 import { ReadOnlyFileSystemMock } from "../readOnlyFileSystem.mock";
@@ -26,7 +25,7 @@ describe("PlatformCommand", () => {
     let fileWriteJsonErrors: boolean;
     let packageInfo: string;
     let failPackageAdd: boolean;
-    let enginePackageConfiguration: PackageConfiguration;
+    let enginePeerPackages: { [id: string]: string};
 
     beforeEach(async () => {
         sandbox = Sinon.sandbox.create();
@@ -117,7 +116,7 @@ describe("PlatformCommand", () => {
             platforms: undefined
         };
 
-        enginePackageConfiguration = await fileSystemStub.fileReadJson<PackageConfiguration>(fileSystemStub.pathCombine(__dirname, "../../../../"), "package.json");
+        enginePeerPackages = await fileSystemStub.fileReadJson<{ [id: string ]: string}>(fileSystemStub.pathCombine(__dirname, "../../../../assets/"), "peerPackages.json");
     });
 
     afterEach(async () => {
@@ -130,7 +129,7 @@ describe("PlatformCommand", () => {
         it("can fail when calling with no unite.json", async () => {
             uniteJson = undefined;
             const obj = new PlatformCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: undefined,
                 platformName: undefined,
@@ -142,7 +141,7 @@ describe("PlatformCommand", () => {
 
         it("can fail when calling with undefined operation", async () => {
             const obj = new PlatformCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: undefined,
                 platformName: undefined,
@@ -154,7 +153,7 @@ describe("PlatformCommand", () => {
 
         it("can fail when calling with undefined platformName", async () => {
             const obj = new PlatformCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 platformName: undefined,
@@ -168,7 +167,7 @@ describe("PlatformCommand", () => {
             fileWriteJsonErrors = true;
 
             const obj = new PlatformCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 platformName: "Web",
@@ -180,7 +179,7 @@ describe("PlatformCommand", () => {
 
         it("can succeed when calling with platformName Web", async () => {
             const obj = new PlatformCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 platformName: "Web",
@@ -193,7 +192,7 @@ describe("PlatformCommand", () => {
 
         it("can succeed when calling with platformName Electron", async () => {
             const obj = new PlatformCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "add",
                 platformName: "Electron",
@@ -209,7 +208,7 @@ describe("PlatformCommand", () => {
         it("can fail when calling with no unite.json", async () => {
             uniteJson = undefined;
             const obj = new PlatformCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: undefined,
                 platformName: undefined,
@@ -221,7 +220,7 @@ describe("PlatformCommand", () => {
 
         it("can fail when calling with undefined operation", async () => {
             const obj = new PlatformCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: undefined,
                 platformName: undefined,
@@ -233,7 +232,7 @@ describe("PlatformCommand", () => {
 
         it("can fail when calling with undefined platformName", async () => {
             const obj = new PlatformCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "remove",
                 platformName: undefined,
@@ -248,7 +247,7 @@ describe("PlatformCommand", () => {
             uniteJson.platforms = { Web: {} };
 
             const obj = new PlatformCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "remove",
                 platformName: "Web",
@@ -260,7 +259,7 @@ describe("PlatformCommand", () => {
 
         it("can fail when platformName does not exist", async () => {
             const obj = new PlatformCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "remove",
                 platformName: "Web",
@@ -273,7 +272,7 @@ describe("PlatformCommand", () => {
         it("can succeed when calling with platformName Web", async () => {
             uniteJson.platforms = { Web: {} };
             const obj = new PlatformCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "remove",
                 platformName: "Web",
@@ -287,7 +286,7 @@ describe("PlatformCommand", () => {
         it("can succeed when calling with platformName Electron", async () => {
             uniteJson.platforms = { Electron: {} };
             const obj = new PlatformCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "remove",
                 platformName: "Electron",
@@ -301,7 +300,7 @@ describe("PlatformCommand", () => {
         it("can succeed when calling all params", async () => {
             uniteJson.platforms = { Web: {} };
             const obj = new PlatformCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), enginePackageConfiguration);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 operation: "remove",
                 platformName: "Web",

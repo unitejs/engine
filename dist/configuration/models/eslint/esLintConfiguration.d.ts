@@ -16,4 +16,7 @@ export declare class EsLintConfiguration {
         [id: string]: any;
     };
     plugins: string[];
+    settings: {
+        [id: string]: any;
+    };
 }

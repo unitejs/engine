@@ -5,7 +5,6 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { PackageConfiguration } from "../../../../../src/configuration/models/packages/packageConfiguration";
 import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../../src/engine/engineVariables";
 import { UniteConfigurationJson } from "../../../../../src/pipelineSteps/unite/uniteConfigurationJson";
@@ -51,8 +50,7 @@ describe("UniteConfigurationJson", () => {
     describe("finalise", () => {
         it("can succeed", async () => {
             const obj = new UniteConfigurationJson();
-            engineVariablesStub.enginePackageJson = new PackageConfiguration();
-            engineVariablesStub.enginePackageJson.version = "1.2.3";
+            engineVariablesStub.engineVersion = "1.2.3";
             const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
 

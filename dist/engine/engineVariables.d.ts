@@ -2,7 +2,6 @@
  * Variables used by the engine.
  */
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
-import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
 import { ISpdxLicense } from "../configuration/models/spdx/ISpdxLicense";
 import { IncludeMode } from "../configuration/models/unite/includeMode";
 import { ScriptIncludeMode } from "../configuration/models/unite/scriptIncludeMode";
@@ -13,7 +12,10 @@ export declare class EngineVariables {
     force: boolean;
     engineRootFolder: string;
     engineAssetsFolder: string;
-    enginePackageJson: PackageConfiguration;
+    engineVersion: string;
+    engineDependencies: {
+        [id: string]: string;
+    };
     rootFolder: string;
     wwwRootFolder: string;
     packagedRootFolder: string;

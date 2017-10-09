@@ -4,7 +4,6 @@
 import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { IPackageManager } from "../interfaces/IPackageManager";
 import { EngineVariables } from "./engineVariables";
@@ -15,7 +14,8 @@ export abstract class EngineCommandBase {
     protected _logger: ILogger;
     protected _fileSystem: IFileSystem;
     protected _engineRootFolder: string;
-    protected _enginePackageJson: PackageConfiguration;
+    protected _engineVersion: string;
+    protected _engineDependencies: { [id: string]: string };
 
     protected _engineAssetsFolder: string;
     protected _profilesFolder: string;
@@ -23,11 +23,12 @@ export abstract class EngineCommandBase {
 
     protected _pipeline: Pipeline;
 
-    public create(logger: ILogger, fileSystem: IFileSystem, engineRootFolder: string, enginePackageJson: PackageConfiguration): void {
+    public create(logger: ILogger, fileSystem: IFileSystem, engineRootFolder: string, engineVersion: string, engineDependencies: { [id: string]: string }): void {
         this._logger = logger;
         this._fileSystem = fileSystem;
         this._engineRootFolder = engineRootFolder;
-        this._enginePackageJson = enginePackageJson;
+        this._engineVersion = engineVersion;
+        this._engineDependencies = engineDependencies;
 
         this._engineAssetsFolder = this._fileSystem.pathCombine(this._engineRootFolder, "/assets/");
         this._profilesFolder = this._fileSystem.pathCombine(this._engineAssetsFolder, "/profiles/");
@@ -89,7 +90,8 @@ export abstract class EngineCommandBase {
         engineVariables.force = false;
         engineVariables.engineRootFolder = this._engineRootFolder;
         engineVariables.engineAssetsFolder = this._engineAssetsFolder;
-        engineVariables.enginePackageJson = this._enginePackageJson;
+        engineVariables.engineVersion = this._engineVersion;
+        engineVariables.engineDependencies = this._engineDependencies;
         engineVariables.setupDirectories(this._fileSystem, outputDirectory);
         engineVariables.initialisePackages(uniteConfiguration.clientPackages);
 

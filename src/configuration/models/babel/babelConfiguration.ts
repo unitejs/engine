@@ -23,7 +23,7 @@ export class BabelConfiguration {
     public moduleRoot: string;
     public only: string;
     public parserOpts: {};
-    public plugins: string[];
+    public plugins: (string | any[])[];
     public presets: any[];
     public retainLines: boolean;
     public resolveModuleSource: string;

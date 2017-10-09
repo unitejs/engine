@@ -2,7 +2,6 @@
  * Variables used by the engine.
  */
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
-import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
 import { ISpdxLicense } from "../configuration/models/spdx/ISpdxLicense";
 import { IncludeMode } from "../configuration/models/unite/includeMode";
 import { ScriptIncludeMode } from "../configuration/models/unite/scriptIncludeMode";
@@ -14,7 +13,8 @@ export class EngineVariables {
     public force: boolean;
     public engineRootFolder: string;
     public engineAssetsFolder: string;
-    public enginePackageJson: PackageConfiguration;
+    public engineVersion: string;
+    public engineDependencies: { [id: string]: string };
 
     public rootFolder: string;
     public wwwRootFolder: string;
@@ -237,9 +237,9 @@ export class EngineVariables {
     }
 
     public findDependencyVersion(requiredDependency: string): string {
-        if (this.enginePackageJson && this.enginePackageJson.peerDependencies) {
-            if (this.enginePackageJson.peerDependencies[requiredDependency]) {
-                return this.enginePackageJson.peerDependencies[requiredDependency];
+        if (this.engineDependencies) {
+            if (this.engineDependencies[requiredDependency]) {
+                return this.engineDependencies[requiredDependency];
             } else {
                 throw new Error(`Missing Dependency '${requiredDependency}'`);
             }
