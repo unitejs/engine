@@ -76,6 +76,24 @@ export class Preact extends SharedAppFramework {
             undefined,
             mainCondition);
 
+        engineVariables.toggleClientPackage(
+            "systemjs-plugin-css",
+            "css.js",
+            undefined,
+            undefined,
+            false,
+            "both",
+            "none",
+            false,
+            undefined,
+            undefined,
+            { "*.css" : "systemjs-plugin-css" },
+            undefined,
+            mainCondition &&
+            (super.condition(uniteConfiguration.bundler, "Browserify") ||
+                super.condition(uniteConfiguration.bundler, "SystemJSBuilder") ||
+                super.condition(uniteConfiguration.bundler, "Webpack")));
+
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
             ObjectHelper.addRemove(esLintConfiguration.parserOptions.ecmaFeatures, "jsx", true, mainCondition);

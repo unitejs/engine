@@ -6,9 +6,9 @@ import { Router } from "preact-router";
 import { Child } from "./child/child";
 
 export class App {
-  public run(rootElement: Element): void {
+  public run(rootElement: Element, basePath: string): void {
     render(<Router>
-      <Child path="/" />
+      <Child path={basePath} />
     </Router>,
            rootElement
     );
