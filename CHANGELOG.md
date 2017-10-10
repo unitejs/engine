@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.2.4
+* Added Vue Support
+
 ## v1.2.3
 
 * Added Preact support
