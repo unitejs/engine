@@ -150,5 +150,43 @@
         "taskManager": "Gulp",
         "server": "BrowserSync",
         "ide": "VSCode"
+    },
+    "VueJavaScript": {
+    	"license": "MIT",
+        "applicationFramework": "Vue",
+        "sourceLanguage": "JavaScript",
+        "linter": "ESLint",
+        "moduleType": "CommonJS",
+        "bundler": "Webpack",
+        "unitTestRunner": "Karma",
+        "unitTestFramework": "MochaChai",
+        "unitTestEngine": "ChromeHeadless",
+        "e2eTestRunner": "Protractor",
+        "e2eTestFramework": "MochaChai",
+        "cssPre": "Sass",
+        "cssPost": "PostCss",
+        "packageManager": "Yarn",
+        "taskManager": "Gulp",
+        "server": "BrowserSync",
+        "ide": "VSCode"
+    },
+    "VueTypeScript": {
+    	"license": "MIT",
+        "applicationFramework": "Vue",
+        "sourceLanguage": "TypeScript",
+        "linter": "TSLint",
+        "moduleType": "CommonJS",
+        "bundler": "Webpack",
+        "unitTestRunner": "Karma",
+        "unitTestFramework": "MochaChai",
+        "unitTestEngine": "ChromeHeadless",
+        "e2eTestRunner": "Protractor",
+        "e2eTestFramework": "MochaChai",
+        "cssPre": "Sass",
+        "cssPost": "PostCss",
+        "packageManager": "Yarn",
+        "taskManager": "Gulp",
+        "server": "BrowserSync",
+        "ide": "VSCode"
     }
 }
