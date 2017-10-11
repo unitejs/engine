@@ -22,26 +22,37 @@ gulp.task("build-bundle-app", async () => {
         const entry = {};
         const plugins = [];
 
-        const keys = clientPackages.getModuleIds(uniteConfig, ["app", "both"])
-            .filter(key => key.toLowerCase().indexOf("systemjs") < 0);
+        const moduleConfig = clientPackages.buildModuleConfig(uniteConfig, ["app", "both"], buildConfiguration.minify);
 
-        if (keys.length > 0) {
-            entry.vendor = keys;
+        const vendorKeys = [];
+        const vendorAliases = {};
+        Object.keys(moduleConfig.paths).forEach((key) => {
+            const idx = key.indexOf("systemjs");
+            if (idx < 0) {
+                display.info("Adding", `${moduleConfig.paths[key]}.js`);
+                vendorKeys.push(key);
+                vendorAliases[key] = path.resolve(`${moduleConfig.paths[key]}.js`);
+            }
+        });        
+
+        if (vendorKeys.length > 0) {
+            entry.vendor = vendorKeys;
         }
+
         plugins.push(new webpack.optimize.CommonsChunkPlugin({
             "filename": "vendor-bundle.js",
             "name": "vendor"
         }));
 
         if (buildConfiguration.minify) {
-            process.env.NODE_ENV = "production";
             plugins.push(new UglifyJSPlugin());
-            plugins.push(new webpack.DefinePlugin({
-                "process.env": {
-                    "NODE_ENV": JSON.stringify(process.env.NODE_ENV)
-                }
-            }));
         }
+
+        plugins.push(new webpack.DefinePlugin({
+            "process.env": {
+                "NODE_ENV": JSON.stringify(buildConfiguration.minify ? "production" : "development")
+            }
+        }));
 
         entry.app = `./${path.join(uniteConfig.dirs.www.dist, "entryPoint.js")}`;
 
@@ -59,8 +70,18 @@ gulp.task("build-bundle-app", async () => {
                         "use": ["style-loader", "css-loader"]
                     }
                 ]
+            },
+            "resolve": {
+                "alias": vendorAliases
             }
         };
+
+        uniteConfig.viewExtensions.forEach((ext) => {
+            webpackOptions.module.rules.push({
+                "test": new RegExp(`.${ext}$`),
+                "use": ["raw-loader"]
+            });
+        });
 
         if (buildConfiguration.sourcemaps) {
             webpackOptions.devtool = "inline-source-map";

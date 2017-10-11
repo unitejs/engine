@@ -12,8 +12,14 @@ import router from "./router";
 export function bootstrap () {
     Vue.config.productionTip = false;
 
+    const innerRootElement = document.createElement("div");
+    innerRootElement.id = "innerRoot";
+
+    const root = document.getElementById("root");
+    root.appendChild(innerRootElement);
+
     return new Vue({
-        "el": "#root",
+        "el": "#innerRoot",
         router,
         "template": "<App/>",
         "components": {App}

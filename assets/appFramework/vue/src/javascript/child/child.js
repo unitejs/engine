@@ -4,9 +4,10 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import "./child.css";
+import importedTemplate from "./child.vue";
 
 @Component({
-    "template": "url:./child.vue"
+    "template": importedTemplate
 })
 export class Child extends Vue {
     constructor () {

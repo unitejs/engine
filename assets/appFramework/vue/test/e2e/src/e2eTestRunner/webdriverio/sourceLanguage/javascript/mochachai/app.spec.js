@@ -16,7 +16,7 @@ describe("App", () => {
 
     it("the root text is set", () => {
         return browser
-            .loadAndWaitForPreactPage("/")
+            .loadAndWaitForVuePage("/")
             .element("#root")
             .getText()
             .then((rootContent) => {
@@ -26,7 +26,7 @@ describe("App", () => {
 
     it("the font size is set", () => {
         return browser
-            .loadAndWaitForPreactPage("/")
+            .loadAndWaitForVuePage("/")
             .element(".child")
             .getCssProperty("font-size")
             .then((fontSize) => {

@@ -21,21 +21,20 @@ gulp.task("build-bundle-vendor", async () => {
         display.info("Running", "Browserify for Vendor");
 
         const bVendor = browserify({"debug": buildConfiguration.sourcemaps});
-
-        const keys = clientPackages.getModuleIds(uniteConfig, ["app", "both"]);
-
-        const idx = keys.indexOf("systemjs");
-        if (idx >= 0) {
-            keys.splice(idx, 1);
-        }
-
-        keys.forEach((key) => {
-            bVendor.require(key);
+        bVendor.transform("envify", {
+            "NODE_ENV": buildConfiguration.minify ? "production" : "development",
+            "global": true
         });
 
-        if (buildConfiguration.minify) {
-            process.env.NODE_ENV = "production";
-        }
+        const moduleConfig = clientPackages.buildModuleConfig(uniteConfig, ["app", "both"], buildConfiguration.minify);
+
+        Object.keys(moduleConfig.paths).forEach((key) => {
+            const idx = key.indexOf("systemjs");
+            if (idx < 0) {
+                display.info("Adding", `${moduleConfig.paths[key]}.js`);
+                bVendor.require(`${moduleConfig.paths[key]}.js`, {"expose": key});
+            }
+        });
 
         return asyncUtil.stream(bVendor.bundle()
             .pipe(source("vendor-bundle.js"))

@@ -27,7 +27,7 @@ export class Browserify extends PipelineStepBase {
     }
 
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
-        engineVariables.toggleDevDependency(["browserify", "browserify-css"], mainCondition);
+        engineVariables.toggleDevDependency(["browserify", "browserify-css", "envify", "stringify"], mainCondition);
         return 0;
     }
 }

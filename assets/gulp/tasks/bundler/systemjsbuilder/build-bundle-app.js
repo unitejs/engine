@@ -65,6 +65,7 @@ gulp.task("build-bundle-app", async () => {
         const dist = uniteConfig.dirs.www.dist;
         const moduleIds = clientPackages.getModuleIds(uniteConfig, ["app", "both"]);
         const hasText = moduleIds.indexOf("systemjs-plugin-text") >= 0;
+        const hasCss = moduleIds.indexOf("systemjs-plugin-css") >= 0;
 
         const packageFiles = [
             `${dist}**/*.js`
@@ -72,7 +73,9 @@ gulp.task("build-bundle-app", async () => {
 
         if (hasText) {
             packageFiles.push(` + ${dist}**/*.${uc.extensionMap(uniteConfig.viewExtensions)}!text`);
-            packageFiles.push(` + ${dist}**/*.css!text`);
+        }
+        if (hasText || hasCss) {
+            packageFiles.push(` + ${dist}**/*.css!${hasCss ? "css" : "text"}`);
         }
 
         packageFiles.push(` - ${dist}vendor-bundle.js`);

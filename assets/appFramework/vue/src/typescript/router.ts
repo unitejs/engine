@@ -1,8 +1,8 @@
 /**
  * Main Router.
  */
-import Vue from "vue";
-import Router from "vue-router";
+import {SYNTHETIC_IMPORT}Vue from "vue";
+import {SYNTHETIC_IMPORT}Router from "vue-router";
 import { Child } from "./child/child";
 
 Vue.use(Router);

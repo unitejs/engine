@@ -5,6 +5,8 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
+import { BabelConfiguration } from "../../../../../src/configuration/models/babel/babelConfiguration";
+import { JestConfiguration } from "../../../../../src/configuration/models/jest/jestConfiguration";
 import { ProtractorConfiguration } from "../../../../../src/configuration/models/protractor/protractorConfiguration";
 import { TypeScriptConfiguration } from "../../../../../src/configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
@@ -99,16 +101,44 @@ describe("Vue", () => {
         it("can be called with configurations", async () => {
             engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "aaaa" }] });
             engineVariablesStub.setConfiguration("WebdriverIO.Plugins", []);
+            engineVariablesStub.setConfiguration("Babel", { plugins: []});
             engineVariablesStub.setConfiguration("ESLint", { parser: {} });
             engineVariablesStub.setConfiguration("TSLint", { rules: {} });
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {} });
             engineVariablesStub.setConfiguration("JavaScript", { compilerOptions: {} });
+            engineVariablesStub.setConfiguration("Jest", { moduleNameMapper: {} });
             const obj = new Vue();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(2);
+            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins.length).to.be.equal(2);
             Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins").length).to.be.equal(1);
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.experimentalDecorators).to.be.equal(true);
+            Chai.expect(engineVariablesStub.getConfiguration<JestConfiguration>("Jest").moduleNameMapper["\\.vue$"]).to.be.equal("<rootDir>/test/unit/dummy.mock.js");
+            Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(2);
+            Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(5);
+        });
+
+        it("can be called with configurations as not requirejs", async () => {
+            uniteConfigurationStub.bundler = "Webpack";
+            engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "aaaa" }] });
+            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", []);
+            engineVariablesStub.setConfiguration("Babel", { plugins: []});
+            engineVariablesStub.setConfiguration("ESLint", { parser: {} });
+            engineVariablesStub.setConfiguration("TSLint", { rules: {} });
+            engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {} });
+            engineVariablesStub.setConfiguration("JavaScript", { compilerOptions: {} });
+            engineVariablesStub.setConfiguration("Jest", { moduleNameMapper: {} });
+            const obj = new Vue();
+            const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(2);
+            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins.length).to.be.equal(2);
+            Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins").length).to.be.equal(1);
+            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.experimentalDecorators).to.be.equal(true);
+            Chai.expect(engineVariablesStub.getConfiguration<JestConfiguration>("Jest").moduleNameMapper["\\.vue$"]).to.be.equal("<rootDir>/test/unit/dummy.mock.js");
+            Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(1);
+            Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(1);
         });
 
         it("can be called no configurations with false mainCondition", async () => {
@@ -120,16 +150,20 @@ describe("Vue", () => {
         it("can be called with configurations with false mainCondition", async () => {
             engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/unitejs-vue-protractor-plugin" } ] });
             engineVariablesStub.setConfiguration("WebdriverIO.Plugins", [ "unitejs-vue-webdriver-plugin" ]);
+            engineVariablesStub.setConfiguration("Babel", { plugins: ["transform-decorators-legacy", "transform-class-properties"]});
             engineVariablesStub.setConfiguration("ESLint", { parser: "babel-eslint" });
             engineVariablesStub.setConfiguration("TSLint", { rules: {} });
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {} });
             engineVariablesStub.setConfiguration("JavaScript", { compilerOptions: {} });
+            engineVariablesStub.setConfiguration("Jest", { moduleNameMapper: { "\\.vue$": "<rootDir>/test/unit/dummy.mock.js" } });
             const obj = new Vue();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins.length).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins").length).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.experimentalDecorators).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<JestConfiguration>("Jest").moduleNameMapper["\\.vue$"]).to.be.equal(undefined);
         });
     });
 

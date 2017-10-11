@@ -1,7 +1,7 @@
 /**
  * Main entry point for app.
  */
-import Vue from "vue";
+import {SYNTHETIC_IMPORT}Vue from "vue";
 import { App } from "./app";
 import router from "./router";
 
@@ -12,8 +12,14 @@ import router from "./router";
 export function bootstrap(): Vue {
     Vue.config.productionTip = false;
 
+    const innerRootElement = document.createElement("div");
+    innerRootElement.id = "innerRoot";
+
+    const root = document.getElementById("root");
+    root.appendChild(innerRootElement);
+
     return new Vue({
-        el: "#root",
+        el: "#innerRoot",
         router,
         template: "<App/>",
         components: { App }

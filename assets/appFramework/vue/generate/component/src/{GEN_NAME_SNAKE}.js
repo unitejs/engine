@@ -4,9 +4,10 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import "./{GEN_NAME_SNAKE}.css";
+import importedTemplate from "./{GEN_NAME_SNAKE}.vue";
 
 @Component({
-    "template": "url:./{GEN_NAME_SNAKE}.vue"
+    "template": importedTemplate
 })
 export class {GEN_NAME_PASCAL} extends Vue {
 }

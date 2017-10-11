@@ -1,12 +1,13 @@
 /**
  * Child class.
  */
-import Vue from "vue";
+import {SYNTHETIC_IMPORT}Vue from "vue";
 import Component from "vue-class-component";
 import "./child.css";
+import {SYNTHETIC_IMPORT}importedTemplate from "./child.vue";
 
 @Component({
-    template: "url:./child.vue"
+    template: importedTemplate
 })
 export class Child extends Vue {
     public message: string;

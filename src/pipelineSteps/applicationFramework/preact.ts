@@ -86,8 +86,8 @@ export class Preact extends SharedAppFramework {
             "none",
             false,
             undefined,
-            undefined,
-            { "*.css" : "systemjs-plugin-css" },
+            { css: "systemjs-plugin-css" },
+            { "*.css" : "css" },
             undefined,
             mainCondition &&
             (super.condition(uniteConfiguration.bundler, "Browserify") ||

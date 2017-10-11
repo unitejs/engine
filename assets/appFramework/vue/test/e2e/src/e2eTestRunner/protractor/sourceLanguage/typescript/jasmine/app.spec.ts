@@ -18,7 +18,7 @@ describe("App", () => {
     });
 
     it("the root text is set", (done) => {
-        browser.loadAndWaitForPreactPage("/")
+        browser.loadAndWaitForVuePage("/")
             .then(() => {
                 $("#root > span").getText()
                     .then((rootContent) => {
@@ -29,7 +29,7 @@ describe("App", () => {
     });
 
     it("the font size is set", (done) => {
-        browser.loadAndWaitForPreactPage("/")
+        browser.loadAndWaitForVuePage("/")
             .then(() => {
                 $(".child").getCssValue("font-size")
                     .then((fontSize) => {

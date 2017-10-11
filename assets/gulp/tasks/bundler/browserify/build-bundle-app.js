@@ -26,17 +26,21 @@ gulp.task("build-bundle-app", async () => {
             "entries": `./${path.join(uniteConfig.dirs.www.dist, "entryPoint.js")}`
         });
 
+        bApp.transform("envify", {
+            "NODE_ENV": buildConfiguration.minify ? "production" : "development",
+            "global": true
+        });
         bApp.transform("browserify-css", {"autoInject": true});
-
-        const keys = clientPackages.getModuleIds(uniteConfig, ["app", "both"]);
-
-        keys.forEach((key) => {
-            bApp.exclude(key);
+        bApp.transform("stringify", {
+            "appliesTo": {"includeExtensions": uniteConfig.viewExtensions.map(ext => `.${ext}`)}
         });
 
-        if (buildConfiguration.minify) {
-            process.env.NODE_ENV = "production";
-        }
+        const moduleConfig = clientPackages.buildModuleConfig(uniteConfig, ["app", "both"], buildConfiguration.minify);
+
+        Object.keys(moduleConfig.paths).forEach((key) => {
+            bApp.exclude(key);
+            bApp.exclude(`${moduleConfig.paths[key]}.js`);
+        });
 
         return asyncUtil.stream(bApp.bundle()
             .pipe(source("app-bundle.js"))

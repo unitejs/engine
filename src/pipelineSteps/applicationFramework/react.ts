@@ -114,13 +114,13 @@ export class React extends SharedAppFramework {
             "none",
             false,
             undefined,
-            undefined,
-            { "*.css" : "systemjs-plugin-css" },
+            { css: "systemjs-plugin-css" },
+            { "*.css" : "css" },
             undefined,
             mainCondition &&
             (super.condition(uniteConfiguration.bundler, "Browserify") ||
-             super.condition(uniteConfiguration.bundler, "SystemJSBuilder") ||
-             super.condition(uniteConfiguration.bundler, "Webpack")));
+                super.condition(uniteConfiguration.bundler, "SystemJSBuilder") ||
+                super.condition(uniteConfiguration.bundler, "Webpack")));
 
         if (mainCondition && super.condition(uniteConfiguration.taskManager, "Gulp") && super.condition(uniteConfiguration.bundler, "RequireJS")) {
             engineVariables.buildTranspileInclude.push("const replace = require(\"gulp-replace\");");
