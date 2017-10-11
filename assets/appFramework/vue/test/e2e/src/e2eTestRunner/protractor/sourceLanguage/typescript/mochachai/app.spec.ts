@@ -1,7 +1,7 @@
 /**
  * Tests for App.
  */
-/// <reference types="unitejs-preact-protractor-plugin"/>
+/// <reference types="unitejs-vue-protractor-plugin"/>
 import { expect } from "chai";
 import { $, browser, by } from "protractor";
 

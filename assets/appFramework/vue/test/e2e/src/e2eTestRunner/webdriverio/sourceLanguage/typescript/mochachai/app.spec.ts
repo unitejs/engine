@@ -1,7 +1,7 @@
 /**
  * Tests for App.
  */
-/// <reference types="unitejs-preact-webdriver-plugin"/>
+/// <reference types="unitejs-vue-webdriver-plugin"/>
 import { expect } from "chai";
 
 describe("App", () => {
