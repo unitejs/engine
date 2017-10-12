@@ -4,6 +4,7 @@
 
 * Added support for json configuration files based on buildConfiguration merged into window.unite variable
 * Added default configuration json files generated on configure command
+* Added contents of ./www/assetsSrc/root are copied to the root folder in the packaging tasks
 * Added PlainApp profiles
 
 ## 1.2.5

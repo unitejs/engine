@@ -17,19 +17,26 @@ async function gatherFiles (platformName) {
     const bundleExists = await asyncUtil.fileExists(path.join(uniteConfig.dirs.www.dist, "app-bundle.js"));
     if (buildConfiguration.bundle && !bundleExists) {
         display.error(`You have specified configuration '${buildConfiguration.name}' which is bundled,` +
-                            " but the dist folder contains a non bundled build.");
+            " but the dist folder contains a non bundled build.");
         process.exit(1);
     } else if (!buildConfiguration.bundle && bundleExists) {
         display.error(`You have specified configuration '${buildConfiguration.name}' which is not bundled,` +
-                            " but the dist folder contains a bundled build.");
+            " but the dist folder contains a bundled build.");
         process.exit(1);
     }
 
+    const dest = path.join(
+        "../",
+        uniteConfig.dirs.packagedRoot,
+        `/${packageJson.version}/${platformName.toLowerCase()}/`
+    );
+
     let files = [
-        path.join("./", "index.html"),
-        path.join(uniteConfig.dirs.www.dist, "**/*"),
-        path.join(uniteConfig.dirs.www.cssDist, "**/*"),
-        path.join(uniteConfig.dirs.www.assets, "**/*")
+        {"src": path.join("./", "index.html")},
+        {"src": path.join(uniteConfig.dirs.www.dist, "**/*")},
+        {"src": path.join(uniteConfig.dirs.www.cssDist, "**/*")},
+        {"src": path.join(uniteConfig.dirs.www.assets, "**/*")},
+        {"src": path.join(uniteConfig.dirs.www.assetsSrc, "root/**/*"), dest}
     ];
 
     const packageFiles = clientPackages.getDistFiles(
@@ -39,30 +46,28 @@ async function gatherFiles (platformName) {
         buildConfiguration.minify
     );
     Object.keys(packageFiles).forEach((key) => {
-        files = files.concat(packageFiles[key]);
+        files = files.concat({"src": packageFiles[key]});
     });
 
-    files = files.concat(clientPackages.getAssets(uniteConfig));
-
-    const dest = path.join(
-        "../",
-        uniteConfig.dirs.packagedRoot,
-        `/${packageJson.version}/${platformName.toLowerCase()}/`
-    );
+    files = files.concat(clientPackages.getAssets(uniteConfig).map(a => {
+        return {"src": a};
+    }));
 
     display.info("Gathering Files", platformName);
     display.info("Destination", dest);
 
     for (let i = 0; i < files.length; i++) {
-        const fileDest = path.join(
-            dest,
-            files[i].indexOf("**") > 0 ? files[i].replace(/\*\*[/\\]\*(.*)/, "") : path.dirname(files[i])
-        );
+        const fileDest = files[i].dest ? files[i].dest
+            : path.join(
+                dest,
+                files[i].src.indexOf("**") > 0
+                    ? files[i].src.replace(/\*\*[/\\]\*(.*)/, "") : path.dirname(files[i].src)
+            );
 
-        display.info("Copying Files", files[i]);
+        display.info("Copying Files", files[i].src);
         display.info("To", fileDest);
 
-        await asyncUtil.stream(gulp.src(files[i])
+        await asyncUtil.stream(gulp.src(files[i].src, {"dot": true})
             .pipe(gulp.dest(fileDest)));
     }
 
