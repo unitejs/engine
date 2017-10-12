@@ -2,11 +2,9 @@
 
 ## v1.2.4
 * Added Vue Support
-* Added browserify include view templates using stringify
-* Added webpack include view templates using raw-loader
-* Fixed browserify bundling correct version of modules not those picked up from package.json by bundler
-* Fixed webpack bundling correct version of modules not those picked up from package.json by bundler
-* Fixed browserify NODE_ENV var
+* Added browserify/webpack include view templates using stringify/raw-loader
+* Fixed browserify/webpack bundling correct version of modules and not the automatic modules read from package.json by bundler
+* Fixed browserify/webpack NODE_ENV var for production/development
 
 ## v1.2.3
 
