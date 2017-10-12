@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.6
+
+* Added support for json configuration files based on buildConfiguration merged into window.unite variable
+
 ## 1.2.5
 
 * Change Electron Packaging defaults to identifying the current platform for its default platform/architecture if none specified in config

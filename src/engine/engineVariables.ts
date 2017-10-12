@@ -34,6 +34,7 @@ export class EngineVariables {
         reportsFolder: string;
         packageFolder: string;
         buildFolder: string;
+        configurationFolder: string;
 
         assetsFolder: string;
         assetsSrcFolder: string;
@@ -100,7 +101,8 @@ export class EngineVariables {
             assetsFolder: fileSystem.pathCombine(this.wwwRootFolder, "assets"),
             assetsSrcFolder: fileSystem.pathCombine(this.wwwRootFolder, "assetsSrc"),
             buildFolder: fileSystem.pathCombine(this.wwwRootFolder, "build"),
-            packageFolder: fileSystem.pathCombine(this.wwwRootFolder, "node_modules")
+            packageFolder: fileSystem.pathCombine(this.wwwRootFolder, "node_modules"),
+            configurationFolder: fileSystem.pathCombine(this.wwwRootFolder, "configuration")
         };
     }
 

@@ -12,6 +12,7 @@ const os = require("os");
 const exec = require("./exec");
 const asyncUtil = require("./async-util");
 const clientPackages = require("./client-packages");
+const configUtil = require("./config-utils");
 const mkdirp = require("mkdirp");
 
 function writeIndex (templateName, cacheBust, config, headers, scriptIncludes) {
@@ -30,18 +31,10 @@ function writeIndex (templateName, cacheBust, config, headers, scriptIncludes) {
         .pipe(gulp.dest("./")));
 }
 
-function buildIndex (uniteConfig, uniteThemeConfig, buildConfiguration, packageJson) {
+async function buildIndex (uniteConfig, uniteThemeConfig, buildConfiguration, packageJson) {
     const cacheBust = buildConfiguration.bundle ? `?v=${new Date().getTime()}` : "";
 
-    const configName = buildConfiguration.variables.name;
-    delete buildConfiguration.variables.name;
-
-    const uniteJs = {
-        "config": buildConfiguration.variables,
-        configName,
-        "packageVersion": packageJson.version,
-        "uniteVersion": uniteConfig.uniteVersion
-    };
+    const uniteJs = await configUtil.create(uniteConfig, buildConfiguration, packageJson);
 
     const config = `window.unite = ${JSON.stringify(uniteJs)};`;
 

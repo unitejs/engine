@@ -33,6 +33,7 @@ export declare class EngineVariables {
         reportsFolder: string;
         packageFolder: string;
         buildFolder: string;
+        configurationFolder: string;
         assetsFolder: string;
         assetsSrcFolder: string;
     };

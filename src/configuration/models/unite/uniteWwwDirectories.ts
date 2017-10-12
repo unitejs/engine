@@ -22,4 +22,6 @@ export class UniteWwwDirectories {
 
     public assets: string;
     public assetsSrc: string;
+
+    public configuration: string;
 }

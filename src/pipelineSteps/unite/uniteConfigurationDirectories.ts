@@ -41,6 +41,8 @@ export class UniteConfigurationDirectories extends PipelineStepBase {
 
         uniteConfiguration.dirs.www.assets = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.assetsFolder));
         uniteConfiguration.dirs.www.assetsSrc = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.assetsSrcFolder));
+
+        uniteConfiguration.dirs.www.configuration = fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.configurationFolder));
         return 0;
     }
 }

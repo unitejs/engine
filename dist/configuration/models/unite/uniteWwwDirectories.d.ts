@@ -17,4 +17,5 @@ export declare class UniteWwwDirectories {
     build: string;
     assets: string;
     assetsSrc: string;
+    configuration: string;
 }

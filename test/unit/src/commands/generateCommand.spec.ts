@@ -125,7 +125,8 @@ describe("GenerateCommand", () => {
                     package: undefined,
                     build: undefined,
                     assets: undefined,
-                    assetsSrc: undefined
+                    assetsSrc: undefined,
+                    configuration: undefined
                 }
             },
             srcDistReplace: undefined,
