@@ -3,6 +3,8 @@
 ## 1.2.6
 
 * Added support for json configuration files based on buildConfiguration merged into window.unite variable
+* Added default configuration json files generated on configure command
+* Added PlainApp profiles
 
 ## 1.2.5
 

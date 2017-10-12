@@ -16,11 +16,11 @@ async function gatherFiles (platformName) {
 
     const bundleExists = await asyncUtil.fileExists(path.join(uniteConfig.dirs.www.dist, "app-bundle.js"));
     if (buildConfiguration.bundle && !bundleExists) {
-        display.error(`You have specified configuration '${buildConfiguration.variables.name}' which is bundled,` +
+        display.error(`You have specified configuration '${buildConfiguration.name}' which is bundled,` +
                             " but the dist folder contains a non bundled build.");
         process.exit(1);
     } else if (!buildConfiguration.bundle && bundleExists) {
-        display.error(`You have specified configuration '${buildConfiguration.variables.name}' which is not bundled,` +
+        display.error(`You have specified configuration '${buildConfiguration.name}' which is not bundled,` +
                             " but the dist folder contains a bundled build.");
         process.exit(1);
     }

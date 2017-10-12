@@ -85,10 +85,8 @@ function getBuildConfiguration (uniteConfig, showInfo) {
     if (buildConfiguration.minify === undefined) {
         buildConfiguration.minify = false;
     }
-    if (buildConfiguration.variables === undefined) {
-        buildConfiguration.variables = {};
-    }
-    buildConfiguration.variables.name = options.buildConfiguration;
+
+    buildConfiguration.name = options.buildConfiguration;
     if (showInfo) {
         display.info("Sourcemaps", buildConfiguration.sourcemaps);
         display.info("Minify", buildConfiguration.minify);

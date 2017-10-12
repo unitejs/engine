@@ -46,8 +46,8 @@ export class BuildConfigurationCommand extends EngineCommandBase implements IEng
         uniteConfiguration.buildConfigurations[args.configurationName].bundle = args.bundle === undefined ? false : args.bundle;
         uniteConfiguration.buildConfigurations[args.configurationName].minify = args.minify === undefined ? false : args.minify;
         uniteConfiguration.buildConfigurations[args.configurationName].sourcemaps = args.sourcemaps === undefined ? true : args.sourcemaps;
-        uniteConfiguration.buildConfigurations[args.configurationName].variables = uniteConfiguration.buildConfigurations[args.configurationName].variables || {};
 
+        this._pipeline.add("content", "buildConfiguration");
         this._pipeline.add("unite", "uniteConfigurationJson");
 
         const ret = await this._pipeline.run(uniteConfiguration, engineVariables);

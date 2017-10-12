@@ -48,8 +48,8 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
         uniteConfiguration.viewExtensions = [];
 
         if (Object.keys(uniteConfiguration.buildConfigurations).length === 0) {
-            uniteConfiguration.buildConfigurations.dev = { bundle: false, minify: false, sourcemaps: true, variables: {} };
-            uniteConfiguration.buildConfigurations.prod = { bundle: true, minify: true, sourcemaps: false, variables: {} };
+            uniteConfiguration.buildConfigurations.dev = { bundle: false, minify: false, sourcemaps: true };
+            uniteConfiguration.buildConfigurations.prod = { bundle: true, minify: true, sourcemaps: false };
         }
 
         uniteConfiguration.platforms = uniteConfiguration.platforms || { Web: {} };

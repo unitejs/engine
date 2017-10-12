@@ -8,12 +8,9 @@ const util = require("util");
 const asyncUtil = require("./async-util");
 
 async function create (uniteConfig, buildConfiguration, packageJson) {
-    const configName = buildConfiguration.variables.name;
-    delete buildConfiguration.variables.name;
-
     const rootConfig = {
-        "config": buildConfiguration.variables,
-        configName,
+        "config": { },
+        "configName": buildConfiguration.name,
         "packageVersion": packageJson.version,
         "uniteVersion": uniteConfig.uniteVersion
     };
