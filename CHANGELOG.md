@@ -1,6 +1,11 @@
 # Changelog
 
+## 1.2.5
+
+* Change Electron Packaging defaults to identifying the current platform for its default platform/architecture if none specified in config
+
 ## v1.2.4
+
 * Added Vue Support
 * Added browserify/webpack include view templates using stringify/raw-loader
 * Fixed browserify/webpack bundling correct version of modules and not the automatic modules read from package.json by bundler

@@ -10,14 +10,38 @@ const path = require("path");
 const del = require("del");
 const deleteEmpty = require("delete-empty");
 const fs = require("fs");
+const os = require("os");
 const replace = require("gulp-replace");
 const exec = require("./util/exec");
 const asyncUtil = require("./util/async-util");
 const platformUtils = require("./util/platform-utils");
 const packageConfig = require("./util/package-config");
 
-const DEF_PLATFORM_ARCH = ["win32/ia32"];
-const DEF_RUNTIME_VERSION = "1.6.11";
+const DEF_RUNTIME_VERSION = "1.7.9";
+
+function getDefaultArchs() {
+    let defArch = [];
+    const platform = os.platform();
+    const arch = os.arch();
+
+    if (platform === "win32") {
+        if (arch === "x64") {
+            defArch = ["win32/x64"];
+        } else {
+            defArch = ["win32/ia32"];
+        }
+    } else if (platform === "darwin") {
+        defArch = ["darwin/x64"];
+    } else {
+        if (arch === "x64") {
+            defArch = ["linux/x64"];
+        } else {
+            defArch = ["linux/ia32"];
+        }
+    }
+
+    return defArch;
+}
 
 gulp.task("platform-electron-package", async () => {
     try {
@@ -37,7 +61,7 @@ gulp.task("platform-electron-clean", async () => {
     const uniteConfig = await uc.getUniteConfig();
     const packageJson = await packageConfig.getPackageJson();
     const platformSettings = platformUtils.getConfig(uniteConfig, "Electron");
-    const platformArchs = platformSettings.platformArch || DEF_PLATFORM_ARCH;
+    const platformArchs = platformSettings.platformArch || getDefaultArchs();
 
     const toClean = [
         path.join(
@@ -86,7 +110,7 @@ gulp.task("platform-electron-gather", async () => {
 
     const platformSettings = platformUtils.getConfig(uniteConfig, "Electron");
 
-    const platformArchs = platformSettings.platformArch || DEF_PLATFORM_ARCH;
+    const platformArchs = platformSettings.platformArch || getDefaultArchs();
 
     const hasLinux = platformArchs.filter(platformArch => platformArch.startsWith("linux")).length > 0;
     const hasDarwin = platformArchs.filter(platformArch =>
@@ -145,7 +169,7 @@ gulp.task("platform-electron-bundle", async () => {
 
     const platformSettings = platformUtils.getConfig(uniteConfig, "Electron");
 
-    const platformArchs = platformSettings.platformArch || DEF_PLATFORM_ARCH;
+    const platformArchs = platformSettings.platformArch || getDefaultArchs();
     const runtimeVersion = platformSettings.runtimeVersion || DEF_RUNTIME_VERSION;
 
     const srcFolder = path.join(
@@ -242,7 +266,7 @@ gulp.task("platform-electron-compress", async () => {
     const uniteConfig = await uc.getUniteConfig();
     const packageJson = await packageConfig.getPackageJson();
     const platformSettings = platformUtils.getConfig(uniteConfig, "Electron");
-    const platformArchs = platformSettings.platformArch || DEF_PLATFORM_ARCH;
+    const platformArchs = platformSettings.platformArch || getDefaultArchs();
 
     for (let i = 0; i < platformArchs.length; i++) {
         const parts = platformArchs[i].split("/");
