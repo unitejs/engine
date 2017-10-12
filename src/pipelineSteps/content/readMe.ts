@@ -8,17 +8,18 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class ReadMe extends PipelineStepBase {
+    private static FILENAMEROOT: string = "README-ROOT.md";
     private static FILENAME: string = "README.md";
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
-        return super.fileToggleLines(logger,
-                                     fileSystem,
-                                     engineVariables.wwwRootFolder,
-                                     ReadMe.FILENAME,
-                                     engineVariables.force,
-                                     mainCondition,
-                                     async () => {
-            const lines = await fileSystem.fileReadLines(engineVariables.engineAssetsFolder, ReadMe.FILENAME);
+        let ret = await super.fileToggleLines(logger,
+                                              fileSystem,
+                                              engineVariables.rootFolder,
+                                              ReadMe.FILENAME,
+                                              engineVariables.force,
+                                              mainCondition,
+                                              async () => {
+            const lines = await fileSystem.fileReadLines(engineVariables.engineAssetsFolder, ReadMe.FILENAMEROOT);
 
             lines.unshift("");
             lines.unshift(`# ${uniteConfiguration.title}`);
@@ -28,5 +29,27 @@ export class ReadMe extends PipelineStepBase {
 
             return lines;
         });
+
+        if (ret === 0) {
+            ret = await super.fileToggleLines(logger,
+                                              fileSystem,
+                                              engineVariables.wwwRootFolder,
+                                              ReadMe.FILENAME,
+                                              engineVariables.force,
+                                              mainCondition,
+                                              async () => {
+                const lines = await fileSystem.fileReadLines(engineVariables.engineAssetsFolder, ReadMe.FILENAME);
+
+                lines.unshift("");
+                lines.unshift(`# ${uniteConfiguration.title}`);
+
+                lines.push("---");
+                lines.push(super.wrapGeneratedMarker("*", "* :zap:"));
+
+                return lines;
+            });
+        }
+
+        return ret;
     }
 }

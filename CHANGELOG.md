@@ -6,6 +6,7 @@
 * Added default configuration json files generated on configure command
 * Added contents of ./www/assetsSrc/root are copied to the root folder in the packaging tasks
 * Added PlainApp profiles
+* Added additional README.md to root folder of generated app
 
 ## 1.2.5
 
