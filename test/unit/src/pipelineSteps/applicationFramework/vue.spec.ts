@@ -81,22 +81,6 @@ describe("Vue", () => {
         });
     });
 
-    describe("initialise", () => {
-        it("can be called with application framework not matching", async () => {
-            const obj = new Vue();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(uniteConfigurationStub.viewExtensions.length).to.be.equal(0);
-        });
-
-        it("can be called with application framework matching", async () => {
-            const obj = new Vue();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(uniteConfigurationStub.viewExtensions.length).to.be.equal(1);
-        });
-    });
-
     describe("configure", () => {
         it("can be called with configurations", async () => {
             engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "aaaa" }] });

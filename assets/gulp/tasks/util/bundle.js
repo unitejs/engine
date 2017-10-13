@@ -17,23 +17,24 @@ async function findAppFiles (uniteConfig, stripJsExtension, htmlPrefixPostfix, c
             "**/!(app-bundle|vendor-bundle|app-bundle-init|vendor-bundle-init|app-module-config).js"
         ));
 
-        const viewFiles = await globAsync(path.join(
-            uniteConfig.dirs.www.dist,
-            `**/!(app-bundle|vendor-bundle).${uc.extensionMap(uniteConfig.viewExtensions)}`
-        ));
+        files = stripJsExtension ? jsFiles.map(file => file.replace(/(\.js)$/, "")) : jsFiles;
+        if (uniteConfig.viewExtensions.length > 0) {
+            const viewFiles = await globAsync(path.join(
+                uniteConfig.dirs.www.dist,
+                `**/!(app-bundle|vendor-bundle).${uc.extensionMap(uniteConfig.viewExtensions)}`
+            ));
+            if (htmlPrefixPostfix && htmlPrefixPostfix.length > 0) {
+                if (htmlPrefixPostfix[0] === "!") {
+                    files = files.concat(viewFiles.map(file => `${file}${htmlPrefixPostfix}`));
+                } else {
+                    files = files.concat(viewFiles.map(file => `${htmlPrefixPostfix}${file}`));
+                }
+            } else {
+                files = files.concat(viewFiles.map(file => `${file}`));
+            }
+        }
         let cssFiles = await globAsync(path.join(uniteConfig.dirs.www.dist, "**/*.css"));
         cssFiles = stripCssExtension ? cssFiles.map(file => file.replace(/(\.css)$/, "")) : cssFiles;
-
-        files = stripJsExtension ? jsFiles.map(file => file.replace(/(\.js)$/, "")) : jsFiles;
-        if (htmlPrefixPostfix && htmlPrefixPostfix.length > 0) {
-            if (htmlPrefixPostfix[0] === "!") {
-                files = files.concat(viewFiles.map(file => `${file}${htmlPrefixPostfix}`));
-            } else {
-                files = files.concat(viewFiles.map(file => `${htmlPrefixPostfix}${file}`));
-            }
-        } else {
-            files = files.concat(viewFiles.map(file => `${file}`));
-        }
         if (cssPrefixPostfix && cssPrefixPostfix.length > 0) {
             if (cssPrefixPostfix[0] === "!") {
                 files = files.concat(cssFiles.map(file => `${file}${cssPrefixPostfix}`));
