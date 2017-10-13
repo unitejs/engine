@@ -40,8 +40,8 @@ export class Vue extends SharedAppFramework {
 
         engineVariables.toggleClientPackage(
             "vue",
-            "dist/vue.js",
-            "dist/vue.min.js",
+            "dist/vue.runtime.js",
+            "dist/vue.runtime.min.js",
             undefined,
             false,
             "both",
