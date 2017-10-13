@@ -10,6 +10,7 @@
 * Added license option None
 * Change moved license reading logic into pipeline step
 * Change vue application framework now uses urls in template configuration and compiles them using gulp-inline-vue-template
+* Change fixed vue version as the new 2.5.0 release typescript definitions don't work correctly
 
 ## 1.2.5
 
