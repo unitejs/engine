@@ -17,18 +17,18 @@ async function create (uniteConfig, buildConfiguration, packageJson) {
 
     const readFileAsync = util.promisify(fs.readFile);
 
-    const baseFilename = path.join(uniteConfig.dirs.www.configuration, "base.json");
-    const baseExists = await asyncUtil.fileExists(baseFilename);
-    if (baseExists) {
+    const commonFilename = path.join(uniteConfig.dirs.www.configuration, "common.json");
+    const commonExists = await asyncUtil.fileExists(commonFilename);
+    if (commonExists) {
         try {
-            const baseContents = await readFileAsync(baseFilename);
+            const commonContents = await readFileAsync(commonFilename);
 
-            const objBaseConfig = JSON.parse(baseContents);
+            const objCommonConfig = JSON.parse(commonContents);
 
-            Object.assign(rootConfig.config, objBaseConfig);
+            Object.assign(rootConfig.config, objCommonConfig);
 
         } catch (err) {
-            display.error(`Reading ${baseFilename} failed`, err);
+            display.error(`Reading ${commonFilename} failed`, err);
             process.exit(1);
         }
     }

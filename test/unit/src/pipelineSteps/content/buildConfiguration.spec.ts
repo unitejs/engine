@@ -80,7 +80,7 @@ describe("BuildConfiguration", () => {
 
         it("can succeed when already exists", async () => {
             await fileSystemMock.directoryCreate("./test/unit/temp/www/configuration/");
-            await fileSystemMock.fileWriteText("./test/unit/temp/www/configuration/", "base.json", "{}");
+            await fileSystemMock.fileWriteText("./test/unit/temp/www/configuration/", "common.json", "{}");
 
             const obj = new BuildConfiguration();
             const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
@@ -89,7 +89,7 @@ describe("BuildConfiguration", () => {
             let exists = await fileSystemMock.directoryExists("./test/unit/temp/www/configuration/");
             Chai.expect(exists).to.be.equal(true);
 
-            exists = await fileSystemMock.fileExists("./test/unit/temp/www/configuration", "base.json");
+            exists = await fileSystemMock.fileExists("./test/unit/temp/www/configuration", "common.json");
             Chai.expect(exists).to.be.equal(true);
         });
 
@@ -102,7 +102,7 @@ describe("BuildConfiguration", () => {
             let exists = await fileSystemMock.directoryExists("./test/unit/temp/www/configuration/");
             Chai.expect(exists).to.be.equal(true);
 
-            exists = await fileSystemMock.fileExists("./test/unit/temp/www/configuration", "base.json");
+            exists = await fileSystemMock.fileExists("./test/unit/temp/www/configuration", "common.json");
             Chai.expect(exists).to.be.equal(true);
         });
 
@@ -115,7 +115,7 @@ describe("BuildConfiguration", () => {
             let exists = await fileSystemMock.directoryExists("./test/unit/temp/www/configuration/");
             Chai.expect(exists).to.be.equal(true);
 
-            exists = await fileSystemMock.fileExists("./test/unit/temp/www/configuration", "base.json");
+            exists = await fileSystemMock.fileExists("./test/unit/temp/www/configuration", "common.json");
             Chai.expect(exists).to.be.equal(true);
 
             exists = await fileSystemMock.fileExists("./test/unit/temp/www/configuration", "test.json");

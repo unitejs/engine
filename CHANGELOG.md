@@ -7,6 +7,8 @@
 * Added contents of ./www/assetsSrc/root are copied to the root folder in the packaging tasks
 * Added PlainApp profiles
 * Added additional README.md to root folder of generated app
+* Added license option None
+* Change moved license reading logic into pipeline step
 
 ## 1.2.5
 

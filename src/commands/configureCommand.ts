@@ -2,8 +2,6 @@
  * Configure Command
  */
 import { ParameterValidation } from "unitejs-framework/dist/helpers/parameterValidation";
-import { ISpdx } from "../configuration/models/spdx/ISpdx";
-import { ISpdxLicense } from "../configuration/models/spdx/ISpdxLicense";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { EngineCommandBase } from "../engine/engineCommandBase";
 import { EngineVariables } from "../engine/engineVariables";
@@ -62,23 +60,6 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
             return 1;
         }
         if (!ParameterValidation.notEmpty(this._logger, "title", uniteConfiguration.title)) {
-            return 1;
-        }
-
-        let spdxLicense: ISpdxLicense;
-        try {
-            const licenseData = await this._fileSystem.fileReadJson<ISpdx>(this._engineAssetsFolder, "spdx-full.json");
-            if (!ParameterValidation.checkOneOf<string>(this._logger,
-                                                        "license",
-                                                        uniteConfiguration.license,
-                                                        Object.keys(licenseData),
-                                                        "does not match any of the possible SPDX license values (see https://spdx.org/licenses/).")) {
-                return 1;
-            } else {
-                spdxLicense = licenseData[uniteConfiguration.license];
-            }
-        } catch (e) {
-            this._logger.error("There was a problem reading the spdx-full.json file", e);
             return 1;
         }
 
@@ -152,14 +133,13 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
 
         this._logger.info("");
 
-        return this.configureRun(args.outputDirectory, uniteConfiguration, spdxLicense, args.force);
+        return this.configureRun(args.outputDirectory, uniteConfiguration, args.force);
     }
 
-    private async configureRun(outputDirectory: string, uniteConfiguration: UniteConfiguration, license: ISpdxLicense, force: boolean): Promise<number> {
+    private async configureRun(outputDirectory: string, uniteConfiguration: UniteConfiguration, force: boolean): Promise<number> {
         const engineVariables = new EngineVariables();
         super.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
         engineVariables.force = force;
-        engineVariables.license = license;
 
         this.addPipelinePre();
 

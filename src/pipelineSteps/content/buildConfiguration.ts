@@ -12,7 +12,7 @@ export class BuildConfiguration extends PipelineStepBase {
         const ret = await super.folderCreate(logger, fileSystem, engineVariables.www.configurationFolder);
 
         if (ret === 0) {
-            let names = ["base"];
+            let names = ["common"];
 
             if (uniteConfiguration.buildConfigurations) {
                 names = names.concat(Object.keys(uniteConfiguration.buildConfigurations));

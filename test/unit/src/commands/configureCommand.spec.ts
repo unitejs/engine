@@ -21,7 +21,6 @@ describe("ConfigureCommand", () => {
     let loggerBannerSpy: Sinon.SinonSpy;
     let uniteJson: UniteConfiguration;
     let uniteJsonWritten: UniteConfiguration;
-    let spdxErrors: boolean;
     let packageInfo: string;
     let profileErrors: boolean;
     let profileExists: boolean;
@@ -43,7 +42,6 @@ describe("ConfigureCommand", () => {
         loggerBannerSpy = sandbox.spy(loggerStub, "banner");
 
         uniteJson = undefined;
-        spdxErrors = false;
         packageInfo = undefined;
         uniteJsonWritten = undefined;
         profileExists = true;
@@ -69,15 +67,7 @@ describe("ConfigureCommand", () => {
         const originalFileReadJson = fileSystemStub.fileReadJson;
         const stubreadJson = sandbox.stub(fileSystemStub, "fileReadJson");
         stubreadJson.callsFake(async (folder, filename) => {
-            if (filename === "spdx-full.json") {
-                return spdxErrors ? Promise.reject("Does not exist") : Promise.resolve({
-                    MIT: {
-                        name: "MIT License",
-                        url: "http://www.opensource.org/licenses/MIT",
-                        osiApproved: true,
-                        licenseText: "MIT"
-                    }});
-            } else if (filename === "unite.json") {
+            if (filename === "unite.json") {
                 return uniteJson === null ? Promise.reject("err") : Promise.resolve(uniteJson);
             } else {
                 return originalFileReadJson(folder, filename);
@@ -203,72 +193,6 @@ describe("ConfigureCommand", () => {
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("title");
-        });
-
-        it("can fail when calling with missing spdx-full.json", async () => {
-            spdxErrors = true;
-            uniteJson = undefined;
-
-            const obj = new ConfigureCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
-            const res = await obj.run({
-                packageName: "my-package",
-                title: "my-app",
-                license: undefined,
-                sourceLanguage: undefined,
-                moduleType: undefined,
-                bundler: undefined,
-                unitTestRunner: undefined,
-                unitTestFramework: undefined,
-                unitTestEngine: undefined,
-                e2eTestRunner: undefined,
-                e2eTestFramework: undefined,
-                linter: undefined,
-                cssPre: undefined,
-                cssPost: undefined,
-                ides: undefined,
-                taskManager: undefined,
-                server: undefined,
-                packageManager: undefined,
-                applicationFramework: undefined,
-                profile: undefined,
-                force: undefined,
-                outputDirectory: undefined
-            });
-            Chai.expect(res).to.be.equal(1);
-            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("spdx-full.json");
-        });
-
-        it("can fail when calling with undefined license", async () => {
-            uniteJson = undefined;
-            const obj = new ConfigureCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
-            const res = await obj.run({
-                packageName: "my-package",
-                title: "my-app",
-                license: undefined,
-                sourceLanguage: undefined,
-                moduleType: undefined,
-                bundler: undefined,
-                unitTestRunner: undefined,
-                unitTestFramework: undefined,
-                unitTestEngine: undefined,
-                e2eTestRunner: undefined,
-                e2eTestFramework: undefined,
-                linter: undefined,
-                cssPre: undefined,
-                cssPost: undefined,
-                ides: undefined,
-                taskManager: undefined,
-                server: undefined,
-                packageManager: undefined,
-                applicationFramework: undefined,
-                profile: undefined,
-                force: undefined,
-                outputDirectory: undefined
-            });
-            Chai.expect(res).to.be.equal(1);
-            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("license");
         });
 
         it("can fail when calling with undefined sourceLanguage", async () => {
@@ -1064,7 +988,7 @@ describe("ConfigureCommand", () => {
             const res = await obj.run({
                 packageName: "my-package",
                 title: "my-app",
-                license: "MIT",
+                license: "None",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
                 bundler: "RequireJS",

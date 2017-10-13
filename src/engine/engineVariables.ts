@@ -2,7 +2,6 @@
  * Variables used by the engine.
  */
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
-import { ISpdxLicense } from "../configuration/models/spdx/ISpdxLicense";
 import { IncludeMode } from "../configuration/models/unite/includeMode";
 import { ScriptIncludeMode } from "../configuration/models/unite/scriptIncludeMode";
 import { UniteClientPackage } from "../configuration/models/unite/uniteClientPackage";
@@ -39,8 +38,6 @@ export class EngineVariables {
         assetsFolder: string;
         assetsSrcFolder: string;
     };
-
-    public license: ISpdxLicense;
 
     public buildTranspileInclude: string[];
     public buildTranspilePreBuild: string[];

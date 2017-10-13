@@ -29,15 +29,10 @@ describe("License", () => {
 
         fileSystemMock = new FileSystemMock();
         uniteConfigurationStub = new UniteConfiguration();
+        uniteConfigurationStub.license = "MIT";
 
         engineVariablesStub = new EngineVariables();
         engineVariablesStub.setupDirectories(fileSystemMock, "./test/unit/temp");
-        engineVariablesStub.license = {
-            name: "",
-            url: "",
-            osiApproved: true,
-            licenseText: "blah\n<year>\nblah\n<year>\nblah"
-        };
     });
 
     afterEach(async () => {
@@ -50,6 +45,68 @@ describe("License", () => {
         Chai.should().exist(obj);
     });
 
+    describe("mainCondition", () => {
+        it("can be called with not matching condition", async () => {
+            const obj = new License();
+            uniteConfigurationStub.license = "None";
+            const res = obj.mainCondition(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(false);
+        });
+
+        it("can be called with matching condition", async () => {
+            const obj = new License();
+            const res = obj.mainCondition(uniteConfigurationStub, engineVariablesStub);
+            Chai.expect(res).to.be.equal(true);
+        });
+    });
+
+    describe("initialise", () => {
+        it("can do nothing if mainCondition not set", async () => {
+            const obj = new License();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
+            Chai.expect(res).to.be.equal(0);
+        });
+
+        it("can fail if spx license file not available", async () => {
+            sandbox.stub(fileSystemMock, "fileReadJson").rejects();
+            const obj = new License();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).contains("problem reading");
+        });
+
+        it("can fail if license not in file", async () => {
+            sandbox.stub(fileSystemMock, "fileReadJson").resolves({
+                MIT: {
+                    name: "MIT License",
+                    url: "http://www.opensource.org/licenses/MIT",
+                    osiApproved: true,
+                    licenseText: "MIT"
+                }
+            });
+            uniteConfigurationStub.license = "Blah";
+            const obj = new License();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).contains("license");
+        });
+
+        it("can succeed if license in file", async () => {
+            sandbox.stub(fileSystemMock, "fileReadJson").resolves({
+                MIT: {
+                    name: "MIT License",
+                    url: "http://www.opensource.org/licenses/MIT",
+                    osiApproved: true,
+                    licenseText: "MIT"
+                }
+            });
+            uniteConfigurationStub.license = "MIT";
+            const obj = new License();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            Chai.expect(res).to.be.equal(0);
+        });
+    });
+
     describe("finalise", () => {
         it("can fail if an exception is thrown", async () => {
             sandbox.stub(fileSystemMock, "fileWriteText").throws("error");
@@ -60,16 +117,24 @@ describe("License", () => {
         });
 
         it("can write file", async () => {
+            sandbox.stub(fileSystemMock, "fileReadJson").resolves({
+                MIT: {
+                    name: "MIT License",
+                    url: "http://www.opensource.org/licenses/MIT",
+                    osiApproved: true,
+                    licenseText: "<year>"
+                }
+            });
             await fileSystemMock.directoryCreate("./test/unit/temp/www/");
 
             const obj = new License();
+            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(loggerInfoSpy.args[0][0]).contains("Writing");
 
             const lines = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "LICENSE");
-            Chai.expect(lines.length).to.be.equal(5);
-            Chai.expect(lines[1]).to.be.equal(new Date().getFullYear().toString());
+            Chai.expect(lines.length).to.be.equal(1);
+            Chai.expect(lines[0]).to.be.equal(new Date().getFullYear().toString());
         });
     });
 });
