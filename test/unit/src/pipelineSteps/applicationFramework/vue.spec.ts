@@ -115,8 +115,9 @@ describe("Vue", () => {
             Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins").length).to.be.equal(1);
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.experimentalDecorators).to.be.equal(true);
             Chai.expect(engineVariablesStub.getConfiguration<JestConfiguration>("Jest").moduleNameMapper["\\.vue$"]).to.be.equal("<rootDir>/test/unit/dummy.mock.js");
-            Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(2);
-            Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(5);
+            Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(3);
+            Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(2);
+            Chai.expect(engineVariablesStub.buildTranspilePostBuild.length).to.be.equal(1);
         });
 
         it("can be called with configurations as not requirejs", async () => {
@@ -138,7 +139,8 @@ describe("Vue", () => {
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.experimentalDecorators).to.be.equal(true);
             Chai.expect(engineVariablesStub.getConfiguration<JestConfiguration>("Jest").moduleNameMapper["\\.vue$"]).to.be.equal("<rootDir>/test/unit/dummy.mock.js");
             Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(1);
-            Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(1);
+            Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(0);
+            Chai.expect(engineVariablesStub.buildTranspilePostBuild.length).to.be.equal(1);
         });
 
         it("can be called no configurations with false mainCondition", async () => {

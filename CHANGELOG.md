@@ -9,6 +9,7 @@
 * Added additional README.md to root folder of generated app
 * Added license option None
 * Change moved license reading logic into pipeline step
+* Change vue application framework now uses urls in template configuration and compiles them using gulp-inline-vue-template
 
 ## 1.2.5
 

@@ -3,10 +3,9 @@
  */
 import Vue from "vue";
 import Component from "vue-class-component";
-import importedTemplate from "./app.vue";
 
 @Component({
-    "template": importedTemplate
+    "template": "./app.vue"
 })
 export class App extends Vue {
     constructor() {

@@ -3,10 +3,9 @@
  */
 import {SYNTHETIC_IMPORT}Vue from "vue";
 import Component from "vue-class-component";
-import {SYNTHETIC_IMPORT}importedTemplate from "./app.vue";
 
 @Component({
-    template: importedTemplate
+    template: "./app.vue"
 })
 export class App extends Vue {
     constructor() {

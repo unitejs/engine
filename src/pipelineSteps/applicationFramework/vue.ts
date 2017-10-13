@@ -99,21 +99,6 @@ export class Vue extends SharedAppFramework {
             mainCondition && super.condition(uniteConfiguration.bundler, "RequireJS"));
 
         engineVariables.toggleClientPackage(
-            "requirejs-text",
-            "text.js",
-            undefined,
-            undefined,
-            false,
-            "both",
-            "none",
-            false,
-            undefined,
-            { text: "requirejs-text" },
-            undefined,
-            undefined,
-            mainCondition && super.condition(uniteConfiguration.bundler, "RequireJS"));
-
-        engineVariables.toggleClientPackage(
             "systemjs-plugin-css",
             "css.js",
             undefined,
@@ -131,41 +116,19 @@ export class Vue extends SharedAppFramework {
              super.condition(uniteConfiguration.bundler, "SystemJSBuilder") ||
              super.condition(uniteConfiguration.bundler, "Webpack")));
 
-        engineVariables.toggleClientPackage(
-            "systemjs-plugin-text",
-            "text.js",
-            undefined,
-            undefined,
-            false,
-            "both",
-            "none",
-            false,
-            undefined,
-            { text: "systemjs-plugin-text" },
-            { "*.vue" : "text" },
-            undefined,
-            mainCondition &&
-                (super.condition(uniteConfiguration.bundler, "Browserify") ||
-                super.condition(uniteConfiguration.bundler, "SystemJSBuilder") ||
-                super.condition(uniteConfiguration.bundler, "Webpack")));
-
         const usingGulp = super.condition(uniteConfiguration.taskManager, "Gulp");
+        engineVariables.toggleDevDependency(["gulp-inline-vue-template"], mainCondition && usingGulp);
         if (mainCondition && usingGulp) {
-            engineVariables.buildTranspileInclude.push("const replace = require(\"gulp-replace\");");
+            engineVariables.buildTranspileInclude.push("const inlineVue = require(\"gulp-inline-vue-template\");");
 
             if (super.condition(uniteConfiguration.bundler, "RequireJS")) {
+                engineVariables.buildTranspileInclude.push("const replace = require(\"gulp-replace\");");
                 engineVariables.buildTranspileInclude.push("const clientPackages = require(\"./util/client-packages\");");
 
                 engineVariables.buildTranspilePreBuild.push(".pipe(replace(/import \\\"\\.\\\/(.*?).css\";/g,");
                 engineVariables.buildTranspilePreBuild.push("            `import \"\${clientPackages.getTypeMap(uniteConfig, \"css\", buildConfiguration.minify)}!./$1.css\";`))");
-                engineVariables.buildTranspilePreBuild.push("        .pipe(replace(/import(.*)importedTemplate from \\\"\\.\\\/(.*?).vue\";/g,");
-                engineVariables.buildTranspilePreBuild.push("             `import$1importedTemplate from \"text!./$2.vue\";`))");
             }
-
-            const componentTemplateReplace = "/([\\\"\\\']?template[\\\"\\\']?:(?:.*?))(importedTemplate)/";
-            const componentTemplateWith = "`$1(/<template>([\\\\s\\\\S]*)<\\\\/template>/i.exec(importedTemplate) || [\"\", \"\"])[1]`";
-
-            engineVariables.buildTranspilePreBuild.push(`        .pipe(replace(${componentTemplateReplace}, ${componentTemplateWith}))`);
+            engineVariables.buildTranspilePostBuild.push(`.pipe(inlineVue())`);
         }
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
