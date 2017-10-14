@@ -21,6 +21,14 @@ export class Vue extends SharedAppFramework {
         return super.condition(uniteConfiguration.applicationFramework, "Vue");
     }
 
+    public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        if (mainCondition) {
+            ArrayHelper.addRemove(uniteConfiguration.viewExtensions, "vue", true);
+        }
+
+        return 0;
+    }
+
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         engineVariables.toggleDevDependency(["unitejs-vue-protractor-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
         engineVariables.toggleDevDependency(["unitejs-vue-webdriver-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));

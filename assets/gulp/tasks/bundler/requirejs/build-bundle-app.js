@@ -8,12 +8,46 @@ const util = require("util");
 const uc = require("./util/unite-config");
 const display = require("./util/display");
 const clientPackages = require("./util/client-packages");
-const bundle = require("./util/bundle");
 const asyncUtil = require("./util/async-util");
 const gutil = require("gulp-util");
 const requireJs = require("requirejs");
 const insert = require("gulp-insert");
 const sourcemaps = require("gulp-sourcemaps");
+const glob = require("glob");
+
+async function findAppFiles (uniteConfig, viewPrefix, cssPrefix) {
+    const globAsync = util.promisify(glob);
+    let files = null;
+
+    try {
+        const jsFiles = await globAsync(path.join(
+            uniteConfig.dirs.www.dist,
+            "**/!(app-bundle|vendor-bundle|app-bundle-init|vendor-bundle-init|app-module-config).js"
+        ));
+
+        files = jsFiles.map(file => file.replace(/(\.js)$/, ""));
+
+        if (viewPrefix) {
+            const viewFiles = await globAsync(path.join(
+                uniteConfig.dirs.www.dist,
+                `**/!(app-bundle|vendor-bundle).${uc.extensionMap(uniteConfig.viewExtensions)}`
+            ));
+
+            files = files.concat(viewFiles.map(file => `${viewPrefix}${file}`));
+        }
+
+        if (cssPrefix) {
+            const cssFiles = await globAsync(path.join(uniteConfig.dirs.www.dist, "**/*.css"));
+
+            files = files.concat(cssFiles.map(file => `${cssPrefix}${file}`));
+        }
+    } catch (err) {
+        display.error("Finding app files", err);
+        process.exit(1);
+    }
+
+    return files;
+}
 
 function performAppOptimize (uniteConfig, buildConfiguration, moduleConfig) {
     return new Promise((resolve, reject) => {
@@ -96,14 +130,11 @@ gulp.task("build-bundle-app", async () => {
             buildConfiguration.minify
         );
 
-        const textPrefix = moduleConfig.map.text === undefined ? "" : "text!";
+        const textPrefix = moduleConfig.map.text === undefined ? undefined : "text!";
         const cssPrefix = moduleConfig.map.css === undefined ? textPrefix
             : `${clientPackages.getTypeMap(uniteConfig, "css", buildConfiguration.minify)}!`;
 
-        const files = await bundle.findAppFiles(
-            uniteConfig, true, textPrefix, cssPrefix,
-            moduleConfig.map.css !== undefined
-        );
+        const files = await findAppFiles(uniteConfig, textPrefix, cssPrefix);
 
         try {
             await util.promisify(fs.writeFile)(

@@ -213,7 +213,6 @@ export class Gulp extends PipelineStepBase {
         const assetUtils = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/util/");
 
         this.toggleFile(assetUtils, "async-util.js", this._utilFolder, "async-util.js", mainCondition);
-        this.toggleFile(assetUtils, "bundle.js", this._utilFolder, "bundle.js", mainCondition);
         this.toggleFile(assetUtils, "client-packages.js", this._utilFolder, "client-packages.js", mainCondition);
         this.toggleFile(assetUtils, "config-utils.js", this._utilFolder, "config-utils.js", mainCondition);
         this.toggleFile(assetUtils, "display.js", this._utilFolder, "display.js", mainCondition);
@@ -226,6 +225,9 @@ export class Gulp extends PipelineStepBase {
         this.toggleFile(assetUtils, "platform-utils.js", this._utilFolder, "platform-utils.js", mainCondition);
         this.toggleFile(assetUtils, "theme-utils.js", this._utilFolder, "theme-utils.js", mainCondition);
         this.toggleFile(assetUtils, "unite-config.js", this._utilFolder, "unite-config.js", mainCondition);
+
+        // no longer used so always delete
+        this.toggleFile(assetUtils, "bundle.js", this._utilFolder, "bundle.js", false);
     }
 
     private toggleFile(sourceFolder: string, sourceFile: string, destFolder: string, destFile: string, keep: boolean, replacements?: { [id: string]: string[]}): void {
