@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.8
+
+* Fixed platform-electron-dev now works on darwin based platforms
+
 ## 1.2.7
 
 * Added task platform-electron-dev which creates an electron build pointing at your www folder

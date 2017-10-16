@@ -380,6 +380,25 @@ gulp.task("platform-electron-dev-create", async () => {
         process.exit(1);
     }
 
+    try {
+        const wwwBuildAssetFolder = path.join(
+            "../",
+            uniteConfig.dirs.wwwRoot,
+            uniteConfig.dirs.www.build,
+            "/assets/platform/electron/"
+        );
+
+        const content = await util.promisify(fs.readFile)(path.join(wwwBuildAssetFolder, "main-dev.js"));
+
+        await util.promisify(fs.writeFile)(path.join(
+            devTempFolder,
+            "main-dev.js"
+        ), content);
+    } catch (err) {
+        display.error("Copying file", err);
+        process.exit(1);
+    }
+
     for (let i = 0; i < platformArchs.length; i++) {
         display.info("Creating Electron Dev", platformArchs[i]);
 
@@ -417,33 +436,13 @@ gulp.task("platform-electron-dev-create", async () => {
                 display.error("Executing electron-packager", err);
                 process.exit(1);
             }
-            const finalDevFolder = path.join(devFolder, `${platform}-${architecture}`);
             try {
                 await util.promisify(fs.rename)(
                     path.join(devFolder, `${packageJson.name}-${platform}-${architecture}`),
-                    finalDevFolder
+                    path.join(devFolder, `${platform}-${architecture}`)
                 );
             } catch (err) {
                 display.error("Renaming folder", err);
-                process.exit(1);
-            }
-
-            const wwwBuildAssetFolder = path.join(
-                "../",
-                uniteConfig.dirs.wwwRoot,
-                uniteConfig.dirs.www.build,
-                "/assets/platform/electron/"
-            );
-            try {
-                const content = await util.promisify(fs.readFile)(path.join(wwwBuildAssetFolder, "main-dev.js"));
-
-                await util.promisify(fs.writeFile)(path.join(
-                    finalDevFolder,
-                    "/resources/app/",
-                    "main-dev.js"
-                ), content);
-            } catch (err) {
-                display.error("Copying file", err);
                 process.exit(1);
             }
         } else {
