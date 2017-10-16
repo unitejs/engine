@@ -104,6 +104,13 @@ describe("Electron", () => {
             Chai.expect(stub.callCount).to.be.equal(2);
         });
 
+        it("can fail creating platform folder", async () => {
+            sandbox.stub(fileSystemMock, "directoryCreate").rejects();
+            const obj = new Electron();
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            Chai.expect(res).to.be.equal(1);
+        });
+
         it("can fail copying asset file", async () => {
             sandbox.stub(fileSystemMock, "fileReadText").rejects();
             const obj = new Electron();

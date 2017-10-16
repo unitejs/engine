@@ -110,6 +110,7 @@ describe("GenerateCommand", () => {
             dirs: {
                 wwwRoot: "./www/",
                 packagedRoot: undefined,
+                platformRoot: undefined,
                 www: {
                     src: "./src/",
                     dist: undefined,

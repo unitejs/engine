@@ -19,6 +19,7 @@ The following gulp commands are available for the app.
 * e2e [optional]
 * serve
 * version
+* platform-electron-dev [optional]
 * platform-web-package [optional]
 * platform-electron-package [optional]
 
@@ -99,17 +100,33 @@ Running this task with no parameters will show the current version, alternativel
     gulp version --part=patch --mode=inc
     gulp version --part=minor --mode=set --value=1
 
+### platform-electron-dev
+
+This task will create development versions of the electron runtime that will wrap your www folder and allow you to develop in-situ.
+
+The platform development versions will be created in the ./platform/electron/${platform}-${architecture} folder, where the platforms and architectures are either read from your unite.json or automatically determined from you system.
+
 ### platform-web-package
 
 This task will gather all the necessary components of the application and create a folder in the top level packaged directory named ${version}/web.
+
 This folder contains a complete set of web deployable files for the application. A zip file named packaged/${version}_web.zip will also be created in the packaged directory.
-For configuring options for this task see the [Platforms](#platforms) section.
+
+To see which file are included in a packaged version see the [Platform Packaged Files](#platformpackagedfiles) section.
+
+For configuring options for this task see the [Platform Web](#platformweb) section.
 
 ### platform-electron-package
 
 This task will gather all the necessary components of the application and create a folder in the top level packaged directory named ${version}/electron.
+
 This folder will then be used to create a set of platform/architecture electron packages in folders named ${version}/electron_${platform}_${architecture} and a corresponding zip file in the packaged root folder.
-For configuring options for this task see the [Platforms](#platforms) section.
+
+To see which file are included in a packaged version see the [Platform Packaged Files](#platformpackagedfiles) section.
+
+For configuring options for this task see the [Platform Electron](#platformelectron) section.
+
+---
 
 ## <a name="themeassets"></a>Theme Assets
 
@@ -142,15 +159,27 @@ The fields in the unite-theme.json should be self explanatory in terms of what t
         "themeColor": "#339933"
     }
 
-## <a name="platforms"></a>Platforms
+## <a name="platformpackagedfiles"></a>Platform Packaged Files
+
+The files included within each package are calculated from the list below:
+
+* index.html
+* dist/**/*
+* css/**/*
+* assets/**/*
+* assetsSrc/root/**/* - These files will be recursively copied to the root of the packaged version
+* client packages code that is script included in index.html
+* client packages assets defined in unite.json clientPackages section
+
+## Platforms Options
 
 If you manually edit your unite.json, you can add additional options for the platform settings.
 
-### Web
+### <a name="platformweb"></a>Web
 
 There are currently no other options for this platform.
 
-### Electron
+### <a name="platformelectron"></a>Electron
 
 For more information about the options see the [Electron Documentation](https://github.com/electron-userland/electron-packager#readme)
 

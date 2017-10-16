@@ -11,7 +11,6 @@ const del = require("del");
 const deleteEmpty = require("delete-empty");
 const fs = require("fs");
 const os = require("os");
-const replace = require("gulp-replace");
 const exec = require("./util/exec");
 const asyncUtil = require("./util/async-util");
 const platformUtils = require("./util/platform-utils");
@@ -19,7 +18,7 @@ const packageConfig = require("./util/package-config");
 
 const DEF_RUNTIME_VERSION = "1.7.9";
 
-function getDefaultArchs() {
+function getDefaultArchs () {
     let defArch = [];
     const platform = os.platform();
     const arch = os.arch();
@@ -32,12 +31,20 @@ function getDefaultArchs() {
         }
     } else if (platform === "darwin") {
         defArch = ["darwin/x64"];
-    } else {
+    } else if (platform === "linux" ||
+        platform === "openbsd" ||
+        platform === "freebsd" ||
+        platform === "aix") {
         if (arch === "x64") {
             defArch = ["linux/x64"];
         } else {
             defArch = ["linux/ia32"];
         }
+    } else {
+        display.error("Unable to determine your platform/architecture combination.");
+        display.error("Please specify the --platformArch command line option or");
+        display.error("add values in unite.json->platforms->electron->platformArch.");
+        process.exit(1);
     }
 
     return defArch;
@@ -152,11 +159,6 @@ gulp.task("platform-electron-gather", async () => {
     }
 
     await asyncUtil.stream(gulp.src(path.join(platformSrc, "index.html"))
-        .pipe(replace(
-            "<head>",
-            "<head>" +
-            "<script>if (window.require) { window.nodeRequire = window.require; delete window.require; }</script>"
-        ))
         .pipe(gulp.dest(platformSrc)));
 
     return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.build, "/assets/platform/electron/main.js"))
@@ -215,7 +217,8 @@ gulp.task("platform-electron-bundle", async () => {
                 "--no-prune",
                 "--overwrite",
                 `--out=${bundleFolder}`,
-                `--electron-version=${runtimeVersion}`
+                `--electron-version=${runtimeVersion}`,
+                "--asar"
             ];
 
             let iconFilename = "";
@@ -290,6 +293,183 @@ gulp.task("platform-electron-compress", async () => {
             display.error(`Malformed platformArch '${platformArchs[i]}'`);
             process.exit(1);
         }
+    }
+});
+
+gulp.task("platform-electron-dev", async () => {
+    try {
+        await util.promisify(runSequence)(
+            "platform-electron-dev-clean",
+            "platform-electron-dev-create",
+            "platform-electron-post-clean",
+        );
+    } catch (err) {
+        display.error("Unhandled error during task", err);
+        process.exit(1);
+    }
+});
+
+gulp.task("platform-electron-dev-clean", async () => {
+    const uniteConfig = await uc.getUniteConfig();
+
+    const devFolder = path.join(
+        "../",
+        uniteConfig.dirs.platformRoot,
+        "/electron/"
+    );
+
+    const toClean = [devFolder];
+
+    display.info("Cleaning", toClean);
+    try {
+        await del(toClean, {"force": true});
+        await util.promisify(deleteEmpty)(
+            devFolder,
+            {"verbose": false}
+        );
+    } catch (err) {
+        display.error(err);
+        process.exit(1);
+    }
+});
+
+gulp.task("platform-electron-dev-create", async () => {
+    const uniteConfig = await uc.getUniteConfig();
+    const packageJson = await packageConfig.getPackageJson();
+
+    const platformSettings = platformUtils.getConfig(uniteConfig, "Electron");
+
+    const platformArchs = platformSettings.platformArch || getDefaultArchs();
+    const runtimeVersion = platformSettings.runtimeVersion || DEF_RUNTIME_VERSION;
+
+    const electronFolder = path.join(
+        "../",
+        uniteConfig.dirs.platformRoot,
+        "/electron/"
+    );
+
+    try {
+        await util.promisify(fs.mkdir)(electronFolder);
+    } catch (err) {
+        display.error("Creating directory failed", err);
+        process.exit(1);
+    }
+
+    const devTempFolder = path.join(electronFolder, "temp");
+
+    try {
+        await util.promisify(fs.mkdir)(devTempFolder);
+    } catch (err) {
+        display.error("Creating directory failed", err);
+        process.exit(1);
+    }
+
+    const electronPackageVersion = {
+        "name": packageJson.name,
+        "version": packageJson.version,
+        "main": "main-dev.js"
+    };
+
+    try {
+        await util.promisify(fs.writeFile)(
+            path.join(devTempFolder, "package.json"),
+            JSON.stringify(electronPackageVersion, undefined, "\t")
+        );
+    } catch (err) {
+        display.error("Writing package.json", err);
+        process.exit(1);
+    }
+
+    for (let i = 0; i < platformArchs.length; i++) {
+        display.info("Creating Electron Dev", platformArchs[i]);
+
+        const parts = platformArchs[i].split("/");
+
+        if (parts.length === 2) {
+            const platform = parts[0];
+            const architecture = parts[1];
+
+            const devFolder = path.join(
+                "../",
+                uniteConfig.dirs.platformRoot,
+                "/electron/"
+            );
+            const args = [
+                devTempFolder,
+                packageJson.name,
+                `--platform=${platform}`,
+                `--arch=${architecture}`,
+                "--no-prune",
+                "--overwrite",
+                `--out=${devFolder}`,
+                `--electron-version=${runtimeVersion}`
+            ];
+
+            Object.keys(platformSettings).forEach(platformSetting => {
+                if (platformSetting !== "runtimeVersion" && platformSetting !== "platformArch") {
+                    args.push(`--${platformSetting}`, platformSettings[platformSetting]);
+                }
+            });
+
+            try {
+                await exec.npmRun("electron-packager", args);
+            } catch (err) {
+                display.error("Executing electron-packager", err);
+                process.exit(1);
+            }
+            const finalDevFolder = path.join(devFolder, `${platform}-${architecture}`);
+            try {
+                await util.promisify(fs.rename)(
+                    path.join(devFolder, `${packageJson.name}-${platform}-${architecture}`),
+                    finalDevFolder
+                );
+            } catch (err) {
+                display.error("Renaming folder", err);
+                process.exit(1);
+            }
+
+            const wwwBuildAssetFolder = path.join(
+                "../",
+                uniteConfig.dirs.wwwRoot,
+                uniteConfig.dirs.www.build,
+                "/assets/platform/electron/"
+            );
+            try {
+                const content = await util.promisify(fs.readFile)(path.join(wwwBuildAssetFolder, "main-dev.js"));
+
+                await util.promisify(fs.writeFile)(path.join(
+                    finalDevFolder,
+                    "/resources/app/",
+                    "main-dev.js"
+                ), content);
+            } catch (err) {
+                display.error("Copying file", err);
+                process.exit(1);
+            }
+        } else {
+            display.error(`Malformed platformArch '${platformArchs[i]}'`);
+            process.exit(1);
+        }
+    }
+});
+
+gulp.task("platform-electron-post-clean", async () => {
+    const uniteConfig = await uc.getUniteConfig();
+
+    const devTempFolder = path.join(
+        "../",
+        uniteConfig.dirs.platformRoot,
+        "/electron/temp/"
+    );
+
+    const toClean = [devTempFolder];
+
+    display.info("Cleaning", toClean);
+    try {
+        await del(toClean, {"force": true});
+    } catch (err) {
+        display.error(err);
+        process.exit(1);
     }
 });
 

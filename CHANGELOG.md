@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.7
+
+* Added task platform-electron-dev which creates an electron build pointing at your www folder
+* Change Electron packaged version default to compressing contents with asar option
+* Fixed Packaging missed files when clientPackages used wildcards (e.g. rxjs)
+
 ## 1.2.6
 
 * Added support for json configuration files based on buildConfiguration merged into window.unite variable
