@@ -1,7 +1,7 @@
 const path = require("path");
 const os = require("os");
 
-const parentFolderCount = os.platform === "darwin" ? 7 : 5;
+const parentFolderCount = os.platform() === "darwin" ? 7 : 5;
 
 const main = require(path.join(
     __dirname,
