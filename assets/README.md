@@ -1,10 +1,10 @@
-The main contents of the application are in the www folder, it is created this way to allow for platform packaged versions at a higher level.
+The main contents of the application are in the www folder, it is created this way to allow for platform and packaged versions folders in the root.
 
-The following pre-requisities are needed
+The following global pre-requisities are needed
 
     npm -g install gulp [or] yarn global add gulp
 
-Once the above pre-requisites are installed you can install the npm packages for the app by running the gulp commands from the www folder.
+Once gulp is installed you can install the npm packages for the app by running the gulp commands from the www folder.
 
     npm install [or] yarn install
 
@@ -25,29 +25,35 @@ The following gulp commands are available for the app.
 
 ### build
 
-This will transpile and build the app.
+This will transpile and build the app ready to run.
 
-You can specify a buildConfiguration with the following syntax:
+    gulp build
+
+You can specify a buildConfiguration (see the buildConfiguration command for details on how to add one) with the following syntax:
 
     gulp build --buildConfiguration=prod
 
-If you don't want to keep running the build command you can add the watch switch, this will monitor for changes in source/views/styling and build whatever is required. This will perform an initial complete build, but only run some of the sub tasks for changes, so you should run a full build before performing other tasks:
+If you don't want to keep running the build command you can add the watch switch, this will monitor for changes in source/views/styling and build whatever is required. This will perform an initial complete build to make sure it is error free, but will only run some of the sub tasks for changes. You should run a full build again before performing other tasks:
 
     gulp build --watch
 
 ### theme-build
 
-You will probably need to run this task at least once to generate the necessary favicon images and meta tags. See [Theme Assets](#themeassets) for more details.
+You will need to run this task at least once to generate the necessary favicon images and meta tags. See [Theme Assets](#themeassets) for more details.
+
+    gulp theme-build
 
 ### unit
 
-This will run unit tests for the app and generate unit and coverage reports in the test/reports folder. This task is only available if you specified a unit test runner and framework during configuration.
+This will run unit tests for the app and generate unit and coverage reports in the test/reports folder. This task is only available if you specified a unit test runner, framework and engine during configuration.
 
-You can run just a subset of tests by providing a source name as follows.
+    gulp unit
+
+You can run just a subset of tests by providing a source name as follows:
 
     gulp unit --grep=app
 
-Or run in a browser using
+Or run in a browser (this will only work if the unit test runner is Karma) using:
 
     gulp unit --browser=[chrome/firefox/ie/safari]
 
@@ -59,19 +65,23 @@ If you don't want to keep running the full unit command you can add the watch sw
 
 This will install all the necessary components required for the e2e tests, it need only be run once. This task is only available if you specified an e2e test runner and framework during configuration.
 
+    gulp e2e-install
+
 ### e2e
 
 This will run e2e tests for the app and generate reports in the test/reports folder. This task is only available if you specified an e2e test runner and framework during configuration.
 
-You can run just a subset of tests by providing a source name as follows.
+    gulp e2e
+
+You can run just a subset of tests by providing a source name as follows:
 
     gulp e2e --grep=app
 
-You can specify that the tests are run over https or on a different port using the switches
+You can specify that the tests are run over https or on a different port using the switches:
 
     gulp e2e --secure --port=5000
 
-You can also run the tests on a different browser from the default chrome by using
+You can also run the tests on a different browser from the default chrome by using:
 
     gulp e2e --browser=[chrome/firefox/ie/edge]
 
@@ -79,24 +89,26 @@ You can also run the tests on a different browser from the default chrome by usi
 
 This will serve the app for you to view in a browser.
 
-You can specify that the content is served over https or on a different port using the switches
+    gulp serve
+
+You can specify that the content is served over https or on a different port using the switches:
 
     gulp serve --secure --port=5000
 
-This command will also watch for changes in the files being served and reload the browser when necessary.
+This command will also watch for changes in the files being served, rebuild them and then reload the browser.
 
 ### version
 
-This will allow you to update the package version.
+This will allow you to show or update the package version.
 
-Running this task with no parameters will show the current version, alternatively use the following parameters.
+    gulp version
+
+Running this task with no parameters will show the current version, alternatively use the following parameters to update the version:
 
     --part=[major, minor, patch] - the part of the version you want to modify
     --mode=[set, inc] - set the part to a specific value or increment the current value
     --value=someValue - required if you use the set mode
 
-    Examples
-    gulp version
     gulp version --part=patch --mode=inc
     gulp version --part=minor --mode=set --value=1
 
@@ -104,13 +116,17 @@ Running this task with no parameters will show the current version, alternativel
 
 This task will create development versions of the electron runtime that will wrap your www folder and allow you to develop in-situ.
 
-The platform development versions will be created in the ./platform/electron/${platform}-${architecture} folder, where the platforms and architectures are either read from your unite.json or automatically determined from you system.
+    gulp platform-electron-dev
+
+The platform development versions will be created in the ./platform/electron/{platform}-{architecture} folder, where the platforms and architectures are either read from your unite.json or automatically determined from you system.
 
 ### platform-web-package
 
-This task will gather all the necessary components of the application and create a folder in the top level packaged directory named ${version}/web.
+This task will gather all the necessary components of the application and create a folder in the top level packaged directory named {version}/web.
 
-This folder contains a complete set of web deployable files for the application. A zip file named packaged/${version}_web.zip will also be created in the packaged directory.
+    gulp platform-web-package
+
+This folder contains a complete set of web deployable files for the application. A zip file named packaged/{version}_web.zip will also be created in the packaged directory.
 
 To see which file are included in a packaged version see the [Platform Packaged Files](#platformpackagedfiles) section.
 
@@ -118,9 +134,11 @@ For configuring options for this task see the [Platform Web](#platformweb) secti
 
 ### platform-electron-package
 
-This task will gather all the necessary components of the application and create a folder in the top level packaged directory named ${version}/electron.
+This task will gather all the necessary components of the application and create a folder in the top level packaged directory named {version}/electron.
 
-This folder will then be used to create a set of platform/architecture electron packages in folders named ${version}/electron_${platform}_${architecture} and a corresponding zip file in the packaged root folder.
+    gulp platform-electron-package
+
+This folder will then be used to create a set of platform/architecture electron packages in folders named {version}/electron_{platform}_{architecture} and a corresponding zip file in the packaged root folder.
 
 To see which file are included in a packaged version see the [Platform Packaged Files](#platformpackagedfiles) section.
 
@@ -130,7 +148,7 @@ For configuring options for this task see the [Platform Electron](#platformelect
 
 ## <a name="themeassets"></a>Theme Assets
 
-During the app generation 3 files will have been created, if you change any of them then you should run the task again.
+During the app generation 3 files will have been created, if you change any of them then you should run the theme-build task again.
 
 * assetsSource/theme/logo-tile.svg
 * assetsSource/theme/logo-transparent.svg
