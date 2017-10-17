@@ -49,7 +49,7 @@ export class PlatformCommand extends EngineCommandBase implements IEngineCommand
         const ret = await this._pipeline.run(uniteConfiguration, engineVariables);
 
         if (ret === 0) {
-            this._logger.warning("You should probably run npm install / yarn install before running any gulp packaging commands.");
+            this._logger.warning("You should probably run npm install / yarn install before running any gulp platform commands.");
             this._logger.banner("Successfully Completed.");
         }
 

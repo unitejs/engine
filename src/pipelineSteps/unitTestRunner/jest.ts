@@ -54,7 +54,7 @@ export class Jest extends PipelineStepBase {
     }
 
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
-        engineVariables.toggleDevDependency(["jest"], mainCondition);
+        engineVariables.toggleDevDependency(["jest", "jest-cli"], mainCondition);
 
         return 0;
     }

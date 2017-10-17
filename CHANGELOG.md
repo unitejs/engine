@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0
+
+* Fixed missing dependency on jest-cli
+
 ## 1.2.9
 
 * Fixed platform-electron-dev now works on darwin based platforms
