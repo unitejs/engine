@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.1
+
+* Change improved linux electron icon
+
 ## 1.3.0
 
 * Fixed missing dependency on jest-cli

@@ -113,6 +113,7 @@ gulp.task("platform-electron-clean", async () => {
 
 gulp.task("platform-electron-gather", async () => {
     const uniteConfig = await uc.getUniteConfig();
+    const uniteThemeConfig = await uc.getUniteThemeConfig(uniteConfig);
     const platformSrc = await platformUtils.gatherFiles("Electron");
 
     const platformSettings = platformUtils.getConfig(uniteConfig, "Electron");
@@ -126,16 +127,17 @@ gulp.task("platform-electron-gather", async () => {
     const linuxPng = path.join(platformSrc, "/assets/favicon/", "linux-1024.png");
     const osxIcns = path.join(platformSrc, "/assets/favicon/", "osx.icns");
 
-    if (hasLinux || hasDarwin) {
+    if (hasLinux) {
         try {
             const args = [
                 "svgToPng",
-                `--sourceFile=${path.join(uniteConfig.dirs.www.assetsSrc, "theme", "logo-transparent.svg")}`,
+                `--sourceFile=${path.join(uniteConfig.dirs.www.assetsSrc, "theme", "logo-tile.svg")}`,
                 `--destFile=${linuxPng}`,
                 "--width=1024",
                 "--height=1024",
                 "--marginX=102",
-                "--marginY=102"
+                "--marginY=102",
+                `--background=${uniteThemeConfig.backgroundColor}`
             ];
             await exec.npmRun("unite-image", args);
         } catch (err) {
@@ -146,12 +148,24 @@ gulp.task("platform-electron-gather", async () => {
 
     if (hasDarwin) {
         try {
+            const darwinTransparentPng = path.join(platformSrc, "/assets/favicon/", "darwin-transparent-1024.png");
             const args = [
-                "pngToIcns",
-                `--sourceFile=${linuxPng}`,
-                `--destFile=${osxIcns}`
+                "svgToPng",
+                `--sourceFile=${path.join(uniteConfig.dirs.www.assetsSrc, "theme", "logo-transparent.svg")}`,
+                `--destFile=${darwinTransparentPng}`,
+                "--width=1024",
+                "--height=1024",
+                "--marginX=102",
+                "--marginY=102"
             ];
             await exec.npmRun("unite-image", args);
+
+            const args2 = [
+                "pngToIcns",
+                `--sourceFile=${darwinTransparentPng}`,
+                `--destFile=${osxIcns}`
+            ];
+            await exec.npmRun("unite-image", args2);
         } catch (err) {
             display.error("Executing unite-image", err);
             process.exit(1);

@@ -25,13 +25,20 @@ function setOptions (options) {
 function createWindow () {
     if (mainWindow === null) {
         // Create the browser window.
-        mainWindow = new BrowserWindow({
+        const windowOptions = {
             "width": mainOptions.width,
             "height": mainOptions.height,
             "webPreferences": {
                 "nodeIntegration": false
             }
-        });
+        };
+
+        if (process.platform !== "win32" &&
+            process.platform !== "darwin") {
+            windowOptions.icon = path.join(__dirname, "assets/favicon/linux-1024.png");
+        }
+
+        mainWindow = new BrowserWindow(windowOptions);
 
         // And load the index.html of the app.
         mainWindow.loadURL(url.format({
