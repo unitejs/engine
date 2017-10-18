@@ -28,6 +28,7 @@ The following gulp commands are available for the app.
 * platform-electron-dev [optional]
 * platform-web-package [optional]
 * platform-electron-package [optional]
+* platform-docker-package [optional]
 
 ### build
 
@@ -189,6 +190,39 @@ This folder will then be used to create a set of platform/architecture electron 
 To see which file are included in a packaged version see the [Platform Packaged Files](#platformpackagedfiles) section.
 
 For configuring options for this task see the [Platform Electron](#platformelectron) section.
+
+### platform-docker-package
+
+This task will package your web app into the docker image that you choose, if you don't supply any parameters it will default to nginx. The output of the task will be written to ./packaged/{version}\_docker\_{image}.tar
+
+``` shell
+gulp platform-docker-package
+```
+
+Optionally specify the docker base image and where you want the web content within that image.
+
+``` shell
+gulp platform-docker-package --image=httpd --www=/usr/local/apache2/htdocs/
+```
+
+Alternatively you can set the defaults as values in the unite.json platforms section:
+
+``` json
+"platforms": {
+    "Docker": {
+        "image": "httpd",
+        "www": "/usr/local/apache2/htdocs/"
+    }
+},
+```
+
+If you want to add additional files to the docker image just place them in ./www/assetSrc/docker/{image}/ folder and the structure will be copied recursively to the root of the image.
+
+**Examples**
+
+To replace the default nginx configuration add the following file to ./www/assetSrc/docker/nginx/etc/nginx/nginx.conf
+
+To replace the default httpd configuration add the following file to ./www/assetSrc/docker/httpd/usr/local/apache2/conf/httpd.conf
 
 ---
 

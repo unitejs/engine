@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.0
+
+* Added docker support to automatically build your web content into a docker image (defaults to nginx)
+
 ## 1.3.1
 
 * Change improved linux electron icon

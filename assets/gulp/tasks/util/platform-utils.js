@@ -9,7 +9,7 @@ const clientPackages = require("./client-packages");
 const asyncUtil = require("./async-util");
 const packageConfig = require("./package-config");
 
-async function gatherFiles (platformName) {
+async function gatherFiles (platformName, wwwRootFolder) {
     const uniteConfig = await uc.getUniteConfig();
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
     const packageJson = await packageConfig.getPackageJson();
@@ -25,11 +25,13 @@ async function gatherFiles (platformName) {
         process.exit(1);
     }
 
-    const dest = path.join(
+    const platformRoot = path.join(
         "../",
         uniteConfig.dirs.packagedRoot,
         `/${packageJson.version}/${platformName.toLowerCase()}/`
     );
+
+    const dest = wwwRootFolder ? path.join(platformRoot, wwwRootFolder) : platformRoot;
 
     let files = [
         {"src": path.join("./", "index.html")},
@@ -71,7 +73,7 @@ async function gatherFiles (platformName) {
             .pipe(gulp.dest(fileDest)));
     }
 
-    return dest;
+    return platformRoot;
 }
 
 function getConfig (uniteConfig, platformName) {
