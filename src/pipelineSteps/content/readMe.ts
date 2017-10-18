@@ -21,11 +21,7 @@ export class ReadMe extends PipelineStepBase {
                                               async () => {
             const lines = await fileSystem.fileReadLines(engineVariables.engineAssetsFolder, ReadMe.FILENAMEROOT);
 
-            lines.unshift("");
-            lines.unshift(`# ${uniteConfiguration.title}`);
-
-            lines.push("---");
-            lines.push(super.wrapGeneratedMarker("*", "* :zap:"));
+            lines[0] = `# ${uniteConfiguration.title}`;
 
             return lines;
         });
@@ -40,11 +36,7 @@ export class ReadMe extends PipelineStepBase {
                                               async () => {
                 const lines = await fileSystem.fileReadLines(engineVariables.engineAssetsFolder, ReadMe.FILENAME);
 
-                lines.unshift("");
-                lines.unshift(`# ${uniteConfiguration.title}`);
-
-                lines.push("---");
-                lines.push(super.wrapGeneratedMarker("*", "* :zap:"));
+                lines[0] = `# ${uniteConfiguration.title}`;
 
                 return lines;
             });
