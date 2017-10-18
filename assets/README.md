@@ -213,7 +213,7 @@ Alternatively you can set the defaults as values in the unite.json platforms sec
         "image": "httpd",
         "www": "/usr/local/apache2/htdocs/"
     }
-},
+}
 ```
 
 If you want to add additional files to the docker image just place them in ./www/assetSrc/docker/{image}/ folder and the structure will be copied recursively to the root of the image.
