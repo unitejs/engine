@@ -230,6 +230,8 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
 
                                     await this._fileSystem.directoryCreate(destFolder);
 
+                                    this._logger.info(`Writing ${this._fileSystem.pathCombine(destFolder, destFilename)}`);
+
                                     await this._fileSystem.fileWriteText(destFolder, destFilename, content);
 
                                     doneCopy = true;

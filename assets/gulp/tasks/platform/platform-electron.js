@@ -15,6 +15,7 @@ const exec = require("./util/exec");
 const asyncUtil = require("./util/async-util");
 const platformUtils = require("./util/platform-utils");
 const packageConfig = require("./util/package-config");
+const minimist = require("minimist");
 
 const DEF_RUNTIME_VERSION = "1.7.9";
 
@@ -50,13 +51,35 @@ function getDefaultArchs () {
     return defArch;
 }
 
+function loadOptions (uniteConfig) {
+    const platformSettings = platformUtils.getConfig(uniteConfig, "Electron");
+
+    const knownOptions = {
+        "default": {
+            "platformArch": (platformSettings.platformArch || getDefaultArchs()).join(";"),
+            "runtimeVersion": platformSettings.runtimeVersion || DEF_RUNTIME_VERSION,
+            "save": false
+        },
+        "string": [
+            "platformArch",
+            "runtimeVersion"
+        ],
+        "boolean": [
+            "save"
+        ]
+    };
+
+    return minimist(process.argv.slice(2), knownOptions);
+}
+
 gulp.task("platform-electron-package", async () => {
     try {
         await util.promisify(runSequence)(
             "platform-electron-clean",
             "platform-electron-gather",
             "platform-electron-bundle",
-            "platform-electron-compress"
+            "platform-electron-compress",
+            "platform-electron-save"
         );
     } catch (err) {
         display.error("Unhandled error during task", err);
@@ -67,8 +90,9 @@ gulp.task("platform-electron-package", async () => {
 gulp.task("platform-electron-clean", async () => {
     const uniteConfig = await uc.getUniteConfig();
     const packageJson = await packageConfig.getPackageJson();
-    const platformSettings = platformUtils.getConfig(uniteConfig, "Electron");
-    const platformArchs = platformSettings.platformArch || getDefaultArchs();
+
+    const options = loadOptions(uniteConfig);
+    const platformArchs = options.platformArch.split(";");
 
     const toClean = [
         path.join(
@@ -116,9 +140,8 @@ gulp.task("platform-electron-gather", async () => {
     const uniteThemeConfig = await uc.getUniteThemeConfig(uniteConfig);
     const platformSrc = await platformUtils.gatherFiles("Electron");
 
-    const platformSettings = platformUtils.getConfig(uniteConfig, "Electron");
-
-    const platformArchs = platformSettings.platformArch || getDefaultArchs();
+    const options = loadOptions(uniteConfig);
+    const platformArchs = options.platformArch.split(";");
 
     const hasLinux = platformArchs.filter(platformArch => platformArch.startsWith("linux")).length > 0;
     const hasDarwin = platformArchs.filter(platformArch =>
@@ -183,10 +206,9 @@ gulp.task("platform-electron-bundle", async () => {
     const uniteConfig = await uc.getUniteConfig();
     const packageJson = await packageConfig.getPackageJson();
 
-    const platformSettings = platformUtils.getConfig(uniteConfig, "Electron");
-
-    const platformArchs = platformSettings.platformArch || getDefaultArchs();
-    const runtimeVersion = platformSettings.runtimeVersion || DEF_RUNTIME_VERSION;
+    const options = loadOptions(uniteConfig);
+    const platformArchs = options.platformArch.split(";");
+    const runtimeVersion = options.runtimeVersion;
 
     const srcFolder = path.join(
         "../",
@@ -251,6 +273,7 @@ gulp.task("platform-electron-bundle", async () => {
                 }
             }
 
+            const platformSettings = platformUtils.getConfig(uniteConfig, "Electron");
             Object.keys(platformSettings).forEach(platformSetting => {
                 if (platformSetting !== "runtimeVersion" && platformSetting !== "platformArch") {
                     args.push(`--${platformSetting}`, platformSettings[platformSetting]);
@@ -282,8 +305,9 @@ gulp.task("platform-electron-bundle", async () => {
 gulp.task("platform-electron-compress", async () => {
     const uniteConfig = await uc.getUniteConfig();
     const packageJson = await packageConfig.getPackageJson();
-    const platformSettings = platformUtils.getConfig(uniteConfig, "Electron");
-    const platformArchs = platformSettings.platformArch || getDefaultArchs();
+
+    const options = loadOptions(uniteConfig);
+    const platformArchs = options.platformArch.split(";");
 
     for (let i = 0; i < platformArchs.length; i++) {
         const parts = platformArchs[i].split("/");
@@ -316,6 +340,7 @@ gulp.task("platform-electron-dev", async () => {
             "platform-electron-dev-clean",
             "platform-electron-dev-create",
             "platform-electron-post-clean",
+            "platform-electron-save"
         );
     } catch (err) {
         display.error("Unhandled error during task", err);
@@ -351,10 +376,9 @@ gulp.task("platform-electron-dev-create", async () => {
     const uniteConfig = await uc.getUniteConfig();
     const packageJson = await packageConfig.getPackageJson();
 
-    const platformSettings = platformUtils.getConfig(uniteConfig, "Electron");
-
-    const platformArchs = platformSettings.platformArch || getDefaultArchs();
-    const runtimeVersion = platformSettings.runtimeVersion || DEF_RUNTIME_VERSION;
+    const options = loadOptions(uniteConfig);
+    const platformArchs = options.platformArch.split(";");
+    const runtimeVersion = options.runtimeVersion;
 
     const electronFolder = path.join(
         "../",
@@ -438,6 +462,7 @@ gulp.task("platform-electron-dev-create", async () => {
                 `--electron-version=${runtimeVersion}`
             ];
 
+            const platformSettings = platformUtils.getConfig(uniteConfig, "Electron");
             Object.keys(platformSettings).forEach(platformSetting => {
                 if (platformSetting !== "runtimeVersion" && platformSetting !== "platformArch") {
                     args.push(`--${platformSetting}`, platformSettings[platformSetting]);
@@ -482,6 +507,54 @@ gulp.task("platform-electron-post-clean", async () => {
         await del(toClean, {"force": true});
     } catch (err) {
         display.error(err);
+        process.exit(1);
+    }
+});
+
+gulp.task("platform-electron-save", async () => {
+    const uniteConfig = await uc.getUniteConfig();
+
+    const knownOptions = {
+        "default": {
+            "platformArch": undefined,
+            "runtimeVersion": undefined,
+            "save": false
+        },
+        "string": [
+            "platformArch",
+            "runtimeVersion"
+        ],
+        "boolean": [
+            "save"
+        ]
+    };
+
+    const options = minimist(process.argv.slice(2), knownOptions);
+
+    try {
+        if (options.save) {
+            display.info("Saving Options");
+
+            uniteConfig.platforms.Electron = uniteConfig.platforms.Electron || {};
+            if (options.platformArch !== undefined) {
+                if (options.platformArch === "") {
+                    delete uniteConfig.platforms.Electron.platformArch;
+                } else {
+                    uniteConfig.platforms.Electron.platformArch = options.platformArch.split(";");
+                }
+            }
+            if (options.runtimeVersion !== undefined) {
+                if (options.runtimeVersion === "") {
+                    delete uniteConfig.platforms.Electron.runtimeVersion;
+                } else {
+                    uniteConfig.platforms.Electron.runtimeVersion = options.runtimeVersion;
+                }
+            }
+
+            await uc.setUniteConfig(uniteConfig);
+        }
+    } catch (err) {
+        display.error("Saving options failed", err);
         process.exit(1);
     }
 });

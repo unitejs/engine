@@ -27,6 +27,19 @@ async function getUniteConfig () {
     }
 }
 
+async function setUniteConfig (uniteConfig) {
+    try {
+        envUtil.set("uniteConfig", uniteConfig);
+        await util.promisify(fs.writeFile)(
+            "../unite.json",
+            JSON.stringify(uniteConfig, undefined, "\t")
+        );
+    } catch (err) {
+        display.error("Writing unite-theme.json", err);
+        process.exit(1);
+    }
+}
+
 async function getUniteThemeConfig (uniteConfig) {
     try {
         const data = await util.promisify(fs.readFile)(path.join(
@@ -107,6 +120,7 @@ function extensionMap (extensions) {
 module.exports = {
     getBuildConfiguration,
     getUniteConfig,
+    setUniteConfig,
     getUniteThemeConfig,
     setUniteThemeConfig,
     extensionMap

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.1
+
+* Added --platformArch, --runtimeVersion, --save option to platform-electron-package
+* Added --save option to platform-docker-package
+* Change Generate command now displays the files it has written
+* Change License None does not add package json entry
+* Fixed LICENSE file not deleted if license options changed to None
+
 ## 1.4.0
 
 * Added docker support to automatically build your web content into a docker image (defaults to nginx)

@@ -40,6 +40,8 @@ export class PackageJson extends PipelineStepBase {
                                     engineVariables.force,
                                     mainCondition,
                                     async () => {
+                ObjectHelper.addRemove(this._configuration, "license", uniteConfiguration.license, uniteConfiguration.license !== "None");
+
                 engineVariables.buildDependencies(uniteConfiguration, this._configuration.dependencies);
                 engineVariables.buildDevDependencies(this._configuration.devDependencies);
 
@@ -55,7 +57,6 @@ export class PackageJson extends PipelineStepBase {
 
         defaultConfiguration.name = uniteConfiguration.packageName;
         defaultConfiguration.version = "0.0.1";
-        defaultConfiguration.license = uniteConfiguration.license;
         defaultConfiguration.devDependencies = {};
         defaultConfiguration.dependencies = {};
         defaultConfiguration.engines = { node: ">=8.0.0" };

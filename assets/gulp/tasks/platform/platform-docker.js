@@ -15,12 +15,34 @@ const platformUtils = require("./util/platform-utils");
 const minimist = require("minimist");
 const exec = require("./util/exec");
 
+function loadOptions (uniteConfig) {
+    const platformSettings = platformUtils.getConfig(uniteConfig, "Docker");
+
+    const knownOptions = {
+        "default": {
+            "image": platformSettings.image || "nginx",
+            "www": platformSettings.www || "/usr/share/nginx/html",
+            "save": false
+        },
+        "string": [
+            "image",
+            "www"
+        ],
+        "boolean": [
+            "save"
+        ]
+    };
+
+    return minimist(process.argv.slice(2), knownOptions);
+}
+
 gulp.task("platform-docker-package", async () => {
     try {
         await util.promisify(runSequence)(
             "platform-docker-clean",
             "platform-docker-gather",
-            "platform-docker-build-image"
+            "platform-docker-build-image",
+            "platform-docker-save"
         );
     } catch (err) {
         display.error("Unhandled error during task", err);
@@ -32,22 +54,7 @@ gulp.task("platform-docker-clean", async () => {
     const uniteConfig = await uc.getUniteConfig();
     const packageJson = await packageConfig.getPackageJson();
 
-    let defaultImage = "nginx";
-    if (uniteConfig.platforms &&
-        uniteConfig.platforms.Docker) {
-        defaultImage = uniteConfig.platforms.Docker.image || defaultImage;
-    }
-
-    const knownOptions = {
-        "default": {
-            "image": defaultImage
-        },
-        "string": [
-            "image"
-        ]
-    };
-
-    const options = minimist(process.argv.slice(2), knownOptions);
+    const options = loadOptions(uniteConfig);
 
     const toClean = [
         path.join("../", uniteConfig.dirs.packagedRoot, `/${packageJson.version}/docker/**/*`),
@@ -60,26 +67,7 @@ gulp.task("platform-docker-clean", async () => {
 gulp.task("platform-docker-gather", async () => {
     const uniteConfig = await uc.getUniteConfig();
 
-    let defaultImage = "nginx";
-    let defaultWww = "/usr/share/nginx/html";
-    if (uniteConfig.platforms &&
-        uniteConfig.platforms.Docker) {
-        defaultImage = uniteConfig.platforms.Docker.image || defaultImage;
-        defaultWww = uniteConfig.platforms.Docker.www || defaultWww;
-    }
-
-    const knownOptions = {
-        "default": {
-            "image": defaultImage,
-            "www": defaultWww
-        },
-        "string": [
-            "image",
-            "www"
-        ]
-    };
-
-    const options = minimist(process.argv.slice(2), knownOptions);
+    const options = loadOptions(uniteConfig);
 
     const platformRoot = await platformUtils.gatherFiles("Docker", options.www);
 
@@ -96,22 +84,7 @@ gulp.task("platform-docker-build-image", async () => {
     const uniteConfig = await uc.getUniteConfig();
     const packageJson = await packageConfig.getPackageJson();
 
-    let defaultImage = "nginx";
-    if (uniteConfig.platforms &&
-        uniteConfig.platforms.Docker) {
-        defaultImage = uniteConfig.platforms.Docker.image || defaultImage;
-    }
-
-    const knownOptions = {
-        "default": {
-            "image": defaultImage
-        },
-        "string": [
-            "image"
-        ]
-    };
-
-    const options = minimist(process.argv.slice(2), knownOptions);
+    const options = loadOptions(uniteConfig);
 
     display.info("Writing Dockerfile");
 
@@ -166,6 +139,54 @@ gulp.task("platform-docker-build-image", async () => {
     }
 
     return del([dockerFilename], {"force": true});
+});
+
+gulp.task("platform-docker-save", async () => {
+    const uniteConfig = await uc.getUniteConfig();
+
+    const knownOptions = {
+        "default": {
+            "image": undefined,
+            "www": undefined,
+            "save": false
+        },
+        "string": [
+            "image",
+            "www"
+        ],
+        "boolean": [
+            "save"
+        ]
+    };
+
+    const options = minimist(process.argv.slice(2), knownOptions);
+
+    try {
+        if (options.save) {
+            display.info("Saving Options");
+
+            uniteConfig.platforms.Docker = uniteConfig.platforms.Docker || {};
+            if (options.image !== undefined) {
+                if (options.image === "") {
+                    delete uniteConfig.platforms.Docker.image;
+                } else {
+                    uniteConfig.platforms.Docker.image = options.image;
+                }
+            }
+            if (options.www !== undefined) {
+                if (options.www === "") {
+                    delete uniteConfig.platforms.Docker.www;
+                } else {
+                    uniteConfig.platforms.Docker.www = options.www;
+                }
+            }
+
+            await uc.setUniteConfig(uniteConfig);
+        }
+    } catch (err) {
+        display.error("Saving options failed", err);
+        process.exit(1);
+    }
 });
 
 /* Generated by UniteJS */

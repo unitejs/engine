@@ -185,6 +185,12 @@ This task will gather all the necessary components of the application and create
 gulp platform-electron-package
 ```
 
+Optionally specify the platform architectures and runtime version to override the defaults. If you also specify the --save options the values will be saved as the default for future runs of the task at which point you can omit all the parameters.
+
+``` shell
+gulp platform-electron-package --platformArch=win32/ia32;win32/x64 --runtimeVersion=1.7.9 --save
+```
+
 This folder will then be used to create a set of platform/architecture electron packages in folders named {version}/electron_{platform}_{architecture} and a corresponding zip file in the packaged root folder.
 
 To see which file are included in a packaged version see the [Platform Packaged Files](#platformpackagedfiles) section.
@@ -199,10 +205,10 @@ This task will package your web app into the docker image that you choose, if yo
 gulp platform-docker-package
 ```
 
-Optionally specify the docker base image and where you want the web content within that image.
+Optionally specify the docker base image and where you want the web content within that image. If you also specify the --save options the values will be saved as the default for future runs of the task at which point you can omit all the parameters.
 
 ``` shell
-gulp platform-docker-package --image=httpd --www=/usr/local/apache2/htdocs/
+gulp platform-docker-package --image=httpd --www=/usr/local/apache2/htdocs/ --save
 ```
 
 Alternatively you can set the defaults as values in the unite.json platforms section:

@@ -47,7 +47,7 @@ export class License extends PipelineStepBase {
                                     fileSystem,
                                     engineVariables.wwwRootFolder,
                                     License.FILENAME,
-                                    engineVariables.force,
+                                    true,
                                     mainCondition,
                                     async() => {
             const yearString = new Date().getFullYear().toString();

@@ -74,7 +74,6 @@ describe("PackageJson", () => {
             Chai.expect(engineVariablesStub.getConfiguration("PackageJson")).to.be.deep.equal({
                 name: "test",
                 version: "0.0.1",
-                license: "MIT",
                 devDependencies: {},
                 dependencies: {},
                 engines: { node: ">=8.0.0" }
@@ -88,7 +87,6 @@ describe("PackageJson", () => {
             Chai.expect(engineVariablesStub.getConfiguration("PackageJson")).to.be.deep.equal({
                 name: "test",
                 version: "0.0.1",
-                license: "MIT",
                 devDependencies: {},
                 dependencies: {},
                 engines: { node: ">=8.0.0" }
