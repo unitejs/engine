@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.1
+
+* Change Decreased size of dependencies
+
 ## 1.5.0
 
 * Added --platformArch, --runtimeVersion, --save option to platform-electron-package
