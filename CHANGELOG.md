@@ -4,11 +4,13 @@
 
 * Added --platformArch, --runtimeVersion, --save option to platform-electron-package
 * Added --save option to platform-docker-package
+* Added karma edge launcher
 * Change Generate command now displays the files it has written
 * Change License None does not add package json entry
 * Change Updated npm install / yarn install message
 * Change Refactored some engine functionality to make it accessible to external development
 * Change Command line option lists are now seperated with commas not semi-colons (BREAKING)
+* Change improved browser switch detection for gulp unit task
 * Fixed LICENSE file not deleted if license options changed to None
 
 ## 1.4.0

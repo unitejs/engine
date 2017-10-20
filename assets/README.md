@@ -75,7 +75,7 @@ gulp unit --grep=app
 Or run in a browser (this will only work if the unit test runner is Karma) using:
 
 ``` shell
-gulp unit --browser=[chrome/firefox/ie/safari]
+gulp unit --browser=[chrome/chromeheadless/edge/firefox/ie/phantomjs/safari]
 ```
 
 If you don't want to keep running the full unit command you can add the watch switch, this will monitor for changes in source/views/styling and build whatever is required.
@@ -115,7 +115,7 @@ gulp e2e --secure --port=5000
 You can also run the tests on a different browser from the default chrome by using:
 
 ``` shell
-gulp e2e --browser=[chrome/firefox/ie/edge]
+gulp e2e --browser=[chrome/edge/firefox/ie/]
 ```
 
 ### serve

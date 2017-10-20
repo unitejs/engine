@@ -62,6 +62,7 @@ export class Karma extends PipelineStepBase {
             "karma-remap-istanbul",
             "remap-istanbul",
             "karma-chrome-launcher",
+            "karma-edge-launcher",
             "karma-firefox-launcher",
             "karma-phantomjs-launcher",
             "karma-safari-launcher",
