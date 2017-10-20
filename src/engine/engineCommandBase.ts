@@ -19,7 +19,6 @@ export abstract class EngineCommandBase {
 
     protected _engineAssetsFolder: string;
     protected _profilesFolder: string;
-    protected _pipelineStepFolder: string;
 
     protected _pipeline: Pipeline;
 
@@ -32,9 +31,8 @@ export abstract class EngineCommandBase {
 
         this._engineAssetsFolder = this._fileSystem.pathCombine(this._engineRootFolder, "/assets/");
         this._profilesFolder = this._fileSystem.pathCombine(this._engineAssetsFolder, "/profiles/");
-        this._pipelineStepFolder = this._fileSystem.pathCombine(this._engineRootFolder, "dist/pipelineSteps");
 
-        this._pipeline = new Pipeline(this._logger, this._fileSystem, this._pipelineStepFolder);
+        this._pipeline = new Pipeline(this._logger, this._fileSystem, this._engineRootFolder);
     }
 
     protected async loadConfiguration(outputDirectory: string, profileSource: string, profile: string | undefined | null, force: boolean): Promise<UniteConfiguration | undefined | null> {
@@ -103,7 +101,7 @@ export abstract class EngineCommandBase {
 
         if (input !== undefined && input !== null && input.length > 0) {
             parsedMap = {};
-            const splitAdditions = input.split(";");
+            const splitAdditions = input.split(",");
 
             splitAdditions.forEach(splitAddition => {
                 const parts = splitAddition.split("=");

@@ -13,7 +13,6 @@ export declare abstract class EngineCommandBase {
     };
     protected _engineAssetsFolder: string;
     protected _profilesFolder: string;
-    protected _pipelineStepFolder: string;
     protected _pipeline: Pipeline;
     create(logger: ILogger, fileSystem: IFileSystem, engineRootFolder: string, engineVersion: string, engineDependencies: {
         [id: string]: string;

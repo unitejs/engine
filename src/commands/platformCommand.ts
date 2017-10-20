@@ -49,7 +49,7 @@ export class PlatformCommand extends EngineCommandBase implements IEngineCommand
         const ret = await this._pipeline.run(uniteConfiguration, engineVariables);
 
         if (ret === 0) {
-            this._logger.warning("You should probably run npm install / yarn install before running any gulp platform commands.");
+            this._logger.warning(`Packages updated, you should probably run ${uniteConfiguration.packageManager.toLowerCase()} install before running any gulp commands.`);
             this._logger.banner("Successfully Completed.");
         }
 
@@ -72,7 +72,7 @@ export class PlatformCommand extends EngineCommandBase implements IEngineCommand
 
         const ret = await this._pipeline.run(uniteConfiguration, engineVariables);
         if (ret === 0) {
-            this._logger.warning("You should probably run npm install / yarn install to remove any unnecessary packages.");
+            this._logger.warning(`Packages updated, you should probably run ${uniteConfiguration.packageManager.toLowerCase()} install to remove any unnecessary packages.`);
             this._logger.banner("Successfully Completed.");
         }
 

@@ -111,7 +111,7 @@ function getAssets (uniteConfig) {
     Object.keys(uniteConfig.clientPackages).forEach(key => {
         const clientAssets = uniteConfig.clientPackages[key].assets;
         if (clientAssets !== undefined && clientAssets !== null && clientAssets.length > 0) {
-            const cas = clientAssets.split(";");
+            const cas = clientAssets.split(",");
             cas.forEach((ca) => {
                 assets.push(path.join(`${uniteConfig.dirs.www.package}${key}/`, ca));
             });

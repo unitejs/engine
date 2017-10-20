@@ -15,5 +15,4 @@ export declare class Engine implements IEngine {
     initialise(): Promise<number>;
     version(): string;
     command<T extends IEngineCommandParams>(commandName: string, args: T): Promise<number>;
-    private findConfigFolder(outputDirectory);
 }

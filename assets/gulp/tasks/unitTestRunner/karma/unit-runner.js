@@ -73,7 +73,7 @@ function addClientPackageTestFiles (uniteConfig, files) {
         if (testPackages[key].assets !== undefined &&
             testPackages[key].assets !== null &&
             testPackages[key].assets.length > 0) {
-            const cas = testPackages[key].assets.split(";");
+            const cas = testPackages[key].assets.split(",");
             cas.forEach((ca) => {
                 addArray.push({
                     "pattern": `./${path.join(uniteConfig.dirs.www.package, `${key}/${ca}`)

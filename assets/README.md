@@ -161,6 +161,12 @@ This task will create development versions of the electron runtime that will wra
 gulp platform-electron-dev
 ```
 
+Optionally specify the platform architectures and runtime version to override the defaults. If you also specify the --save options the values will be saved as the default for future runs of all the platform-electron-* tasks.
+
+``` shell
+gulp platform-electron-dev --platformArch=win32/ia32,win32/x64 --runtimeVersion=1.7.9 --save
+```
+
 The platform development versions will be created in the ./platform/electron/{platform}-{architecture} folder, where the platforms and architectures are either read from your unite.json or automatically determined from you system.
 
 ### platform-web-package
@@ -185,10 +191,10 @@ This task will gather all the necessary components of the application and create
 gulp platform-electron-package
 ```
 
-Optionally specify the platform architectures and runtime version to override the defaults. If you also specify the --save options the values will be saved as the default for future runs of the task at which point you can omit all the parameters.
+Optionally specify the platform architectures and runtime version to override the defaults. If you also specify the --save options the values will be saved as the default for future runs of all the platform-electron-* tasks.
 
 ``` shell
-gulp platform-electron-package --platformArch=win32/ia32;win32/x64 --runtimeVersion=1.7.9 --save
+gulp platform-electron-package --platformArch=win32/ia32,win32/x64 --runtimeVersion=1.7.9 --save
 ```
 
 This folder will then be used to create a set of platform/architecture electron packages in folders named {version}/electron_{platform}_{architecture} and a corresponding zip file in the packaged root folder.
@@ -205,7 +211,7 @@ This task will package your web app into the docker image that you choose, if yo
 gulp platform-docker-package
 ```
 
-Optionally specify the docker base image and where you want the web content within that image. If you also specify the --save options the values will be saved as the default for future runs of the task at which point you can omit all the parameters.
+Optionally specify the docker base image and where you want the web content within that image. If you also specify the --save options the values will be saved as the default for future runs of all the platform-docker-* tasks.
 
 ``` shell
 gulp platform-docker-package --image=httpd --www=/usr/local/apache2/htdocs/ --save

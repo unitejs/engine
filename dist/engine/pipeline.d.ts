@@ -7,11 +7,11 @@ import { PipelineKey } from "./pipelineKey";
 export declare class Pipeline {
     private _logger;
     private _fileSystem;
-    private _pipelineStepFolder;
+    private _engineRootFolder;
     private _steps;
     private _moduleIdMap;
     private _loadedStepCache;
-    constructor(logger: ILogger, fileSystem: IFileSystem, pipelineStepFolder: string);
+    constructor(logger: ILogger, fileSystem: IFileSystem, engineRootFolder: string);
     add(category: string, key: string): void;
     run(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, steps?: string[], logInfo?: boolean): Promise<number>;
     getStep<T extends IPipelineStep>(pipelineKey: PipelineKey): T;

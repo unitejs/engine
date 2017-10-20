@@ -57,7 +57,7 @@ gulp.task("platform-docker-clean", async () => {
     const options = loadOptions(uniteConfig);
 
     const toClean = [
-        path.join("../", uniteConfig.dirs.packagedRoot, `/${packageJson.version}/docker/**/*`),
+        path.join("../", uniteConfig.dirs.packagedRoot, `/${packageJson.version}/docker_${options.image}/**/*`),
         path.join("../", uniteConfig.dirs.packagedRoot, `/${packageJson.version}_docker_${options.image}.tar`)
     ];
     display.info("Cleaning", toClean);
@@ -69,7 +69,7 @@ gulp.task("platform-docker-gather", async () => {
 
     const options = loadOptions(uniteConfig);
 
-    const platformRoot = await platformUtils.gatherFiles("Docker", options.www);
+    const platformRoot = await platformUtils.gatherFiles(`docker_${options.image}`, options.www);
 
     display.info("Copying Image Additions");
 
@@ -97,7 +97,7 @@ gulp.task("platform-docker-build-image", async () => {
     const dockerFilename = path.join(platformRoot, "dockerfile");
 
     try {
-        const dockerFile = `FROM ${options.image}\nCOPY docker /`;
+        const dockerFile = `FROM ${options.image}\nCOPY docker_${options.image} /`;
 
         await util.promisify(fs.writeFile)(dockerFilename, dockerFile);
     } catch (err) {

@@ -73,7 +73,7 @@ describe("Pipeline", () => {
 
         fileSystemStub = new FileSystemMock();
 
-        modulePath = fileSystemStub.pathAbsolute("./test/unit/dist");
+        modulePath = fileSystemStub.pathAbsolute("./test/unit/dist/mocks");
 
         uniteConfigurationStub = new UniteConfiguration();
         engineVariablesStub = new EngineVariables();

@@ -56,7 +56,7 @@ function loadOptions (uniteConfig) {
 
     const knownOptions = {
         "default": {
-            "platformArch": (platformSettings.platformArch || getDefaultArchs()).join(";"),
+            "platformArch": (platformSettings.platformArch || getDefaultArchs()).join(","),
             "runtimeVersion": platformSettings.runtimeVersion || DEF_RUNTIME_VERSION,
             "save": false
         },
@@ -92,7 +92,7 @@ gulp.task("platform-electron-clean", async () => {
     const packageJson = await packageConfig.getPackageJson();
 
     const options = loadOptions(uniteConfig);
-    const platformArchs = options.platformArch.split(";");
+    const platformArchs = options.platformArch.split(",");
 
     const toClean = [
         path.join(
@@ -141,7 +141,7 @@ gulp.task("platform-electron-gather", async () => {
     const platformSrc = await platformUtils.gatherFiles("Electron");
 
     const options = loadOptions(uniteConfig);
-    const platformArchs = options.platformArch.split(";");
+    const platformArchs = options.platformArch.split(",");
 
     const hasLinux = platformArchs.filter(platformArch => platformArch.startsWith("linux")).length > 0;
     const hasDarwin = platformArchs.filter(platformArch =>
@@ -207,7 +207,7 @@ gulp.task("platform-electron-bundle", async () => {
     const packageJson = await packageConfig.getPackageJson();
 
     const options = loadOptions(uniteConfig);
-    const platformArchs = options.platformArch.split(";");
+    const platformArchs = options.platformArch.split(",");
     const runtimeVersion = options.runtimeVersion;
 
     const srcFolder = path.join(
@@ -307,7 +307,7 @@ gulp.task("platform-electron-compress", async () => {
     const packageJson = await packageConfig.getPackageJson();
 
     const options = loadOptions(uniteConfig);
-    const platformArchs = options.platformArch.split(";");
+    const platformArchs = options.platformArch.split(",");
 
     for (let i = 0; i < platformArchs.length; i++) {
         const parts = platformArchs[i].split("/");
@@ -377,7 +377,7 @@ gulp.task("platform-electron-dev-create", async () => {
     const packageJson = await packageConfig.getPackageJson();
 
     const options = loadOptions(uniteConfig);
-    const platformArchs = options.platformArch.split(";");
+    const platformArchs = options.platformArch.split(",");
     const runtimeVersion = options.runtimeVersion;
 
     const electronFolder = path.join(
@@ -540,7 +540,7 @@ gulp.task("platform-electron-save", async () => {
                 if (options.platformArch === "") {
                     delete uniteConfig.platforms.Electron.platformArch;
                 } else {
-                    uniteConfig.platforms.Electron.platformArch = options.platformArch.split(";");
+                    uniteConfig.platforms.Electron.platformArch = options.platformArch.split(",");
                 }
             }
             if (options.runtimeVersion !== undefined) {

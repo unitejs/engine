@@ -8,20 +8,21 @@ import { UniteConfiguration } from "../configuration/models/unite/uniteConfigura
 import { IPipelineStep } from "../interfaces/IPipelineStep";
 import { EngineVariables } from "./engineVariables";
 import { PipelineKey } from "./pipelineKey";
+import { PipelineLocator } from "./pipelineLocator";
 
 export class Pipeline {
     private _logger: ILogger;
     private _fileSystem: IFileSystem;
-    private _pipelineStepFolder: string;
+    private _engineRootFolder: string;
 
     private _steps: PipelineKey[];
     private _moduleIdMap: { [id: string]: string };
     private _loadedStepCache: { [id: string]: IPipelineStep };
 
-    constructor(logger: ILogger, fileSystem: IFileSystem, pipelineStepFolder: string) {
+    constructor(logger: ILogger, fileSystem: IFileSystem, engineRootFolder: string) {
         this._logger = logger;
         this._fileSystem = fileSystem;
-        this._pipelineStepFolder = pipelineStepFolder;
+        this._engineRootFolder = engineRootFolder;
         this._steps = [];
         this._moduleIdMap = {};
         this._loadedStepCache = {};
@@ -162,27 +163,22 @@ export class Pipeline {
             let className = this._moduleIdMap[moduleTypeId];
 
             if (className === undefined) {
-                const moduleTypeFolder = this._fileSystem.pathCombine(this._pipelineStepFolder, pipelineKey.category);
                 const actualType = configurationType ? configurationType : pipelineKey.category;
 
                 try {
-                    let files = await this._fileSystem.directoryGetFiles(moduleTypeFolder);
-                    files = files.filter(file => file.endsWith(".js")).map(file => file.replace(".js", ""));
+                    const items = await PipelineLocator.getPipelineCategoryItems(this._fileSystem, this._engineRootFolder, pipelineKey.category);
 
                     if (pipelineKey.key === undefined || pipelineKey.key === null || pipelineKey.key.length === 0) {
-                        this._logger.error(`--${actualType} should not be blank, possible options could be [${files.join(", ")}]`);
+                        this._logger.error(`--${actualType} should not be blank, possible options could be [${items.join(", ")}]`);
                         return false;
                     } else {
                         const moduleIdLower = pipelineKey.key.toLowerCase();
-                        for (let i = 0; i < files.length; i++) {
-                            if (files[i].toLowerCase() === moduleIdLower) {
-                                // We disable the linting as we are trying to dynamically load modules
-                                // tslint:disable:no-require-imports
-                                // tslint:disable:non-literal-require
-                                const loadFile = this._fileSystem.pathCombine(moduleTypeFolder, files[i]);
-                                const module = require(loadFile);
-                                // tslint:enable:no-require-imports
-                                // tslint:enable:non-literal-require
+                        for (let i = 0; i < items.length; i++) {
+                            if (items[i].toLowerCase() === moduleIdLower) {
+                                const module = await PipelineLocator.loadItem(this._fileSystem,
+                                                                              this._engineRootFolder,
+                                                                              pipelineKey.category,
+                                                                              items[i]);
 
                                 className = Object.keys(module)[0];
 
@@ -199,7 +195,7 @@ export class Pipeline {
                                 return true;
                             }
                         }
-                        this._logger.error(`Pipeline Step '${pipelineKey.key}' for arg --${actualType} could not be located, possible options could be [${files.join(", ")}]`);
+                        this._logger.error(`Pipeline Step '${pipelineKey.key}' for arg --${actualType} could not be located, possible options could be [${items.join(", ")}]`);
                         return false;
                     }
                 } catch (err) {

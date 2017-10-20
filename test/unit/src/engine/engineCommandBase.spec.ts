@@ -188,7 +188,7 @@ describe("EngineCommandBase", () => {
         it("can be called with broken input", async () => {
             const obj = new TestCommand();
             obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
-            const res = obj.testMapParser("a=1;b=2");
+            const res = obj.testMapParser("a=1,b=2");
             Chai.expect(res).to.be.deep.equal({ a: "1", b: "2" });
         });
     });

@@ -6,6 +6,7 @@ import { UniteConfiguration } from "../configuration/models/unite/uniteConfigura
 import { EngineCommandBase } from "../engine/engineCommandBase";
 import { EngineVariables } from "../engine/engineVariables";
 import { PipelineKey } from "../engine/pipelineKey";
+import { PipelineLocator } from "../engine/pipelineLocator";
 import { IConfigureCommandParams } from "../interfaces/IConfigureCommandParams";
 import { IEngineCommand } from "../interfaces/IEngineCommand";
 import { IEngineCommandParams } from "../interfaces/IEngineCommandParams";
@@ -150,7 +151,7 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
         const ret = await this._pipeline.run(uniteConfiguration, engineVariables);
 
         if (ret === 0) {
-            this._logger.warning("You should probably run npm install / yarn install before running any gulp commands.");
+            this._logger.warning(`Packages updated, you should probably run ${uniteConfiguration.packageManager.toLowerCase()} install before running any gulp commands.`);
             this._logger.banner("Successfully Completed.");
         }
 
@@ -165,15 +166,14 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
     }
 
     private async addPipelineDynamic(): Promise<void> {
-        const folders = await this._fileSystem.directoryGetFolders(this._pipelineStepFolder);
+        const categories = await PipelineLocator.getPipelineCategories(this._fileSystem, this._engineRootFolder);
 
-        for (let i = 0; i < folders.length; i++) {
-            if (folders[i] !== "scaffold" && folders[i] !== "unite") {
-                const fullFolder = this._fileSystem.pathCombine(this._pipelineStepFolder, folders[i]);
-                const files = await this._fileSystem.directoryGetFiles(fullFolder);
+        for (let i = 0; i < categories.length; i++) {
+            if (categories[i] !== "scaffold" && categories[i] !== "unite") {
+                const items = await PipelineLocator.getPipelineCategoryItems(this._fileSystem, this._engineRootFolder, categories[i]);
 
-                files.filter(file => file.endsWith(".js")).forEach(file => {
-                    this._pipeline.add(folders[i], file.replace(".js", ""));
+                items.forEach(item => {
+                    this._pipeline.add(categories[i], item);
                 });
             }
         }
