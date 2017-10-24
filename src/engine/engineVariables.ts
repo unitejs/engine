@@ -2,8 +2,6 @@
  * Variables used by the engine.
  */
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
-import { IncludeMode } from "../configuration/models/unite/includeMode";
-import { ScriptIncludeMode } from "../configuration/models/unite/scriptIncludeMode";
 import { UniteClientPackage } from "../configuration/models/unite/uniteClientPackage";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { IPackageManager } from "../interfaces/IPackageManager";
@@ -109,69 +107,23 @@ export class EngineVariables {
         this._requiredClientPackages = clientPackages || {};
     }
 
-    public toggleClientPackage(name: string,
-                               main: string,
-                               mainMinified: string,
-                               testingAdditions:  { [id: string]: string},
-                               preload: boolean,
-                               includeMode: IncludeMode,
-                               scriptIncludeMode: ScriptIncludeMode,
-                               isPackage: boolean,
-                               assets: string,
-                               map: { [id: string]: string},
-                               loaders: { [id: string]: string},
-                               isModuleLoader: boolean,
-                               required: boolean): void {
-
+    public toggleClientPackage(key: string, clientPackage: UniteClientPackage, required: boolean): void {
         if (required) {
-            this.addClientPackage(name,
-                                  main,
-                                  mainMinified,
-                                  testingAdditions,
-                                  preload,
-                                  includeMode,
-                                  scriptIncludeMode,
-                                  isPackage,
-                                  assets,
-                                  map,
-                                  loaders,
-                                  isModuleLoader);
+            this.addClientPackage(key, clientPackage);
         } else {
-            this.removeClientPackage(name);
+            this.removeClientPackage(key, clientPackage);
         }
     }
 
-    public addClientPackage(name: string,
-                            main: string,
-                            mainMinified: string,
-                            testingAdditions:  { [id: string]: string},
-                            preload: boolean,
-                            includeMode: IncludeMode,
-                            scriptIncludeMode: ScriptIncludeMode,
-                            isPackage: boolean,
-                            assets: string,
-                            map: { [id: string]: string},
-                            loaders: { [id: string]: string},
-                            isModuleLoader: boolean): void {
-        const clientPackage = new UniteClientPackage();
-        clientPackage.name = name;
-        clientPackage.includeMode = includeMode;
-        clientPackage.preload = preload;
-        clientPackage.main = main;
-        clientPackage.mainMinified = mainMinified;
-        clientPackage.testingAdditions = testingAdditions;
-        clientPackage.isPackage = isPackage;
-        clientPackage.version = this.findDependencyVersion(name);
-        clientPackage.assets = assets;
-        clientPackage.map = map;
-        clientPackage.loaders = loaders;
-        clientPackage.scriptIncludeMode = scriptIncludeMode;
-        clientPackage.isModuleLoader = isModuleLoader;
-        this._requiredClientPackages[name] = clientPackage;
+    public addClientPackage(key: string, clientPackage: UniteClientPackage): void {
+        if (!clientPackage.version) {
+            clientPackage.version = this.findDependencyVersion(clientPackage.name);
+        }
+        this._requiredClientPackages[key] = clientPackage;
     }
 
-    public removeClientPackage(name: string): void {
-        this._removedClientPackages[name] = undefined;
+    public removeClientPackage(key: string, clientPackage: UniteClientPackage): void {
+        this._removedClientPackages[key] = clientPackage;
     }
 
     public toggleDevDependency(dependencies: string[], required: boolean): void {
@@ -200,25 +152,29 @@ export class EngineVariables {
 
     public buildDependencies(uniteConfiguration: UniteConfiguration, packageJsonDependencies: { [id: string]: string }): void {
         for (const key in this._removedClientPackages) {
-            if (packageJsonDependencies[key]) {
-                delete packageJsonDependencies[key];
+            const pkg = this._removedClientPackages[key];
+
+            if (packageJsonDependencies[pkg.name]) {
+                delete packageJsonDependencies[pkg.name];
             }
         }
 
         const addedTestDependencies = [];
         const removedTestDependencies = [];
-        for (const pkg in this._requiredClientPackages) {
-            uniteConfiguration.clientPackages[pkg] = this._requiredClientPackages[pkg];
-            if (this._requiredClientPackages[pkg].includeMode === "app" || this._requiredClientPackages[pkg].includeMode === "both") {
-                packageJsonDependencies[pkg] = this._requiredClientPackages[pkg].version;
+        for (const key in this._requiredClientPackages) {
+            const pkg = this._requiredClientPackages[key];
 
-                const idx = this._requiredDevDependencies.indexOf(pkg);
+            uniteConfiguration.clientPackages[key] = pkg;
+            if (pkg.includeMode === "app" || pkg.includeMode === "both") {
+                packageJsonDependencies[pkg.name] = pkg.version;
+
+                const idx = this._requiredDevDependencies.indexOf(pkg.name);
                 if (idx >= 0) {
                     this._requiredDevDependencies.splice(idx, 1);
-                    removedTestDependencies.push(pkg);
+                    removedTestDependencies.push(pkg.name);
                 }
             } else {
-                addedTestDependencies.push(pkg);
+                addedTestDependencies.push(pkg.name);
             }
         }
         this.toggleDevDependency(addedTestDependencies, true);

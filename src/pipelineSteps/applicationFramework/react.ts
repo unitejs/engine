@@ -44,83 +44,49 @@ export class React extends SharedAppFramework {
         engineVariables.toggleDevDependency(["unitejs-react-protractor-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
         engineVariables.toggleDevDependency(["unitejs-react-webdriver-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
 
-        engineVariables.toggleClientPackage(
-            "react",
-            "umd/react.development.js",
-            "umd/react.production.min.js",
-            undefined,
-            false,
-            "both",
-            "none",
-            false,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            mainCondition);
+        engineVariables.toggleClientPackage("react", {
+                                                name: "react",
+                                                main: "umd/react.development.js",
+                                                mainMinified: "umd/react.production.min.js",
+                                                includeMode: "both"
+                                            },
+                                            mainCondition);
 
-        engineVariables.toggleClientPackage(
-            "react-dom",
-            "umd/react-dom.development.js",
-            "umd/react-dom.production.min.js",
-            undefined,
-            false,
-            "both",
-            "none",
-            false,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            mainCondition);
+        engineVariables.toggleClientPackage("react-dom", {
+                                                name: "react-dom",
+                                                main: "umd/react-dom.development.js",
+                                                mainMinified: "umd/react-dom.production.min.js",
+                                                includeMode: "both"
+                                            },
+                                            mainCondition);
 
-        engineVariables.toggleClientPackage(
-            "react-router-dom",
-            "umd/react-router-dom.js",
-            "umd/react-router-dom.min.js",
-            undefined,
-            false,
-            "both",
-            "none",
-            false,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            mainCondition);
+        engineVariables.toggleClientPackage("react-router-dom", {
+                                                name: "react-router-dom",
+                                                main: "umd/react-router-dom.js",
+                                                mainMinified: "umd/react-router-dom.min.js",
+                                                includeMode: "both"
+                                            },
+                                            mainCondition);
 
-        engineVariables.toggleClientPackage(
-            "require-css",
-            "css.js",
-            undefined,
-            undefined,
-            false,
-            "both",
-            "none",
-            false,
-            undefined,
-            { css: "require-css" },
-            undefined,
-            undefined,
-            mainCondition && super.condition(uniteConfiguration.bundler, "RequireJS"));
+        engineVariables.toggleClientPackage("require-css", {
+                                                name: "require-css",
+                                                main: "css.js",
+                                                includeMode: "both",
+                                                map: { css: "require-css" }
+                                            },
+                                            mainCondition && super.condition(uniteConfiguration.bundler, "RequireJS"));
 
-        engineVariables.toggleClientPackage(
-            "systemjs-plugin-css",
-            "css.js",
-            undefined,
-            undefined,
-            false,
-            "both",
-            "none",
-            false,
-            undefined,
-            { css: "systemjs-plugin-css" },
-            { "*.css" : "css" },
-            undefined,
-            mainCondition &&
+        engineVariables.toggleClientPackage("systemjs-plugin-css", {
+                                                name: "systemjs-plugin-css",
+                                                main: "css.js",
+                                                includeMode: "both",
+                                                map: { css: "systemjs-plugin-css" },
+                                                loaders: { "*.css" : "css" }
+                                            },
+                                            mainCondition &&
             (super.condition(uniteConfiguration.bundler, "Browserify") ||
-                super.condition(uniteConfiguration.bundler, "SystemJSBuilder") ||
-                super.condition(uniteConfiguration.bundler, "Webpack")));
+            super.condition(uniteConfiguration.bundler, "SystemJSBuilder") ||
+            super.condition(uniteConfiguration.bundler, "Webpack")));
 
         if (mainCondition && super.condition(uniteConfiguration.taskManager, "Gulp") && super.condition(uniteConfiguration.bundler, "RequireJS")) {
             engineVariables.buildTranspileInclude.push("const replace = require(\"gulp-replace\");");
@@ -187,18 +153,18 @@ export class React extends SharedAppFramework {
 
             if (ret === 0) {
                 ret = await super.generateAppCss(logger, fileSystem, uniteConfiguration, engineVariables, [`child/child`]);
+            }
 
-                if (ret === 0) {
-                    ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
+            if (ret === 0) {
+                ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
+            }
 
-                    if (ret === 0) {
-                        ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`, `bootstrapper.spec${sourceExtension}`], true);
+            if (ret === 0) {
+                ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`, `bootstrapper.spec${sourceExtension}`], true);
+            }
 
-                        if (ret === 0) {
-                            ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
-                        }
-                    }
-                }
+            if (ret === 0) {
+                ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
             }
 
             return ret;

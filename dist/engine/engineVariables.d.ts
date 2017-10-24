@@ -2,8 +2,6 @@
  * Variables used by the engine.
  */
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
-import { IncludeMode } from "../configuration/models/unite/includeMode";
-import { ScriptIncludeMode } from "../configuration/models/unite/scriptIncludeMode";
 import { UniteClientPackage } from "../configuration/models/unite/uniteClientPackage";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { IPackageManager } from "../interfaces/IPackageManager";
@@ -55,21 +53,9 @@ export declare class EngineVariables {
     initialisePackages(clientPackages: {
         [id: string]: UniteClientPackage;
     }): void;
-    toggleClientPackage(name: string, main: string, mainMinified: string, testingAdditions: {
-        [id: string]: string;
-    }, preload: boolean, includeMode: IncludeMode, scriptIncludeMode: ScriptIncludeMode, isPackage: boolean, assets: string, map: {
-        [id: string]: string;
-    }, loaders: {
-        [id: string]: string;
-    }, isModuleLoader: boolean, required: boolean): void;
-    addClientPackage(name: string, main: string, mainMinified: string, testingAdditions: {
-        [id: string]: string;
-    }, preload: boolean, includeMode: IncludeMode, scriptIncludeMode: ScriptIncludeMode, isPackage: boolean, assets: string, map: {
-        [id: string]: string;
-    }, loaders: {
-        [id: string]: string;
-    }, isModuleLoader: boolean): void;
-    removeClientPackage(name: string): void;
+    toggleClientPackage(key: string, clientPackage: UniteClientPackage, required: boolean): void;
+    addClientPackage(key: string, clientPackage: UniteClientPackage): void;
+    removeClientPackage(key: string, clientPackage: UniteClientPackage): void;
     toggleDevDependency(dependencies: string[], required: boolean): void;
     addDevDependency(dependencies: string[]): void;
     removeDevDependency(dependencies: string[]): void;

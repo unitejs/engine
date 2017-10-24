@@ -92,7 +92,7 @@ export class Gulp extends PipelineStepBase {
                                             ],
                                             mainCondition);
 
-        engineVariables.toggleDevDependency(["gulp-babel"], mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
+        engineVariables.toggleDevDependency(["gulp-babel"], mainCondition);
         engineVariables.toggleDevDependency(["gulp-typescript"], mainCondition && super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
         engineVariables.toggleDevDependency(["gulp-eslint"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
         engineVariables.toggleDevDependency(["gulp-tslint"], mainCondition && super.condition(uniteConfiguration.linter, "TSLint"));
@@ -129,6 +129,7 @@ export class Gulp extends PipelineStepBase {
         this.toggleFile(assetTasksCssPost, "build-css-post-components.js", this._tasksFolder, "build-css-post-components.js", mainCondition);
 
         this.toggleFile(assetTasks, "build.js", this._tasksFolder, "build.js", mainCondition);
+        this.toggleFile(assetTasks, "build-transpile-modules.js", this._tasksFolder, "build-transpile-modules.js", mainCondition);
         this.toggleFile(assetTasks, "version.js", this._tasksFolder, "version.js", mainCondition);
     }
 

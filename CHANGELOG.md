@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.2
+
+* Fixed undefined global module entry in app-module-config
+
 ## 1.5.1
 
 * Change Decreased size of dependencies

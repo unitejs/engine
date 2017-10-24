@@ -30,6 +30,7 @@ function addClientPackageTestFiles (uniteConfig, files) {
         const pkg = testPackages[key];
         const addArray = pkg.isModuleLoader ? newModuleLoaders : newFiles;
         const includeType = pkg.isModuleLoader ? "moduleLoader" : "clientPackage";
+        const pkgLocation = pkg.transpileAlias || pkg.name;
         if (pkg.main) {
             const mainSplit = pkg.main.split("/");
             let main = mainSplit.pop();
@@ -37,7 +38,7 @@ function addClientPackageTestFiles (uniteConfig, files) {
 
             if (pkg.isPackage) {
                 addArray.push({
-                    "pattern": `./${path.join(uniteConfig.dirs.www.package, `${key}/${location}/**/*.{js,html,css}`)
+                    "pattern": `./${path.join(uniteConfig.dirs.www.package, `${pkgLocation}/${location}/**/*.{js,html,css}`)
                         .replace(/\\/g, "/")}`,
                     "included": pkg.scriptIncludeMode === "notBundled" || pkg.scriptIncludeMode === "both",
                     includeType
@@ -48,7 +49,7 @@ function addClientPackageTestFiles (uniteConfig, files) {
                     main = "**/*.{js,html,css}";
                 }
                 addArray.push({
-                    "pattern": `./${path.join(uniteConfig.dirs.www.package, `${key}/${location}${main}`)
+                    "pattern": `./${path.join(uniteConfig.dirs.www.package, `${pkgLocation}/${location}${main}`)
                         .replace(/\\/g, "/")}`,
                     "included": pkg.scriptIncludeMode === "notBundled" || pkg.scriptIncludeMode === "both",
                     includeType
@@ -61,7 +62,7 @@ function addClientPackageTestFiles (uniteConfig, files) {
                     addArray.push({
                         "pattern": `./${path.join(
                             uniteConfig.dirs.www.package,
-                            `${key}/${pkg.testingAdditions[additionKey]}`
+                            `${pkgLocation}/${pkg.testingAdditions[additionKey]}`
                         ).replace(/\\/g, "/")}`,
                         "included": pkg.scriptIncludeMode === "notBundled" || pkg.scriptIncludeMode === "both",
                         includeType
@@ -76,7 +77,7 @@ function addClientPackageTestFiles (uniteConfig, files) {
             const cas = testPackages[key].assets.split(",");
             cas.forEach((ca) => {
                 addArray.push({
-                    "pattern": `./${path.join(uniteConfig.dirs.www.package, `${key}/${ca}`)
+                    "pattern": `./${path.join(uniteConfig.dirs.www.package, `${pkgLocation}/${ca}`)
                         .replace(/\\/g, "/")}`,
                     "included": false,
                     includeType

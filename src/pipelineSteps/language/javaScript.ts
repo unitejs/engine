@@ -46,7 +46,8 @@ export class JavaScript extends PipelineStepBase {
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         // Removing and old dependency always false
         engineVariables.toggleDevDependency(["babel-preset-es2015"], false);
-        engineVariables.toggleDevDependency(["babel-core", "babel-preset-env"], mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
+        // We always include babel as we might need to transpile client packages
+        engineVariables.toggleDevDependency(["babel-core", "babel-preset-env"], true);
 
         return 0;
     }

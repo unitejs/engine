@@ -106,26 +106,26 @@ export class Angular extends SharedAppFramework {
 
             if (ret === 0) {
                 ret = await super.generateAppHtml(logger, fileSystem, uniteConfiguration, engineVariables, ["app.component.html", "child/child.component.html"]);
+            }
 
-                if (ret === 0) {
-                    ret = await super.generateAppCss(logger, fileSystem, uniteConfiguration, engineVariables, ["app.component", "child/child.component"]);
+            if (ret === 0) {
+                ret = await super.generateAppCss(logger, fileSystem, uniteConfiguration, engineVariables, ["app.component", "child/child.component"]);
+            }
 
-                    if (ret === 0) {
-                        ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
+            if (ret === 0) {
+                ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
+            }
 
-                        if (ret === 0) {
-                            ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`bootstrapper.spec${sourceExtension}`], true);
+            if (ret === 0) {
+                ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`bootstrapper.spec${sourceExtension}`], true);
+            }
 
-                            if (ret === 0) {
-                                ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.module.spec${sourceExtension}`], false);
+            if (ret === 0) {
+                ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.module.spec${sourceExtension}`], false);
+            }
 
-                                if (ret === 0) {
-                                    ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
-                                }
-                            }
-                        }
-                    }
-                }
+            if (ret === 0) {
+                ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
             }
 
             return ret;
@@ -143,87 +143,57 @@ export class Angular extends SharedAppFramework {
                 testAdditions[`@angular/${pkg}/testing`] = `bundles/${pkg}-testing.umd.js`;
             }
 
-            engineVariables.toggleClientPackage(
-                `@angular/${pkg}`,
-                `bundles/${pkg}.umd.js`,
-                `bundles/${pkg}.umd.min.js`,
-                testAdditions,
-                false,
-                "both",
-                "none",
-                false,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                mainCondition);
+            engineVariables.toggleClientPackage(`@angular/${pkg}`, {
+                                                    name: `@angular/${pkg}`,
+                                                    main: `bundles/${pkg}.umd.js`,
+                                                    mainMinified: `bundles/${pkg}.umd.min.js`,
+                                                    testingAdditions: testAdditions,
+                                                    preload: false,
+                                                    includeMode: "both",
+                                                    isPackage: false
+                                                },
+                                                mainCondition);
         });
 
-        engineVariables.toggleClientPackage(
-            "rxjs",
-            "*",
-            undefined,
-            undefined,
-            false,
-            "both",
-            "none",
-            false,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            mainCondition);
+        engineVariables.toggleClientPackage("rxjs", {
+                                                name: "rxjs",
+                                                main: "*",
+                                                preload: false,
+                                                includeMode: "both"
+                                            },
+                                            mainCondition);
 
-        engineVariables.toggleClientPackage(
-            "core-js",
-            "client/shim.js",
-            undefined,
-            undefined,
-            false,
-            "both",
-            "both",
-            false,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            mainCondition);
+        engineVariables.toggleClientPackage("core-js", {
+                                                name: "core-js",
+                                                main: "client/shim.js",
+                                                includeMode: "both",
+                                                scriptIncludeMode: "both"
+                                            },
+                                            mainCondition);
 
-        engineVariables.toggleClientPackage(
-            "zone.js",
-            "dist/zone.js",
-            "dist/zone.min.js",
-            {
-                "long-stack-trace-zone": "dist/long-stack-trace-zone.js",
-                proxy: "dist/proxy.js",
-                "sync-test": "dist/sync-test.js",
-                "runner-patch": super.condition(uniteConfiguration.unitTestFramework, "Jasmine") ? "dist/jasmine-patch.js" : "dist/mocha-patch.js",
-                "async-test": "dist/async-test.js",
-                "fake-async-test": "dist/fake-async-test.js"
-            },
-            false,
-            "both",
-            "both",
-            false,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            mainCondition);
+        engineVariables.toggleClientPackage("zone.js", {
+                                                name: "zone.js",
+                                                main: "dist/zone.js",
+                                                mainMinified: "dist/zone.min.js",
+                                                testingAdditions: {
+                                                    "long-stack-trace-zone": "dist/long-stack-trace-zone.js",
+                                                    proxy: "dist/proxy.js",
+                                                    "sync-test": "dist/sync-test.js",
+                                                    "runner-patch": super.condition(uniteConfiguration.unitTestFramework, "Jasmine") ? "dist/jasmine-patch.js" : "dist/mocha-patch.js",
+                                                    "async-test": "dist/async-test.js",
+                                                    "fake-async-test": "dist/fake-async-test.js"
+                                                },
+                                                includeMode: "both",
+                                                scriptIncludeMode: "both"
+                                            },
+                                            mainCondition);
 
-        engineVariables.toggleClientPackage(
-            "reflect-metadata",
-            "Reflect.js",
-            undefined,
-            undefined,
-            false,
-            "both",
-            "both",
-            false,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            mainCondition);
+        engineVariables.toggleClientPackage("reflect-metadata", {
+                                                name: "reflect-metadata",
+                                                main: "Reflect.js",
+                                                includeMode: "both",
+                                                scriptIncludeMode: "both"
+                                            },
+                                            mainCondition);
     }
 }

@@ -31,20 +31,13 @@ export class MochaChai extends PipelineStepBase {
 
         engineVariables.toggleDevDependency(["wdio-mocha-framework"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO") && isE2E);
 
-        engineVariables.toggleClientPackage(
-            "chai",
-            "chai.js",
-            undefined,
-            undefined,
-            true,
-            "test",
-            "none",
-            false,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            mainCondition);
+        engineVariables.toggleClientPackage("chai", {
+                                                name: "chai",
+                                                main: "chai.js",
+                                                preload: true,
+                                                includeMode: "test"
+                                            },
+                                            mainCondition);
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {

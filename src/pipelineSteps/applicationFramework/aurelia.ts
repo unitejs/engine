@@ -105,22 +105,22 @@ export class Aurelia extends SharedAppFramework {
 
             if (ret === 0) {
                 ret = await super.generateAppHtml(logger, fileSystem, uniteConfiguration, engineVariables, ["app.html", "child/child.html"]);
+            }
 
-                if (ret === 0) {
-                    ret = await super.generateAppCss(logger, fileSystem, uniteConfiguration, engineVariables, ["child/child"]);
+            if (ret === 0) {
+                ret = await super.generateAppCss(logger, fileSystem, uniteConfiguration, engineVariables, ["child/child"]);
+            }
 
-                    if (ret === 0) {
-                        ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
+            if (ret === 0) {
+                ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
+            }
 
-                        if (ret === 0) {
-                            ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`, `bootstrapper.spec${sourceExtension}`], true);
+            if (ret === 0) {
+                ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`, `bootstrapper.spec${sourceExtension}`], true);
+            }
 
-                            if (ret === 0) {
-                                ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
-                            }
-                        }
-                    }
-                }
+            if (ret === 0) {
+                ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
             }
 
             return ret;
@@ -172,65 +172,36 @@ export class Aurelia extends SharedAppFramework {
         ];
 
         clientPackages.forEach(clientPackage => {
-            engineVariables.toggleClientPackage(
-                clientPackage.name,
-                `${location}${clientPackage.name}.js`,
-                undefined,
-                undefined,
-                false,
-                "both",
-                "none",
-                clientPackage.isPackage ? true : false,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                mainCondition);
+            engineVariables.toggleClientPackage(clientPackage.name, {
+                                                    name: clientPackage.name,
+                                                    main: `${location}${clientPackage.name}.js`,
+                                                    includeMode: "both",
+                                                    isPackage: clientPackage.isPackage ? true : false
+                                                },
+                                                mainCondition);
         });
 
-        engineVariables.toggleClientPackage(
-            "whatwg-fetch",
-            "fetch.js",
-            undefined,
-            undefined,
-            false,
-            "both",
-            "none",
-            false,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            mainCondition);
+        engineVariables.toggleClientPackage("whatwg-fetch", {
+                                                name: "whatwg-fetch",
+                                                main: "fetch.js",
+                                                includeMode: "both"
+                                            },
+                                            mainCondition);
 
-        engineVariables.toggleClientPackage(
-            "requirejs-text",
-            "text.js",
-            undefined,
-            undefined,
-            false,
-            "both",
-            "none",
-            false,
-            undefined,
-            { text: "requirejs-text" },
-            undefined,
-            undefined,
-            mainCondition && super.condition(uniteConfiguration.moduleType, "AMD"));
+        engineVariables.toggleClientPackage("requirejs-text", {
+                                                name: "requirejs-text",
+                                                main: "text.js",
+                                                includeMode: "both",
+                                                map: { text: "requirejs-text" }
+                                            },
+                                            mainCondition && super.condition(uniteConfiguration.moduleType, "AMD"));
 
-        engineVariables.toggleClientPackage(
-            "systemjs-plugin-text",
-            "text.js",
-            undefined,
-            undefined,
-            false,
-            "both",
-            "none",
-            false,
-            undefined,
-            { text: "systemjs-plugin-text" },
-            undefined,
-            undefined,
-            mainCondition && super.condition(uniteConfiguration.moduleType, "SystemJS"));
+        engineVariables.toggleClientPackage("systemjs-plugin-text", {
+                                                name: "systemjs-plugin-text",
+                                                main: "text.js",
+                                                includeMode: "both",
+                                                map: { text: "systemjs-plugin-text" }
+                                            },
+                                            mainCondition && super.condition(uniteConfiguration.moduleType, "SystemJS"));
     }
 }

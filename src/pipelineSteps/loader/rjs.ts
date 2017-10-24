@@ -14,20 +14,14 @@ export class RJS extends PipelineStepBase {
     }
 
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
-        engineVariables.toggleClientPackage(
-            "requirejs",
-            "require.js",
-            undefined,
-            undefined,
-            false,
-            "both",
-            "both",
-            false,
-            undefined,
-            undefined,
-            undefined,
-            true,
-            mainCondition);
+        engineVariables.toggleClientPackage("requirejs", {
+                                                name: "requirejs",
+                                                main: "require.js",
+                                                includeMode: "both",
+                                                scriptIncludeMode: "both",
+                                                isModuleLoader: true
+                                            },
+                                            mainCondition);
 
         if (mainCondition) {
             const htmlNoBundle = engineVariables.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle");

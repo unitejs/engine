@@ -29,20 +29,15 @@ export class SJS extends PipelineStepBase {
             scriptIncludeMode = "none";
         }
 
-        engineVariables.toggleClientPackage(
-            "systemjs",
-            "dist/system.src.js",
-            "dist/system.js",
-            undefined,
-            false,
-            "both",
-            scriptIncludeMode,
-            false,
-            undefined,
-            undefined,
-            undefined,
-            true,
-            mainCondition);
+        engineVariables.toggleClientPackage("systemjs", {
+                                                name: "systemjs",
+                                                main: "dist/system.src.js",
+                                                mainMinified: "dist/system.js",
+                                                includeMode: "both",
+                                                scriptIncludeMode,
+                                                isModuleLoader: true
+                                            },
+                                            mainCondition);
 
         if (mainCondition) {
             const htmlNoBundle = engineVariables.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle");

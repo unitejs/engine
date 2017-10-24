@@ -46,50 +46,29 @@ export class Preact extends SharedAppFramework {
         engineVariables.toggleDevDependency(["unitejs-preact-protractor-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
         engineVariables.toggleDevDependency(["unitejs-preact-webdriver-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
 
-        engineVariables.toggleClientPackage(
-            "preact",
-            "dist/preact.dev.js",
-            "dist/preact.min.js",
-            undefined,
-            false,
-            "both",
-            "none",
-            false,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            mainCondition);
+        engineVariables.toggleClientPackage("preact", {
+                                                name: "preact",
+                                                main: "dist/preact.dev.js",
+                                                mainMinified: "dist/preact.min.js",
+                                                includeMode: "both"
+                                            },
+                                            mainCondition);
 
-        engineVariables.toggleClientPackage(
-            "preact-router",
-            "dist/preact-router.js",
-            undefined,
-            undefined,
-            false,
-            "both",
-            "none",
-            false,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            mainCondition);
+        engineVariables.toggleClientPackage("preact-router", {
+                                                name: "preact-router",
+                                                main: "dist/preact-router.js",
+                                                includeMode: "both"
+                                            },
+                                            mainCondition);
 
-        engineVariables.toggleClientPackage(
-            "systemjs-plugin-css",
-            "css.js",
-            undefined,
-            undefined,
-            false,
-            "both",
-            "none",
-            false,
-            undefined,
-            { css: "systemjs-plugin-css" },
-            { "*.css" : "css" },
-            undefined,
-            mainCondition &&
+        engineVariables.toggleClientPackage("systemjs-plugin-css", {
+                                                name: "systemjs-plugin-css",
+                                                main: "css.js",
+                                                includeMode: "both",
+                                                map: { css: "systemjs-plugin-css" },
+                                                loaders: { "*.css" : "css" }
+                                            },
+                                            mainCondition &&
             (super.condition(uniteConfiguration.bundler, "Browserify") ||
                 super.condition(uniteConfiguration.bundler, "SystemJSBuilder") ||
                 super.condition(uniteConfiguration.bundler, "Webpack")));
@@ -155,18 +134,18 @@ export class Preact extends SharedAppFramework {
 
             if (ret === 0) {
                 ret = await super.generateAppCss(logger, fileSystem, uniteConfiguration, engineVariables, [`child/child`]);
+            }
 
-                if (ret === 0) {
-                    ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
+            if (ret === 0) {
+                ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
+            }
 
-                    if (ret === 0) {
-                        ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`, `bootstrapper.spec${sourceExtension}`], true);
+            if (ret === 0) {
+                ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`, `bootstrapper.spec${sourceExtension}`], true);
+            }
 
-                        if (ret === 0) {
-                            ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
-                        }
-                    }
-                }
+            if (ret === 0) {
+                ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
             }
 
             return ret;

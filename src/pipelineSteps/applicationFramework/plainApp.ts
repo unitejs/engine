@@ -67,14 +67,14 @@ export class PlainApp extends SharedAppFramework {
 
             if (ret === 0) {
                 ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);
+            }
 
-                if (ret === 0) {
-                    ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`, `bootstrapper.spec${sourceExtension}`], true);
+            if (ret === 0) {
+                ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`, `bootstrapper.spec${sourceExtension}`], true);
+            }
 
-                    if (ret === 0) {
-                        ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
-                    }
-                }
+            if (ret === 0) {
+                ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
             }
 
             return ret;

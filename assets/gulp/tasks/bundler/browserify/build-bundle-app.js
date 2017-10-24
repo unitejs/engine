@@ -35,14 +35,15 @@ gulp.task("build-bundle-app", async () => {
             "appliesTo": {"includeExtensions": uniteConfig.viewExtensions.map(ext => `.${ext}`)}
         });
 
-        const moduleConfig = clientPackages.buildModuleConfig(uniteConfig, ["app", "both"], buildConfiguration.minify);
+        const vendorPackages = await clientPackages.getBundleVendorPackages(uniteConfig);
 
-        Object.keys(moduleConfig.paths).forEach((key) => {
+        Object.keys(vendorPackages).forEach((key) => {
             bApp.exclude(key);
-            bApp.exclude(`${moduleConfig.paths[key]}.js`);
         });
 
-        return asyncUtil.stream(bApp.bundle()
+        return asyncUtil.stream(bApp.bundle().on("error", (err) => {
+            display.error(err);
+        })
             .pipe(source("app-bundle.js"))
             .pipe(buffer())
             .pipe(buildConfiguration.minify ? uglify()

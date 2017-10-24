@@ -5,23 +5,29 @@ import { IncludeMode } from "./includeMode";
 import { ScriptIncludeMode } from "./scriptIncludeMode";
 export declare class UniteClientPackage {
     name: string;
-    version: string;
-    preload: boolean;
-    main: string;
-    mainMinified: string;
-    testingAdditions: {
+    version?: string;
+    main?: string;
+    mainMinified?: string;
+    testingAdditions?: {
         [id: string]: string;
     };
-    includeMode: IncludeMode;
-    isPackage: boolean;
-    assets: string;
-    map: {
+    preload?: boolean;
+    includeMode?: IncludeMode;
+    scriptIncludeMode?: ScriptIncludeMode;
+    isPackage?: boolean;
+    assets?: string;
+    map?: {
         [id: string]: string;
     };
-    loaders: {
+    loaders?: {
         [id: string]: string;
     };
-    scriptIncludeMode: ScriptIncludeMode;
-    isModuleLoader: boolean;
-    noScript: boolean;
+    isModuleLoader?: boolean;
+    noScript?: boolean;
+    transpileAlias?: string;
+    transpileSrc?: string[];
+    transpileTransforms?: {
+        from: string;
+        to: string;
+    }[];
 }

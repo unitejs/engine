@@ -33,13 +33,13 @@ export class PackageJson extends PipelineStepBase {
     }
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
-        return super.fileToggleJson(logger,
-                                    fileSystem,
-                                    engineVariables.wwwRootFolder,
-                                    PackageJson.FILENAME,
-                                    engineVariables.force,
-                                    mainCondition,
-                                    async () => {
+        const ret = await super.fileToggleJson(logger,
+                                               fileSystem,
+                                               engineVariables.wwwRootFolder,
+                                               PackageJson.FILENAME,
+                                               engineVariables.force,
+                                               mainCondition,
+                                               async () => {
                 ObjectHelper.addRemove(this._configuration, "license", uniteConfiguration.license, uniteConfiguration.license !== "None");
 
                 engineVariables.buildDependencies(uniteConfiguration, this._configuration.dependencies);
@@ -50,6 +50,33 @@ export class PackageJson extends PipelineStepBase {
 
                 return this._configuration;
             });
+
+        if (ret === 0) {
+            // Since we are reconfiguring we should remove any transpiled clientPackages
+            // tnhey will get rebuilt on the first run of the build task
+            const keys = Object.keys(uniteConfiguration.clientPackages);
+
+            for (let i = 0; i < keys.length; i++) {
+                const pkg = uniteConfiguration.clientPackages[keys[i]];
+                if (pkg.transpileAlias) {
+                    const parts = pkg.transpileAlias.split("/");
+                    const transpileFolder = fileSystem.pathCombine(engineVariables.www.packageFolder, parts[0]);
+                    try {
+                        const exists = await fileSystem.directoryExists(transpileFolder);
+
+                        if (exists) {
+                            logger.info(`Removing transpiled package ${transpileFolder}`);
+                            await fileSystem.directoryDelete(transpileFolder);
+                        }
+                    } catch (err) {
+                        logger.error(`Removing ${transpileFolder} failed`, err);
+                        return 1;
+                    }
+                }
+            }
+        }
+
+        return ret;
     }
 
     private configDefaults(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void {

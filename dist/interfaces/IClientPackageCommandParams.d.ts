@@ -20,6 +20,12 @@ export interface IClientPackageCommandParams extends IEngineCommandParams {
     map: string | undefined | null;
     loaders: string | undefined | null;
     noScript: boolean | undefined;
+    transpileAlias: string | undefined | null;
+    transpileSrc: string[] | undefined | null;
+    transpileTransforms: {
+        from: string;
+        to: string;
+    }[] | undefined | null;
     profile: string | undefined | null;
     packageManager: string | undefined | null;
 }

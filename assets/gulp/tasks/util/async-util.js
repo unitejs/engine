@@ -32,6 +32,19 @@ async function fileExists (filename) {
     }
 }
 
+async function directoryExists (filename) {
+    try {
+        const stat = await util.promisify(fs.stat)(filename);
+        return stat.isDirectory();
+    } catch (err) {
+        if (err.code !== "ENOENT") {
+            display.error(`Error accessing '${filename}`, err);
+            process.exit(1);
+        }
+        return false;
+    }
+}
+
 function zipFolder (sourceFolder, destFile) {
     return new Promise((resolve) => {
         const fullPath = path.resolve(sourceFolder);
@@ -70,9 +83,10 @@ function zipFolder (sourceFolder, destFile) {
 }
 
 module.exports = {
+    directoryExists,
+    fileExists,
     stream,
     streamToPromise,
-    fileExists,
     zipFolder
 };
 

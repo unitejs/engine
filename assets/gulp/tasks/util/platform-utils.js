@@ -47,8 +47,8 @@ async function gatherFiles (platformName, wwwRootFolder) {
         buildConfiguration.bundle,
         buildConfiguration.minify
     );
-    Object.keys(packageFiles).forEach((key) => {
-        files = files.concat({"src": packageFiles[key]});
+    packageFiles.forEach((packageFile) => {
+        files = files.concat({"src": packageFile});
     });
 
     files = files.concat(clientPackages.getAssets(uniteConfig).map(a => {

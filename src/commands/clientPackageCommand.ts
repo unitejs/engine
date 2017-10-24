@@ -57,6 +57,9 @@ export class ClientPackageCommand extends EngineCommandBase implements IEngineCo
         clientPackage.isPackage = args.isPackage || clientPackage.isPackage;
         clientPackage.noScript = args.noScript || clientPackage.noScript;
         clientPackage.assets = args.assets || clientPackage.assets;
+        clientPackage.transpileAlias = args.transpileAlias || clientPackage.transpileAlias;
+        clientPackage.transpileSrc = args.transpileSrc || clientPackage.transpileSrc;
+        clientPackage.transpileTransforms = args.transpileTransforms || clientPackage.transpileTransforms;
 
         try {
             clientPackage.testingAdditions = this.mapParser(args.testingAdditions) || clientPackage.testingAdditions;
@@ -135,6 +138,15 @@ export class ClientPackageCommand extends EngineCommandBase implements IEngineCo
         }
         if (clientPackage.noScript) {
             this._logger.info("noScript", { noScript: clientPackage.noScript });
+        }
+        if (clientPackage.transpileAlias) {
+            this._logger.info("transpileAlias", { transpileAlias: clientPackage.transpileAlias });
+        }
+        if (clientPackage.transpileSrc) {
+            this._logger.info("transpileSrc", { transpileSrc: clientPackage.transpileSrc });
+        }
+        if (clientPackage.transpileTransforms) {
+            this._logger.info("transpileTransforms", { transpileSrc: clientPackage.transpileTransforms });
         }
 
         this._logger.info("");

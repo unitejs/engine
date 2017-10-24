@@ -38,80 +38,46 @@ export class Vue extends SharedAppFramework {
 
         engineVariables.toggleDevDependency(["babel-eslint"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
 
-        engineVariables.toggleClientPackage(
-            "vue",
-            "dist/vue.runtime.js",
-            "dist/vue.runtime.min.js",
-            undefined,
-            false,
-            "both",
-            "none",
-            false,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            mainCondition);
+        engineVariables.toggleClientPackage("vue", {
+                                                name: "vue",
+                                                main: "dist/vue.runtime.js",
+                                                mainMinified: "dist/vue.runtime.min.js",
+                                                includeMode: "both"
+                                            },
+                                            mainCondition);
 
-        engineVariables.toggleClientPackage(
-            "vue-router",
-            "dist/vue-router.js",
-            "dist/vue-router.min.js",
-            undefined,
-            false,
-            "both",
-            "none",
-            false,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            mainCondition);
+        engineVariables.toggleClientPackage("vue-router", {
+                                                name: "vue-router",
+                                                main: "dist/vue-router.js",
+                                                mainMinified: "dist/vue-router.min.js",
+                                                includeMode: "both"
+                                            },
+                                            mainCondition);
 
-        engineVariables.toggleClientPackage(
-            "vue-class-component",
-            "dist/vue-class-component.js",
-            "dist/vue-class-component.min.js",
-            undefined,
-            false,
-            "both",
-            "none",
-            false,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            mainCondition);
+        engineVariables.toggleClientPackage("vue-class-component", {
+                                                name: "vue-class-component",
+                                                main: "dist/vue-class-component.js",
+                                                mainMinified: "dist/vue-class-component.min.js",
+                                                includeMode: "both"
+                                            },
+                                            mainCondition);
 
-        engineVariables.toggleClientPackage(
-            "require-css",
-            "css.js",
-            undefined,
-            undefined,
-            false,
-            "both",
-            "none",
-            false,
-            undefined,
-            { css: "require-css" },
-            undefined,
-            undefined,
-            mainCondition && super.condition(uniteConfiguration.bundler, "RequireJS"));
+        engineVariables.toggleClientPackage("require-css", {
+                                                name: "require-css",
+                                                main: "css.js",
+                                                includeMode: "both",
+                                                map: { css: "require-css" }
+                                            },
+                                            mainCondition && super.condition(uniteConfiguration.bundler, "RequireJS"));
 
-        engineVariables.toggleClientPackage(
-            "systemjs-plugin-css",
-            "css.js",
-            undefined,
-            undefined,
-            false,
-            "both",
-            "none",
-            false,
-            undefined,
-            { css: "systemjs-plugin-css" },
-            { "*.css" : "css" },
-            undefined,
-            mainCondition &&
+        engineVariables.toggleClientPackage("systemjs-plugin-css", {
+                                                name: "systemjs-plugin-css",
+                                                main: "css.js",
+                                                includeMode: "both",
+                                                map: { css: "systemjs-plugin-css" },
+                                                loaders: { "*.css" : "css" }
+                                            },
+                                            mainCondition &&
             (super.condition(uniteConfiguration.bundler, "Browserify") ||
              super.condition(uniteConfiguration.bundler, "SystemJSBuilder") ||
              super.condition(uniteConfiguration.bundler, "Webpack")));

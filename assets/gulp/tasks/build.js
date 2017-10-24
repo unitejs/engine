@@ -18,6 +18,7 @@ const htmlMin = require("gulp-htmlmin");
 const deleteEmpty = require("delete-empty");
 const envUtil = require("./util/env-util");
 require("./build-transpile");
+require("./build-transpile-modules");
 require("./build-bundle-app");
 require("./build-bundle-vendor");
 require("./build-lint");
@@ -184,6 +185,7 @@ gulp.task("build", async () => {
             "build-clean",
             "build-css-components",
             "build-css-post-components",
+            "build-transpile-modules",
             "build-transpile",
             "build-lint",
             "build-css-app",
