@@ -56,6 +56,7 @@ gulp.task("build-transpile-modules", async () => {
 
                 let errorCount = 0;
 
+                const lowerModule = uniteConfig.moduleType.toLowerCase();
                 if (clientPackage.transpileLanguage === "JavaScript") {
                     await asyncUtil.stream(gulp.src(srcs, {"base": baseFolder})
                         .pipe(multiReplace(clientPackage.transpileTransforms))
@@ -64,7 +65,7 @@ gulp.task("build-transpile-modules", async () => {
                                 [
                                     "env",
                                     {
-                                        "modules": uniteConfig.moduleType.toLowerCase()
+                                        "modules": lowerModule
                                     }
                                 ]
                             ],
@@ -91,8 +92,7 @@ gulp.task("build-transpile-modules", async () => {
                     const tsProject = typescript.createProject({
                         "target": "es5",
                         "experimentalDecorators": true,
-                        "module": uniteConfig.moduleType === "systemjs"
-                            ? "system" : uniteConfig.moduleType.toLowerCase()
+                        "module": lowerModule === "systemjs" ? "system" : lowerModule
                     });
                     await asyncUtil.stream(gulp.src(srcs, {"base": baseFolder})
                         .pipe(multiReplace(clientPackage.transpileTransforms))

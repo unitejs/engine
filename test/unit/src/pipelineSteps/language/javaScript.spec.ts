@@ -104,8 +104,8 @@ describe("JavaScript", () => {
             };
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
 
-            Chai.expect(packageJsonDevDependencies["babel-core"]).to.be.equal(undefined);
-            Chai.expect(packageJsonDevDependencies["babel-preset-env"]).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["babel-core"]).to.be.equal("1.2.3");
+            Chai.expect(packageJsonDevDependencies["babel-preset-env"]).to.be.equal("1.2.3");
         });
     });
 

@@ -28,7 +28,7 @@ describe("EngineVariables", () => {
         it("can fail when there are no peer dependencies", async () => {
             const obj = new EngineVariables();
             try {
-                obj.toggleClientPackage({ name: "package", main: "main.js", mainMinified: "main.min.js", includeMode: "app" }, true);
+                obj.toggleClientPackage("package", { name: "package", main: "main.js", mainMinified: "main.min.js", includeMode: "app" }, true);
             } catch (err) {
                 Chai.expect(err.message).to.contain("missing");
             }
@@ -38,7 +38,7 @@ describe("EngineVariables", () => {
             const obj = new EngineVariables();
             obj.engineDependencies = peerDependencies;
             try {
-                obj.toggleClientPackage({ name: "package", main: "main.js", mainMinified: "main.min.js", includeMode: "app" }, true);
+                obj.toggleClientPackage("package", { name: "package", main: "main.js", mainMinified: "main.min.js", includeMode: "app" }, true);
             } catch (err) {
                 Chai.expect(err.message).to.contain("Missing");
             }
@@ -48,7 +48,7 @@ describe("EngineVariables", () => {
             const obj = new EngineVariables();
             peerDependencies.package = "^1.2.3";
             obj.engineDependencies = peerDependencies;
-            obj.toggleClientPackage({
+            obj.toggleClientPackage("package", {
                                         name: "package",
                                         main: "main.js",
                                         mainMinified: "main.min.js",
@@ -78,7 +78,7 @@ describe("EngineVariables", () => {
             const obj = new EngineVariables();
             peerDependencies.package = "^1.2.3";
             obj.engineDependencies = peerDependencies;
-            obj.toggleClientPackage({
+            obj.toggleClientPackage("package", {
                                         name: "package",
                                         main: "main.js",
                                         mainMinified: "main.min.js",
@@ -98,7 +98,7 @@ describe("EngineVariables", () => {
             const obj = new EngineVariables();
             peerDependencies.package = "^1.2.3";
             obj.engineDependencies = peerDependencies;
-            obj.toggleClientPackage({
+            obj.toggleClientPackage("package", {
                                         name: "package",
                                         main: "main.js",
                                         mainMinified: "main.min.js",
@@ -109,7 +109,7 @@ describe("EngineVariables", () => {
                                         assets: "**/*.css"
                                     },
                                     true);
-            obj.toggleClientPackage({
+            obj.toggleClientPackage("package", {
                                         name: "package",
                                         main: "main.js",
                                         mainMinified: "main.min.js",
@@ -199,7 +199,7 @@ describe("EngineVariables", () => {
             const obj = new EngineVariables();
             peerDependencies.package = "^1.2.3";
             obj.engineDependencies = peerDependencies;
-            obj.toggleClientPackage({
+            obj.toggleClientPackage("package", {
                                         name: "package",
                                         main: "main.js",
                                         mainMinified: "main.min.js",
@@ -218,7 +218,7 @@ describe("EngineVariables", () => {
             const obj = new EngineVariables();
             peerDependencies.package = "^1.2.3";
             obj.engineDependencies = peerDependencies;
-            obj.toggleClientPackage({
+            obj.toggleClientPackage("package", {
                                         name: "package",
                                         main: "main.js",
                                         mainMinified: "main.min.js",
@@ -237,7 +237,7 @@ describe("EngineVariables", () => {
             const obj = new EngineVariables();
             peerDependencies.package = "^1.2.3";
             obj.engineDependencies = peerDependencies;
-            obj.toggleClientPackage({
+            obj.toggleClientPackage("package", {
                                         name: "package",
                                         main: "main.js",
                                         mainMinified: "main.min.js",
@@ -259,7 +259,7 @@ describe("EngineVariables", () => {
             const obj = new EngineVariables();
             peerDependencies.package = "^1.2.3";
             obj.engineDependencies = peerDependencies;
-            obj.toggleClientPackage({
+            obj.toggleClientPackage("package", {
                                         name: "package",
                                         main: "main.js",
                                         mainMinified: "main.min.js",
@@ -279,7 +279,7 @@ describe("EngineVariables", () => {
 
         it("can not lookup version if supplied", async () => {
             const obj = new EngineVariables();
-            obj.toggleClientPackage({
+            obj.toggleClientPackage("package", {
                                         name: "package",
                                         main: "main.js",
                                         mainMinified: "main.min.js",

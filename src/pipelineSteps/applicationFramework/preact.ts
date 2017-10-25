@@ -10,6 +10,7 @@ import { EsLintConfiguration } from "../../configuration/models/eslint/esLintCon
 import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
 import { TsLintConfiguration } from "../../configuration/models/tslint/tsLintConfiguration";
 import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
+import { UniteClientPackage } from "../../configuration/models/unite/uniteClientPackage";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { JavaScriptConfiguration } from "../../configuration/models/vscode/javaScriptConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
@@ -22,11 +23,6 @@ export class Preact extends SharedAppFramework {
 
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         if (mainCondition) {
-            if (super.condition(uniteConfiguration.moduleType, "AMD") || super.condition(uniteConfiguration.moduleType, "SystemJS")) {
-                logger.error(`Preact does not support moduleType ${uniteConfiguration.moduleType}`);
-                return 1;
-            }
-
             ArrayHelper.addRemove(uniteConfiguration.viewExtensions, "html", true);
 
             ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "tsx",
@@ -46,20 +42,43 @@ export class Preact extends SharedAppFramework {
         engineVariables.toggleDevDependency(["unitejs-preact-protractor-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
         engineVariables.toggleDevDependency(["unitejs-preact-webdriver-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
 
-        engineVariables.toggleClientPackage("preact", {
-                                                name: "preact",
-                                                main: "dist/preact.dev.js",
-                                                mainMinified: "dist/preact.min.js",
-                                                includeMode: "both"
-                                            },
-                                            mainCondition);
+        const isTranspiled = super.condition(uniteConfiguration.moduleType, "AMD") || super.condition(uniteConfiguration.moduleType, "SystemJS");
+        const preactPackage: UniteClientPackage = {
+                                name: "preact",
+                                main: "dist/preact.dev.js",
+                                mainMinified: "dist/preact.min.js",
+                                includeMode: "both"
+                            };
 
-        engineVariables.toggleClientPackage("preact-router", {
-                                                name: "preact-router",
-                                                main: "dist/preact-router.js",
-                                                includeMode: "both"
+        const preactRouterPackage: UniteClientPackage = {
+                                name: "preact-router",
+                                main: "dist/preact-router.js",
+                                includeMode: "both"
+                            };
+
+        if (isTranspiled) {
+            preactPackage.main = "dist/preact.esm.js";
+            preactPackage.mainMinified = undefined;
+            preactPackage.transpileAlias = "preact-transpiled";
+            preactPackage.transpileLanguage = "JavaScript";
+            preactPackage.transpileSrc = [ "dist/preact.esm.js" ];
+
+            preactRouterPackage.main = "dist/preact-router.es.js";
+            preactRouterPackage.transpileAlias = "preact-router-transpiled";
+            preactRouterPackage.transpileLanguage = "JavaScript";
+            preactRouterPackage.transpileSrc = [ "dist/preact-router.es.js" ];
+        }
+
+        engineVariables.toggleClientPackage("preact", preactPackage, mainCondition);
+        engineVariables.toggleClientPackage("preact-router", preactRouterPackage, mainCondition);
+
+        engineVariables.toggleClientPackage("require-css", {
+                                                name: "require-css",
+                                                main: "css.js",
+                                                includeMode: "both",
+                                                map: { css: "require-css" }
                                             },
-                                            mainCondition);
+                                            mainCondition && super.condition(uniteConfiguration.bundler, "RequireJS"));
 
         engineVariables.toggleClientPackage("systemjs-plugin-css", {
                                                 name: "systemjs-plugin-css",
@@ -72,6 +91,13 @@ export class Preact extends SharedAppFramework {
             (super.condition(uniteConfiguration.bundler, "Browserify") ||
                 super.condition(uniteConfiguration.bundler, "SystemJSBuilder") ||
                 super.condition(uniteConfiguration.bundler, "Webpack")));
+
+        if (mainCondition && super.condition(uniteConfiguration.taskManager, "Gulp") && super.condition(uniteConfiguration.bundler, "RequireJS")) {
+            engineVariables.buildTranspileInclude.push("const replace = require(\"gulp-replace\");");
+            engineVariables.buildTranspileInclude.push("const clientPackages = require(\"./util/client-packages\");");
+            engineVariables.buildTranspilePreBuild.push(".pipe(replace(/import \"\.\\/(.*?).css\";/g,");
+            engineVariables.buildTranspilePreBuild.push("    `import \"\${clientPackages.getTypeMap(uniteConfig, \"css\", buildConfiguration.minify)}!./$1\";`))");
+        }
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {

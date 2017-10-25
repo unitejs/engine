@@ -44,6 +44,7 @@ export class Polymer extends SharedAppFramework {
                                             mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
 
         engineVariables.toggleDevDependency(["babel-eslint"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
+        engineVariables.toggleDevDependency(["@types/polymer"], mainCondition && super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
 
         engineVariables.toggleClientPackage("@webcomponents/webcomponentsjs-es5adapter", {
                                                 name: "@webcomponents/webcomponentsjs",

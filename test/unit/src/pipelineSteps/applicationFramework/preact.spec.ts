@@ -111,14 +111,6 @@ describe("Preact", () => {
             Chai.expect(uniteConfigurationStub.sourceExtensions).to.contain("tsx");
             Chai.expect(uniteConfigurationStub.viewExtensions.length).to.be.equal(1);
         });
-
-        it("can fail if module type is not commonjs", async () => {
-            const obj = new Preact();
-            uniteConfigurationStub.moduleType = "AMD";
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
-            Chai.expect(res).to.be.equal(1);
-            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("does not support moduleType");
-        });
     });
 
     describe("configure", () => {
