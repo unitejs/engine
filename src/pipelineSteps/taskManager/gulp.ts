@@ -92,8 +92,10 @@ export class Gulp extends PipelineStepBase {
                                             ],
                                             mainCondition);
 
+        // Babel and TypeScript are always needed now as client packages can be transpiled from either source language
         engineVariables.toggleDevDependency(["gulp-babel"], mainCondition);
-        engineVariables.toggleDevDependency(["gulp-typescript"], mainCondition && super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
+        engineVariables.toggleDevDependency(["gulp-typescript", "typescript"], mainCondition);
+
         engineVariables.toggleDevDependency(["gulp-eslint"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
         engineVariables.toggleDevDependency(["gulp-tslint"], mainCondition && super.condition(uniteConfiguration.linter, "TSLint"));
         engineVariables.toggleDevDependency(["webpack-stream"], mainCondition && super.condition(uniteConfiguration.bundler, "Webpack"));

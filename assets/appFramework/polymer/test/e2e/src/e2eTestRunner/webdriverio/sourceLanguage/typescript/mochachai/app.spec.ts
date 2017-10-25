@@ -28,7 +28,7 @@ describe("App", () => {
     it("the font size is set", () => {
         return browser
             .loadAndWaitForPolymerPage("/")
-            .element(".child")
+            .customShadowRoot("#root unite-app::sr iron-pages unite-child::sr div")
             .getCssProperty("font-size")
             .then((fontSize) => {
                 expect(fontSize.value).to.equal("20px");

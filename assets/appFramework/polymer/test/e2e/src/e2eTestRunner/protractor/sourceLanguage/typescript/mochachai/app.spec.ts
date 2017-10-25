@@ -3,7 +3,7 @@
  */
 /// <reference types="unitejs-polymer-protractor-plugin"/>
 import { expect } from "chai";
-import { $, browser, by } from "protractor";
+import { $, browser, by, element } from "protractor";
 
 describe("App", () => {
     it("the title is set", (done) => {
@@ -32,7 +32,8 @@ describe("App", () => {
     it("the font size is set", (done) => {
         browser.loadAndWaitForPolymerPage("/")
             .then(() => {
-                element(by.customShadowRoot("#root unite-app::sr iron-pages unite-child::sr div ")).getCssValue("font-size")
+                element(by.customShadowRoot("#root unite-app::sr iron-pages unite-child::sr div "))
+                    .getCssValue("font-size")
                     .then((fontSize) => {
                         expect(fontSize).to.equal("20px");
                         done();

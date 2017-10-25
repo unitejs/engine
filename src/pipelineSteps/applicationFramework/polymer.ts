@@ -5,6 +5,7 @@ import { ArrayHelper } from "unitejs-framework/dist/helpers/arrayHelper";
 import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
+import { BabelConfiguration } from "../../configuration/models/babel/babelConfiguration";
 import { EsLintConfiguration } from "../../configuration/models/eslint/esLintConfiguration";
 import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
 import { TsLintConfiguration } from "../../configuration/models/tslint/tsLintConfiguration";
@@ -39,9 +40,15 @@ export class Polymer extends SharedAppFramework {
         engineVariables.toggleDevDependency(["unitejs-polymer-protractor-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
         engineVariables.toggleDevDependency(["unitejs-polymer-webdriver-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
 
+        engineVariables.toggleDevDependency(["babel-plugin-transform-decorators-legacy", "babel-plugin-transform-class-properties"],
+                                            mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
+
+        engineVariables.toggleDevDependency(["babel-eslint"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
+
         engineVariables.toggleClientPackage("@webcomponents/webcomponentsjs-es5adapter", {
                                                 name: "@webcomponents/webcomponentsjs",
                                                 main: "custom-elements-es5-adapter.js",
+                                                transpileLanguage: "JavaScript",
                                                 includeMode: "both",
                                                 scriptIncludeMode: "both"
                                             },
@@ -50,6 +57,7 @@ export class Polymer extends SharedAppFramework {
         engineVariables.toggleClientPackage("@webcomponents/webcomponentsjs", {
                                                 name: "@webcomponents/webcomponentsjs",
                                                 main: "webcomponents-lite.js",
+                                                transpileLanguage: "JavaScript",
                                                 includeMode: "both",
                                                 scriptIncludeMode: "both"
                                             },
@@ -59,6 +67,7 @@ export class Polymer extends SharedAppFramework {
                                                 name: "@webcomponents/shadycss",
                                                 transpileAlias: "@webcomponents-transpiled/shadycss",
                                                 transpileSrc: ["entrypoints/*.js", "src/**/*.js"],
+                                                transpileLanguage: "JavaScript",
                                                 main: "*",
                                                 includeMode: "both"
                                             },
@@ -68,6 +77,7 @@ export class Polymer extends SharedAppFramework {
                                                 name: "@polymer/polymer",
                                                 transpileAlias: "@polymer-transpiled/polymer",
                                                 transpileSrc: ["polymer.js", "polymer-element.js", "lib/**/*.js"],
+                                                transpileLanguage: "JavaScript",
                                                 transpileTransforms: [
                                                     {
                                                         from: "import '(.*)@webcomponents",
@@ -86,6 +96,7 @@ export class Polymer extends SharedAppFramework {
         engineVariables.toggleClientPackage("@polymer/app-route", {
                                                 name: "@polymer/app-route",
                                                 transpileAlias: "@polymer-transpiled/app-route",
+                                                transpileLanguage: "JavaScript",
                                                 transpileSrc: ["*.js"],
                                                 main: "*",
                                                 includeMode: "both"
@@ -95,7 +106,18 @@ export class Polymer extends SharedAppFramework {
         engineVariables.toggleClientPackage("@polymer/iron-location", {
                                                 name: "@polymer/iron-location",
                                                 transpileAlias: "@polymer-transpiled/iron-location",
+                                                transpileLanguage: "JavaScript",
                                                 transpileSrc: ["*.js"],
+                                                main: "*",
+                                                includeMode: "both"
+                                            },
+                                            mainCondition);
+
+        engineVariables.toggleClientPackage("@polymer/decorators", {
+                                                name: "@polymer/decorators",
+                                                transpileAlias: "@polymer-transpiled/decorators",
+                                                transpileLanguage: "TypeScript",
+                                                transpileSrc: ["src/*.ts"],
                                                 main: "*",
                                                 includeMode: "both"
                                             },
@@ -134,8 +156,15 @@ export class Polymer extends SharedAppFramework {
             engineVariables.buildTranspilePreBuild.push("            `import \"text!./$1.html\";`))");
         }
 
+        const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
+        if (babelConfiguration) {
+            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-class-properties", mainCondition);
+            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", mainCondition);
+        }
+
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
+            ObjectHelper.addRemove(esLintConfiguration, "parser", "babel-eslint", mainCondition);
             ObjectHelper.addRemove(esLintConfiguration.rules, "no-unused-vars", 1, mainCondition);
         }
 
@@ -172,14 +201,22 @@ export class Polymer extends SharedAppFramework {
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         if (mainCondition) {
-            const sourceExtension = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? ".ts" : ".js";
+            const isTypeScript = super.condition(uniteConfiguration.sourceLanguage, "TypeScript");
+            const sourceExtension = isTypeScript ? ".ts" : ".js";
 
-            let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [
+            const srcFiles = [
                 `app${sourceExtension}`,
                 `child/child${sourceExtension}`,
                 `bootstrapper${sourceExtension}`,
                 `entryPoint${sourceExtension}`
-            ]);
+            ];
+
+            if (isTypeScript) {
+                srcFiles.push("customTypes/polymer-module.d.ts");
+                srcFiles.push("customTypes/polymer-element.d.ts");
+            }
+
+            let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, srcFiles);
 
             if (ret === 0) {
                 ret = await super.generateAppHtml(logger, fileSystem, uniteConfiguration, engineVariables, ["app.html", "child/child.html"]);

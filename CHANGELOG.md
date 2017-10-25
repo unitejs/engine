@@ -1,8 +1,11 @@
 # Changelog
 
-## 1.5.2
+## 1.6.0
 
+* Added Polymer support
+* Added support for transpilation of npm packages during build
 * Fixed undefined global module entry in app-module-config
+* Fixed order of transform-class-properties, transform-decorators-legacy is important
 
 ## 1.5.1
 

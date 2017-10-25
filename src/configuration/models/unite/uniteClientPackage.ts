@@ -21,5 +21,6 @@ export class UniteClientPackage {
     public noScript?: boolean;
     public transpileAlias?: string;
     public transpileSrc?: string[];
+    public transpileLanguage?: string;
     public transpileTransforms?: { from: string; to: string}[];
 }

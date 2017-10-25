@@ -5,6 +5,7 @@ const display = require("./util/display");
 const uc = require("./util/unite-config");
 const gulp = require("gulp");
 const babel = require("gulp-babel");
+const typescript = require("gulp-typescript");
 const path = require("path");
 const uglify = require("gulp-uglify");
 const gutil = require("gulp-util");
@@ -55,26 +56,58 @@ gulp.task("build-transpile-modules", async () => {
 
                 let errorCount = 0;
 
-                await asyncUtil.stream(gulp.src(srcs, {"base": baseFolder})
-                    .pipe(multiReplace(clientPackage.transpileTransforms))
-                    .pipe(babel())
-                    .on("error", (err) => {
-                        display.error(err.message);
-                        if (err.codeFrame) {
-                            display.error(`\n${err.codeFrame}`);
-                        }
-                        errorCount++;
-                    })
-                    .on("error", errorUtil.handleErrorEvent)
-                    .pipe(buildConfiguration.minify ? uglify()
+                if (clientPackage.transpileLanguage === "JavaScript") {
+                    await asyncUtil.stream(gulp.src(srcs, {"base": baseFolder})
+                        .pipe(multiReplace(clientPackage.transpileTransforms))
+                        .pipe(babel({
+                            "presets": [
+                                [
+                                    "env",
+                                    {
+                                        "modules": uniteConfig.moduleType.toLowerCase()
+                                    }
+                                ]
+                            ],
+                            "babelrc": false
+                        }))
                         .on("error", (err) => {
-                            display.error(err.toString());
-                        }) : gutil.noop())
+                            display.error(err.message);
+                            if (err.codeFrame) {
+                                display.error(`\n${err.codeFrame}`);
+                            }
+                            errorCount++;
+                        })
+                        .on("error", errorUtil.handleErrorEvent)
+                        .pipe(buildConfiguration.minify ? uglify()
+                            .on("error", (err) => {
+                                display.error(err.toString());
+                            }) : gutil.noop())
 
-                    .pipe(gulp.dest(destFolder))
-                    .on("end", () => {
-                        errorUtil.handleErrorCount(errorCount);
-                    }));
+                        .pipe(gulp.dest(destFolder))
+                        .on("end", () => {
+                            errorUtil.handleErrorCount(errorCount);
+                        }));
+                } else if (clientPackage.transpileLanguage === "TypeScript") {
+                    const tsProject = typescript.createProject({
+                        "target": "es5",
+                        "experimentalDecorators": true,
+                        "module": uniteConfig.moduleType === "systemjs"
+                            ? "system" : uniteConfig.moduleType.toLowerCase()
+                    });
+                    await asyncUtil.stream(gulp.src(srcs, {"base": baseFolder})
+                        .pipe(multiReplace(clientPackage.transpileTransforms))
+                        .pipe(tsProject(typescript.reporter.nullReporter()))
+                        .on("error", (err) => {
+                            display.error(err.message);
+                            errorCount++;
+                        })
+                        .on("error", errorUtil.handleErrorEvent)
+                        .js
+                        .pipe(gulp.dest(destFolder))
+                        .on("end", () => {
+                            errorUtil.handleErrorCount(errorCount);
+                        }));
+                }
             }
         }
     }

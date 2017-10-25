@@ -58,6 +58,7 @@ export class ClientPackageCommand extends EngineCommandBase implements IEngineCo
         clientPackage.noScript = args.noScript || clientPackage.noScript;
         clientPackage.assets = args.assets || clientPackage.assets;
         clientPackage.transpileAlias = args.transpileAlias || clientPackage.transpileAlias;
+        clientPackage.transpileLanguage = args.transpileLanguage || clientPackage.transpileLanguage;
         clientPackage.transpileSrc = args.transpileSrc || clientPackage.transpileSrc;
         clientPackage.transpileTransforms = args.transpileTransforms || clientPackage.transpileTransforms;
 
@@ -141,6 +142,9 @@ export class ClientPackageCommand extends EngineCommandBase implements IEngineCo
         }
         if (clientPackage.transpileAlias) {
             this._logger.info("transpileAlias", { transpileAlias: clientPackage.transpileAlias });
+        }
+        if (clientPackage.transpileLanguage) {
+            this._logger.info("transpiltranspileLanguageeAlias", { transpileLanguage: clientPackage.transpileAlias });
         }
         if (clientPackage.transpileSrc) {
             this._logger.info("transpileSrc", { transpileSrc: clientPackage.transpileSrc });
