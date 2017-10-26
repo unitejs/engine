@@ -96,21 +96,38 @@ export abstract class EngineCommandBase {
         engineVariables.packageManager = this._pipeline.getStep<IPackageManager>(new PipelineKey("packageManager", uniteConfiguration.packageManager));
     }
 
-    protected mapParser(input: string): { [id: string]: string } {
+    protected mapParser(input: string[]): { [id: string]: string } {
         let parsedMap: { [id: string]: string };
 
         if (input !== undefined && input !== null && input.length > 0) {
             parsedMap = {};
-            const splitAdditions = input.split(",");
 
-            splitAdditions.forEach(splitAddition => {
-                const parts = splitAddition.split("=");
+            input.forEach(item => {
+                const parts = item.split("=");
                 if (parts.length === 2) {
                     parsedMap[parts[0]] = parts[1];
                 } else {
                     throw new Error(`The input is not formed correctly '${input}'`);
                 }
             });
+        }
+
+        return parsedMap;
+    }
+
+    protected mapFromArrayParser(input: string[]): { [id: string]: string } {
+        let parsedMap: { [id: string]: string };
+
+        if (input !== undefined && input !== null && input.length > 0) {
+            parsedMap = {};
+
+            if (input.length % 2 !== 0) {
+                throw new Error(`The input is not formed correctly '${input}'`);
+            } else {
+                for (let i = 0; i < input.length; i += 2) {
+                    parsedMap[input[i]] = input[i + 1];
+                }
+            }
         }
 
         return parsedMap;

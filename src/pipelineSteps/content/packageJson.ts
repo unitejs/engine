@@ -58,6 +58,10 @@ export class PackageJson extends PipelineStepBase {
 
             for (let i = 0; i < keys.length; i++) {
                 const pkg = uniteConfiguration.clientPackages[keys[i]];
+
+                // Fill in package name for any that used to be just addressed by their key
+                pkg.name = pkg.name || keys[i];
+
                 if (pkg.transpileAlias) {
                     const parts = pkg.transpileAlias.split("/");
                     const transpileFolder = fileSystem.pathCombine(engineVariables.www.packageFolder, parts[0]);

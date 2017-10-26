@@ -15,7 +15,7 @@ export declare class UniteClientPackage {
     includeMode?: IncludeMode;
     scriptIncludeMode?: ScriptIncludeMode;
     isPackage?: boolean;
-    assets?: string;
+    assets?: string[];
     map?: {
         [id: string]: string;
     };
@@ -28,7 +28,6 @@ export declare class UniteClientPackage {
     transpileSrc?: string[];
     transpileLanguage?: string;
     transpileTransforms?: {
-        from: string;
-        to: string;
-    }[];
+        [id: string]: string;
+    };
 }

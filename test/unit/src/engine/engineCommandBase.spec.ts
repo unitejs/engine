@@ -23,8 +23,12 @@ class TestCommand extends EngineCommandBase {
         return super.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
     }
 
-    public testMapParser(input: string): { [id: string]: string } {
+    public testMapParser(input: string[]): { [id: string]: string } {
         return super.mapParser(input);
+    }
+
+    public testMapFromArrayParser(input: string[]): { [id: string]: string } {
+        return super.mapFromArrayParser(input);
     }
 }
 
@@ -179,7 +183,7 @@ describe("EngineCommandBase", () => {
             const obj = new TestCommand();
             obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
             try {
-                obj.testMapParser("khjlkjlk");
+                obj.testMapParser(["khjlkjlk"]);
             } catch (err) {
                 Chai.expect(err.toString()).to.contain("not formed");
             }
@@ -188,8 +192,34 @@ describe("EngineCommandBase", () => {
         it("can be called with broken input", async () => {
             const obj = new TestCommand();
             obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
-            const res = obj.testMapParser("a=1,b=2");
+            const res = obj.testMapParser(["a=1", "b=2"]);
             Chai.expect(res).to.be.deep.equal({ a: "1", b: "2" });
+        });
+    });
+
+    describe("mapFromArrayParser", () => {
+        it("can be called with no parameters", async () => {
+            const obj = new TestCommand();
+            obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
+            const res = obj.testMapFromArrayParser(undefined);
+            Chai.expect(res).to.be.equal(undefined);
+        });
+
+        it("can be called with broken input", async () => {
+            const obj = new TestCommand();
+            obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
+            try {
+                obj.testMapFromArrayParser(["khjlkjlk"]);
+            } catch (err) {
+                Chai.expect(err.toString()).to.contain("not formed");
+            }
+        });
+
+        it("can be called with broken input", async () => {
+            const obj = new TestCommand();
+            obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
+            const res = obj.testMapFromArrayParser(["a", "b"]);
+            Chai.expect(res).to.be.deep.equal({ a: "b" });
         });
     });
 });

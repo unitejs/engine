@@ -14,19 +14,16 @@ export interface IClientPackageCommandParams extends IEngineCommandParams {
     scriptIncludeMode: ScriptIncludeMode | undefined | null;
     main: string | undefined | null;
     mainMinified: string | undefined | null;
-    testingAdditions: string | undefined | null;
     isPackage: boolean | undefined;
-    assets: string | undefined | null;
-    map: string | undefined | null;
-    loaders: string | undefined | null;
+    testingAdditions: string[] | undefined | null;
+    assets: string[] | undefined | null;
+    map: string[] | undefined | null;
+    loaders: string[] | undefined | null;
     noScript: boolean | undefined;
     transpileAlias: string | undefined | null;
     transpileLanguage: string | undefined | null;
     transpileSrc: string[] | undefined | null;
-    transpileTransforms: {
-        from: string;
-        to: string;
-    }[] | undefined | null;
+    transpileTransforms: string[] | undefined | null;
     profile: string | undefined | null;
     packageManager: string | undefined | null;
 }

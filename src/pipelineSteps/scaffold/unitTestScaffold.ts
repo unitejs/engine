@@ -13,6 +13,6 @@ export class UnitTestScaffold extends PipelineStepBase {
     }
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
-        return await super.folderToggle(logger, fileSystem, engineVariables.www.unitTestFolder, engineVariables.force, mainCondition);
+        return super.folderToggle(logger, fileSystem, engineVariables.www.unitTestFolder, engineVariables.force, mainCondition);
     }
 }

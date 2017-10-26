@@ -17,9 +17,9 @@ function multiReplace (replacements) {
     return through.obj((file, encode, callback) => {
         let contents = file.contents.toString();
 
-        if (replacements && replacements.length > 0) {
-            replacements.forEach(replacement => {
-                contents = contents.replace(new RegExp(replacement.from, "g"), replacement.to);
+        if (replacements) {
+            Object.keys(replacements).forEach(replacement => {
+                contents = contents.replace(new RegExp(replacement, "g"), replacements[replacement]);
             });
         }
 

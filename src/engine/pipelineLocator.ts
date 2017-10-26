@@ -28,6 +28,6 @@ export class PipelineLocator {
         const categoryFolder = fileSystem.pathCombine(pipelineStepFolder, category);
 
         const loadFile = fileSystem.pathCombine(categoryFolder, `${item}.js`);
-        return await import(loadFile);
+        return import(loadFile);
     }
 }

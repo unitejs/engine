@@ -493,7 +493,7 @@ describe("ClientPackageCommand", () => {
                 scriptIncludeMode: undefined,
                 main: undefined,
                 mainMinified: undefined,
-                testingAdditions: "sdfgsd",
+                testingAdditions: ["sdfgsd"],
                 isPackage: undefined,
                 assets: undefined,
                 map: undefined,
@@ -831,19 +831,19 @@ describe("ClientPackageCommand", () => {
                 scriptIncludeMode: "none",
                 main: "1.js",
                 mainMinified: "2.js",
-                testingAdditions: "my-pkg=blah,my-pkg3=foo",
+                testingAdditions: ["my-pkg=blah", "my-pkg3=foo"],
                 isPackage: true,
-                assets: "**/*.css",
-                map: "a=b,c=d",
-                loaders: "text=*.html,css=*.css",
+                assets: ["**/*.css", "**/*.otf"],
+                map: ["a=b", "c=d"],
+                loaders: ["text=*.html", "css=*.css"],
                 noScript: undefined,
                 profile: undefined,
+                transpileAlias: "TAlias",
+                transpileLanguage: "JavaScript",
+                transpileSrc: ["src/**/*.js"],
+                transpileTransforms: ["a", "b"],
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSrc: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
@@ -855,9 +855,13 @@ describe("ClientPackageCommand", () => {
             Chai.expect(uniteJsonWritten.clientPackages.moment.scriptIncludeMode).to.be.equal("none");
             Chai.expect(uniteJsonWritten.clientPackages.moment.testingAdditions).to.be.deep.equal({ "my-pkg": "blah", "my-pkg3": "foo" });
             Chai.expect(uniteJsonWritten.clientPackages.moment.isPackage).to.be.equal(true);
-            Chai.expect(uniteJsonWritten.clientPackages.moment.assets).to.be.equal("**/*.css");
+            Chai.expect(uniteJsonWritten.clientPackages.moment.assets).to.be.deep.equal(["**/*.css", "**/*.otf"]);
             Chai.expect(uniteJsonWritten.clientPackages.moment.map).to.be.deep.equal({ a: "b", c: "d" });
             Chai.expect(uniteJsonWritten.clientPackages.moment.loaders).to.be.deep.equal({ text: "*.html", css: "*.css" });
+            Chai.expect(uniteJsonWritten.clientPackages.moment.transpileAlias).to.be.equal("TAlias");
+            Chai.expect(uniteJsonWritten.clientPackages.moment.transpileLanguage).to.be.equal("JavaScript");
+            Chai.expect(uniteJsonWritten.clientPackages.moment.transpileSrc).to.be.deep.equal(["src/**/*.js"]);
+            Chai.expect(uniteJsonWritten.clientPackages.moment.transpileTransforms).to.be.deep.equal({ a: "b" });
         });
     });
 

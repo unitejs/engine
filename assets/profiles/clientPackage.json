@@ -2,14 +2,12 @@
     "font-awesome": {
         "name": "font-awesome",
         "includeMode": "both",
-        "scriptIncludeMode": "none",
-        "assets": "fonts/**/*"
+        "assets": ["fonts/**/*"]
     },
     "bootstrap4": {
         "name": "bootstrap",
         "version": "4.0.0-beta",
         "includeMode": "both",
-        "scriptIncludeMode": "none",
         "noScript": true
     },
     "bluebird": {
@@ -23,8 +21,7 @@
         "name": "primsjs",
         "main": "prism.js",
         "includeMode": "both",
-        "scriptIncludeMode": "none",
-        "assets": "components/**/*.min.js"
+        "assets": ["components/**/*.min.js"]
     },
     "rxjs": {
         "name": "rxjs",

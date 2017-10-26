@@ -185,8 +185,6 @@ describe("PlatformCommand", () => {
                 platformName: "Web",
                 outputDirectory: undefined
             });
-            /* tslint:disable */
-            console.log(loggerErrorSpy.args);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
             Chai.expect(uniteJsonWritten.platforms.Web).not.to.be.equal(undefined);

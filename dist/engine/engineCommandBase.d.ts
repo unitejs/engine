@@ -20,7 +20,10 @@ export declare abstract class EngineCommandBase {
     protected loadConfiguration(outputDirectory: string, profileSource: string, profile: string | undefined | null, force: boolean): Promise<UniteConfiguration | undefined | null>;
     protected loadProfile<T>(profileSource: string, profile: string | undefined | null): Promise<T | undefined | null>;
     protected createEngineVariables(outputDirectory: string, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void;
-    protected mapParser(input: string): {
+    protected mapParser(input: string[]): {
+        [id: string]: string;
+    };
+    protected mapFromArrayParser(input: string[]): {
         [id: string]: string;
     };
 }

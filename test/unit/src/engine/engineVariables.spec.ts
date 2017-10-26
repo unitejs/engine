@@ -56,7 +56,7 @@ describe("EngineVariables", () => {
                                         includeMode: "app",
                                         scriptIncludeMode: "none",
                                         isPackage: false,
-                                        assets: "**/*.css"
+                                        assets: ["**/*.css"]
                                     },
                                     true);
             obj.buildDependencies(uniteConfiguration, packageJsonDependencies);
@@ -69,7 +69,7 @@ describe("EngineVariables", () => {
             Chai.expect(uniteConfiguration.clientPackages.package.version).to.be.equal("^1.2.3");
             Chai.expect(uniteConfiguration.clientPackages.package.preload).to.be.equal(false);
             Chai.expect(uniteConfiguration.clientPackages.package.isPackage).to.be.equal(false);
-            Chai.expect(uniteConfiguration.clientPackages.package.assets).to.be.equal("**/*.css");
+            Chai.expect(uniteConfiguration.clientPackages.package.assets).to.be.deep.equal(["**/*.css"]);
             obj.buildDevDependencies(packageJsonDevDependencies);
             Chai.should().not.exist(packageJsonDevDependencies.package);
         });
@@ -86,7 +86,7 @@ describe("EngineVariables", () => {
                                         includeMode: "app",
                                         scriptIncludeMode: "none",
                                         isPackage: false,
-                                        assets: "**/*.css"
+                                        assets: ["**/*.css"]
                                     },
                                     false);
             obj.buildDependencies(uniteConfiguration, packageJsonDependencies);
@@ -106,7 +106,7 @@ describe("EngineVariables", () => {
                                         includeMode: "app",
                                         scriptIncludeMode: "none",
                                         isPackage: false,
-                                        assets: "**/*.css"
+                                        assets: ["**/*.css"]
                                     },
                                     true);
             obj.toggleClientPackage("package", {
@@ -117,7 +117,7 @@ describe("EngineVariables", () => {
                                         includeMode: "app",
                                         scriptIncludeMode: "none",
                                         isPackage: false,
-                                        assets: "**/*.css"
+                                        assets: ["**/*.css"]
                                     },
                                     false);
             obj.buildDependencies(uniteConfiguration, packageJsonDependencies);
@@ -130,7 +130,7 @@ describe("EngineVariables", () => {
             Chai.expect(uniteConfiguration.clientPackages.package.version).to.be.equal("^1.2.3");
             Chai.expect(uniteConfiguration.clientPackages.package.preload).to.be.equal(false);
             Chai.expect(uniteConfiguration.clientPackages.package.isPackage).to.be.equal(false);
-            Chai.expect(uniteConfiguration.clientPackages.package.assets).to.be.equal("**/*.css");
+            Chai.expect(uniteConfiguration.clientPackages.package.assets).to.be.deep.equal(["**/*.css"]);
             obj.buildDevDependencies(packageJsonDevDependencies);
             Chai.should().not.exist(packageJsonDevDependencies.package);
         });
@@ -207,7 +207,7 @@ describe("EngineVariables", () => {
                                         includeMode: "app",
                                         scriptIncludeMode: "none",
                                         isPackage: false,
-                                        assets: "**/*.css"
+                                        assets: ["**/*.css"]
                                     },
                                     false);
             packageJsonDependencies.package = "blah";
@@ -226,7 +226,7 @@ describe("EngineVariables", () => {
                                         includeMode: "app",
                                         scriptIncludeMode: "none",
                                         isPackage: false,
-                                        assets: "**/*.css"
+                                        assets: ["**/*.css"]
                                     },
                                     true);
             obj.buildDependencies(uniteConfiguration, packageJsonDependencies);
@@ -245,7 +245,7 @@ describe("EngineVariables", () => {
                                         includeMode: "app",
                                         scriptIncludeMode: "none",
                                         isPackage: false,
-                                        assets: "**/*.css"
+                                        assets: ["**/*.css"]
                                     },
                                     true);
             obj.toggleDevDependency(["package"], true);
@@ -267,7 +267,7 @@ describe("EngineVariables", () => {
                                         includeMode: "test",
                                         scriptIncludeMode: "none",
                                         isPackage: false,
-                                        assets: "**/*.css"
+                                        assets: ["**/*.css"]
                                     },
                                     true);
             obj.buildDependencies(uniteConfiguration, packageJsonDependencies);
@@ -288,7 +288,7 @@ describe("EngineVariables", () => {
                                         includeMode: "test",
                                         scriptIncludeMode: "none",
                                         isPackage: false,
-                                        assets: "**/*.css"
+                                        assets: ["**/*.css"]
                                     },
                                     true);
             obj.buildDependencies(uniteConfiguration, packageJsonDependencies);

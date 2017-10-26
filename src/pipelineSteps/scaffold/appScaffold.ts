@@ -9,6 +9,6 @@ import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class AppScaffold extends PipelineStepBase {
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
-        return await super.folderToggle(logger, fileSystem, engineVariables.www.srcFolder, engineVariables.force, mainCondition);
+        return super.folderToggle(logger, fileSystem, engineVariables.www.srcFolder, engineVariables.force, mainCondition);
     }
 }

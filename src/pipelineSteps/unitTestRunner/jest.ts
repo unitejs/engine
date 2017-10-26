@@ -103,7 +103,7 @@ export class Jest extends PipelineStepBase {
             `${distFolder.replace(/\.\//, "")}/**/!(app-module-config|entryPoint).js`
         ];
         defaultConfiguration.mapCoverage = true;
-        defaultConfiguration.coverageDirectory = reportsFolder.replace(/\.\//, "<rootDir>/"),
+        defaultConfiguration.coverageDirectory = reportsFolder.replace(/\.\//, "<rootDir>/");
         defaultConfiguration.coverageReporters = [
             "json",
             "lcov",

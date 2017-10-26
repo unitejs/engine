@@ -14,7 +14,7 @@ export class UniteClientPackage {
     public includeMode?: IncludeMode;
     public scriptIncludeMode?: ScriptIncludeMode;
     public isPackage?: boolean;
-    public assets?: string;
+    public assets?: string[];
     public map?: { [id: string]: string };
     public loaders?: { [id: string]: string };
     public isModuleLoader?: boolean;
@@ -22,5 +22,5 @@ export class UniteClientPackage {
     public transpileAlias?: string;
     public transpileSrc?: string[];
     public transpileLanguage?: string;
-    public transpileTransforms?: { from: string; to: string}[];
+    public transpileTransforms?: { [id: string]: string };
 }

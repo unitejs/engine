@@ -26,7 +26,7 @@ export class Polymer extends SharedAppFramework {
                 logger.error(`Polymer does not support unit testing with ${uniteConfiguration.unitTestEngine} as it lack many modern ES features`);
                 return 1;
             }
-            if (super.condition(uniteConfiguration.unitTestEngine, "Jest")) {
+            if (super.condition(uniteConfiguration.unitTestEngine, "JSDom")) {
                 logger.error(`Polymer does not support unit testing with ${uniteConfiguration.unitTestEngine} as it has no MutationObserver support`);
                 return 1;
             }
@@ -79,16 +79,10 @@ export class Polymer extends SharedAppFramework {
                                                 transpileAlias: "@polymer-transpiled/polymer",
                                                 transpileSrc: ["polymer.js", "polymer-element.js", "lib/**/*.js"],
                                                 transpileLanguage: "JavaScript",
-                                                transpileTransforms: [
-                                                    {
-                                                        from: "import '(.*)@webcomponents",
-                                                        to: "import '@webcomponents"
-                                                    },
-                                                    {
-                                                        from: "import '(.*).js'",
-                                                        to: "import '$1'"
-                                                    }
-                                                ],
+                                                transpileTransforms: {
+                                                    "import '(.*)@webcomponents": "import '@webcomponents",
+                                                    "import '(.*).js'": "import '$1'"
+                                                },
                                                 main: "*",
                                                 includeMode: "both"
                                             },

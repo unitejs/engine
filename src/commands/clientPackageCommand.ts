@@ -35,9 +35,9 @@ export class ClientPackageCommand extends EngineCommandBase implements IEngineCo
         }
 
         if (args.operation === "add") {
-            return await this.clientPackageAdd(args, uniteConfiguration);
+            return this.clientPackageAdd(args, uniteConfiguration);
         } else {
-            return await this.clientPackageRemove(args, uniteConfiguration);
+            return this.clientPackageRemove(args, uniteConfiguration);
         }
     }
 
@@ -60,12 +60,12 @@ export class ClientPackageCommand extends EngineCommandBase implements IEngineCo
         clientPackage.transpileAlias = args.transpileAlias || clientPackage.transpileAlias;
         clientPackage.transpileLanguage = args.transpileLanguage || clientPackage.transpileLanguage;
         clientPackage.transpileSrc = args.transpileSrc || clientPackage.transpileSrc;
-        clientPackage.transpileTransforms = args.transpileTransforms || clientPackage.transpileTransforms;
 
         try {
             clientPackage.testingAdditions = this.mapParser(args.testingAdditions) || clientPackage.testingAdditions;
             clientPackage.map = this.mapParser(args.map) || clientPackage.map;
             clientPackage.loaders = this.mapParser(args.loaders) || clientPackage.loaders;
+            clientPackage.transpileTransforms = this.mapFromArrayParser(args.transpileTransforms) || clientPackage.transpileTransforms;
         } catch (err) {
             this._logger.error("Input failure", err);
             return 1;
@@ -135,7 +135,7 @@ export class ClientPackageCommand extends EngineCommandBase implements IEngineCo
             this._logger.info("map", { map: clientPackage.map });
         }
         if (clientPackage.loaders) {
-            this._logger.info("loaders", { loaders: clientPackage .loaders });
+            this._logger.info("loaders", { loaders: clientPackage.loaders });
         }
         if (clientPackage.noScript) {
             this._logger.info("noScript", { noScript: clientPackage.noScript });
@@ -144,7 +144,7 @@ export class ClientPackageCommand extends EngineCommandBase implements IEngineCo
             this._logger.info("transpileAlias", { transpileAlias: clientPackage.transpileAlias });
         }
         if (clientPackage.transpileLanguage) {
-            this._logger.info("transpiltranspileLanguageeAlias", { transpileLanguage: clientPackage.transpileAlias });
+            this._logger.info("transpileLanguage", { transpileLanguage: clientPackage.transpileLanguage });
         }
         if (clientPackage.transpileSrc) {
             this._logger.info("transpileSrc", { transpileSrc: clientPackage.transpileSrc });

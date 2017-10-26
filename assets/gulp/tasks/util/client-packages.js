@@ -157,10 +157,9 @@ function getAssets (uniteConfig) {
     Object.keys(uniteConfig.clientPackages).forEach(key => {
         const pkg = uniteConfig.clientPackages[key];
         const clientAssets = pkg.assets;
-        if (clientAssets !== undefined && clientAssets !== null && clientAssets.length > 0) {
+        if (clientAssets !== undefined && clientAssets !== null) {
             const pkgLocation = pkg.transpileAlias || pkg.name;
-            const cas = clientAssets.split(",");
-            cas.forEach((ca) => {
+            clientAssets.forEach((ca) => {
                 assets.push(path.join(`${uniteConfig.dirs.www.package}${pkgLocation}/`, ca));
             });
         }

@@ -31,9 +31,9 @@ export class BuildConfigurationCommand extends EngineCommandBase implements IEng
         this._logger.info("");
 
         if (args.operation === "add") {
-            return await this.buildConfigurationAdd(args, uniteConfiguration);
+            return this.buildConfigurationAdd(args, uniteConfiguration);
         } else {
-            return await this.buildConfigurationRemove(args, uniteConfiguration);
+            return this.buildConfigurationRemove(args, uniteConfiguration);
         }
     }
 

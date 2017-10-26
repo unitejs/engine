@@ -31,9 +31,9 @@ export class PlatformCommand extends EngineCommandBase implements IEngineCommand
         this._logger.info("");
 
         if (args.operation === "add") {
-            return await this.platformAdd(args, uniteConfiguration);
+            return this.platformAdd(args, uniteConfiguration);
         } else {
-            return await this.platformRemove(args, uniteConfiguration);
+            return this.platformRemove(args, uniteConfiguration);
         }
     }
 

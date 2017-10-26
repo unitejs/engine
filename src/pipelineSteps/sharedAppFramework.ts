@@ -121,11 +121,11 @@ export abstract class SharedAppFramework extends PipelineStepBase {
                 }
             }
 
-            return await this.copyFile(logger, fileSystem, unitTestsRunner,
-                                       "unit-bootstrap.js",
-                                       engineVariables.www.unitTestFolder,
-                                       "unit-bootstrap.js",
-                                       engineVariables.force);
+            return this.copyFile(logger, fileSystem, unitTestsRunner,
+                                 "unit-bootstrap.js",
+                                 engineVariables.www.unitTestFolder,
+                                 "unit-bootstrap.js",
+                                 engineVariables.force);
 
         } else {
             return 0;
