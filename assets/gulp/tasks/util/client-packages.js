@@ -21,8 +21,83 @@ function getModuleIds (uniteConfig, includeModes) {
     return moduleIds;
 }
 
-function getDistFiles (uniteConfig, includeModes, isBundled, isMinified) {
+function toWebUrls (files) {
+    return files.map(file => file.replace(/\\/g, "/"));
+}
+
+function stripJsExtension (file) {
+    return file.replace(/(\.js)$/, "");
+}
+
+function stripLeadingSlash (file) {
+    return file.replace(/^\.\//, "");
+}
+
+function getPackageFiles (uniteConfig, pkg, isMinified) {
     const files = [];
+
+    const pkgMain = isMinified && pkg.mainMinified ? pkg.mainMinified : pkg.main;
+
+    if (pkgMain) {
+        const mainSplit = pkgMain.split("/");
+        let main = mainSplit.pop();
+        const location = mainSplit.join("/");
+        const pkgLocation = pkg.transpileAlias || pkg.name;
+        if (pkg.isPackage) {
+            files.push(path.join(
+                `${uniteConfig.dirs.www.package}${pkgLocation}/${location}`,
+                "**/*.{js,html,css}"
+            ));
+        } else if (main === "*" && pkg.mainLib) {
+            for (let i = 0; i < pkg.mainLib.length; i++) {
+                files.push(`./${path.join(
+                    uniteConfig.dirs.www.package,
+                    `${pkgLocation}/${location}${pkg.mainLib[i]}`
+                )}`);
+            }
+        } else {
+            if (main === "*") {
+                main = "**/*.{js,html,css}";
+            }
+            files.push(path.join(`${uniteConfig.dirs.www.package}${pkgLocation}/${location}`, main));
+        }
+    }
+
+    return toWebUrls(files);
+}
+
+function getPackageAssets (uniteConfig, pkg) {
+    const files = [];
+
+    const clientAssets = pkg.assets;
+    if (clientAssets !== undefined && clientAssets !== null) {
+        const pkgLocation = pkg.transpileAlias || pkg.name;
+        clientAssets.forEach((ca) => {
+            files.push(path.join(`${uniteConfig.dirs.www.package}${pkgLocation}/`, ca));
+        });
+    }
+
+    return toWebUrls(files);
+}
+
+function getPackageTestingAdditions (uniteConfig, pkg) {
+    const files = [];
+
+    if (pkg.testingAdditions) {
+        const pkgLocation = pkg.transpileAlias || pkg.name;
+        Object.keys(pkg.testingAdditions).forEach(additionKey => {
+            files.push(`./${path.join(
+                uniteConfig.dirs.www.package,
+                `${pkgLocation}/${pkg.testingAdditions[additionKey]}`
+            )}`);
+        });
+    }
+
+    return toWebUrls(files);
+}
+
+function getDistFiles (uniteConfig, includeModes, isBundled, isMinified) {
+    let files = [];
 
     Object.keys(uniteConfig.clientPackages).forEach(key => {
         const pkg = uniteConfig.clientPackages[key];
@@ -31,30 +106,12 @@ function getDistFiles (uniteConfig, includeModes, isBundled, isMinified) {
             if (!isBundled ||
                 (isBundled && (pkg.scriptIncludeMode === "bundled" || pkg.scriptIncludeMode === "both"))) {
 
-                const pkgMain = isMinified && pkg.mainMinified ? pkg.mainMinified : pkg.main;
-
-                if (pkgMain) {
-                    const mainSplit = pkgMain.split("/");
-                    let main = mainSplit.pop();
-                    const location = mainSplit.join("/");
-                    const pkgLocation = pkg.transpileAlias || pkg.name;
-                    if (pkg.isPackage) {
-                        files.push(path.join(
-                            `${uniteConfig.dirs.www.package}${pkgLocation}/${location}`,
-                            "**/*.{js,html,css}"
-                        ));
-                    } else {
-                        if (main === "*") {
-                            main = "**/*.{js,html,css}";
-                        }
-                        files.push(path.join(`${uniteConfig.dirs.www.package}${pkgLocation}/${location}`, main));
-                    }
-                }
+                files = files.concat(getPackageFiles(uniteConfig, pkg, isMinified));
             }
         }
     });
 
-    return files;
+    return toWebUrls(files);
 }
 
 function getRequires (uniteConfig, includeModes, isMinified) {
@@ -66,7 +123,7 @@ function getRequires (uniteConfig, includeModes, isMinified) {
             (!pkg.scriptIncludeMode || pkg.scriptIncludeMode === "none")) {
             const pkgMain = isMinified && pkg.mainMinified ? pkg.mainMinified : pkg.main;
 
-            if (pkgMain && !pkgMain.endsWith("*")) {
+            if (pkgMain && pkgMain !== "*") {
                 requires.push(pkg.name);
             }
         }
@@ -91,11 +148,21 @@ async function getBundleVendorPackages (uniteConfig) {
             if (pkgMain) {
                 const pkgLocation = pkg.transpileAlias || pkg.name;
 
-                if (pkgMain.endsWith("*")) {
-                    const files = await globAsync(path.join(
-                        uniteConfig.dirs.www.package,
-                        `${pkgLocation}/${pkgMain}*/*.js`
-                    ));
+                if (pkgMain === "*") {
+                    let files = [];
+                    if (pkg.mainLib) {
+                        for (let j = 0; j < pkg.mainLib.length; j++) {
+                            files = files.concat(await globAsync(path.join(
+                                uniteConfig.dirs.www.package,
+                                `${pkgLocation}/${pkg.mainLib[j]}`
+                            )));
+                        }
+                    } else {
+                        files = await globAsync(path.join(
+                            uniteConfig.dirs.www.package,
+                            `${pkgLocation}/${pkgMain}*/*.js`
+                        ));
+                    }
 
                     files.forEach(file => {
                         const itemKey = file.replace(new RegExp(`(?:.*)${pkgLocation}(.*).js`), `${pkg.name}$1`);
@@ -123,8 +190,7 @@ function getScriptIncludes (uniteConfig, isBundled) {
             const pkgLocation = pkg.transpileAlias || pkg.name;
 
             const main = isBundled && pkg.mainMinified ? pkg.mainMinified : pkg.main;
-            const script = `./${path.join(uniteConfig.dirs.www.package, `${pkgLocation}/${main}`)
-                .replace(/\\/g, "/")}`;
+            const script = `./${path.join(uniteConfig.dirs.www.package, `${pkgLocation}/${main}`)}`;
 
             if (pkg.isModuleLoader) {
                 scriptIncludes2.push(script);
@@ -134,7 +200,7 @@ function getScriptIncludes (uniteConfig, isBundled) {
         }
     });
 
-    return scriptIncludes.concat(scriptIncludes2);
+    return toWebUrls(scriptIncludes.concat(scriptIncludes2));
 }
 
 function getTestPackages (uniteConfig) {
@@ -152,17 +218,11 @@ function getTestPackages (uniteConfig) {
 }
 
 function getAssets (uniteConfig) {
-    const assets = [];
+    let assets = [];
 
     Object.keys(uniteConfig.clientPackages).forEach(key => {
         const pkg = uniteConfig.clientPackages[key];
-        const clientAssets = pkg.assets;
-        if (clientAssets !== undefined && clientAssets !== null) {
-            const pkgLocation = pkg.transpileAlias || pkg.name;
-            clientAssets.forEach((ca) => {
-                assets.push(path.join(`${uniteConfig.dirs.www.package}${pkgLocation}/`, ca));
-            });
-        }
+        assets = assets.concat(getPackageAssets(uniteConfig, pkg));
     });
 
     return assets;
@@ -183,19 +243,16 @@ function buildModuleConfig (uniteConfig, includeModes, isMinified) {
         const pkg = uniteConfig.clientPackages[key];
         if (includeModes.indexOf(pkg.includeMode) >= 0 &&
             (!pkg.scriptIncludeMode || pkg.scriptIncludeMode === "none")) {
-            let pkgMain = isMinified && pkg.mainMinified ? pkg.mainMinified : pkg.main;
+            const pkgMain = isMinified && pkg.mainMinified ? pkg.mainMinified : pkg.main;
 
             if (pkgMain) {
                 const pkgLocation = pkg.transpileAlias || pkg.name;
-                if (pkgMain.endsWith("*")) {
-                    pkgMain = pkgMain.substring(0, pkgMain.length - 1);
-                    if (pkgMain.length > 0) {
-                        pkgMain = `/${pkgMain}`;
-                    }
-                    moduleConfig.map[pkg.name] = `${uniteConfig.dirs.www.package}${pkgLocation}${pkgMain}`;
+
+                if (pkgMain === "*") {
+                    moduleConfig.map[pkg.name] = `${uniteConfig.dirs.www.package}${pkgLocation}`;
                 } else {
                     const mainSplit = pkgMain.split("/");
-                    const main = mainSplit.pop().replace(/(\.js)$/, "");
+                    const main = stripJsExtension(mainSplit.pop());
                     let location = mainSplit.join("/");
 
                     if (pkg.isPackage) {
@@ -252,9 +309,9 @@ function getTypeMap (uniteConfig, type, isMinified) {
                     const pkgMain = isMinified && modulePkg.mainMinified ? modulePkg.mainMinified : modulePkg.main;
 
                     if (pkgMain) {
-                        const pkgMainNoJs = pkgMain.replace(/(\.js)$/, "");
+                        const pkgMainNoJs = stripJsExtension(pkgMain);
                         const pkgMainFullPath = `${uniteConfig.dirs.www.package}${moduleKey}/${pkgMainNoJs}`;
-                        return pkgMainFullPath.replace(/^\.\//, "");
+                        return stripLeadingSlash(pkgMainFullPath);
                     }
                 }
             }
@@ -270,6 +327,9 @@ module.exports = {
     getBundleVendorPackages,
     getDistFiles,
     getModuleIds,
+    getPackageAssets,
+    getPackageFiles,
+    getPackageTestingAdditions,
     getRequires,
     getScriptIncludes,
     getTestPackages,

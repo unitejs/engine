@@ -8,6 +8,7 @@ export declare class UniteClientPackage {
     version?: string;
     main?: string;
     mainMinified?: string;
+    mainLib?: string[];
     testingAdditions?: {
         [id: string]: string;
     };

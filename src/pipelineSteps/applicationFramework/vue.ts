@@ -88,11 +88,7 @@ export class Vue extends SharedAppFramework {
             engineVariables.buildTranspileInclude.push("const inlineVue = require(\"gulp-inline-vue-template\");");
 
             if (super.condition(uniteConfiguration.bundler, "RequireJS")) {
-                engineVariables.buildTranspileInclude.push("const replace = require(\"gulp-replace\");");
-                engineVariables.buildTranspileInclude.push("const clientPackages = require(\"./util/client-packages\");");
-
-                engineVariables.buildTranspilePreBuild.push(".pipe(replace(/import \\\"\\.\\\/(.*?).css\";/g,");
-                engineVariables.buildTranspilePreBuild.push("            `import \"\${clientPackages.getTypeMap(uniteConfig, \"css\", buildConfiguration.minify)}!./$1.css\";`))");
+                super.createLoaderTypeMapReplacement(engineVariables, "css", "css", true);
             }
             engineVariables.buildTranspilePostBuild.push(`.pipe(inlineVue())`);
         }

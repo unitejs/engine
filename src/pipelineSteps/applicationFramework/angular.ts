@@ -158,6 +158,16 @@ export class Angular extends SharedAppFramework {
         engineVariables.toggleClientPackage("rxjs", {
                                                 name: "rxjs",
                                                 main: "*",
+                                                mainLib: ["*.js",
+                                                    "add/**/*.js",
+                                                    "observable/**/*.js",
+                                                    "operator/**/*.js",
+                                                    "operators/**/*.js",
+                                                    "scheduler/**/*.js",
+                                                    "symbol/**/*.js",
+                                                    "testing/**/*.js",
+                                                    "util/**/*.js"
+                                                ],
                                                 preload: false,
                                                 includeMode: "both"
                                             },

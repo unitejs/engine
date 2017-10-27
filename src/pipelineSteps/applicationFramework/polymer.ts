@@ -30,6 +30,11 @@ export class Polymer extends SharedAppFramework {
                 logger.error(`Polymer does not support unit testing with ${uniteConfiguration.unitTestEngine} as it has no MutationObserver support`);
                 return 1;
             }
+            if (super.condition(uniteConfiguration.bundler, "RequireJS")) {
+                logger.error(`Polymer does not currently support bundling with ${uniteConfiguration.bundler}`);
+                return 1;
+            }
+
             ArrayHelper.addRemove(uniteConfiguration.viewExtensions, "html", true);
         }
 
@@ -144,11 +149,8 @@ export class Polymer extends SharedAppFramework {
                 super.condition(uniteConfiguration.bundler, "Webpack")));
 
         if (mainCondition && super.condition(uniteConfiguration.taskManager, "Gulp") && super.condition(uniteConfiguration.bundler, "RequireJS")) {
-            engineVariables.buildTranspileInclude.push("const replace = require(\"gulp-replace\");");
-            engineVariables.buildTranspilePreBuild.push(".pipe(replace(/import \\\"\\.\\\/(.*?).css\";/g,");
-            engineVariables.buildTranspilePreBuild.push("            `import \"text!./$1.css\";`))");
-            engineVariables.buildTranspilePreBuild.push(".pipe(replace(/import \\\"\\.\\\/(.*?).html\";/g,");
-            engineVariables.buildTranspilePreBuild.push("            `import \"text!./$1.html\";`))");
+            super.createLoaderReplacement(engineVariables, "css", "text", true);
+            super.createLoaderReplacement(engineVariables, "html", "text", false);
         }
 
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");

@@ -9,6 +9,7 @@ export class UniteClientPackage {
     public version?: string;
     public main?: string;
     public mainMinified?: string;
+    public mainLib?: string[];
     public testingAdditions?: { [id: string]: string };
     public preload?: boolean;
     public includeMode?: IncludeMode;

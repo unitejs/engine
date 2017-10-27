@@ -54,6 +54,7 @@ export class ClientPackageCommand extends EngineCommandBase implements IEngineCo
         clientPackage.scriptIncludeMode = args.scriptIncludeMode || clientPackage.scriptIncludeMode;
         clientPackage.main = args.main || clientPackage.main;
         clientPackage.mainMinified = args.mainMinified || clientPackage.mainMinified;
+        clientPackage.mainLib = args.mainLib || clientPackage.mainLib;
         clientPackage.isPackage = args.isPackage || clientPackage.isPackage;
         clientPackage.noScript = args.noScript || clientPackage.noScript;
         clientPackage.assets = args.assets || clientPackage.assets;
@@ -124,6 +125,9 @@ export class ClientPackageCommand extends EngineCommandBase implements IEngineCo
             }
         }
 
+        if (clientPackage.mainLib) {
+            this._logger.info("mainLib", { mainLib: clientPackage.mainLib });
+        }
         if (clientPackage.testingAdditions) {
             this._logger.info("testingAdditions", { testingAdditions: clientPackage.testingAdditions });
         }

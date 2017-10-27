@@ -15,6 +15,7 @@ export interface IClientPackageCommandParams extends IEngineCommandParams {
     scriptIncludeMode: ScriptIncludeMode | undefined | null;
     main: string | undefined | null;
     mainMinified: string | undefined | null;
+    mainLib: string[] | undefined | null;
     isPackage: boolean | undefined;
     testingAdditions: string[] | undefined | null;
     assets: string[] | undefined | null;

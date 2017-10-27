@@ -4,8 +4,19 @@
 const os = require("os");
 const clientPackages = require("./client-packages");
 
+function replaceLeadingSlash (file, replace) {
+    return file.replace(/^\.\//, replace);
+}
+
 function createRequireJS (uniteConfig, includeModes, isBundle, mapBase) {
     const moduleConfig = clientPackages.buildModuleConfig(uniteConfig, includeModes, isBundle);
+
+    for (const key in moduleConfig.paths) {
+        moduleConfig.paths[key] = replaceLeadingSlash(moduleConfig.paths[key], "");
+    }
+    for (const key in moduleConfig.map) {
+        moduleConfig.map[key] = replaceLeadingSlash(moduleConfig.map[key], "");
+    }
 
     const rjsConfig = {
         "paths": moduleConfig.paths,
@@ -67,10 +78,10 @@ function createSystemJS (uniteConfig, includeModes, isBundle, mapBase) {
     sjsConfig.packages[""] = {"defaultExtension": "js"};
 
     Object.keys(moduleConfig.paths).forEach(key => {
-        moduleConfig.paths[key] = moduleConfig.paths[key].replace(/^\.\//, "");
+        moduleConfig.paths[key] = replaceLeadingSlash(moduleConfig.paths[key], "");
     });
     Object.keys(moduleConfig.map).forEach(key => {
-        moduleConfig.map[key] = moduleConfig.map[key].replace(/^\.\//, mapBase);
+        moduleConfig.map[key] = replaceLeadingSlash(moduleConfig.map[key], mapBase);
 
         if (moduleConfig.paths[moduleConfig.map[key]]) {
             const distKey = `dist/*/${moduleConfig.paths[moduleConfig.map[key]]}.js`;
@@ -78,7 +89,7 @@ function createSystemJS (uniteConfig, includeModes, isBundle, mapBase) {
         }
     });
     moduleConfig.packages.forEach((pkg) => {
-        moduleConfig.paths[pkg.name] = pkg.location.replace(/^\.\//, "");
+        moduleConfig.paths[pkg.name] = replaceLeadingSlash(pkg.location, "");
         sjsConfig.packages[pkg.name] = {
             "main": pkg.main
         };

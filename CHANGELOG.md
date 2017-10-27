@@ -5,6 +5,8 @@
 * Added Polymer support
 * Added support for transpilation of npm packages during build
 * Change Preact now uses module transpilation so can support AMD and SystemJS
+* Change wildcard client packages can now have more targeted includes
+* Change improved loader replacement regex
 * Fixed undefined global module entry in app-module-config
 * Fixed order of transform-class-properties, transform-decorators-legacy is important
 

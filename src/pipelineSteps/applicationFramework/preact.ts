@@ -93,10 +93,7 @@ export class Preact extends SharedAppFramework {
                 super.condition(uniteConfiguration.bundler, "Webpack")));
 
         if (mainCondition && super.condition(uniteConfiguration.taskManager, "Gulp") && super.condition(uniteConfiguration.bundler, "RequireJS")) {
-            engineVariables.buildTranspileInclude.push("const replace = require(\"gulp-replace\");");
-            engineVariables.buildTranspileInclude.push("const clientPackages = require(\"./util/client-packages\");");
-            engineVariables.buildTranspilePreBuild.push(".pipe(replace(/import \"\.\\/(.*?).css\";/g,");
-            engineVariables.buildTranspilePreBuild.push("    `import \"\${clientPackages.getTypeMap(uniteConfig, \"css\", buildConfiguration.minify)}!./$1\";`))");
+            super.createLoaderTypeMapReplacement(engineVariables, "css", "css", true);
         }
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
