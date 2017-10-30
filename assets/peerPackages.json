@@ -169,7 +169,7 @@
     "unitejs-plain-protractor-plugin": "^1.0.0",
     "unitejs-plain-webdriver-plugin": "^1.0.0",
     "unitejs-polymer-protractor-plugin": "^1.0.1",
-    "unitejs-polymer-webdriver-plugin": "^1.0.2",
+    "unitejs-polymer-webdriver-plugin": "^1.0.3",
     "unitejs-preact-protractor-plugin": "^1.0.0",
     "unitejs-preact-webdriver-plugin": "^1.0.0",
     "unitejs-react-protractor-plugin": "^1.0.0",

@@ -3,8 +3,8 @@
  */
 import { customElement, property } from "@polymer/decorators/src/decorators";
 import { Element as PolymerElement } from "@polymer/polymer/polymer-element";
-import * as style from "./child.css";
-import * as template from "./child.html";
+import {SYNTHETIC_IMPORT}style from "./child.css";
+import {SYNTHETIC_IMPORT}template from "./child.html";
 
 @customElement("unite-child")
 export class Child extends PolymerElement {

@@ -6,6 +6,7 @@ import { PackageConfiguration } from "../configuration/models/packages/packageCo
 import { IncludeMode } from "../configuration/models/unite/includeMode";
 import { ScriptIncludeMode } from "../configuration/models/unite/scriptIncludeMode";
 import { UniteClientPackage } from "../configuration/models/unite/uniteClientPackage";
+import { UniteClientPackageTranspile } from "../configuration/models/unite/uniteClientPackageTranspile";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { EngineCommandBase } from "../engine/engineCommandBase";
 import { EngineVariables } from "../engine/engineVariables";
@@ -43,6 +44,9 @@ export class ClientPackageCommand extends EngineCommandBase implements IEngineCo
 
     private async clientPackageAdd(args: IClientPackageCommandParams, uniteConfiguration: UniteConfiguration): Promise<number> {
         let clientPackage = await this.loadProfile<UniteClientPackage>("clientPackage", args.profile);
+        if (clientPackage === null) {
+            return 1;
+        }
         if (clientPackage === undefined) {
             clientPackage = new UniteClientPackage();
         }
@@ -58,15 +62,24 @@ export class ClientPackageCommand extends EngineCommandBase implements IEngineCo
         clientPackage.isPackage = args.isPackage || clientPackage.isPackage;
         clientPackage.noScript = args.noScript || clientPackage.noScript;
         clientPackage.assets = args.assets || clientPackage.assets;
-        clientPackage.transpileAlias = args.transpileAlias || clientPackage.transpileAlias;
-        clientPackage.transpileLanguage = args.transpileLanguage || clientPackage.transpileLanguage;
-        clientPackage.transpileSrc = args.transpileSrc || clientPackage.transpileSrc;
+        if (args.transpileAlias || (clientPackage.transpile && clientPackage.transpile.alias)) {
+            if (!clientPackage.transpile) {
+                clientPackage.transpile = new UniteClientPackageTranspile();
+            }
+            clientPackage.transpile.alias = args.transpileAlias || clientPackage.transpile.alias;
+            clientPackage.transpile.language = args.transpileLanguage || clientPackage.transpile.language;
+            clientPackage.transpile.sources = args.transpileSources || clientPackage.transpile.sources;
+            clientPackage.transpile.modules = args.transpileModules || clientPackage.transpile.modules;
+            clientPackage.transpile.stripExt = args.transpileStripExt || clientPackage.transpile.stripExt;
+        }
 
         try {
             clientPackage.testingAdditions = this.mapParser(args.testingAdditions) || clientPackage.testingAdditions;
             clientPackage.map = this.mapParser(args.map) || clientPackage.map;
             clientPackage.loaders = this.mapParser(args.loaders) || clientPackage.loaders;
-            clientPackage.transpileTransforms = this.mapFromArrayParser(args.transpileTransforms) || clientPackage.transpileTransforms;
+            if (clientPackage.transpile) {
+                clientPackage.transpile.transforms = this.mapFromArrayParser(args.transpileTransforms) || clientPackage.transpile.transforms;
+            }
         } catch (err) {
             this._logger.error("Input failure", err);
             return 1;
@@ -144,17 +157,25 @@ export class ClientPackageCommand extends EngineCommandBase implements IEngineCo
         if (clientPackage.noScript) {
             this._logger.info("noScript", { noScript: clientPackage.noScript });
         }
-        if (clientPackage.transpileAlias) {
-            this._logger.info("transpileAlias", { transpileAlias: clientPackage.transpileAlias });
-        }
-        if (clientPackage.transpileLanguage) {
-            this._logger.info("transpileLanguage", { transpileLanguage: clientPackage.transpileLanguage });
-        }
-        if (clientPackage.transpileSrc) {
-            this._logger.info("transpileSrc", { transpileSrc: clientPackage.transpileSrc });
-        }
-        if (clientPackage.transpileTransforms) {
-            this._logger.info("transpileTransforms", { transpileSrc: clientPackage.transpileTransforms });
+        if (clientPackage.transpile) {
+            if (clientPackage.transpile.alias) {
+                this._logger.info("transpileAlias", { transpileAlias: clientPackage.transpile.alias });
+            }
+            if (clientPackage.transpile.language) {
+                this._logger.info("transpileLanguage", { transpileLanguage: clientPackage.transpile.language });
+            }
+            if (clientPackage.transpile.sources) {
+                this._logger.info("transpileSources", { transpileSrc: clientPackage.transpile.sources });
+            }
+            if (clientPackage.transpile.modules) {
+                this._logger.info("transpileModules", { transpileSrc: clientPackage.transpile.modules });
+            }
+            if (clientPackage.transpile.stripExt !== undefined) {
+                this._logger.info("transpileStripExt", { transpileStripExt: clientPackage.transpile.stripExt });
+            }
+            if (clientPackage.transpile.transforms) {
+                this._logger.info("transpileTransforms", { transpileSrc: clientPackage.transpile.transforms });
+            }
         }
 
         this._logger.info("");

@@ -5,7 +5,7 @@ import "@polymer/app-route/app-location";
 import "@polymer/app-route/app-route";
 import {customElement} from "@polymer/decorators/src/decorators";
 import {Element as PolymerElement} from "@polymer/polymer/polymer-element";
-import * as template from "./app.html";
+import {SYNTHETIC_IMPORT}template from "./app.html";
 import "./child/child";
 
 @customElement("unite-app")

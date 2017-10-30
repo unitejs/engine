@@ -187,16 +187,14 @@ export abstract class SharedAppFramework extends PipelineStepBase {
         if (includeRequires) {
             engineVariables.buildTranspileInclude.push("const replace = require(\"gulp-replace\");");
         }
-        engineVariables.buildTranspilePreBuild.push(`.pipe(replace(/import(.*)("|'|\`)(.*?).${extension}\\2/g, "import$1$2${loader}!$3.${extension}$2"))`);
+        engineVariables.buildTranspilePreBuild.push(`        .pipe(replace(/import(.*?)("|'|\`)(.*?).${extension}\\2/g, "import$1$2${loader}!$3.${extension}$2"))`);
     }
 
-    protected createLoaderTypeMapReplacement(engineVariables: EngineVariables, extension: string, loader: string, includeRequires: boolean) : void {
-        if (includeRequires) {
-            engineVariables.buildTranspileInclude.push("const replace = require(\"gulp-replace\");");
-            engineVariables.buildTranspileInclude.push("const clientPackages = require(\"./util/client-packages\");");
-        }
+    protected createLoaderTypeMapReplacement(engineVariables: EngineVariables, extension: string, loader: string) : void {
+        engineVariables.buildTranspileInclude.push("const replace = require(\"gulp-replace\");");
+        engineVariables.buildTranspileInclude.push("const clientPackages = require(\"./util/client-packages\");");
 
         const typeMapLoader = `\${clientPackages.getTypeMap(uniteConfig, "${loader}", buildConfiguration.minify)}`;
-        engineVariables.buildTranspilePreBuild.push(`.pipe(replace(/import(.*)("|'|\`)(.*?).${extension}\\2/g, \`import$1$2${typeMapLoader}!$3.${extension}$2\`))`);
+        engineVariables.buildTranspilePreBuild.push(`        .pipe(replace(/import(.*?)("|'|\`)(.*?).${extension}\\2/g, \`import$1$2${typeMapLoader}!$3.${extension}$2\`))`);
     }
 }

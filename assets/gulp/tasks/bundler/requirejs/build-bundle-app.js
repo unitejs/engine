@@ -56,7 +56,7 @@ function performAppOptimize (uniteConfig, buildConfiguration, moduleConfig) {
             const paths = {};
 
             Object.keys(moduleConfig.map).forEach(key => {
-                map["*"][key] = moduleConfig.map[key];
+                map["*"][key] = moduleConfig.map[key].replace(/^\.\//, "");
             });
 
             for (const key in moduleConfig.paths) {

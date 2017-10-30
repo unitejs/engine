@@ -22,12 +22,8 @@ export class Polymer extends SharedAppFramework {
 
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         if (mainCondition) {
-            if (super.condition(uniteConfiguration.unitTestEngine, "PhantomJS")) {
-                logger.error(`Polymer does not support unit testing with ${uniteConfiguration.unitTestEngine} as it lack many modern ES features`);
-                return 1;
-            }
-            if (super.condition(uniteConfiguration.unitTestEngine, "JSDom")) {
-                logger.error(`Polymer does not support unit testing with ${uniteConfiguration.unitTestEngine} as it has no MutationObserver support`);
+            if (super.condition(uniteConfiguration.unitTestEngine, "PhantomJS") || super.condition(uniteConfiguration.unitTestEngine, "JSDom")) {
+                logger.error(`Polymer does not support unit testing with ${uniteConfiguration.unitTestEngine}`);
                 return 1;
             }
             if (super.condition(uniteConfiguration.bundler, "RequireJS")) {
@@ -54,7 +50,6 @@ export class Polymer extends SharedAppFramework {
         engineVariables.toggleClientPackage("@webcomponents/webcomponentsjs-es5adapter", {
                                                 name: "@webcomponents/webcomponentsjs",
                                                 main: "custom-elements-es5-adapter.js",
-                                                transpileLanguage: "JavaScript",
                                                 includeMode: "both",
                                                 scriptIncludeMode: "both"
                                             },
@@ -63,7 +58,6 @@ export class Polymer extends SharedAppFramework {
         engineVariables.toggleClientPackage("@webcomponents/webcomponentsjs", {
                                                 name: "@webcomponents/webcomponentsjs",
                                                 main: "webcomponents-lite.js",
-                                                transpileLanguage: "JavaScript",
                                                 includeMode: "both",
                                                 scriptIncludeMode: "both"
                                             },
@@ -71,9 +65,11 @@ export class Polymer extends SharedAppFramework {
 
         engineVariables.toggleClientPackage("@webcomponents/shadycss", {
                                                 name: "@webcomponents/shadycss",
-                                                transpileAlias: "@webcomponents-transpiled/shadycss",
-                                                transpileSrc: ["entrypoints/*.js", "src/**/*.js"],
-                                                transpileLanguage: "JavaScript",
+                                                transpile: {
+                                                    alias: "@webcomponents-transpiled/shadycss",
+                                                    sources: ["entrypoints/*.js", "src/**/*.js"],
+                                                    language: "JavaScript"
+                                                },
                                                 main: "*",
                                                 includeMode: "both"
                                             },
@@ -81,12 +77,12 @@ export class Polymer extends SharedAppFramework {
 
         engineVariables.toggleClientPackage("@polymer/polymer", {
                                                 name: "@polymer/polymer",
-                                                transpileAlias: "@polymer-transpiled/polymer",
-                                                transpileSrc: ["polymer.js", "polymer-element.js", "lib/**/*.js"],
-                                                transpileLanguage: "JavaScript",
-                                                transpileTransforms: {
-                                                    "import '(.*)@webcomponents": "import '@webcomponents",
-                                                    "import '(.*).js'": "import '$1'"
+                                                transpile: {
+                                                    alias: "@polymer-transpiled/polymer",
+                                                    sources: ["polymer.js", "polymer-element.js", "lib/**/*.js"],
+                                                    language: "JavaScript",
+                                                    stripExt: true,
+                                                    modules: ["@webcomponents"]
                                                 },
                                                 main: "*",
                                                 includeMode: "both"
@@ -95,9 +91,11 @@ export class Polymer extends SharedAppFramework {
 
         engineVariables.toggleClientPackage("@polymer/app-route", {
                                                 name: "@polymer/app-route",
-                                                transpileAlias: "@polymer-transpiled/app-route",
-                                                transpileLanguage: "JavaScript",
-                                                transpileSrc: ["*.js"],
+                                                transpile: {
+                                                    alias: "@polymer-transpiled/app-route",
+                                                    language: "JavaScript",
+                                                    sources: ["*.js"]
+                                                },
                                                 main: "*",
                                                 includeMode: "both"
                                             },
@@ -105,9 +103,11 @@ export class Polymer extends SharedAppFramework {
 
         engineVariables.toggleClientPackage("@polymer/iron-location", {
                                                 name: "@polymer/iron-location",
-                                                transpileAlias: "@polymer-transpiled/iron-location",
-                                                transpileLanguage: "JavaScript",
-                                                transpileSrc: ["*.js"],
+                                                transpile: {
+                                                    alias: "@polymer-transpiled/iron-location",
+                                                    language: "JavaScript",
+                                                    sources: ["*.js"]
+                                                },
                                                 main: "*",
                                                 includeMode: "both"
                                             },
@@ -115,9 +115,11 @@ export class Polymer extends SharedAppFramework {
 
         engineVariables.toggleClientPackage("@polymer/decorators", {
                                                 name: "@polymer/decorators",
-                                                transpileAlias: "@polymer-transpiled/decorators",
-                                                transpileLanguage: "TypeScript",
-                                                transpileSrc: ["src/*.ts"],
+                                                transpile: {
+                                                    alias: "@polymer-transpiled/decorators",
+                                                    language: "TypeScript",
+                                                    sources: ["src/*.ts"]
+                                                },
                                                 main: "*",
                                                 includeMode: "both"
                                             },

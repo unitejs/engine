@@ -11,6 +11,7 @@ import { ProtractorConfiguration } from "../../configuration/models/protractor/p
 import { TsLintConfiguration } from "../../configuration/models/tslint/tsLintConfiguration";
 import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteClientPackage } from "../../configuration/models/unite/uniteClientPackage";
+import { UniteClientPackageTranspile } from "../../configuration/models/unite/uniteClientPackageTranspile";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { JavaScriptConfiguration } from "../../configuration/models/vscode/javaScriptConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
@@ -59,14 +60,16 @@ export class Preact extends SharedAppFramework {
         if (isTranspiled) {
             preactPackage.main = "dist/preact.esm.js";
             preactPackage.mainMinified = undefined;
-            preactPackage.transpileAlias = "preact-transpiled";
-            preactPackage.transpileLanguage = "JavaScript";
-            preactPackage.transpileSrc = [ "dist/preact.esm.js" ];
+            preactPackage.transpile = new UniteClientPackageTranspile();
+            preactPackage.transpile.alias = "preact-transpiled";
+            preactPackage.transpile.language = "JavaScript";
+            preactPackage.transpile.sources = [ "dist/preact.esm.js" ];
 
             preactRouterPackage.main = "dist/preact-router.es.js";
-            preactRouterPackage.transpileAlias = "preact-router-transpiled";
-            preactRouterPackage.transpileLanguage = "JavaScript";
-            preactRouterPackage.transpileSrc = [ "dist/preact-router.es.js" ];
+            preactRouterPackage.transpile = new UniteClientPackageTranspile();
+            preactRouterPackage.transpile.alias = "preact-router-transpiled";
+            preactRouterPackage.transpile.language = "JavaScript";
+            preactRouterPackage.transpile.sources = [ "dist/preact-router.es.js" ];
         }
 
         engineVariables.toggleClientPackage("preact", preactPackage, mainCondition);
@@ -93,7 +96,7 @@ export class Preact extends SharedAppFramework {
                 super.condition(uniteConfiguration.bundler, "Webpack")));
 
         if (mainCondition && super.condition(uniteConfiguration.taskManager, "Gulp") && super.condition(uniteConfiguration.bundler, "RequireJS")) {
-            super.createLoaderTypeMapReplacement(engineVariables, "css", "css", true);
+            super.createLoaderTypeMapReplacement(engineVariables, "css", "css");
         }
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");

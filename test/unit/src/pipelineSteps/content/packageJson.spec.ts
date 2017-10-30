@@ -7,6 +7,7 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { PackageConfiguration } from "../../../../../src/configuration/models/packages/packageConfiguration";
 import { UniteClientPackage } from "../../../../../src/configuration/models/unite/uniteClientPackage";
+import { UniteClientPackageTranspile } from "../../../../../src/configuration/models/unite/uniteClientPackageTranspile";
 import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../../src/engine/engineVariables";
 import { PackageJson } from "../../../../../src/pipelineSteps/content/packageJson";
@@ -152,7 +153,8 @@ describe("PackageJson", () => {
 
             uniteConfigurationStub.clientPackages = {};
             uniteConfigurationStub.clientPackages.package = new UniteClientPackage();
-            uniteConfigurationStub.clientPackages.package.transpileAlias = "alias";
+            uniteConfigurationStub.clientPackages.package.transpile = new UniteClientPackageTranspile();
+            uniteConfigurationStub.clientPackages.package.transpile.alias = "alias";
 
             const obj = new PackageJson();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
@@ -167,7 +169,8 @@ describe("PackageJson", () => {
 
             uniteConfigurationStub.clientPackages = {};
             uniteConfigurationStub.clientPackages.package = new UniteClientPackage();
-            uniteConfigurationStub.clientPackages.package.transpileAlias = "alias";
+            uniteConfigurationStub.clientPackages.package.transpile = new UniteClientPackageTranspile();
+            uniteConfigurationStub.clientPackages.package.transpile.alias = "alias";
 
             const obj = new PackageJson();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
@@ -182,7 +185,8 @@ describe("PackageJson", () => {
 
             uniteConfigurationStub.clientPackages = {};
             uniteConfigurationStub.clientPackages.package = new UniteClientPackage();
-            uniteConfigurationStub.clientPackages.package.transpileAlias = "alias";
+            uniteConfigurationStub.clientPackages.package.transpile = new UniteClientPackageTranspile();
+            uniteConfigurationStub.clientPackages.package.transpile.alias = "alias";
 
             const obj = new PackageJson();
             await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);

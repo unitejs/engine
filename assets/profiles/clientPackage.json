@@ -2,7 +2,9 @@
     "font-awesome": {
         "name": "font-awesome",
         "includeMode": "both",
-        "assets": ["fonts/**/*"]
+        "assets": [
+            "fonts/**/*"
+        ]
     },
     "bootstrap4": {
         "name": "bootstrap",
@@ -21,10 +23,24 @@
         "name": "primsjs",
         "main": "prism.js",
         "includeMode": "both",
-        "assets": ["components/**/*.min.js"]
+        "assets": [
+            "components/**/*.min.js"
+        ]
     },
     "rxjs": {
         "name": "rxjs",
-        "main": "*"
+        "main": "*",
+        "mainLib": [
+            "*.js",
+            "add/**/*.js",
+            "observable/**/*.js",
+            "operator/**/*.js",
+            "operators/**/*.js",
+            "scheduler/**/*.js",
+            "symbol/**/*.js",
+            "testing/**/*.js",
+            "util/**/*.js"
+        ],
+        "includeMode": "both"
     }
 }

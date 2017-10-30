@@ -26,9 +26,9 @@ gulp.task("build-transpile", async () => {
         `**/*.${uc.extensionMap(uniteConfig.sourceExtensions)}`
     ))
         .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : gutil.noop())
-        {TRANSPILEPREBUILD}
+{TRANSPILEPREBUILD}
         .pipe(babel())
-        {TRANSPILEPOSTBUILD}
+{TRANSPILEPOSTBUILD}
         .on("error", (err) => {
             display.error(err.message);
             if (err.codeFrame) {

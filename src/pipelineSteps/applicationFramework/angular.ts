@@ -148,9 +148,7 @@ export class Angular extends SharedAppFramework {
                                                     main: `bundles/${pkg}.umd.js`,
                                                     mainMinified: `bundles/${pkg}.umd.min.js`,
                                                     testingAdditions: testAdditions,
-                                                    preload: false,
-                                                    includeMode: "both",
-                                                    isPackage: false
+                                                    includeMode: "both"
                                                 },
                                                 mainCondition);
         });
@@ -168,7 +166,6 @@ export class Angular extends SharedAppFramework {
                                                     "testing/**/*.js",
                                                     "util/**/*.js"
                                                 ],
-                                                preload: false,
                                                 includeMode: "both"
                                             },
                                             mainCondition);

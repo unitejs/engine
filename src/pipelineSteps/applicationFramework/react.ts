@@ -89,7 +89,7 @@ export class React extends SharedAppFramework {
             super.condition(uniteConfiguration.bundler, "Webpack")));
 
         if (mainCondition && super.condition(uniteConfiguration.taskManager, "Gulp") && super.condition(uniteConfiguration.bundler, "RequireJS")) {
-            super.createLoaderTypeMapReplacement(engineVariables, "css", "css", true);
+            super.createLoaderTypeMapReplacement(engineVariables, "css", "css");
         }
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");

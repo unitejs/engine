@@ -103,6 +103,13 @@ describe("Polymer", () => {
             Chai.expect(res).to.be.equal(1);
         });
 
+        it("can fail with requirejs as bundler", async () => {
+            uniteConfigurationStub.bundler = "RequireJS";
+            const obj = new Polymer();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            Chai.expect(res).to.be.equal(1);
+        });
+
         it("can be called with application framework matching", async () => {
             const obj = new Polymer();
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
@@ -157,7 +164,7 @@ describe("Polymer", () => {
 
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(1);
-            Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(4);
+            Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(2);
         });
 
         it("can be called with no configurations with false mainCondition", async () => {

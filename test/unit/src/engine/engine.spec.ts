@@ -248,6 +248,7 @@ describe("Engine", () => {
                 scriptIncludeMode: undefined,
                 main: undefined,
                 mainMinified: undefined,
+                mainLib: undefined,
                 testingAdditions: undefined,
                 isPackage: undefined,
                 assets: undefined,
@@ -257,7 +258,9 @@ describe("Engine", () => {
                 profile: undefined,
                 transpileAlias: undefined,
                 transpileLanguage: undefined,
-                transpileSrc: undefined,
+                transpileSources: undefined,
+                transpileModules: undefined,
+                transpileStripExt: undefined,
                 transpileTransforms: undefined,
                 packageManager: undefined,
                 outputDirectory: "./test/unit/temp"

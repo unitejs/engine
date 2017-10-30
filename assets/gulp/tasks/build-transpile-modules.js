@@ -36,30 +36,44 @@ gulp.task("build-transpile-modules", async () => {
 
     for (let i = 0; i < keys.length; i++) {
         const clientPackage = uniteConfig.clientPackages[keys[i]];
-        if (clientPackage.transpileAlias) {
-            const destFolder = path.join(uniteConfig.dirs.www.package, clientPackage.transpileAlias);
+        if (clientPackage.transpile && clientPackage.transpile.alias) {
+            const destFolder = path.join(uniteConfig.dirs.www.package, clientPackage.transpile.alias);
 
             const dirExists = await asyncUtil.directoryExists(destFolder);
 
             if (dirExists) {
-                display.info("Skipping Transpile", `${clientPackage.name} to ${clientPackage.transpileAlias}`);
+                display.info("Skipping Transpile", `${clientPackage.name} to ${clientPackage.transpile.alias}`);
             } else {
-                display.info("Transpiling", `${clientPackage.name} to ${clientPackage.transpileAlias}`);
+                display.info("Transpiling", `${clientPackage.name} to ${clientPackage.transpile.alias}`);
 
                 const baseFolder = path.join(
                     uniteConfig.dirs.www.package,
                     clientPackage.name
                 );
 
-                const srcs = (clientPackage.transpileSrc || ["**/*.js"])
+                const srcs = (clientPackage.transpile.sources || ["**/*.js"])
                     .map(src => path.join(uniteConfig.dirs.www.package, clientPackage.name, src));
 
                 let errorCount = 0;
 
+                const transforms = clientPackage.transpile.transforms || {};
+                const sourceExtension = clientPackage.transpile.language === "JavaScript" ? "js" : "ts";
+
+                if (clientPackage.transpile.stripExt) {
+                    transforms[`import(.*?)("|'|\`)(.*?)\\.${sourceExtension}\\2`] = "import$1$2$3$2";
+                }
+
+                if (clientPackage.transpile.modules) {
+                    clientPackage.transpile.modules.forEach(module => {
+                        transforms[`import(.*?)("|'|\`)(?:.*?)(?:\\.\\.\\/)${module}(.*)\\2`] =
+                            `import$1$2${module}$3$2`;
+                    });
+                }
+
                 const lowerModule = uniteConfig.moduleType.toLowerCase();
-                if (clientPackage.transpileLanguage === "JavaScript") {
+                if (clientPackage.transpile.language === "JavaScript") {
                     await asyncUtil.stream(gulp.src(srcs, {"base": baseFolder})
-                        .pipe(multiReplace(clientPackage.transpileTransforms))
+                        .pipe(multiReplace(transforms))
                         .pipe(babel({
                             "presets": [
                                 [
@@ -88,14 +102,14 @@ gulp.task("build-transpile-modules", async () => {
                         .on("end", () => {
                             errorUtil.handleErrorCount(errorCount);
                         }));
-                } else if (clientPackage.transpileLanguage === "TypeScript") {
+                } else if (clientPackage.transpile.language === "TypeScript") {
                     const tsProject = typescript.createProject({
                         "target": "es5",
                         "experimentalDecorators": true,
                         "module": lowerModule === "systemjs" ? "system" : lowerModule
                     });
                     await asyncUtil.stream(gulp.src(srcs, {"base": baseFolder})
-                        .pipe(multiReplace(clientPackage.transpileTransforms))
+                        .pipe(multiReplace(transforms))
                         .pipe(tsProject(typescript.reporter.nullReporter()))
                         .on("error", (err) => {
                             display.error(err.message);

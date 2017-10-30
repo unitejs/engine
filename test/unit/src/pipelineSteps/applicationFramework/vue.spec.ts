@@ -116,7 +116,7 @@ describe("Vue", () => {
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.experimentalDecorators).to.be.equal(true);
             Chai.expect(engineVariablesStub.getConfiguration<JestConfiguration>("Jest").moduleNameMapper["\\.vue$"]).to.be.equal("<rootDir>/test/unit/dummy.mock.js");
             Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(3);
-            Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(2);
+            Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(1);
             Chai.expect(engineVariablesStub.buildTranspilePostBuild.length).to.be.equal(1);
         });
 

@@ -42,7 +42,7 @@ function getPackageFiles (uniteConfig, pkg, isMinified) {
         const mainSplit = pkgMain.split("/");
         let main = mainSplit.pop();
         const location = mainSplit.join("/");
-        const pkgLocation = pkg.transpileAlias || pkg.name;
+        const pkgLocation = pkg.transpile && pkg.transpile.alias ? pkg.transpile.alias : pkg.name;
         if (pkg.isPackage) {
             files.push(path.join(
                 `${uniteConfig.dirs.www.package}${pkgLocation}/${location}`,
@@ -71,7 +71,7 @@ function getPackageAssets (uniteConfig, pkg) {
 
     const clientAssets = pkg.assets;
     if (clientAssets !== undefined && clientAssets !== null) {
-        const pkgLocation = pkg.transpileAlias || pkg.name;
+        const pkgLocation = pkg.transpile && pkg.transpile.alias ? pkg.transpile.alias : pkg.name;
         clientAssets.forEach((ca) => {
             files.push(path.join(`${uniteConfig.dirs.www.package}${pkgLocation}/`, ca));
         });
@@ -84,7 +84,7 @@ function getPackageTestingAdditions (uniteConfig, pkg) {
     const files = [];
 
     if (pkg.testingAdditions) {
-        const pkgLocation = pkg.transpileAlias || pkg.name;
+        const pkgLocation = pkg.transpile && pkg.transpile.alias ? pkg.transpile.alias : pkg.name;
         Object.keys(pkg.testingAdditions).forEach(additionKey => {
             files.push(`./${path.join(
                 uniteConfig.dirs.www.package,
@@ -146,7 +146,7 @@ async function getBundleVendorPackages (uniteConfig) {
             const pkgMain = pkg.mainMinified ? pkg.mainMinified : pkg.main;
 
             if (pkgMain) {
-                const pkgLocation = pkg.transpileAlias || pkg.name;
+                const pkgLocation = pkg.transpile && pkg.transpile.alias ? pkg.transpile.alias : pkg.name;
 
                 if (pkgMain === "*") {
                     let files = [];
@@ -187,7 +187,7 @@ function getScriptIncludes (uniteConfig, isBundled) {
 
         if ((isBundled && (pkg.scriptIncludeMode === "bundled" || pkg.scriptIncludeMode === "both")) ||
             (!isBundled && (pkg.scriptIncludeMode === "notBundled" || pkg.scriptIncludeMode === "both"))) {
-            const pkgLocation = pkg.transpileAlias || pkg.name;
+            const pkgLocation = pkg.transpile && pkg.transpile.alias ? pkg.transpile.alias : pkg.name;
 
             const main = isBundled && pkg.mainMinified ? pkg.mainMinified : pkg.main;
             const script = `./${path.join(uniteConfig.dirs.www.package, `${pkgLocation}/${main}`)}`;
@@ -246,7 +246,7 @@ function buildModuleConfig (uniteConfig, includeModes, isMinified) {
             const pkgMain = isMinified && pkg.mainMinified ? pkg.mainMinified : pkg.main;
 
             if (pkgMain) {
-                const pkgLocation = pkg.transpileAlias || pkg.name;
+                const pkgLocation = pkg.transpile && pkg.transpile.alias ? pkg.transpile.alias : pkg.name;
 
                 if (pkgMain === "*") {
                     moduleConfig.map[pkg.name] = `${uniteConfig.dirs.www.package}${pkgLocation}`;

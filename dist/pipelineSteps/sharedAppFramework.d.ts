@@ -14,5 +14,5 @@ export declare abstract class SharedAppFramework extends PipelineStepBase {
     protected generateE2eTest(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, specs: string[]): Promise<number>;
     protected generateCss(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     protected createLoaderReplacement(engineVariables: EngineVariables, extension: string, loader: string, includeRequires: boolean): void;
-    protected createLoaderTypeMapReplacement(engineVariables: EngineVariables, extension: string, loader: string, includeRequires: boolean): void;
+    protected createLoaderTypeMapReplacement(engineVariables: EngineVariables, extension: string, loader: string): void;
 }

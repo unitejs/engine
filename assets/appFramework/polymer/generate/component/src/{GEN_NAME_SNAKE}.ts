@@ -3,8 +3,8 @@
  */
 import {customElement, property} from "@polymer/decorators/src/decorators";
 import {Element as PolymerElement} from "@polymer/polymer/polymer-element";
-import * as style from "./{GEN_NAME_SNAKE}.css";
-import * as template from "./{GEN_NAME_SNAKE}.html";
+import {SYNTHETIC_IMPORT}style from "./{GEN_NAME_SNAKE}.css";
+import {SYNTHETIC_IMPORT}template from "./{GEN_NAME_SNAKE}.html";
 
 @customElement("co-{GEN_NAME_SNAKE}")
 export class {GEN_NAME_PASCAL} extends PolymerElement {
