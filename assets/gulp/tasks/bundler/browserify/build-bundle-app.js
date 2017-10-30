@@ -32,7 +32,7 @@ gulp.task("build-bundle-app", async () => {
         Object.keys(vendorPackages).forEach((key) => {
             bApp.exclude(key);
             const idx = key.indexOf("systemjs");
-            if (idx < 0) {
+            if (idx >= 0) {
                 hasStyleLoader = key === "systemjs-plugin-css";
             }
         });

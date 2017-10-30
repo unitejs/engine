@@ -77,7 +77,7 @@ gulp.task("build-bundle-app", async () => {
         webpackOptions.module.rules.push({
             "test": new RegExp(".css$"),
             "use": hasStyleLoader ? ["style-loader", "css-loader"] : ["raw-loader"]
-        });            
+        });
 
         uniteConfig.viewExtensions.forEach((ext) => {
             webpackOptions.module.rules.push({
