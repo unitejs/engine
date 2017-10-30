@@ -5,10 +5,6 @@ Core of the UniteJS JavaScript framework management tool.
 
 See [UniteJS CLI](https://github.com/unitejs/cli#readme) for command line usage.
 
-# API
-
-To do.....
-
 [license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat
 [license-url]: LICENSE
 
