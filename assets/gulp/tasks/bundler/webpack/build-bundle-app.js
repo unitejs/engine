@@ -22,18 +22,21 @@ gulp.task("build-bundle-app", async () => {
         const entry = {};
         const plugins = [];
 
-        const moduleConfig = clientPackages.buildModuleConfig(uniteConfig, ["app", "both"], buildConfiguration.minify);
+        const vendorPackages = await clientPackages.getBundleVendorPackages(uniteConfig);
 
         const vendorKeys = [];
         const vendorAliases = {};
-        Object.keys(moduleConfig.paths).forEach((key) => {
+        let hasStyleLoader = false;
+        Object.keys(vendorPackages).forEach((key) => {
             const idx = key.indexOf("systemjs");
             if (idx < 0) {
-                display.info("Adding", `${moduleConfig.paths[key]}.js`);
+                display.info("Adding", `${key} -> ${vendorPackages[key]}`);
                 vendorKeys.push(key);
-                vendorAliases[key] = path.resolve(`${moduleConfig.paths[key]}.js`);
+                vendorAliases[key] = path.resolve(`${vendorPackages[key]}`);
+            } else {
+                hasStyleLoader = key === "systemjs-plugin-css";
             }
-        });        
+        });
 
         if (vendorKeys.length > 0) {
             entry.vendor = vendorKeys;
@@ -64,17 +67,17 @@ gulp.task("build-bundle-app", async () => {
             },
             plugins,
             "module": {
-                "rules": [
-                    {
-                        "test": /\.css$/,
-                        "use": ["style-loader", "css-loader"]
-                    }
-                ]
+                "rules": []
             },
             "resolve": {
                 "alias": vendorAliases
             }
         };
+
+        webpackOptions.module.rules.push({
+            "test": new RegExp(".css$"),
+            "use": hasStyleLoader ? ["style-loader", "css-loader"] : ["raw-loader"]
+        });            
 
         uniteConfig.viewExtensions.forEach((ext) => {
             webpackOptions.module.rules.push({

@@ -7,6 +7,7 @@
 * Change Preact now uses module transpilation so can support AMD and SystemJS
 * Change wildcard client packages can now have more targeted includes (mainLib)
 * Change improved loader replacement regex
+* Change Browserify and Webpack only auto inject styles if they used systemjs-plugin-css in unbundled mode
 * Fixed undefined global module entry in app-module-config
 * Fixed order of transform-class-properties, transform-decorators-legacy is important for babel
 

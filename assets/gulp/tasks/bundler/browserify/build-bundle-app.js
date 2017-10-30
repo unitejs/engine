@@ -26,19 +26,24 @@ gulp.task("build-bundle-app", async () => {
             "entries": `./${path.join(uniteConfig.dirs.www.dist, "entryPoint.js")}`
         });
 
+        const vendorPackages = await clientPackages.getBundleVendorPackages(uniteConfig);
+        let hasStyleLoader = false;
+
+        Object.keys(vendorPackages).forEach((key) => {
+            bApp.exclude(key);
+            const idx = key.indexOf("systemjs");
+            if (idx < 0) {
+                hasStyleLoader = key === "systemjs-plugin-css";
+            }
+        });
+
         bApp.transform("envify", {
             "NODE_ENV": buildConfiguration.minify ? "production" : "development",
             "global": true
         });
-        bApp.transform("browserify-css", {"autoInject": true});
+        bApp.transform("browserify-css", {"autoInject": hasStyleLoader});
         bApp.transform("stringify", {
             "appliesTo": {"includeExtensions": uniteConfig.viewExtensions.map(ext => `.${ext}`)}
-        });
-
-        const vendorPackages = await clientPackages.getBundleVendorPackages(uniteConfig);
-
-        Object.keys(vendorPackages).forEach((key) => {
-            bApp.exclude(key);
         });
 
         return asyncUtil.stream(bApp.bundle().on("error", (err) => {
