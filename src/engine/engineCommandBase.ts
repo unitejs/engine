@@ -2,6 +2,7 @@
  * Main engine
  */
 import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
+import { StringHelper } from "unitejs-framework/dist/helpers/stringHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
@@ -44,6 +45,20 @@ export abstract class EngineCommandBase {
 
                 if (exists) {
                     const existing = await this._fileSystem.fileReadJson<UniteConfiguration>(outputDirectory, "unite.json");
+
+                    // Convert the old comma separated assets into an array
+                    if (existing.clientPackages) {
+                        Object.keys(existing.clientPackages).forEach(key => {
+                            const pkg = existing.clientPackages[key];
+                            if (pkg.assets) {
+                                if (StringHelper.isString(pkg.assets)) {
+                                    const assetsString = <string><any>pkg.assets;
+                                    pkg.assets = assetsString.split(",");
+                                }
+                            }
+                        });
+
+                    }
 
                     uniteConfiguration = ObjectHelper.merge(uniteConfiguration, existing);
                 }

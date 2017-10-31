@@ -89,13 +89,40 @@ describe("EngineCommandBase", () => {
             Chai.expect(res).to.be.equal(undefined);
         });
 
-        it("can be called with existing config", async () => {
+        it("can be called with existing config and no packages", async () => {
             sandbox.stub(fileSystemStub, "fileExists").resolves(true);
             sandbox.stub(fileSystemStub, "fileReadJson").resolves({ packageName: "fred" });
             const obj = new TestCommand();
             obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
             const res = await obj.testLoadConfiguration(undefined, undefined, undefined, false);
             Chai.expect(res).to.be.deep.equal({ packageName: "fred" });
+        });
+
+        it("can be called with existing config and packages with no assets", async () => {
+            sandbox.stub(fileSystemStub, "fileExists").resolves(true);
+            sandbox.stub(fileSystemStub, "fileReadJson").resolves({ packageName: "fred", clientPackages: { package: {}} });
+            const obj = new TestCommand();
+            obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
+            const res = await obj.testLoadConfiguration(undefined, undefined, undefined, false);
+            Chai.expect(res).to.be.deep.equal({ packageName: "fred", clientPackages: { package: {}} });
+        });
+
+        it("can be called with existing config with new assets format", async () => {
+            sandbox.stub(fileSystemStub, "fileExists").resolves(true);
+            sandbox.stub(fileSystemStub, "fileReadJson").resolves({ packageName: "fred", clientPackages: { package: {assets: ["a", "b", "c"]}} });
+            const obj = new TestCommand();
+            obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
+            const res = await obj.testLoadConfiguration(undefined, undefined, undefined, false);
+            Chai.expect(res).to.be.deep.equal({ packageName: "fred", clientPackages: { package: {assets: ["a", "b", "c"]}} });
+        });
+
+        it("can be called with existing config with old assets format", async () => {
+            sandbox.stub(fileSystemStub, "fileExists").resolves(true);
+            sandbox.stub(fileSystemStub, "fileReadJson").resolves({ packageName: "fred", clientPackages: { package: {assets: "a,b,c"}} });
+            const obj = new TestCommand();
+            obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
+            const res = await obj.testLoadConfiguration(undefined, undefined, undefined, false);
+            Chai.expect(res).to.be.deep.equal({ packageName: "fred", clientPackages: { package: { assets: ["a", "b", "c"]}} });
         });
     });
 
