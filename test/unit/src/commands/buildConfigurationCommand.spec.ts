@@ -202,6 +202,7 @@ describe("BuildConfigurationCommand", () => {
             Chai.expect(uniteJsonWritten.buildConfigurations.myconfig.bundle).to.be.equal(false);
             Chai.expect(uniteJsonWritten.buildConfigurations.myconfig.minify).to.be.equal(false);
             Chai.expect(uniteJsonWritten.buildConfigurations.myconfig.sourcemaps).to.be.equal(true);
+            Chai.expect(uniteJsonWritten.buildConfigurations.myconfig.pwa).to.be.equal(true);
         });
 
         it("can succeed when calling all params", async () => {
@@ -213,7 +214,7 @@ describe("BuildConfigurationCommand", () => {
                 bundle: true,
                 minify: true,
                 sourcemaps: false,
-                pwa: undefined,
+                pwa: false,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);
@@ -221,6 +222,7 @@ describe("BuildConfigurationCommand", () => {
             Chai.expect(uniteJsonWritten.buildConfigurations.myconfig.bundle).to.be.equal(true);
             Chai.expect(uniteJsonWritten.buildConfigurations.myconfig.minify).to.be.equal(true);
             Chai.expect(uniteJsonWritten.buildConfigurations.myconfig.sourcemaps).to.be.equal(false);
+            Chai.expect(uniteJsonWritten.buildConfigurations.myconfig.pwa).to.be.equal(false);
         });
     });
 

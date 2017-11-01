@@ -290,6 +290,7 @@ describe("Engine", () => {
                 bundle: undefined,
                 minify: undefined,
                 sourcemaps: undefined,
+                pwa: undefined,
                 outputDirectory: "./test/unit/temp"
             });
             Chai.expect(res).to.be.equal(0);

@@ -25,26 +25,30 @@ class TestSharedAppFramework extends SharedAppFramework {
     }
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
-        let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [`${this.appModuleName}.js`]);
+        let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [`${this.appModuleName}.js`], false);
+
+        if (ret === 0) {
+            ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [`entryPoint.js`], true);
+        }
 
         if (ret === 0) {
             ret = await super.generateAppHtml(logger, fileSystem, uniteConfiguration, engineVariables, this.htmlFiles);
+        }
 
-            if (ret === 0) {
-                ret = await super.generateAppCss(logger, fileSystem, uniteConfiguration, engineVariables, this.appCssFiles);
+        if (ret === 0) {
+            ret = await super.generateAppCss(logger, fileSystem, uniteConfiguration, engineVariables, this.appCssFiles);
+        }
 
-                if (ret === 0) {
-                    ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app.spec.js"]);
+        if (ret === 0) {
+            ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app.spec.js"]);
+        }
 
-                    if (ret === 0) {
-                        ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`${this.appModuleName}.spec.js`], !this.customUnitTests);
+        if (ret === 0) {
+            ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`${this.appModuleName}.spec.js`], !this.customUnitTests);
+        }
 
-                        if (ret === 0) {
-                            ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
-                        }
-                    }
-                }
-            }
+        if (ret === 0) {
+            ret = await super.generateCss(logger, fileSystem, uniteConfiguration, engineVariables);
         }
 
         return ret;
