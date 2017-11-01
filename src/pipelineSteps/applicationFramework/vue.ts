@@ -151,15 +151,18 @@ export class Vue extends SharedAppFramework {
                 `app${sourceExtension}`,
                 `router${sourceExtension}`,
                 `child/child${sourceExtension}`,
-                `bootstrapper${sourceExtension}`,
-                `entryPoint${sourceExtension}`
+                `bootstrapper${sourceExtension}`
             ];
 
             if (isTypeScript) {
                 srcFiles.push("customTypes/vue-module.d.ts");
             }
 
-            let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, srcFiles);
+            let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, srcFiles, false);
+
+            if (ret === 0) {
+                ret = await super.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [`entryPoint${sourceExtension}`], true);
+            }
 
             if (ret === 0) {
                 ret = await super.generateAppHtml(logger, fileSystem, uniteConfiguration, engineVariables, ["app.vue", "child/child.vue"]);

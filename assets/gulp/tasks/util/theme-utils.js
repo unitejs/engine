@@ -14,8 +14,9 @@ const asyncUtil = require("./async-util");
 const clientPackages = require("./client-packages");
 const configUtil = require("./config-utils");
 const mkdirp = require("mkdirp");
+const glob = require("glob");
 
-function writeIndex (templateName, cacheBust, config, headers, scriptIncludes) {
+function writeIndex (templateName, cacheBust, config, headers, scriptIncludes, appLoader) {
     const formattedHeaders = headers
         .filter(header => header.trim().length > 0)
         .join("\r\n        ");
@@ -27,6 +28,7 @@ function writeIndex (templateName, cacheBust, config, headers, scriptIncludes) {
         .pipe(replace("{SCRIPTINCLUDE}", `        ${formattedScriptIncludes}`))
         .pipe(replace("{CACHEBUST}", cacheBust))
         .pipe(replace("{UNITECONFIG}", config))
+        .pipe(replace("{APPLOADER}", appLoader))
         .pipe(rename("index.html"))
         .pipe(gulp.dest("./")));
 }
@@ -60,6 +62,16 @@ async function buildIndex (uniteConfig, uniteThemeConfig, buildConfiguration, pa
         headers = headers.concat(uniteThemeConfig.customHeaders);
     }
 
+    headers.push("<link rel=\"manifest\" href=\"./assets/favicon/manifest.json\">");
+    headers.push("<style>#app-loader{width:200px;height:200px;position:absolute;top:0;bottom:0;left:0;right:0;margin:auto;}</style>");
+
+    const appLoader = `<svg width="200px" height="200px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+        <circle cx="50" cy="50" fill="none" stroke="#339933" stroke-width="2" r="35" 
+            stroke-dasharray="164.93361431346415 56.97787143782138" transform="rotate(330 50 50)">
+            <animateTransform attributeName="transform" type="rotate" calcMode="linear"
+                values="0 50 50;360 50 50" keyTimes="0;1" dur="1s" begin="0s" repeatCount="indefinite">
+        </animateTransform></circle></svg>`.replace("#339933", uniteThemeConfig.themeColor);
+
     const scriptIncludes = clientPackages.getScriptIncludes(uniteConfig, buildConfiguration.bundle);
 
     return writeIndex(
@@ -67,7 +79,8 @@ async function buildIndex (uniteConfig, uniteThemeConfig, buildConfiguration, pa
         cacheBust,
         config,
         headers,
-        scriptIncludes.map(scriptInclude => `<script src="${scriptInclude}"></script>`)
+        scriptIncludes.map(scriptInclude => `<script src="${scriptInclude}"></script>`),
+        appLoader
     );
 }
 
@@ -107,11 +120,17 @@ async function buildBrowserConfig (uniteConfig, uniteThemeConfig) {
 async function buildManifestJson (uniteConfig, uniteThemeConfig) {
     const manifest = {
         "name": uniteConfig.title,
+        "short_name": uniteConfig.title,
         "icons": [],
         "theme_color": uniteThemeConfig.themeColor,
         "background_color": uniteThemeConfig.backgroundColor,
-        "display": "standalone"
+        "display": "standalone",
+        "start_url": "../../index.html"
     };
+
+    if (uniteThemeConfig.metaDescription) {
+        manifest.name = uniteThemeConfig.metaDescription;
+    }
 
     const sizes = [192, 512];
 
@@ -125,7 +144,7 @@ async function buildManifestJson (uniteConfig, uniteThemeConfig) {
         const imageExists = await asyncUtil.fileExists(fname);
         if (imageExists) {
             manifest.icons.push({
-                "src": `./${fname.replace(/\\/g, "/")}`,
+                "src": `../../${fname.replace(/\\/g, "/")}`,
                 "sizes": `${sizes[i]}x${sizes[i]}`,
                 "type": "image/png"
             });
@@ -334,10 +353,43 @@ async function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory
     }
 }
 
+async function buildPwa (uniteConfig, buildConfiguration, packageJson, files, dest, includeRoot) {
+    const cacheName = `${packageJson.name}-${packageJson.version}-${buildConfiguration.name}`;
+    let cacheFiles = [];
+
+    const globAsync = util.promisify(glob);
+    for (let i = 0; i < files.length; i++) {
+        let globFiles = await globAsync(files[i].src);
+
+        if (files[i].moveToRoot) {
+            if (includeRoot) {
+                const root = files[i].src
+                    .replace(/(.*?)\*(?:.*)/, "$1")
+                    .replace(/\\/g, "/");
+                globFiles = globFiles.map(file => `./${file.replace(root, "")}`);
+                cacheFiles = cacheFiles.concat(globFiles);
+            }
+        } else {
+            globFiles = globFiles.map(file => `./${file}`);
+            cacheFiles = cacheFiles.concat(globFiles);
+        }
+    }
+
+    return asyncUtil.stream(gulp.src(path.join(
+        uniteConfig.dirs.www.build,
+        "assets/pwa/service-worker-template.js"
+    ))
+        .pipe(replace("{CACHE_NAME}", cacheName))
+        .pipe(replace("{CACHE_URLS}", JSON.stringify(cacheFiles, undefined, "\t")))
+        .pipe(rename("service-worker.js"))
+        .pipe(gulp.dest(dest)));
+}
+
 module.exports = {
     buildBrowserConfig,
     buildIndex,
     buildManifestJson,
+    buildPwa,
     buildThemeHeaders,
     callUniteImage,
     generateFavIcons

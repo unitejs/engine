@@ -128,6 +128,7 @@ describe("BuildConfigurationCommand", () => {
                 bundle: undefined,
                 minify: undefined,
                 sourcemaps: undefined,
+                pwa: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -143,6 +144,7 @@ describe("BuildConfigurationCommand", () => {
                 bundle: undefined,
                 minify: undefined,
                 sourcemaps: undefined,
+                pwa: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -158,6 +160,7 @@ describe("BuildConfigurationCommand", () => {
                 bundle: undefined,
                 minify: undefined,
                 sourcemaps: undefined,
+                pwa: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -175,6 +178,7 @@ describe("BuildConfigurationCommand", () => {
                 bundle: undefined,
                 minify: undefined,
                 sourcemaps: undefined,
+                pwa: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -190,6 +194,7 @@ describe("BuildConfigurationCommand", () => {
                 bundle: undefined,
                 minify: undefined,
                 sourcemaps: undefined,
+                pwa: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);
@@ -208,6 +213,7 @@ describe("BuildConfigurationCommand", () => {
                 bundle: true,
                 minify: true,
                 sourcemaps: false,
+                pwa: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);
@@ -229,6 +235,7 @@ describe("BuildConfigurationCommand", () => {
                 bundle: undefined,
                 minify: undefined,
                 sourcemaps: undefined,
+                pwa: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -244,6 +251,7 @@ describe("BuildConfigurationCommand", () => {
                 bundle: undefined,
                 minify: undefined,
                 sourcemaps: undefined,
+                pwa: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -259,6 +267,7 @@ describe("BuildConfigurationCommand", () => {
                 bundle: undefined,
                 minify: undefined,
                 sourcemaps: undefined,
+                pwa: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -277,6 +286,7 @@ describe("BuildConfigurationCommand", () => {
                 bundle: undefined,
                 minify: undefined,
                 sourcemaps: undefined,
+                pwa: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -292,6 +302,7 @@ describe("BuildConfigurationCommand", () => {
                 bundle: undefined,
                 minify: undefined,
                 sourcemaps: undefined,
+                pwa: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -308,6 +319,7 @@ describe("BuildConfigurationCommand", () => {
                 bundle: undefined,
                 minify: undefined,
                 sourcemaps: undefined,
+                pwa: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);
@@ -325,6 +337,7 @@ describe("BuildConfigurationCommand", () => {
                 bundle: undefined,
                 minify: undefined,
                 sourcemaps: undefined,
+                pwa: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);

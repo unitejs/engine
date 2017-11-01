@@ -142,11 +142,15 @@ export class React extends SharedAppFramework {
             const sourceExtension = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? ".ts" : ".js";
 
             let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [
-                `app${sourceExtension}x`,
-                `child/child${sourceExtension}x`,
-                `bootstrapper${sourceExtension}`,
-                `entryPoint${sourceExtension}`
-            ]);
+                                                        `app${sourceExtension}x`,
+                                                        `child/child${sourceExtension}x`,
+                                                        `bootstrapper${sourceExtension}`
+                                                    ],
+                                                   false);
+
+            if (ret === 0) {
+                ret = await super.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [`entryPoint${sourceExtension}`], true);
+            }
 
             if (ret === 0) {
                 ret = await super.generateAppCss(logger, fileSystem, uniteConfiguration, engineVariables, [`child/child`]);

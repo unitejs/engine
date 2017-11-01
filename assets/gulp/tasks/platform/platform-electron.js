@@ -138,7 +138,15 @@ gulp.task("platform-electron-clean", async () => {
 gulp.task("platform-electron-gather", async () => {
     const uniteConfig = await uc.getUniteConfig();
     const uniteThemeConfig = await uc.getUniteThemeConfig(uniteConfig);
-    const platformSrc = await platformUtils.gatherFiles("Electron");
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
+    const packageJson = await packageConfig.getPackageJson();
+
+    const platformSrc = await platformUtils.gatherFiles(
+        uniteConfig,
+        buildConfiguration,
+        packageJson,
+        "Electron"
+    );
 
     const options = loadOptions(uniteConfig);
     const platformArchs = options.platformArch.split(",");

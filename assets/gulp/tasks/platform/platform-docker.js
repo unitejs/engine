@@ -66,10 +66,18 @@ gulp.task("platform-docker-clean", async () => {
 
 gulp.task("platform-docker-gather", async () => {
     const uniteConfig = await uc.getUniteConfig();
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
+    const packageJson = await packageConfig.getPackageJson();
 
     const options = loadOptions(uniteConfig);
 
-    const platformRoot = await platformUtils.gatherFiles(`docker_${options.image}`, options.www);
+    const platformRoot = await platformUtils.gatherFiles(
+        uniteConfig,
+        buildConfiguration,
+        packageJson,
+        `docker_${options.image}`,
+        options.www
+    );
 
     display.info("Copying Image Additions");
 

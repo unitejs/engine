@@ -10,7 +10,7 @@ export function bootstrap () {
             .plugin("aurelia-dialog")
             .plugin("aurelia-validation");
 
-        if (window.unite.configName === "dev") {
+        if (!window.unite.bundle) {
             aurelia.use.developmentLogging();
         }
 

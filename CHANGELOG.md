@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.6.1
+
+* Added Progressive Web App support including service worker, caching and manifest as a buildConfiguration option
+* Added default progress spinner to index page colored with theme color, automatically removed when #root is populated
+* Added noscript block to index templates
+* Change css loading is deffered to later in index page instead of blocking
+
 ## 1.6.0
 
 * Added Polymer support

@@ -57,7 +57,8 @@
 		"consistent-return": "off",
 		"promise/avoid-new": "off",
 		"max-depth": "off",
-		"no-extra-parens": "off"
+        "no-extra-parens": "off",
+        "no-console": "off"
 	},
 	"plugins": [
 		"node",

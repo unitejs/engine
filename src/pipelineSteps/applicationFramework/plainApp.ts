@@ -60,10 +60,14 @@ export class PlainApp extends SharedAppFramework {
             const sourceExtension = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? ".ts" : ".js";
 
             let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [
-                `app${sourceExtension}`,
-                `bootstrapper${sourceExtension}`,
-                `entryPoint${sourceExtension}`
-            ]);
+                                                        `app${sourceExtension}`,
+                                                        `bootstrapper${sourceExtension}`
+                                                    ],
+                                                   false);
+
+            if (ret === 0) {
+                ret = await super.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [`entryPoint${sourceExtension}`], true);
+            }
 
             if (ret === 0) {
                 ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [`app.spec${sourceExtension}`]);

@@ -206,8 +206,7 @@ export class Polymer extends SharedAppFramework {
             const srcFiles = [
                 `app${sourceExtension}`,
                 `child/child${sourceExtension}`,
-                `bootstrapper${sourceExtension}`,
-                `entryPoint${sourceExtension}`
+                `bootstrapper${sourceExtension}`
             ];
 
             if (isTypeScript) {
@@ -215,7 +214,11 @@ export class Polymer extends SharedAppFramework {
                 srcFiles.push("customTypes/polymer-element.d.ts");
             }
 
-            let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, srcFiles);
+            let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, srcFiles, false);
+
+            if (ret === 0) {
+                ret = await super.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [`entryPoint${sourceExtension}`], true);
+            }
 
             if (ret === 0) {
                 ret = await super.generateAppHtml(logger, fileSystem, uniteConfiguration, engineVariables, ["app.html", "child/child.html"]);

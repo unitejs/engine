@@ -37,8 +37,17 @@ gulp.task("platform-web-clean", async () => {
     return del(toClean, {"force": true});
 });
 
-gulp.task("platform-web-gather", () => {
-    return platformUtils.gatherFiles("Web");
+gulp.task("platform-web-gather", async () => {
+    const uniteConfig = await uc.getUniteConfig();
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
+    const packageJson = await packageConfig.getPackageJson();
+
+    return platformUtils.gatherFiles(
+        uniteConfig,
+        buildConfiguration,
+        packageJson,
+        "Web"
+    );
 });
 
 gulp.task("platform-web-compress", async () => {

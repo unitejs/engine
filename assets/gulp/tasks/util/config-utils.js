@@ -11,6 +11,9 @@ async function create (uniteConfig, buildConfiguration, packageJson) {
     const rootConfig = {
         "config": { },
         "configName": buildConfiguration.name,
+        "bundle": buildConfiguration.bundle,
+        "minify": buildConfiguration.minify,
+        "pwa": buildConfiguration.pwa,
         "packageVersion": packageJson.version,
         "uniteVersion": uniteConfig.uniteVersion
     };

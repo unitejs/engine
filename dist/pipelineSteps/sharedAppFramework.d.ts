@@ -7,7 +7,7 @@ import { UniteConfiguration } from "../configuration/models/unite/uniteConfigura
 import { EngineVariables } from "../engine/engineVariables";
 import { PipelineStepBase } from "../engine/pipelineStepBase";
 export declare abstract class SharedAppFramework extends PipelineStepBase {
-    protected generateAppSource(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, files: string[]): Promise<number>;
+    protected generateAppSource(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, files: string[], isShared: boolean): Promise<number>;
     protected generateAppHtml(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, htmlFiles: string[]): Promise<number>;
     protected generateAppCss(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, cssFiles: string[]): Promise<number>;
     protected generateUnitTest(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, specs: string[], isShared: boolean): Promise<number>;

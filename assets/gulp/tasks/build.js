@@ -17,6 +17,7 @@ const minimist = require("minimist");
 const htmlMin = require("gulp-htmlmin");
 const deleteEmpty = require("delete-empty");
 const envUtil = require("./util/env-util");
+const platformUtils = require("./util/platform-utils");
 require("./build-transpile");
 require("./build-transpile-modules");
 require("./build-bundle-app");
@@ -32,7 +33,8 @@ gulp.task("build-clean", async () => {
     const toClean = [
         path.join(uniteConfig.dirs.www.dist, "**/*"),
         path.join(uniteConfig.dirs.www.cssDist, "**/*"),
-        "./index.html"
+        "./index.html",
+        "./service-worker.js"
     ];
     display.info("Cleaning", toClean);
     return del(toClean);
@@ -47,6 +49,24 @@ gulp.task("build-copy-index", async () => {
     const packageJson = await packageConfig.getPackageJson();
 
     return themeUtils.buildIndex(uniteConfig, uniteThemeConfig, buildConfiguration, packageJson);
+});
+
+gulp.task("build-create-pwa", async () => {
+    display.info("Building PWA Service Worker");
+
+    const uniteConfig = await uc.getUniteConfig();
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
+
+    if (buildConfiguration.pwa) {
+        const packageJson = await packageConfig.getPackageJson();
+
+        const files = await platformUtils.listFiles(
+            uniteConfig,
+            buildConfiguration
+        );
+
+        return themeUtils.buildPwa(uniteConfig, buildConfiguration, packageJson, files, "./", false);
+    }
 });
 
 gulp.task("build-post-clean", async () => {
@@ -197,7 +217,8 @@ gulp.task("build", async () => {
             "build-bundle-app",
             "build-copy-index",
             "build-index-min",
-            "build-post-clean"
+            "build-post-clean",
+            "build-create-pwa"
         );
 
         if (options.watch) {

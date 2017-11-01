@@ -2,18 +2,13 @@
  * Gulp utilities for platform.
  */
 const display = require("./display");
-const uc = require("./unite-config");
 const gulp = require("gulp");
 const path = require("path");
 const clientPackages = require("./client-packages");
 const asyncUtil = require("./async-util");
-const packageConfig = require("./package-config");
+const themeUtils = require("./theme-utils");
 
-async function gatherFiles (platformName, wwwRootFolder) {
-    const uniteConfig = await uc.getUniteConfig();
-    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
-    const packageJson = await packageConfig.getPackageJson();
-
+async function listFiles (uniteConfig, buildConfiguration) {
     const bundleExists = await asyncUtil.fileExists(path.join(uniteConfig.dirs.www.dist, "app-bundle.js"));
     if (buildConfiguration.bundle && !bundleExists) {
         display.error(`You have specified configuration '${buildConfiguration.name}' which is bundled,` +
@@ -25,20 +20,13 @@ async function gatherFiles (platformName, wwwRootFolder) {
         process.exit(1);
     }
 
-    const platformRoot = path.join(
-        "../",
-        uniteConfig.dirs.packagedRoot,
-        `/${packageJson.version}/${platformName.toLowerCase()}/`
-    );
-
-    const dest = wwwRootFolder ? path.join(platformRoot, wwwRootFolder) : platformRoot;
-
     let files = [
         {"src": path.join("./", "index.html")},
+        {"src": path.join("./", "service-worker.js")},
         {"src": path.join(uniteConfig.dirs.www.dist, "**/*")},
         {"src": path.join(uniteConfig.dirs.www.cssDist, "**/*")},
         {"src": path.join(uniteConfig.dirs.www.assets, "**/*")},
-        {"src": path.join(uniteConfig.dirs.www.assetsSrc, "root/**/*"), dest}
+        {"src": path.join(uniteConfig.dirs.www.assetsSrc, "root/**/*"), "moveToRoot": true}
     ];
 
     const packageFiles = clientPackages.getDistFiles(
@@ -55,11 +43,25 @@ async function gatherFiles (platformName, wwwRootFolder) {
         return {"src": a};
     }));
 
+    return files;
+}
+
+async function gatherFiles (uniteConfig, buildConfiguration, packageJson, platformName, wwwRootFolder) {
     display.info("Gathering Files", platformName);
+
+    const files = await listFiles(uniteConfig, buildConfiguration);
+
+    const platformRoot = path.join(
+        "../",
+        uniteConfig.dirs.packagedRoot,
+        `/${packageJson.version}/${platformName.toLowerCase()}/`
+    );
+
+    const dest = wwwRootFolder ? path.join(platformRoot, wwwRootFolder) : platformRoot;
     display.info("Destination", dest);
 
     for (let i = 0; i < files.length; i++) {
-        const fileDest = files[i].dest ? files[i].dest
+        const fileDest = files[i].moveToRoot ? dest
             : path.join(
                 dest,
                 files[i].src.indexOf("**") > 0
@@ -72,6 +74,8 @@ async function gatherFiles (platformName, wwwRootFolder) {
         await asyncUtil.stream(gulp.src(files[i].src, {"dot": true})
             .pipe(gulp.dest(fileDest)));
     }
+
+    await themeUtils.buildPwa(uniteConfig, buildConfiguration, packageJson, files, dest, true);
 
     return platformRoot;
 }
@@ -87,7 +91,8 @@ function getConfig (uniteConfig, platformName) {
 
 module.exports = {
     gatherFiles,
-    getConfig
+    getConfig,
+    listFiles
 };
 
 

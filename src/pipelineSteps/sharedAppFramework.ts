@@ -12,9 +12,12 @@ export abstract class SharedAppFramework extends PipelineStepBase {
                                       fileSystem: IFileSystem,
                                       uniteConfiguration: UniteConfiguration,
                                       engineVariables: EngineVariables,
-                                      files: string[]): Promise<number> {
+                                      files: string[],
+                                      isShared: boolean): Promise<number> {
+        const appFramework = isShared ? "shared" : uniteConfiguration.applicationFramework.toLowerCase();
+
         const scaffoldFolder = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
-                                                      `appFramework/${uniteConfiguration.applicationFramework.toLowerCase()}/src/${uniteConfiguration.sourceLanguage.toLowerCase()}`);
+                                                      `appFramework/${appFramework}/src/${uniteConfiguration.sourceLanguage.toLowerCase()}`);
 
         logger.info("Generating App Source in", { appSourceFolder: engineVariables.www.srcFolder });
 

@@ -97,12 +97,16 @@ export class Angular extends SharedAppFramework {
             const sourceExtension = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? ".ts" : ".js";
 
             let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [
-                `app.component${sourceExtension}`,
-                `app.module${sourceExtension}`,
-                `child/child.component${sourceExtension}`,
-                `bootstrapper${sourceExtension}`,
-                `entryPoint${sourceExtension}`
-            ]);
+                                                        `app.component${sourceExtension}`,
+                                                        `app.module${sourceExtension}`,
+                                                        `child/child.component${sourceExtension}`,
+                                                        `bootstrapper${sourceExtension}`
+                                                    ],
+                                                   false);
+
+            if (ret === 0) {
+                ret = await super.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [`entryPoint${sourceExtension}`], true);
+            }
 
             if (ret === 0) {
                 ret = await super.generateAppHtml(logger, fileSystem, uniteConfiguration, engineVariables, ["app.component.html", "child/child.component.html"]);

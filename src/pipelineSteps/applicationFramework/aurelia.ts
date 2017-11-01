@@ -99,9 +99,13 @@ export class Aurelia extends SharedAppFramework {
                                                    [
                                                     `app${sourceExtension}`,
                                                     `bootstrapper${sourceExtension}`,
-                                                    `entryPoint${sourceExtension}`,
                                                     `child/child${sourceExtension}`
-                                                ]);
+                                                    ],
+                                                   false);
+
+            if (ret === 0) {
+                ret = await super.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [`entryPoint${sourceExtension}`], true);
+            }
 
             if (ret === 0) {
                 ret = await super.generateAppHtml(logger, fileSystem, uniteConfiguration, engineVariables, ["app.html", "child/child.html"]);

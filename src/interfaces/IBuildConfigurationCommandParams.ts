@@ -10,4 +10,5 @@ export interface IBuildConfigurationCommandParams extends IEngineCommandParams {
     bundle: boolean | undefined;
     minify: boolean | undefined;
     sourcemaps: boolean | undefined;
+    pwa: boolean | undefined;
 }
