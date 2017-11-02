@@ -73,8 +73,6 @@ export class HtmlTemplate extends PipelineStepBase {
             this.addLine(indent, lines, "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\">");
             this.addLine(indent, lines, `<title>${uniteConfiguration.title}</title>`);
             lines.push("{THEME}");
-            lines.push("{SCRIPTINCLUDE}");
-
             engineVariablesHtml.head.forEach(head => {
                 this.addLine(indent, lines, head);
             });
@@ -85,6 +83,7 @@ export class HtmlTemplate extends PipelineStepBase {
             indent++;
             this.addLine(indent, lines, "<div id=\"app-loader\">{APPLOADER}</div>");
             this.addLine(indent, lines, "<div id=\"root\"></div>");
+            lines.push("{SCRIPTINCLUDE}");
             engineVariablesHtml.body.forEach(body => {
                 this.addLine(indent, lines, body);
             });

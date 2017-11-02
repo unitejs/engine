@@ -3,8 +3,12 @@
 ## 1.6.1
 
 * Added Progressive Web App support including service worker, caching and manifest as a buildConfiguration option
+* Added additional fields to unite-theme.json for shortName for use un PWA manifest, defaults to title
 * Added default progress spinner to index page colored with theme color, automatically removed when #root is populated
+* Added additional fields to unite-theme.json for appLoader and appLoader style
 * Added noscript block to index templates
+* Added buildNumber and buildDateTime to runtime window.unite.json variable
+* Change script includes are deffered to later in index page instead of blocking
 * Change css loading is deffered to later in index page instead of blocking
 
 ## 1.6.0

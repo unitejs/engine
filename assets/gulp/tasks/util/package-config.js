@@ -2,22 +2,32 @@
  * Gulp utils for package configuration.
  */
 const display = require("./display");
+const envUtil = require("./env-util");
 const fs = require("fs");
 const util = require("util");
 
 async function getPackageJson () {
-    try {
-        const data = await util.promisify(fs.readFile)("./package.json");
-        return JSON.parse(data.toString());
-    } catch (err) {
-        display.error("Reading package.json", err);
-        process.exit(1);
-        return undefined;
+    let pj = envUtil.get("packageJson");
+
+    if (pj) {
+        return pj;
+    } else {
+        try {
+            const data = await util.promisify(fs.readFile)("./package.json");
+            pj = JSON.parse(data.toString());
+            envUtil.set("packageJson", pj);
+            return pj;
+        } catch (err) {
+            display.error("Reading package.json", err);
+            process.exit(1);
+            return undefined;
+        }
     }
 }
 
 async function setPackageJson (packageJson) {
     try {
+        envUtil.set("packageJson", packageJson);
         await util.promisify(fs.writeFile)("./package.json", JSON.stringify(packageJson, undefined, "\t"));
     } catch (err) {
         display.error("Writing package.json", err);

@@ -3,6 +3,7 @@
  */
 const gulp = require("gulp");
 const themeUtils = require("./util/theme-utils");
+const packageConfig = require("./util/package-config");
 const uc = require("./util/unite-config");
 const path = require("path");
 const util = require("util");
@@ -45,8 +46,9 @@ gulp.task("theme-manifest-json", async () => {
     const uniteConfig = await uc.getUniteConfig();
 
     const uniteThemeConfig = await uc.getUniteThemeConfig(uniteConfig);
+    const packageJson = await packageConfig.getPackageJson();
 
-    return themeUtils.buildManifestJson(uniteConfig, uniteThemeConfig);
+    return themeUtils.buildManifestJson(uniteConfig, uniteThemeConfig, packageJson);
 });
 
 gulp.task("theme-headers", async () => {

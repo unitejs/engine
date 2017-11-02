@@ -75,7 +75,9 @@ async function gatherFiles (uniteConfig, buildConfiguration, packageJson, platfo
             .pipe(gulp.dest(fileDest)));
     }
 
-    await themeUtils.buildPwa(uniteConfig, buildConfiguration, packageJson, files, dest, true);
+    if (buildConfiguration.pwa) {
+        await themeUtils.buildPwa(uniteConfig, buildConfiguration, packageJson, files, dest, true);
+    }
 
     return platformRoot;
 }

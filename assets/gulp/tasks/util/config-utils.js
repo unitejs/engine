@@ -7,15 +7,36 @@ const path = require("path");
 const util = require("util");
 const asyncUtil = require("./async-util");
 
+function createBuildNumber (now) {
+    return now.getFullYear() +
+        `0${now.getUTCMonth() + 1}`.substr(-2) +
+        `0${now.getUTCDate()}`.substr(-2) +
+        `0${now.getUTCHours()}`.substr(-2) +
+        `0${now.getUTCMinutes()}`.substr(-2) +
+        `0${now.getUTCSeconds()}`.substr(-2);
+}
+
 async function create (uniteConfig, buildConfiguration, packageJson) {
+    const now = new Date();
     const rootConfig = {
-        "config": { },
+        "config": {},
         "configName": buildConfiguration.name,
         "bundle": buildConfiguration.bundle,
         "minify": buildConfiguration.minify,
         "pwa": buildConfiguration.pwa,
         "packageVersion": packageJson.version,
-        "uniteVersion": uniteConfig.uniteVersion
+        "uniteVersion": uniteConfig.uniteVersion,
+        "buildDateTime": now.getTime(),
+        "buildNumber": process.env.BUILD_NUMBER ||
+                       process.env.BUILD_TAG ||
+                       process.env.CI_BUILD_NUMBER ||
+                       process.env.CI_BUILD_TAG ||
+                       process.env.TRAVIS_BUILD_NUMBER ||
+                       process.env.CIRCLE_BUILD_NUM ||
+                       process.env.DRONE_BUILD_NUMBER ||
+                       process.env.APPVEYOR_BUILD_NUMBER ||
+                       process.env.BUILD_BUILDNUMBER ||
+                       createBuildNumber(now)
     };
 
     const readFileAsync = util.promisify(fs.readFile);

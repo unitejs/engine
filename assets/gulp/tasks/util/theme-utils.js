@@ -63,14 +63,16 @@ async function buildIndex (uniteConfig, uniteThemeConfig, buildConfiguration, pa
     }
 
     headers.push("<link rel=\"manifest\" href=\"./assets/favicon/manifest.json\">");
-    headers.push("<style>#app-loader{width:200px;height:200px;position:absolute;top:0;bottom:0;left:0;right:0;margin:auto;}</style>");
 
-    const appLoader = `<svg width="200px" height="200px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
-        <circle cx="50" cy="50" fill="none" stroke="#339933" stroke-width="2" r="35" 
-            stroke-dasharray="164.93361431346415 56.97787143782138" transform="rotate(330 50 50)">
-            <animateTransform attributeName="transform" type="rotate" calcMode="linear"
-                values="0 50 50;360 50 50" keyTimes="0;1" dur="1s" begin="0s" repeatCount="indefinite">
-        </animateTransform></circle></svg>`.replace("#339933", uniteThemeConfig.themeColor);
+    if (uniteThemeConfig.appLoaderStyle && uniteThemeConfig.appLoaderStyle.length > 0) {
+        headers.push(uniteThemeConfig.appLoaderStyle);
+    }
+
+    let appLoader = "";
+    if (uniteThemeConfig.appLoader && uniteThemeConfig.appLoader.length > 0) {
+        appLoader = uniteThemeConfig.appLoader.replace("{THEME_COLOR}", uniteThemeConfig.themeColor)
+        appLoader = appLoader.replace("{THEME_BACKGROUND_COLOR}", uniteThemeConfig.backgroundColor)
+    }
 
     const scriptIncludes = clientPackages.getScriptIncludes(uniteConfig, buildConfiguration.bundle);
 
@@ -117,20 +119,19 @@ async function buildBrowserConfig (uniteConfig, uniteThemeConfig) {
     }
 }
 
-async function buildManifestJson (uniteConfig, uniteThemeConfig) {
+async function buildManifestJson (uniteConfig, uniteThemeConfig, packageJson) {
     const manifest = {
         "name": uniteConfig.title,
-        "short_name": uniteConfig.title,
+        "short_name": uniteThemeConfig.shortName || uniteConfig.title,
+        "description": uniteThemeConfig.metaDescription,
+        "version": packageJson.version,
+        "author": uniteThemeConfig.metaAuthor,
         "icons": [],
         "theme_color": uniteThemeConfig.themeColor,
         "background_color": uniteThemeConfig.backgroundColor,
         "display": "standalone",
         "start_url": "../../index.html"
     };
-
-    if (uniteThemeConfig.metaDescription) {
-        manifest.name = uniteThemeConfig.metaDescription;
-    }
 
     const sizes = [192, 512];
 
@@ -355,7 +356,7 @@ async function generateFavIcons (uniteConfig, uniteThemeConfig, favIconDirectory
 
 async function buildPwa (uniteConfig, buildConfiguration, packageJson, files, dest, includeRoot) {
     const cacheName = `${packageJson.name}-${packageJson.version}-${buildConfiguration.name}`;
-    let cacheFiles = [];
+    let cacheFiles = ["./"];
 
     const globAsync = util.promisify(glob);
     for (let i = 0; i < files.length; i++) {

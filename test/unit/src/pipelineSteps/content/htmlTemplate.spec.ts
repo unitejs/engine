@@ -107,7 +107,7 @@ describe("HtmlTemplate", () => {
 
             const lines = await fileSystemMock.fileReadLines("./test/unit/temp/www/", "index-no-bundle.html");
             Chai.expect(lines.length).to.be.equal(20);
-            Chai.expect(lines.findIndex(line => line.indexOf("head1") > 0)).to.be.equal(8);
+            Chai.expect(lines.findIndex(line => line.indexOf("head1") > 0)).to.be.equal(7);
             Chai.expect(lines.findIndex(line => line.indexOf("body2") > 0)).to.be.equal(13);
         });
     });

@@ -51,6 +51,23 @@ gulp.task("build-copy-index", async () => {
     return themeUtils.buildIndex(uniteConfig, uniteThemeConfig, buildConfiguration, packageJson);
 });
 
+gulp.task("build-pre", async () => {
+    const uniteConfig = await uc.getUniteConfig();
+    const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
+
+    if (buildConfiguration.pwa) {
+        const favIcon = path.join(uniteConfig.dirs.www.assets, "favicon/favicon.ico");
+        const faviconExists = await asyncUtil.fileExists(favIcon);
+
+        if (!faviconExists) {
+            display.warning("Before you can create a PWA build you must build the theme.");
+            display.warning(`Update any information in '${path.join(uniteConfig.dirs.www.assetsSrc, "theme/unite-theme.json")}',`);
+            display.warning(`and then run 'gulp theme-build'.`);
+            process.exit(1);
+        }
+    }
+});
+
 gulp.task("build-create-pwa", async () => {
     display.info("Building PWA Service Worker");
 
@@ -58,6 +75,7 @@ gulp.task("build-create-pwa", async () => {
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
 
     if (buildConfiguration.pwa) {
+        const uniteThemeConfig = await uc.getUniteThemeConfig(uniteConfig);
         const packageJson = await packageConfig.getPackageJson();
 
         const files = await platformUtils.listFiles(
@@ -65,7 +83,9 @@ gulp.task("build-create-pwa", async () => {
             buildConfiguration
         );
 
-        return themeUtils.buildPwa(uniteConfig, buildConfiguration, packageJson, files, "./", false);
+        await themeUtils.buildPwa(uniteConfig, buildConfiguration, packageJson, files, "./", false);
+
+        return themeUtils.buildManifestJson(uniteConfig, uniteThemeConfig, packageJson);
     }
 });
 
@@ -202,6 +222,7 @@ gulp.task("build", async () => {
 
     try {
         await util.promisify(runSequence)(
+            "build-pre",
             "build-clean",
             "build-css-components",
             "build-css-post-components",

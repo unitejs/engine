@@ -24,7 +24,9 @@
         "func-style": 0,
         "vars-on-top": 0,
         "promise/no-nesting": 0,
-        "promise/always-return": 0
+        "promise/always-return": 0,
+        "dot-location": 0,
+        "no-console": 0
 	},
 	"plugins": [
 	]
