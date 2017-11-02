@@ -174,7 +174,7 @@
     "unitejs-preact-webdriver-plugin": "^1.0.0",
     "unitejs-react-protractor-plugin": "^1.0.0",
     "unitejs-react-webdriver-plugin": "^1.0.0",
-    "unitejs-types": "^1.0.2",
+    "unitejs-types": "^1.0.3",
     "unitejs-vue-protractor-plugin": "^1.0.0",
     "unitejs-vue-webdriver-plugin": "^1.0.0",
     "vinyl-buffer": "^1.0.0",
