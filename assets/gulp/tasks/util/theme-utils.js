@@ -65,13 +65,15 @@ async function buildIndex (uniteConfig, uniteThemeConfig, buildConfiguration, pa
     headers.push("<link rel=\"manifest\" href=\"./assets/favicon/manifest.json\">");
 
     if (uniteThemeConfig.appLoaderStyle && uniteThemeConfig.appLoaderStyle.length > 0) {
-        headers.push(uniteThemeConfig.appLoaderStyle);
+        let sty = uniteThemeConfig.appLoaderStyle.replace("{THEME_COLOR}", uniteThemeConfig.themeColor);
+        sty = sty.replace("{THEME_BACKGROUND_COLOR}", uniteThemeConfig.backgroundColor);
+        headers.push(sty);
     }
 
     let appLoader = "";
     if (uniteThemeConfig.appLoader && uniteThemeConfig.appLoader.length > 0) {
-        appLoader = uniteThemeConfig.appLoader.replace("{THEME_COLOR}", uniteThemeConfig.themeColor)
-        appLoader = appLoader.replace("{THEME_BACKGROUND_COLOR}", uniteThemeConfig.backgroundColor)
+        appLoader = uniteThemeConfig.appLoader.replace("{THEME_COLOR}", uniteThemeConfig.themeColor);
+        appLoader = appLoader.replace("{THEME_BACKGROUND_COLOR}", uniteThemeConfig.backgroundColor);
     }
 
     const scriptIncludes = clientPackages.getScriptIncludes(uniteConfig, buildConfiguration.bundle);
