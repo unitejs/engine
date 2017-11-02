@@ -98,12 +98,16 @@ function getBuildConfiguration (uniteConfig, showInfo) {
     if (buildConfiguration.minify === undefined) {
         buildConfiguration.minify = false;
     }
+    if (buildConfiguration.pwa === undefined) {
+        buildConfiguration.pwa = false;
+    }
 
     buildConfiguration.name = options.buildConfiguration;
     if (showInfo) {
         display.info("Sourcemaps", buildConfiguration.sourcemaps);
         display.info("Minify", buildConfiguration.minify);
         display.info("Bundle", buildConfiguration.bundle);
+        display.info("Pwa", buildConfiguration.pwa);
     }
 
     return buildConfiguration;
