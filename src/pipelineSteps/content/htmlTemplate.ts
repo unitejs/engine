@@ -89,6 +89,7 @@ export class HtmlTemplate extends PipelineStepBase {
             });
             this.addLine(indent, lines, "<link rel=\"stylesheet\" href=\"./css/style.css{CACHEBUST}\">");
             this.addLine(indent, lines, "<noscript>Your browser does not support JavaScript or has it disabled, this site will not work without it.</noscript>");
+            lines.push("{BODYEND}");
             indent--;
             this.addLine(indent, lines, "</body>");
             indent--;

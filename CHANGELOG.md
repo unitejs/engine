@@ -8,6 +8,7 @@
 * Added additional fields to unite-theme.json for appLoader and appLoader style
 * Added noscript block to index templates
 * Added buildNumber and buildDateTime to runtime window.unite.json variable
+* Added googleAnalyticsId in a buildConfiguration will inject GA script and initialise
 * Change script includes are deffered to later in index page instead of blocking
 * Change css loading is deffered to later in index page instead of blocking
 

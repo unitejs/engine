@@ -16,19 +16,27 @@ const configUtil = require("./config-utils");
 const mkdirp = require("mkdirp");
 const glob = require("glob");
 
-function writeIndex (templateName, cacheBust, config, headers, scriptIncludes, appLoader) {
+function writeIndex (minify, templateName, cacheBust, config, headers, scriptIncludes, appLoader, bodyEnd) {
+    const join = minify ? "" : "\r\n        ";
     const formattedHeaders = headers
         .filter(header => header.trim().length > 0)
-        .join("\r\n        ");
+        .join(join);
     const formattedScriptIncludes = scriptIncludes
         .filter(scriptInclude => scriptInclude.trim().length > 0)
-        .join("\r\n        ");
+        .join(join);
+    const formattedBodyEnd = bodyEnd
+        .filter(be => be.trim().length > 0)
+        .join(join);
+    const formattedAppLoader = appLoader
+        .filter(al => al.trim().length > 0)
+        .join(join);
     return asyncUtil.stream(gulp.src(templateName)
         .pipe(replace("{THEME}", `        ${formattedHeaders}`))
         .pipe(replace("{SCRIPTINCLUDE}", `        ${formattedScriptIncludes}`))
         .pipe(replace("{CACHEBUST}", cacheBust))
         .pipe(replace("{UNITECONFIG}", config))
-        .pipe(replace("{APPLOADER}", appLoader))
+        .pipe(replace("{APPLOADER}", formattedAppLoader))
+        .pipe(replace("{BODYEND}", `        ${formattedBodyEnd}`))
         .pipe(rename("index.html"))
         .pipe(gulp.dest("./")));
 }
@@ -64,27 +72,42 @@ async function buildIndex (uniteConfig, uniteThemeConfig, buildConfiguration, pa
 
     headers.push("<link rel=\"manifest\" href=\"./assets/favicon/manifest.json\">");
 
+    const substTheme = line => {
+        return line.replace("{THEME_COLOR}", uniteThemeConfig.themeColor)
+            .replace("{THEME_BACKGROUND_COLOR}", uniteThemeConfig.backgroundColor);
+    };
+
     if (uniteThemeConfig.appLoaderStyle && uniteThemeConfig.appLoaderStyle.length > 0) {
-        let sty = uniteThemeConfig.appLoaderStyle.replace("{THEME_COLOR}", uniteThemeConfig.themeColor);
-        sty = sty.replace("{THEME_BACKGROUND_COLOR}", uniteThemeConfig.backgroundColor);
-        headers.push(sty);
+        headers = headers.concat(uniteThemeConfig.appLoaderStyle.map(line => substTheme(line)));
     }
 
     let appLoader = "";
-    if (uniteThemeConfig.appLoader && uniteThemeConfig.appLoader.length > 0) {
-        appLoader = uniteThemeConfig.appLoader.replace("{THEME_COLOR}", uniteThemeConfig.themeColor);
-        appLoader = appLoader.replace("{THEME_BACKGROUND_COLOR}", uniteThemeConfig.backgroundColor);
+    if (uniteThemeConfig.appLoader) {
+        appLoader = uniteThemeConfig.appLoader.map(line => substTheme(line));
     }
 
     const scriptIncludes = clientPackages.getScriptIncludes(uniteConfig, buildConfiguration.bundle);
+    const bodyEnd = [];
+
+    if (uniteJs.config.googleAnalyticsId) {
+        bodyEnd.push(`<script async src="https://www.googletagmanager.com/gtag/js?id=${uniteJs.config.googleAnalyticsId}"></script>`);
+        bodyEnd.push("<script>");
+        bodyEnd.push("window.dataLayer=window.dataLayer||[];");
+        bodyEnd.push("function gtag(){dataLayer.push(arguments)};");
+        bodyEnd.push("gtag('js',new Date());");
+        bodyEnd.push(`gtag('config','${uniteJs.config.googleAnalyticsId}');`);
+        bodyEnd.push("</script>");
+    }
 
     return writeIndex(
+        buildConfiguration.minify,
         buildConfiguration.bundle ? "./index-bundle.html" : "./index-no-bundle.html",
         cacheBust,
         config,
         headers,
         scriptIncludes.map(scriptInclude => `<script src="${scriptInclude}"></script>`),
-        appLoader
+        appLoader,
+        bodyEnd
     );
 }
 

@@ -254,7 +254,7 @@ The fields in the unite-theme.json should be self explanatory in terms of what t
 
 Some of the fields are used to generate the ./assets/favicon/manifest.json which is used by some browsers when the web site is pinned. The manifest.json also contains fields (shortName) used by Progressive Web Apps (pwa) should one of your buildConfigurations have the pwa flag enabled.
 
-There are also properties for the index page loading spinner which can be customised, to remove the spinner entirely just leave the entries as empty strings. The appLoaderStyle and appLoader entries can be any valid html you like, they both have the {THEME_COLOR} and {THEME_BACKGROUND_COLOR} substitutions applied to them from the other variables in the json file.
+There are also properties for the index page loading spinner which can be customised, to remove the spinner entirely just leave the entries as empty arrays. The appLoaderStyle and appLoader entries can be any valid html you like, they both have the {THEME_COLOR} and {THEME_BACKGROUND_COLOR} substitutions applied to them from the other variables in the json file.
 
 ``` json
 {
@@ -273,8 +273,29 @@ There are also properties for the index page loading spinner which can be custom
     "backgroundColor": "#339933",
     "themeColor": "#339933",
     "shortName": "Test",
-    "appLoaderStyle": "<style>#app-loader{width:200px;height:200px;position:absolute;top:0;bottom:0;left:0;right:0;margin:auto;}</style>",
-    "appLoader": "<svg><circle stroke=\"{THEME_COLOR}\" fill=\"{THEME_BACKGROUND_COLOR}\"...</svg>"
+    "appLoaderStyle": [
+        "<style>",
+        "#app-loader",
+        "{",
+        "width:200px;",
+        "height:200px;",
+        "position:absolute;",
+        "top:0;",
+        "bottom:0;",
+        "left:0;",
+        "right:0;",
+        "margin:auto;",
+        "}",
+        "</style>"
+    ],
+    "appLoader": [
+        "<svg width=\"200px\" height=\"200px\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" preserveAspectRatio=\"xMidYMid\">",
+        "<circle cx=\"50\" cy=\"50\" fill=\"none\" stroke=\"{THEME_COLOR}\" stroke-width=\"2\" r=\"35\" stroke-dasharray=\"164.93361431346415 56.97787143782138\" transform=\"rotate(330 50 50)\">",
+        "<animateTransform attributeName=\"transform\" type=\"rotate\" calcMode=\"linear\" values=\"0 50 50;360 50 50\" keyTimes=\"0;1\" dur=\"1s\" begin=\"0s\" repeatCount=\"indefinite\">",
+        "</animateTransform>",
+        "</circle>",
+        "</svg>"
+    ]
 }
 ```
 
