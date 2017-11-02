@@ -379,7 +379,7 @@ console.log(window.unite.config["myApiKey"]); // --prod-key--
 
 ## Runtime Variables
 
-In addition there are some other fields available in the window.unite object which are automaticaly populated at build time.
+In addition there are some other fields available in the window.unite object which are automatically populated at build time.
 
 ``` json
 {
