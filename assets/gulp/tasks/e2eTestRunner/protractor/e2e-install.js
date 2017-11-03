@@ -4,19 +4,31 @@
 const display = require("./util/display");
 const exec = require("./util/exec");
 const gulp = require("gulp");
+const minimist = require("minimist");
 
 gulp.task("e2e-install", async () => {
     display.info("Running", "Webdriver Manager");
 
+    const allDrivers = ["chrome", "gecko", "edge", "ie64", "ie"];
+    const knownOptions = {
+        "default": {
+            "drivers": allDrivers.join(",")
+        },
+        "boolean": [
+            "watch"
+        ]
+    };
+
+    const options = minimist(process.argv.slice(2), knownOptions);
+
+    const args = ["update"];
+    const drivers = options.split(",");
+    allDrivers.forEach(driver => {
+        args.push(`--${driver}${drivers.indexOf(driver) >= 0 ? "" : " false"}`);
+    });
+
     try {
-        await exec.npmRun("webdriver-manager", [
-            "update",
-            "--chrome",
-            "--gecko",
-            "--edge",
-            "--ie64",
-            "--ie"
-        ]);
+        await exec.npmRun("webdriver-manager", args);
     } catch (err) {
         display.error("Executing webdriver-manager", err);
         process.exit(1);
