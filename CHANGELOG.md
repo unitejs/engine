@@ -7,6 +7,7 @@
 * Change Angular changed core-js/client/shim.js to core-js/client/shim.min.js for minified builds
 * Added hasOverrides flag for client packages so a unite configure will not overwrite and custom changes
 * Fixed removing a client package didn't remove it from dependencies if it already existed
+* Fixed added missing dependency for through2
 
 ## 1.6.1
 
