@@ -17,13 +17,9 @@ describe("ClientPackageCommand", () => {
     let loggerStub: ILogger;
     let fileSystemStub: IFileSystem;
     let loggerErrorSpy: Sinon.SinonSpy;
-    let loggerInfoSpy: Sinon.SinonSpy;
-    let loggerWarningSpy: Sinon.SinonSpy;
     let loggerBannerSpy: Sinon.SinonSpy;
     let uniteJson: UniteConfiguration;
     let uniteJsonWritten: UniteConfiguration;
-    let packageJsonErrors: boolean;
-    let spdxErrors: boolean;
     let fileWriteJsonErrors: boolean;
     let packageInfo: string;
     let failPackageAdd: boolean;
@@ -41,13 +37,9 @@ describe("ClientPackageCommand", () => {
         fileSystemStub = new ReadOnlyFileSystemMock();
 
         loggerErrorSpy = sandbox.spy(loggerStub, "error");
-        loggerInfoSpy = sandbox.spy(loggerStub, "info");
-        loggerWarningSpy = sandbox.spy(loggerStub, "warning");
         loggerBannerSpy = sandbox.spy(loggerStub, "banner");
 
         uniteJson = undefined;
-        packageJsonErrors = false;
-        spdxErrors = false;
         fileWriteJsonErrors = false;
         packageInfo = undefined;
         uniteJsonWritten = undefined;

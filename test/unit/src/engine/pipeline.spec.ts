@@ -10,7 +10,6 @@ import { EngineVariables } from "../../../../src/engine/engineVariables";
 import { Pipeline } from "../../../../src/engine/pipeline";
 import { PipelineKey } from "../../../../src/engine/pipelineKey";
 import { PipelineStepBase } from "../../../../src/engine/pipelineStepBase";
-import { IPipelineStep } from "../../../../src/interfaces/IPipelineStep";
 import { FileSystemMock } from "../fileSystem.mock";
 
 class TestStep extends PipelineStepBase {
@@ -58,7 +57,6 @@ describe("Pipeline", () => {
     let fileSystemStub: IFileSystem;
     let uniteConfigurationStub: any;
     let engineVariablesStub: EngineVariables;
-    let loggerInfoSpy: Sinon.SinonSpy;
     let loggerErrorSpy: Sinon.SinonSpy;
     let modulePath: string;
 
@@ -68,7 +66,6 @@ describe("Pipeline", () => {
         loggerStub.info = () => { };
         loggerStub.error = () => { };
 
-        loggerInfoSpy = sandbox.spy(loggerStub, "info");
         loggerErrorSpy = sandbox.spy(loggerStub, "error");
 
         fileSystemStub = new FileSystemMock();

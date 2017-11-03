@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.6.2
+
+* Change Angular updated to v5
+* Change Angular v5 no longer needs reflect-metadata so removed
+* Change Angular changed core-js/client/shim.js to core-js/client/shim.min.js for minified builds
+* Added hasOverrides flag for client packages so a unite configure will not overwrite and custom changes
+* Fixed removing a client package didn't remove it from dependencies if it already existed
+
 ## 1.6.1
 
 * Added Progressive Web App support including service worker, caching and manifest as a buildConfiguration option
@@ -9,8 +17,8 @@
 * Added noscript block to index templates
 * Added buildNumber and buildDateTime to runtime window.unite.json variable
 * Added googleAnalyticsId in a buildConfiguration will inject GA script and initialise
-* Change script includes are deffered to later in index page instead of blocking
-* Change css loading is deffered to later in index page instead of blocking
+* Change script includes are deferred to later in index page instead of blocking
+* Change css loading is deferred to later in index page instead of blocking
 
 ## 1.6.0
 

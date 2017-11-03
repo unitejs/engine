@@ -16,12 +16,10 @@ describe("ConfigureCommand", () => {
     let loggerStub: ILogger;
     let fileSystemStub: IFileSystem;
     let loggerErrorSpy: Sinon.SinonSpy;
-    let loggerInfoSpy: Sinon.SinonSpy;
     let loggerWarningSpy: Sinon.SinonSpy;
     let loggerBannerSpy: Sinon.SinonSpy;
     let uniteJson: UniteConfiguration;
     let uniteJsonWritten: UniteConfiguration;
-    let packageInfo: string;
     let profileErrors: boolean;
     let profileExists: boolean;
     let enginePeerPackages: { [id: string]: string};
@@ -37,12 +35,10 @@ describe("ConfigureCommand", () => {
         fileSystemStub = new ReadOnlyFileSystemMock();
 
         loggerErrorSpy = sandbox.spy(loggerStub, "error");
-        loggerInfoSpy = sandbox.spy(loggerStub, "info");
         loggerWarningSpy = sandbox.spy(loggerStub, "warning");
         loggerBannerSpy = sandbox.spy(loggerStub, "banner");
 
         uniteJson = undefined;
-        packageInfo = undefined;
         uniteJsonWritten = undefined;
         profileExists = true;
         profileErrors = false;

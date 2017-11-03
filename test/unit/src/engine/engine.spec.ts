@@ -20,11 +20,9 @@ describe("Engine", () => {
     let loggerStub: ILogger;
     let fileSystemStub: IFileSystem;
     let loggerErrorSpy: Sinon.SinonSpy;
-    let loggerInfoSpy: Sinon.SinonSpy;
     let loggerWarningSpy: Sinon.SinonSpy;
     let loggerBannerSpy: Sinon.SinonSpy;
     let uniteJson: UniteConfiguration;
-    let uniteJsonWritten: UniteConfiguration;
     let packageJsonErrors: boolean;
     let spdxErrors: boolean;
     let fileWriteJsonErrors: boolean;
@@ -44,7 +42,6 @@ describe("Engine", () => {
         fileSystemStub = new ReadOnlyFileSystemMock();
 
         loggerErrorSpy = sandbox.spy(loggerStub, "error");
-        loggerInfoSpy = sandbox.spy(loggerStub, "info");
         loggerWarningSpy = sandbox.spy(loggerStub, "warning");
         loggerBannerSpy = sandbox.spy(loggerStub, "banner");
 
@@ -53,7 +50,6 @@ describe("Engine", () => {
         spdxErrors = false;
         fileWriteJsonErrors = false;
         packageInfo = undefined;
-        uniteJsonWritten = undefined;
         failPackageAdd = false;
         profileExists = true;
         profileErrors = false;
@@ -95,12 +91,7 @@ describe("Engine", () => {
                 return Promise.reject("error");
 
             } else {
-                if (filename === "unite.json") {
-                    uniteJsonWritten = obj;
-                    return Promise.resolve();
-                } else {
-                    return originalFileWriteJson(folder, filename, obj);
-                }
+                return originalFileWriteJson(folder, filename, obj);
             }
         });
 

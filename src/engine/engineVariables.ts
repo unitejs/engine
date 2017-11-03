@@ -53,6 +53,7 @@ export class EngineVariables {
     private _removedDevDependencies: string[];
     private _requiredClientPackages: { [id: string]: UniteClientPackage };
     private _removedClientPackages: { [id: string]: UniteClientPackage };
+    private _existingClientPackages: { [id: string]: UniteClientPackage };
 
     constructor() {
         this._configuration = {};
@@ -68,6 +69,7 @@ export class EngineVariables {
         this._removedDevDependencies = [];
         this._requiredClientPackages = {};
         this._removedClientPackages = {};
+        this._existingClientPackages = {};
     }
 
     public setConfiguration(name: string, config: any): void {
@@ -104,7 +106,7 @@ export class EngineVariables {
     }
 
     public initialisePackages(clientPackages: { [id: string]: UniteClientPackage }): void {
-        this._requiredClientPackages = clientPackages || {};
+        this._existingClientPackages = clientPackages;
     }
 
     public toggleClientPackage(key: string, clientPackage: UniteClientPackage, required: boolean): void {
@@ -156,6 +158,19 @@ export class EngineVariables {
 
             if (packageJsonDependencies[pkg.name]) {
                 delete packageJsonDependencies[pkg.name];
+            }
+
+            if (this._existingClientPackages[key] &&
+                !this._existingClientPackages[key].hasOverrides) {
+                delete this._existingClientPackages[key];
+            }
+        }
+
+        for (const key in this._existingClientPackages) {
+            const pkg = this._existingClientPackages[key];
+
+            if (pkg.hasOverrides || !this._requiredClientPackages[key]) {
+                this._requiredClientPackages[key] = pkg;
             }
         }
 

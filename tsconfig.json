@@ -14,7 +14,8 @@
         "strictNullChecks": false,
         "jsx": "react",
         "outDir": "./dist",
-        "baseUrl": "."
+        "baseUrl": ".",
+        "noUnusedLocals": true
     },
     "include": [
         "src/**/*",

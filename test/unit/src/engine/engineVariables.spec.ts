@@ -192,6 +192,19 @@ describe("EngineVariables", () => {
             Chai.should().not.exist(uniteConfiguration.clientPackages.package);
             Chai.should().not.exist(packageJsonDependencies.package);
         });
+
+        it("can succeed when removing a dev dependency that already exists exist", async () => {
+            const obj = new EngineVariables();
+            peerDependencies.package = "^1.2.3";
+            obj.engineDependencies = peerDependencies;
+            obj.toggleDevDependency(["package"], false);
+            obj.toggleDevDependency(["package"], false);
+            obj.buildDevDependencies(packageJsonDevDependencies);
+            Chai.should().not.exist(packageJsonDevDependencies.package);
+            obj.buildDependencies(uniteConfiguration, packageJsonDependencies);
+            Chai.should().not.exist(uniteConfiguration.clientPackages.package);
+            Chai.should().not.exist(packageJsonDependencies.package);
+        });
     });
 
     describe("buildDependencies", () => {
@@ -294,6 +307,83 @@ describe("EngineVariables", () => {
             obj.buildDependencies(uniteConfiguration, packageJsonDependencies);
             Chai.should().exist(uniteConfiguration.clientPackages.package);
             Chai.expect(uniteConfiguration.clientPackages.package.version).to.be.equal("^6.7.8");
+        });
+
+        it("can retain package details if client package hasOverrides set", async () => {
+            const obj = new EngineVariables();
+            obj.initialisePackages({package: {
+                                        name: "package",
+                                        main: "mainOverride.js",
+                                        version: "9.9.9",
+                                        hasOverrides: true
+                                    }});
+            obj.toggleClientPackage("package", {
+                                        name: "package",
+                                        main: "main.js",
+                                        version: "^6.7.8"
+                                    },
+                                    true);
+            obj.buildDependencies(uniteConfiguration, packageJsonDependencies);
+            Chai.should().exist(uniteConfiguration.clientPackages.package);
+            Chai.expect(uniteConfiguration.clientPackages.package.main).to.be.equal("mainOverride.js");
+            Chai.expect(uniteConfiguration.clientPackages.package.version).to.be.equal("9.9.9");
+        });
+
+        it("can retain package details if client package hasOverrides empty", async () => {
+            const obj = new EngineVariables();
+            obj.initialisePackages({package: {
+                                        name: "package",
+                                        main: "mainOverride.js",
+                                        version: "9.9.9"
+                                    }});
+            obj.toggleClientPackage("package", {
+                                        name: "package",
+                                        main: "main.js",
+                                        version: "^6.7.8"
+                                    },
+                                    true);
+            obj.buildDependencies(uniteConfiguration, packageJsonDependencies);
+            Chai.should().exist(uniteConfiguration.clientPackages.package);
+            Chai.expect(uniteConfiguration.clientPackages.package.main).to.be.equal("main.js");
+            Chai.expect(uniteConfiguration.clientPackages.package.version).to.be.equal("^6.7.8");
+        });
+
+        it("can not remove package if client package hasOverrides set", async () => {
+            const obj = new EngineVariables();
+            obj.initialisePackages({package: {
+                                        name: "package",
+                                        main: "mainOverride.js",
+                                        version: "9.9.9",
+                                        hasOverrides: true
+                                    }});
+            obj.toggleClientPackage("package", {
+                                        name: "package",
+                                        main: "main.js",
+                                        version: "^6.7.8"
+                                    },
+                                    false);
+            obj.buildDependencies(uniteConfiguration, packageJsonDependencies);
+            Chai.should().exist(uniteConfiguration.clientPackages.package);
+            Chai.expect(uniteConfiguration.clientPackages.package.main).to.be.equal("mainOverride.js");
+            Chai.expect(uniteConfiguration.clientPackages.package.version).to.be.equal("9.9.9");
+        });
+
+        it("can remove package if client package hasOverrides empty", async () => {
+            const obj = new EngineVariables();
+            obj.initialisePackages({package: {
+                                        name: "package",
+                                        main: "mainOverride.js",
+                                        version: "9.9.9"
+                                    }});
+            obj.toggleClientPackage("package", {
+                                        name: "package",
+                                        main: "main.js",
+                                        version: "^6.7.8"
+                                    },
+                                    false);
+            obj.buildDependencies(uniteConfiguration, packageJsonDependencies);
+            Chai.should().not.exist(uniteConfiguration.clientPackages.package);
+            Chai.should().not.exist(packageJsonDependencies.package);
         });
     });
 

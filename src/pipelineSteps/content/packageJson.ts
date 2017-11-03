@@ -53,7 +53,7 @@ export class PackageJson extends PipelineStepBase {
 
         if (ret === 0 && uniteConfiguration.clientPackages) {
             // Since we are reconfiguring we should remove any transpiled clientPackages
-            // tnhey will get rebuilt on the first run of the build task
+            // they will get rebuilt on the first run of the build task
             const keys = Object.keys(uniteConfiguration.clientPackages);
 
             for (let i = 0; i < keys.length; i++) {

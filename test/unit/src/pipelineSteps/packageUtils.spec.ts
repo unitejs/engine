@@ -13,7 +13,6 @@ describe("PackageUtils", () => {
     let loggerStub: ILogger;
     let fileSystemStub: IFileSystem;
     let loggerInfoSpy: Sinon.SinonSpy;
-    let loggerErrorSpy: Sinon.SinonSpy;
     let childSpawnStub: Sinon.SinonStub;
     let childSpawnProcess: any;
 
@@ -38,7 +37,6 @@ describe("PackageUtils", () => {
         childSpawnStub.returns(childSpawnProcess);
 
         loggerInfoSpy = sandbox.spy(loggerStub, "info");
-        loggerErrorSpy = sandbox.spy(loggerStub, "error");
     });
 
     afterEach(async () => {

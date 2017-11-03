@@ -27,4 +27,5 @@ export declare class UniteClientPackage {
     isModuleLoader?: boolean;
     noScript?: boolean;
     transpile?: UniteClientPackageTranspile;
+    hasOverrides?: boolean;
 }

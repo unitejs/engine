@@ -177,6 +177,7 @@ export class Angular extends SharedAppFramework {
         engineVariables.toggleClientPackage("core-js", {
                                                 name: "core-js",
                                                 main: "client/shim.js",
+                                                mainMinified: "client/shim.min.js",
                                                 includeMode: "both",
                                                 scriptIncludeMode: "both"
                                             },
@@ -199,12 +200,10 @@ export class Angular extends SharedAppFramework {
                                             },
                                             mainCondition);
 
+        // main condition false to always remove, since ng5 no longer requires
         engineVariables.toggleClientPackage("reflect-metadata", {
-                                                name: "reflect-metadata",
-                                                main: "Reflect.js",
-                                                includeMode: "both",
-                                                scriptIncludeMode: "both"
+                                                name: "reflect-metadata"
                                             },
-                                            mainCondition);
+                                            false);
     }
 }

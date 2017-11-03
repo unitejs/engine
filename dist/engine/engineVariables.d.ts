@@ -46,6 +46,7 @@ export declare class EngineVariables {
     private _removedDevDependencies;
     private _requiredClientPackages;
     private _removedClientPackages;
+    private _existingClientPackages;
     constructor();
     setConfiguration(name: string, config: any): void;
     getConfiguration<T>(name: string): T;

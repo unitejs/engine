@@ -2,7 +2,6 @@
  * Client Package Command
  */
 import { ParameterValidation } from "unitejs-framework/dist/helpers/parameterValidation";
-import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
 import { IncludeMode } from "../configuration/models/unite/includeMode";
 import { ScriptIncludeMode } from "../configuration/models/unite/scriptIncludeMode";
 import { UniteClientPackage } from "../configuration/models/unite/uniteClientPackage";

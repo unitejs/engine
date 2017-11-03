@@ -16,8 +16,6 @@ describe("GenerateCommand", () => {
     let loggerStub: ILogger;
     let fileSystemStub: IFileSystem;
     let loggerErrorSpy: Sinon.SinonSpy;
-    let loggerInfoSpy: Sinon.SinonSpy;
-    let loggerWarningSpy: Sinon.SinonSpy;
     let loggerBannerSpy: Sinon.SinonSpy;
     let uniteJson: UniteConfiguration;
     let enginePeerPackages: { [id: string]: string};
@@ -37,8 +35,6 @@ describe("GenerateCommand", () => {
         fileSystemStub = new ReadOnlyFileSystemMock();
 
         loggerErrorSpy = sandbox.spy(loggerStub, "error");
-        loggerInfoSpy = sandbox.spy(loggerStub, "info");
-        loggerWarningSpy = sandbox.spy(loggerStub, "warning");
         loggerBannerSpy = sandbox.spy(loggerStub, "banner");
 
         uniteJson = undefined;

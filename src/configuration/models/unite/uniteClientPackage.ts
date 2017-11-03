@@ -22,4 +22,5 @@ export class UniteClientPackage {
     public isModuleLoader?: boolean;
     public noScript?: boolean;
     public transpile?: UniteClientPackageTranspile;
+    public hasOverrides?: boolean;
 }

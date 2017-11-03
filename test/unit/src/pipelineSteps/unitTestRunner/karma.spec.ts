@@ -15,7 +15,6 @@ import { FileSystemMock } from "../../fileSystem.mock";
 describe("Karma", () => {
     let sandbox: Sinon.SinonSandbox;
     let loggerStub: ILogger;
-    let loggerInfoSpy: Sinon.SinonSpy;
     let loggerErrorSpy: Sinon.SinonSpy;
     let fileSystemMock: IFileSystem;
     let uniteConfigurationStub: UniteConfiguration;
@@ -26,7 +25,6 @@ describe("Karma", () => {
         loggerStub = <ILogger>{};
         loggerStub.info = () => { };
         loggerStub.error = () => { };
-        loggerInfoSpy = sandbox.spy(loggerStub, "info");
         loggerErrorSpy = sandbox.spy(loggerStub, "error");
 
         fileSystemMock = new FileSystemMock();
