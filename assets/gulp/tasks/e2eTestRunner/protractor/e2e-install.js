@@ -14,7 +14,7 @@ gulp.task("e2e-install", async () => {
         "default": {
             "drivers": allDrivers.join(",")
         },
-        "boolean": [
+        "string": [
             "drivers"
         ]
     };
