@@ -15,14 +15,14 @@ gulp.task("e2e-install", async () => {
             "drivers": allDrivers.join(",")
         },
         "boolean": [
-            "watch"
+            "drivers"
         ]
     };
 
     const options = minimist(process.argv.slice(2), knownOptions);
 
     const args = ["update"];
-    const drivers = options.split(",");
+    const drivers = options.drivers.split(",");
     allDrivers.forEach(driver => {
         args.push(`--${driver}${drivers.indexOf(driver) >= 0 ? "" : " false"}`);
     });
