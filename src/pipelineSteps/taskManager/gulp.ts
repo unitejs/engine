@@ -27,7 +27,8 @@ export class Gulp extends PipelineStepBase {
                                                 "gulp-uglify",
                                                 "uglify-js",
                                                 "mkdirp",
-                                                "stream-to-promise"
+                                                "stream-to-promise",
+                                                "through2"
                                             ],
                                             mainCondition);
 
