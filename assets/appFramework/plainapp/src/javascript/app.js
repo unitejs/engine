@@ -3,7 +3,16 @@
  */
 export class App {
     run () {
-        document.getElementById("root").innerHTML = "Hello UniteJS World!";
+        const style = document.createElement("style");
+        style.type = "text/css";
+        style.appendChild(document.createTextNode(`.child { font-size: 20px }`));
+        document.head.appendChild(style);
+
+        const child = document.createElement("span");
+        child.innerText = "Hello UniteJS World!";
+        child.className = "child";
+
+        document.getElementById("root").appendChild(child);
     }
 }
 

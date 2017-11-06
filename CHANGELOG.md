@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.3
+
+* Fixed PlainApp so that it is has a child element styled like other frameworks, so e2e works
+
 ## 1.6.2
 
 * Change Angular updated to v5
