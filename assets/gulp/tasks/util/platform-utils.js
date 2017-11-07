@@ -46,12 +46,12 @@ async function listFiles (uniteConfig, buildConfiguration) {
     return files;
 }
 
-async function gatherFiles (uniteConfig, buildConfiguration, packageJson, platformName, wwwRootFolder) {
+async function gatherFiles (uniteConfig, buildConfiguration, packageJson, platformName, wwwRootFolder, platformFolder) {
     display.info("Gathering Files", platformName);
 
     const files = await listFiles(uniteConfig, buildConfiguration);
 
-    const platformRoot = path.join(
+    const platformRoot = platformFolder ? platformFolder : path.join(
         "../",
         uniteConfig.dirs.packagedRoot,
         `/${packageJson.version}/${platformName.toLowerCase()}/`

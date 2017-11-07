@@ -4,6 +4,8 @@
 export declare class UniteThemeConfiguration {
     shortName: string;
     metaAuthor: string;
+    metaAuthorEmail: string;
+    metaAuthorWeb: string;
     metaDescription: string;
     metaKeywords: string[];
     customHeaders: string[];
@@ -12,4 +14,10 @@ export declare class UniteThemeConfiguration {
     themeColor: string;
     appLoaderStyle: string[];
     appLoader: string[];
+    cordova: {
+        headers: string[];
+        scriptInclude: string[];
+        scriptStart: string[];
+        scriptEnd: string[];
+    };
 }
