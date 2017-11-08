@@ -8,6 +8,7 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { ConfigureCommand } from "../../../../src/commands/configureCommand";
 import { UniteBuildConfiguration } from "../../../../src/configuration/models/unite/uniteBuildConfiguration";
 import { UniteConfiguration } from "../../../../src/configuration/models/unite/uniteConfiguration";
+import { UniteThemeConfiguration } from "../../../../src/configuration/models/uniteTheme/uniteThemeConfiguration";
 import { FileSystemMock } from "../fileSystem.mock";
 import { ReadOnlyFileSystemMock } from "../readOnlyFileSystem.mock";
 
@@ -20,6 +21,7 @@ describe("ConfigureCommand", () => {
     let loggerBannerSpy: Sinon.SinonSpy;
     let uniteJson: UniteConfiguration;
     let uniteJsonWritten: UniteConfiguration;
+    let uniteJsonThemeWritten: UniteThemeConfiguration;
     let profileErrors: boolean;
     let profileExists: boolean;
     let enginePeerPackages: { [id: string]: string};
@@ -40,6 +42,7 @@ describe("ConfigureCommand", () => {
 
         uniteJson = undefined;
         uniteJsonWritten = undefined;
+        uniteJsonThemeWritten = undefined;
         profileExists = true;
         profileErrors = false;
 
@@ -75,6 +78,9 @@ describe("ConfigureCommand", () => {
             if (filename === "unite.json") {
                 uniteJsonWritten = obj;
                 return Promise.resolve();
+            } else if (filename === "unite-theme.json") {
+                uniteJsonThemeWritten = obj;
+                return Promise.resolve();
             } else {
                 return originalFileWriteJson(folder, filename, obj);
             }
@@ -82,7 +88,6 @@ describe("ConfigureCommand", () => {
 
         uniteJson = {
             packageName: "my-package",
-            title: "My App",
             license: "MIT",
             sourceLanguage: "JavaScript",
             moduleType: "AMD",
@@ -134,6 +139,16 @@ describe("ConfigureCommand", () => {
             const res = await obj.run({
                 packageName: undefined,
                 title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: undefined,
                 sourceLanguage: undefined,
                 moduleType: undefined,
@@ -159,45 +174,23 @@ describe("ConfigureCommand", () => {
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("packageName");
         });
 
-        it("can fail when calling with undefined title", async () => {
-            uniteJson = undefined;
-            const obj = new ConfigureCommand();
-            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
-            const res = await obj.run({
-                packageName: "my-package",
-                title: undefined,
-                license: undefined,
-                sourceLanguage: undefined,
-                moduleType: undefined,
-                bundler: undefined,
-                unitTestRunner: undefined,
-                unitTestFramework: undefined,
-                unitTestEngine: undefined,
-                e2eTestRunner: undefined,
-                e2eTestFramework: undefined,
-                linter: undefined,
-                cssPre: undefined,
-                cssPost: undefined,
-                ides: undefined,
-                taskManager: undefined,
-                server: undefined,
-                packageManager: undefined,
-                applicationFramework: undefined,
-                profile: undefined,
-                force: undefined,
-                outputDirectory: undefined
-            });
-            Chai.expect(res).to.be.equal(1);
-            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("title");
-        });
-
         it("can fail when calling with undefined sourceLanguage", async () => {
             uniteJson = undefined;
             const obj = new ConfigureCommand();
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: undefined,
                 moduleType: undefined,
@@ -229,7 +222,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: undefined,
@@ -261,7 +264,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -293,7 +306,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -325,7 +348,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -357,7 +390,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -389,7 +432,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -421,7 +474,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -453,7 +516,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -485,7 +558,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -517,7 +600,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -549,7 +642,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -581,7 +684,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -613,7 +726,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -645,7 +768,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -677,7 +810,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -709,7 +852,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -741,7 +894,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -773,7 +936,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -819,7 +992,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -852,7 +1035,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -885,7 +1078,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -917,7 +1120,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -950,7 +1163,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -983,7 +1206,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "None",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -1016,7 +1249,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -1049,7 +1292,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: undefined,
-                title: undefined,
+                title: "My App",
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: undefined,
                 sourceLanguage: undefined,
                 moduleType: undefined,
@@ -1083,6 +1336,16 @@ describe("ConfigureCommand", () => {
             const res = await obj.run({
                 packageName: undefined,
                 title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: undefined,
                 sourceLanguage: undefined,
                 moduleType: undefined,
@@ -1115,6 +1378,16 @@ describe("ConfigureCommand", () => {
             const res = await obj.run({
                 packageName: undefined,
                 title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: undefined,
                 sourceLanguage: undefined,
                 moduleType: undefined,
@@ -1148,6 +1421,16 @@ describe("ConfigureCommand", () => {
             const res = await obj.run({
                 packageName: undefined,
                 title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: undefined,
                 sourceLanguage: undefined,
                 moduleType: undefined,
@@ -1181,6 +1464,16 @@ describe("ConfigureCommand", () => {
             const res = await obj.run({
                 packageName: undefined,
                 title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: undefined,
                 sourceLanguage: undefined,
                 moduleType: undefined,
@@ -1213,6 +1506,16 @@ describe("ConfigureCommand", () => {
             const res = await obj.run({
                 packageName: undefined,
                 title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: undefined,
                 sourceLanguage: undefined,
                 moduleType: undefined,
@@ -1245,6 +1548,16 @@ describe("ConfigureCommand", () => {
             const res = await obj.run({
                 packageName: "my-package",
                 title: "My Package",
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: undefined,
                 sourceLanguage: undefined,
                 moduleType: undefined,
@@ -1268,7 +1581,6 @@ describe("ConfigureCommand", () => {
             });
             Chai.expect(res).to.be.equal(0);
             Chai.expect(uniteJsonWritten.packageName).to.be.equal("my-package");
-            Chai.expect(uniteJsonWritten.title).to.be.equal("My Package");
             Chai.expect(uniteJsonWritten.applicationFramework).to.be.equal("Aurelia");
             Chai.expect(uniteJsonWritten.sourceLanguage).to.be.equal("TypeScript");
         });
@@ -1280,6 +1592,16 @@ describe("ConfigureCommand", () => {
             const res = await obj.run({
                 packageName: "my-package",
                 title: "My Package",
+                shortName: undefined,
+                keywords: undefined,
+                description: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: undefined,
                 sourceLanguage: undefined,
                 moduleType: undefined,
@@ -1303,7 +1625,6 @@ describe("ConfigureCommand", () => {
             });
             Chai.expect(res).to.be.equal(0);
             Chai.expect(uniteJsonWritten.packageName).to.be.equal("my-package");
-            Chai.expect(uniteJsonWritten.title).to.be.equal("My Package");
             Chai.expect(uniteJsonWritten.applicationFramework).to.be.equal("Angular");
             Chai.expect(uniteJsonWritten.sourceLanguage).to.be.equal("TypeScript");
         });
@@ -1314,7 +1635,17 @@ describe("ConfigureCommand", () => {
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "my-package",
-                title: "my-app",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
                 license: "MIT",
                 sourceLanguage: "JavaScript",
                 moduleType: "AMD",
@@ -1339,6 +1670,61 @@ describe("ConfigureCommand", () => {
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerWarningSpy.args[0][0]).to.contain("should probably");
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
+        });
+
+        it("can succeed with force and existing unite.json", async () => {
+            uniteJson.buildConfigurations = { dev: new UniteBuildConfiguration() };
+            const obj = new ConfigureCommand();
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "my-package",
+                title: "my-app",
+                shortName: "short",
+                description: "desc",
+                keywords: ["a", "b"],
+                organization: "org",
+                copyright: "copy",
+                webSite: "web",
+                namespace: "ns",
+                author: "auth",
+                authorEmail: "authE",
+                authorWebSite: "authW",
+                license: "MIT",
+                sourceLanguage: "JavaScript",
+                moduleType: "AMD",
+                bundler: "RequireJS",
+                unitTestRunner: "Karma",
+                unitTestFramework: "Jasmine",
+                unitTestEngine: "PhantomJS",
+                e2eTestRunner: "Protractor",
+                e2eTestFramework: "MochaChai",
+                linter: "ESLint",
+                cssPre: "Sass",
+                cssPost: "None",
+                ides: ["VSCode"],
+                server: "BrowserSync",
+                taskManager: "Gulp",
+                packageManager: "Npm",
+                applicationFramework: "PlainApp",
+                profile: undefined,
+                force: true,
+                outputDirectory: "./test/unit/temp"
+            });
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(loggerWarningSpy.args[0][0]).to.contain("should probably");
+            Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
+
+            Chai.expect(uniteJsonThemeWritten.title).to.be.equal("my-app");
+            Chai.expect(uniteJsonThemeWritten.shortName).to.be.equal("short");
+            Chai.expect(uniteJsonThemeWritten.metaDescription).to.be.equal("desc");
+            Chai.expect(uniteJsonThemeWritten.metaKeywords).to.be.deep.equal(["a", "b"]);
+            Chai.expect(uniteJsonThemeWritten.organization).to.be.equal("org");
+            Chai.expect(uniteJsonThemeWritten.copyright).to.be.equal("copy");
+            Chai.expect(uniteJsonThemeWritten.webSite).to.be.equal("web");
+            Chai.expect(uniteJsonThemeWritten.namespace).to.be.equal("ns");
+            Chai.expect(uniteJsonThemeWritten.metaAuthor).to.be.equal("auth");
+            Chai.expect(uniteJsonThemeWritten.metaAuthorEmail).to.be.equal("authE");
+            Chai.expect(uniteJsonThemeWritten.metaAuthorWebSite).to.be.equal("authW");
         });
     });
 

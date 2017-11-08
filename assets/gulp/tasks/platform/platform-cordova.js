@@ -123,7 +123,7 @@ gulp.task("platform-cordova-update-config", async () => {
         xml.widget.author[0]._ = uniteThemeConfig.metaAuthor;
         xml.widget.author[0].$ = xml.widget.author.$ || {};
         xml.widget.author[0].$.email = uniteThemeConfig.metaAuthorEmail;
-        xml.widget.author[0].$.href = uniteThemeConfig.metaAuthorWeb;
+        xml.widget.author[0].$.href = uniteThemeConfig.metaAuthorWebSite;
 
         xml.widget.preference = xml.widget.preference || [];
         const winTargetIndex = xml.widget.preference.findIndex(pref => pref.$.name === "windows-target-version");

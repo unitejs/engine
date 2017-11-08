@@ -71,7 +71,7 @@ export class HtmlTemplate extends PipelineStepBase {
             indent++;
             this.addLine(indent, lines, "<meta charset=\"utf-8\"/>");
             this.addLine(indent, lines, "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\">");
-            this.addLine(indent, lines, `<title>${uniteConfiguration.title}</title>`);
+            this.addLine(indent, lines, `<title>{TITLE}</title>`);
             lines.push("{THEME}");
             engineVariablesHtml.head.forEach(head => {
                 this.addLine(indent, lines, head);

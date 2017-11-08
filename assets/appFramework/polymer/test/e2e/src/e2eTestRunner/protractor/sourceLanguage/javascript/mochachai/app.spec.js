@@ -5,12 +5,12 @@ import { expect } from "chai";
 
 describe("App", () => {
     it("the title is set", (done) => {
-        const uniteJson = require("../../../../unite.json");
+        const uniteThemeJson = require("../../../assetsSrc/theme/unite-theme.json");
         browser.get("/")
             .then(() => {
                 browser.getTitle()
                     .then((title) => {
-                        expect(title).to.equal(uniteJson.title);
+                        expect(title).to.equal(uniteThemeJson.title);
                         done();
                     });
             });

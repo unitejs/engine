@@ -44,6 +44,7 @@ export class PlatformCommand extends EngineCommandBase implements IEngineCommand
 
         this._pipeline.add("platform", args.platformName);
         this._pipeline.add("content", "packageJson");
+        this._pipeline.add("unite", "uniteThemeConfigurationJson");
         this._pipeline.add("unite", "uniteConfigurationJson");
 
         const ret = await this._pipeline.run(uniteConfiguration, engineVariables);
@@ -68,6 +69,7 @@ export class PlatformCommand extends EngineCommandBase implements IEngineCommand
 
         this._pipeline.add("platform", args.platformName);
         this._pipeline.add("content", "packageJson");
+        this._pipeline.add("unite", "uniteThemeConfigurationJson");
         this._pipeline.add("unite", "uniteConfigurationJson");
 
         const ret = await this._pipeline.run(uniteConfiguration, engineVariables);

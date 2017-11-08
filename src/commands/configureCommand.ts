@@ -5,6 +5,7 @@ import { ParameterValidation } from "unitejs-framework/dist/helpers/parameterVal
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { EngineCommandBase } from "../engine/engineCommandBase";
 import { EngineVariables } from "../engine/engineVariables";
+import { EngineVariablesMeta } from "../engine/engineVariablesMeta";
 import { PipelineKey } from "../engine/pipelineKey";
 import { PipelineLocator } from "../engine/pipelineLocator";
 import { IConfigureCommandParams } from "../interfaces/IConfigureCommandParams";
@@ -22,8 +23,25 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
             return 1;
         }
 
+        const meta: EngineVariablesMeta = new EngineVariablesMeta();
+
         uniteConfiguration.packageName = args.packageName || uniteConfiguration.packageName;
-        uniteConfiguration.title = args.title || uniteConfiguration.title;
+
+        // title has moved to unite-theme.json and is now optional so remove from uniteConfiguration
+        meta.title = args.title || uniteConfiguration.title || uniteConfiguration.packageName;
+        delete uniteConfiguration.title;
+
+        meta.description = args.description;
+        meta.keywords = args.keywords;
+        meta.shortName = args.shortName;
+        meta.copyright = args.copyright;
+        meta.organization = args.organization;
+        meta.webSite = args.webSite;
+        meta.author = args.author;
+        meta.authorEmail = args.authorEmail;
+        meta.authorWebSite = args.authorWebSite;
+        meta.namespace = args.namespace;
+
         uniteConfiguration.license = args.license || uniteConfiguration.license;
         uniteConfiguration.sourceLanguage = args.sourceLanguage || uniteConfiguration.sourceLanguage;
         uniteConfiguration.moduleType = args.moduleType || uniteConfiguration.moduleType;
@@ -58,9 +76,6 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
         }
 
         if (!ParameterValidation.checkPackageName(this._logger, "packageName", uniteConfiguration.packageName)) {
-            return 1;
-        }
-        if (!ParameterValidation.notEmpty(this._logger, "title", uniteConfiguration.title)) {
             return 1;
         }
 
@@ -130,16 +145,61 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
             return 1;
         }
 
+        if (args.title) {
+            this._logger.info("title", { title: args.title });
+        }
+
+        if (args.description) {
+            this._logger.info("description", { description: args.description });
+        }
+
+        if (args.keywords && args.keywords.length > 0) {
+            this._logger.info("keywords", { keywords: args.keywords.join(",") });
+        }
+
+        if (args.shortName) {
+            this._logger.info("shortName", { shortName: args.shortName });
+        }
+
+        if (args.organization) {
+            this._logger.info("organization", { organization: args.organization });
+        }
+
+        if (args.webSite) {
+            this._logger.info("webSite", { webSite: args.webSite });
+        }
+
+        if (args.copyright) {
+            this._logger.info("copyright", { copyright: args.copyright });
+        }
+
+        if (args.namespace) {
+            this._logger.info("namespace", { namespace: args.namespace });
+        }
+
+        if (args.author) {
+            this._logger.info("author", { author: args.author });
+        }
+
+        if (args.authorEmail) {
+            this._logger.info("authorEmail", { authorEmail: args.authorEmail });
+        }
+
+        if (args.authorWebSite) {
+            this._logger.info("authorWebSite", { authorWebSite: args.authorWebSite });
+        }
+
         this._logger.info("force", { force: args.force });
 
         this._logger.info("");
 
-        return this.configureRun(args.outputDirectory, uniteConfiguration, args.force);
+        return this.configureRun(args.outputDirectory, uniteConfiguration, meta, args.force);
     }
 
-    private async configureRun(outputDirectory: string, uniteConfiguration: UniteConfiguration, force: boolean): Promise<number> {
+    private async configureRun(outputDirectory: string, uniteConfiguration: UniteConfiguration, meta: EngineVariablesMeta, force: boolean): Promise<number> {
         const engineVariables = new EngineVariables();
         super.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
+        engineVariables.meta = meta;
         engineVariables.force = force;
 
         this.addPipelinePre();

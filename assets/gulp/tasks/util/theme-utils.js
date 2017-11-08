@@ -16,7 +16,7 @@ const configUtil = require("./config-utils");
 const mkdirp = require("mkdirp");
 const glob = require("glob");
 
-function writeIndex (minify, templateName, cacheBust, config, headers, scriptIncludes, appLoader, bodyEnd) {
+function writeIndex (minify, templateName, title, cacheBust, config, headers, scriptIncludes, appLoader, bodyEnd) {
     const join = minify ? "" : "\r\n        ";
     const formattedHeaders = headers
         .filter(header => header.trim().length > 0)
@@ -33,6 +33,7 @@ function writeIndex (minify, templateName, cacheBust, config, headers, scriptInc
     return asyncUtil.stream(gulp.src(templateName)
         .pipe(replace("{THEME}", `        ${formattedHeaders}`))
         .pipe(replace("{SCRIPTINCLUDE}", `        ${formattedScriptIncludes}`))
+        .pipe(replace("{TITLE}", title))
         .pipe(replace("{CACHEBUST}", cacheBust))
         .pipe(replace("{UNITECONFIG}", config))
         .pipe(replace("{APPLOADER}", formattedAppLoader))
@@ -72,14 +73,16 @@ async function buildIndex (uniteConfig, uniteThemeConfig, buildConfiguration, pa
 
     headers.push("<link rel=\"manifest\" href=\"./assets/favicon/manifest.json\">");
 
+    if (uniteThemeConfig.appLoaderStyle && uniteThemeConfig.appLoaderStyle.length > 0) {
+        headers = headers.concat(uniteThemeConfig.appLoaderStyle);
+    }
+
     const substTheme = line => {
         return line.replace("{THEME_COLOR}", uniteThemeConfig.themeColor)
             .replace("{THEME_BACKGROUND_COLOR}", uniteThemeConfig.backgroundColor);
     };
 
-    if (uniteThemeConfig.appLoaderStyle && uniteThemeConfig.appLoaderStyle.length > 0) {
-        headers = headers.concat(uniteThemeConfig.appLoaderStyle.map(line => substTheme(line)));
-    }
+    headers = headers.map(line => substTheme(line));
 
     let appLoader = "";
     if (uniteThemeConfig.appLoader) {
@@ -102,6 +105,7 @@ async function buildIndex (uniteConfig, uniteThemeConfig, buildConfiguration, pa
     return writeIndex(
         buildConfiguration.minify,
         buildConfiguration.bundle ? "./index-bundle.html" : "./index-no-bundle.html",
+        uniteThemeConfig.title,
         cacheBust,
         config,
         headers,
@@ -146,9 +150,9 @@ async function buildBrowserConfig (uniteConfig, uniteThemeConfig) {
 
 async function buildManifestJson (uniteConfig, uniteThemeConfig, packageJson) {
     const manifest = {
-        "name": uniteConfig.title,
-        "short_name": uniteThemeConfig.shortName || uniteConfig.title,
-        "description": uniteThemeConfig.metaDescription,
+        "name": uniteThemeConfig.title,
+        "short_name": uniteThemeConfig.shortName || uniteThemeConfig.title,
+        "description": uniteThemeConfig.metaDescription || uniteThemeConfig.title,
         "version": packageJson.version,
         "author": uniteThemeConfig.metaAuthor,
         "icons": [],
@@ -213,7 +217,7 @@ async function buildThemeHeaders (uniteConfig, uniteThemeConfig) {
         {
             "file": path.join(uniteConfig.dirs.www.assets, "favicon/", "safari-pinned-tab.svg"),
             "header": "<link rel=\"mask-icon\" href=\"./assets/favicon/safari-pinned-tab.svg\" " +
-            `color="${uniteThemeConfig.themeColor}">`
+            "color=\"{THEME_COLOR}\">"
         },
         {
             "file": path.join(uniteConfig.dirs.www.assets, "favicon/", "favicon.ico"),
@@ -225,9 +229,7 @@ async function buildThemeHeaders (uniteConfig, uniteThemeConfig) {
         }
     ];
 
-    if (uniteThemeConfig.themeColor) {
-        uniteThemeConfig.themeHeaders.push(`<meta name="theme-color" content="${uniteThemeConfig.themeColor}">`);
-    }
+    uniteThemeConfig.themeHeaders.push("<meta name=\"theme-color\" content=\"{THEME_COLOR}\">");
 
     for (let i = 0; i < headers.length; i++) {
         const headerFileExists = await asyncUtil.fileExists(headers[i].file);

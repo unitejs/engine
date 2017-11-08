@@ -8,7 +8,6 @@ import { UniteDirectories } from "./uniteDirectories";
 export class UniteConfiguration {
     public uniteVersion: string;
     public packageName: string;
-    public title: string;
     public license: string;
     public applicationFramework: string;
     public moduleType: string;
@@ -40,4 +39,7 @@ export class UniteConfiguration {
 
     public buildConfigurations: { [id: string]: UniteBuildConfiguration };
     public platforms: { [id: string]: { [id: string]: any } };
+
+    // This has moved to unite-theme.json, will be removed in a future build
+    public title?: string;
 }

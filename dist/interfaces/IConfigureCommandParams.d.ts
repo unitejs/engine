@@ -4,7 +4,6 @@
 import { IEngineCommandParams } from "./IEngineCommandParams";
 export interface IConfigureCommandParams extends IEngineCommandParams {
     packageName: string | undefined | null;
-    title: string | undefined | null;
     license: string | undefined | null;
     sourceLanguage: string | undefined | null;
     moduleType: string | undefined | null;
@@ -23,5 +22,16 @@ export interface IConfigureCommandParams extends IEngineCommandParams {
     packageManager: string | undefined | null;
     applicationFramework: string | undefined | null;
     profile: string | undefined | null;
+    title: string | undefined | null;
+    shortName: string | undefined | null;
+    description: string | undefined | null;
+    keywords: string[] | undefined | null;
+    organization: string | undefined | null;
+    copyright: string | undefined | null;
+    webSite: string | undefined | null;
+    author: string | undefined | null;
+    authorEmail: string | undefined | null;
+    authorWebSite: string | undefined | null;
+    namespace: string | undefined | null;
     force: boolean | undefined;
 }

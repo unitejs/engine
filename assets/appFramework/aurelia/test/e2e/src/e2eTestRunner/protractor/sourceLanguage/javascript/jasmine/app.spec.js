@@ -3,12 +3,12 @@
  */
 describe("App", () => {
     it("the title is set", (done) => {
-        const uniteJson = require("../../../../unite.json");
+        const uniteThemeJson = require("../../../assetsSrc/theme/unite-theme.json");
         browser.loadAndWaitForAureliaPage("/")
             .then(() => {
                 browser.getTitle()
                     .then((title) => {
-                        expect(title).toEqual(uniteJson.title);
+                        expect(title).toEqual(uniteThemeJson.title);
                         done();
                     });
             });

@@ -3,6 +3,9 @@
 ## 1.6.4
 
 * Added cordova support
+* Added additional optional meta data for configure command (description, shortName, organization, keywords,
+* namespace, webSite, copyright, author, authorEmail, authorWebSite)
+* Change title property moved from unite.json to unite-theme.json
 
 ## 1.6.3
 

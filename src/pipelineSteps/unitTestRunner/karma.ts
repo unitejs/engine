@@ -154,6 +154,16 @@ export class Karma extends PipelineStepBase {
 
         ArrayHelper.addRemove(this._configuration.files,
                               {
+                                    pattern: "./assetsSrc/theme/unite-theme.json",
+                                    included: false,
+                                    watched: true,
+                                    includeType: "fixed"
+                                },
+                              true,
+                              (object, item) => object.pattern === item.pattern);
+
+        ArrayHelper.addRemove(this._configuration.files,
+                              {
                                     pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
                                                                                               fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "../unit-module-config.js"))),
                                     included: true,

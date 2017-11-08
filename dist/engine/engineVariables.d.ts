@@ -5,7 +5,9 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { UniteClientPackage } from "../configuration/models/unite/uniteClientPackage";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { IPackageManager } from "../interfaces/IPackageManager";
+import { EngineVariablesMeta } from "./engineVariablesMeta";
 export declare class EngineVariables {
+    meta: EngineVariablesMeta;
     force: boolean;
     engineRootFolder: string;
     engineAssetsFolder: string;

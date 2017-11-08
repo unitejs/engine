@@ -8,6 +8,7 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
 import { UniteThemeConfiguration } from "../../../../../src/configuration/models/uniteTheme/uniteThemeConfiguration";
 import { EngineVariables } from "../../../../../src/engine/engineVariables";
+import { EngineVariablesMeta } from "../../../../../src/engine/engineVariablesMeta";
 import { UniteThemeConfigurationJson } from "../../../../../src/pipelineSteps/unite/uniteThemeConfigurationJson";
 import { FileSystemMock } from "../../fileSystem.mock";
 
@@ -28,7 +29,6 @@ describe("UniteThemeConfigurationJson", () => {
 
         fileSystemMock = new FileSystemMock();
         uniteConfigurationStub = new UniteConfiguration();
-        uniteConfigurationStub.title = "This Is My Title";
 
         engineVariablesStub = new EngineVariables();
         engineVariablesStub.setupDirectories(fileSystemMock, "./test/unit/temp");
@@ -54,24 +54,62 @@ describe("UniteThemeConfigurationJson", () => {
             Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
         });
 
-        it("can succeed when file does not exist and empty title", async () => {
-            fileSystemMock.fileExists = sandbox.stub().resolves(false);
-            uniteConfigurationStub.title = undefined;
-            const obj = new UniteThemeConfigurationJson();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration<UniteThemeConfiguration>("UniteTheme").themeColor).to.be.equal("#339933");
-        });
-
         it("can succeed when file does exist", async () => {
             fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
-            fileSystemMock.fileReadJson = sandbox.stub().resolves({ themeColor: "#112211" });
+            fileSystemMock.fileReadJson = sandbox.stub().resolves({ title: "This Is My Title", themeColor: "#112211" });
             const obj = new UniteThemeConfigurationJson();
+            engineVariablesStub.meta = new EngineVariablesMeta();
+
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<UniteThemeConfiguration>("UniteTheme").themeColor).to.be.equal("#112211");
-            Chai.expect(engineVariablesStub.getConfiguration<UniteThemeConfiguration>("UniteTheme").metaDescription).to.be.equal("This Is My Title");
-            Chai.expect(engineVariablesStub.getConfiguration<UniteThemeConfiguration>("UniteTheme").metaKeywords).to.be.deep.equal(["This", "Is", "My", "Title"]);
+            Chai.expect(engineVariablesStub.getConfiguration<UniteThemeConfiguration>("UniteTheme").title).to.be.equal("This Is My Title");
+        });
+    });
+
+    describe("configure", () => {
+        it("can succeed with metadata", async () => {
+            fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(false);
+            const obj = new UniteThemeConfigurationJson();
+            engineVariablesStub.meta = new EngineVariablesMeta();
+            engineVariablesStub.meta.title = "This Is My Title";
+            engineVariablesStub.meta.shortName = "MyTitle";
+            engineVariablesStub.meta.description = "My application";
+            engineVariablesStub.meta.keywords = ["a", "b", "c"];
+            engineVariablesStub.meta.author = "Martyn Janes";
+            engineVariablesStub.meta.authorEmail = "fake@unitejs.com";
+            engineVariablesStub.meta.authorWebSite = "http://author.unitejs.com";
+            engineVariablesStub.meta.webSite = "http://unitejs.com";
+            engineVariablesStub.meta.namespace = "unitejs.com";
+            engineVariablesStub.meta.organization = "UniteJS";
+            engineVariablesStub.meta.copyright = "(C) 2017 UniteJS";
+
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            Chai.expect(res).to.be.equal(0);
+            const ut = engineVariablesStub.getConfiguration<UniteThemeConfiguration>("UniteTheme");
+            Chai.expect(ut.title).to.be.equal("This Is My Title");
+            Chai.expect(ut.shortName).to.be.equal("MyTitle");
+            Chai.expect(ut.metaDescription).to.be.equal("My application");
+            Chai.expect(ut.metaAuthor).to.be.equal("Martyn Janes");
+            Chai.expect(ut.metaAuthorEmail).to.be.equal("fake@unitejs.com");
+            Chai.expect(ut.metaAuthorWebSite).to.be.equal("http://author.unitejs.com");
+            Chai.expect(ut.metaKeywords).to.be.deep.equal(["a", "b", "c"]);
+            Chai.expect(ut.webSite).to.be.equal("http://unitejs.com");
+            Chai.expect(ut.namespace).to.be.equal("unitejs.com");
+            Chai.expect(ut.organization).to.be.equal("UniteJS");
+            Chai.expect(ut.copyright).to.be.equal("(C) 2017 UniteJS");
+        });
+
+        it("can succeed with no metadata", async () => {
+            fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(false);
+            const obj = new UniteThemeConfigurationJson();
+
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            Chai.expect(res).to.be.equal(0);
+            const ut = engineVariablesStub.getConfiguration<UniteThemeConfiguration>("UniteTheme");
+            Chai.expect(ut.title).to.be.equal("");
         });
     });
 

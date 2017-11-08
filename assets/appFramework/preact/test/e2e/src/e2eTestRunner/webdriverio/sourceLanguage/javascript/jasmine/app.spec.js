@@ -3,12 +3,12 @@
  */
 describe("App", () => {
     it("the title is set", () => {
-        const uniteJson = require("../../../../unite.json");
+        const uniteThemeJson = require("../../../assetsSrc/theme/unite-theme.json");
         return browser
             .url("/")
             .getTitle()
             .then((title) => {
-                expect(title).toEqual(uniteJson.title);
+                expect(title).toEqual(uniteThemeJson.title);
             });
     });
 

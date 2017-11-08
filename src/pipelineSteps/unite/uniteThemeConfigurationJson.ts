@@ -7,6 +7,7 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { UniteThemeConfiguration } from "../../configuration/models/uniteTheme/uniteThemeConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
+import { EngineVariablesMeta } from "../../engine/engineVariablesMeta";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class UniteThemeConfigurationJson extends PipelineStepBase {
@@ -29,6 +30,24 @@ export class UniteThemeConfigurationJson extends PipelineStepBase {
         });
     }
 
+    public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
+        const meta: EngineVariablesMeta = engineVariables.meta || new EngineVariablesMeta();
+
+        this._configuration.title = meta.title || this._configuration.title || uniteConfiguration.packageName || "";
+        this._configuration.shortName = meta.shortName || this._configuration.shortName || this._configuration.title;
+        this._configuration.metaDescription = meta.description || this._configuration.metaDescription || this._configuration.title;
+        this._configuration.metaKeywords = meta.keywords || this._configuration.metaKeywords || this._configuration.title.split(" ");
+        this._configuration.metaAuthor = meta.author || this._configuration.metaAuthor;
+        this._configuration.metaAuthorEmail = meta.authorEmail || this._configuration.metaAuthorEmail;
+        this._configuration.metaAuthorWebSite = meta.authorWebSite || this._configuration.metaAuthorWebSite;
+        this._configuration.namespace = meta.namespace || this._configuration.namespace;
+        this._configuration.organization = meta.organization || this._configuration.organization;
+        this._configuration.copyright = meta.copyright || this._configuration.copyright;
+        this._configuration.webSite = meta.webSite || this._configuration.webSite;
+
+        return 0;
+    }
+
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         return super.fileToggleJson(logger,
                                     fileSystem,
@@ -42,14 +61,8 @@ export class UniteThemeConfigurationJson extends PipelineStepBase {
     private configDefaults(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void {
         const defaultConfiguration = new UniteThemeConfiguration();
 
-        if (uniteConfiguration.title) {
-            defaultConfiguration.metaDescription = uniteConfiguration.title;
-            defaultConfiguration.metaKeywords = uniteConfiguration.title.split(" ");
-            defaultConfiguration.shortName = uniteConfiguration.title;
-        }
-        defaultConfiguration.metaAuthor = "";
-        defaultConfiguration.customHeaders = [];
         defaultConfiguration.themeHeaders = [];
+        defaultConfiguration.customHeaders = [];
         defaultConfiguration.backgroundColor = "#339933";
         defaultConfiguration.themeColor = "#339933";
         defaultConfiguration.appLoaderStyle = [

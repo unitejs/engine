@@ -5,8 +5,10 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { UniteClientPackage } from "../configuration/models/unite/uniteClientPackage";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { IPackageManager } from "../interfaces/IPackageManager";
+import { EngineVariablesMeta } from "./engineVariablesMeta";
 
 export class EngineVariables {
+    public meta: EngineVariablesMeta;
     public force: boolean;
     public engineRootFolder: string;
     public engineAssetsFolder: string;

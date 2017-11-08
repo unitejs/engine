@@ -7,7 +7,6 @@ import { UniteDirectories } from "./uniteDirectories";
 export declare class UniteConfiguration {
     uniteVersion: string;
     packageName: string;
-    title: string;
     license: string;
     applicationFramework: string;
     moduleType: string;
@@ -42,4 +41,5 @@ export declare class UniteConfiguration {
             [id: string]: any;
         };
     };
+    title?: string;
 }

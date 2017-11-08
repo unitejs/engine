@@ -2,12 +2,16 @@
  * Model of Unite Theme Configuration (unite-theme.json) file.
  */
 export class UniteThemeConfiguration {
+    public title: string;
     public shortName: string;
+    public namespace: string;
+    public organization: string;
+    public copyright: string;
+    public webSite: string;
     public metaAuthor: string;
     public metaAuthorEmail: string;
-    public metaAuthorWeb: string;
+    public metaAuthorWebSite: string;
     public metaDescription: string;
-    public metaNamespace: string;
     public metaKeywords: string[];
     public customHeaders: string[];
     public themeHeaders: string[];
