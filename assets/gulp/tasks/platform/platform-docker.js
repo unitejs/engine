@@ -71,12 +71,20 @@ gulp.task("platform-docker-gather", async () => {
 
     const options = loadOptions(uniteConfig);
 
-    const platformRoot = await platformUtils.gatherFiles(
+    const platformName = `docker_${options.image}`;
+    const gatherRoot = path.join(
+        "../",
+        uniteConfig.dirs.packagedRoot,
+        `/${packageJson.version}/${platformName.toLowerCase()}/`,
+        options.www
+    );
+
+    await platformUtils.gatherFiles(
         uniteConfig,
         buildConfiguration,
         packageJson,
-        `docker_${options.image}`,
-        options.www
+        platformName,
+        gatherRoot
     );
 
     display.info("Copying Image Additions");
@@ -85,7 +93,7 @@ gulp.task("platform-docker-gather", async () => {
         uniteConfig.dirs.www.assetsSrc,
         `docker/${options.image}/**/*`
     ), {"dot": true})
-        .pipe(gulp.dest(platformRoot)));
+        .pipe(gulp.dest(gatherRoot)));
 });
 
 gulp.task("platform-docker-build-image", async () => {

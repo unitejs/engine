@@ -42,11 +42,19 @@ gulp.task("platform-web-gather", async () => {
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
     const packageJson = await packageConfig.getPackageJson();
 
-    return platformUtils.gatherFiles(
+    const platformName = "Web";
+    const gatherRoot = path.join(
+        "../",
+        uniteConfig.dirs.packagedRoot,
+        `/${packageJson.version}/${platformName.toLowerCase()}/`
+    );
+
+    await platformUtils.gatherFiles(
         uniteConfig,
         buildConfiguration,
         packageJson,
-        "Web"
+        platformName,
+        gatherRoot
     );
 });
 

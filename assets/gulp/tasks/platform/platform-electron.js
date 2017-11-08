@@ -141,11 +141,19 @@ gulp.task("platform-electron-gather", async () => {
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig);
     const packageJson = await packageConfig.getPackageJson();
 
-    const platformSrc = await platformUtils.gatherFiles(
+    const platformName = "Electron";
+    const gatherRoot = path.join(
+        "../",
+        uniteConfig.dirs.packagedRoot,
+        `/${packageJson.version}/${platformName.toLowerCase()}/`
+    );
+
+    await platformUtils.gatherFiles(
         uniteConfig,
         buildConfiguration,
         packageJson,
-        "Electron"
+        platformName,
+        gatherRoot
     );
 
     const options = loadOptions(uniteConfig);
@@ -155,8 +163,8 @@ gulp.task("platform-electron-gather", async () => {
     const hasDarwin = platformArchs.filter(platformArch =>
         platformArch.startsWith("darwin") || platformArch.startsWith("mas")).length > 0;
 
-    const linuxPng = path.join(platformSrc, "/assets/favicon/", "linux-1024.png");
-    const osxIcns = path.join(platformSrc, "/assets/favicon/", "osx.icns");
+    const linuxPng = path.join(gatherRoot, "/assets/favicon/", "linux-1024.png");
+    const osxIcns = path.join(gatherRoot, "/assets/favicon/", "osx.icns");
 
     if (hasLinux) {
         try {
@@ -179,7 +187,7 @@ gulp.task("platform-electron-gather", async () => {
 
     if (hasDarwin) {
         try {
-            const darwinTransparentPng = path.join(platformSrc, "/assets/favicon/", "darwin-transparent-1024.png");
+            const darwinTransparentPng = path.join(gatherRoot, "/assets/favicon/", "darwin-transparent-1024.png");
             const args = [
                 "svgToPng",
                 `--sourceFile=${path.join(uniteConfig.dirs.www.assetsSrc, "theme", "logo-transparent.svg")}`,
@@ -203,11 +211,8 @@ gulp.task("platform-electron-gather", async () => {
         }
     }
 
-    await asyncUtil.stream(gulp.src(path.join(platformSrc, "index.html"))
-        .pipe(gulp.dest(platformSrc)));
-
     return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.build, "/assets/platform/electron/main.js"))
-        .pipe(gulp.dest(platformSrc)));
+        .pipe(gulp.dest(gatherRoot)));
 });
 
 gulp.task("platform-electron-bundle", async () => {

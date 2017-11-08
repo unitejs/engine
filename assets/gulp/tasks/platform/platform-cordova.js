@@ -96,7 +96,7 @@ gulp.task("platform-cordova-update-config", async () => {
         const cordovaPackage = JSON.parse(cordovaPackageJson.toString());
 
         cordovaPackage.name = packageJson.name;
-        cordovaPackage.displayName = uniteConfig.title;
+        cordovaPackage.displayName = uniteThemeConfig.title;
         cordovaPackage.version = packageJson.version;
         cordovaPackage.description = uniteThemeConfig.metaDescription;
         cordovaPackage.license = packageJson.license;
@@ -107,16 +107,18 @@ gulp.task("platform-cordova-update-config", async () => {
         const cordovaConfigFile = path.join(platformFolder, "config.xml");
         const cordovaConfigXml = await util.promisify(fs.readFile)(cordovaConfigFile);
         const xml = await util.promisify(xml2js.parseString)(cordovaConfigXml);
-        if (uniteThemeConfig.metaNamespace) {
+        xml.widget.$.id = "";
+        if (uniteThemeConfig.metaNamespace && uniteThemeConfig.metaNamespace.length > 0) {
             xml.widget.$.id = `${uniteThemeConfig.metaNamespace
                 .split(".")
                 .reverse()
-                .join(".")}.${packageJson.name}`;
+                .join(".")}.${packageJson.name}.`;
         } else {
-            xml.widget.$.id = packageJson.name;
+            xml.widget.$.id += "org.package.";
         }
+        xml.widget.$.id += packageJson.name.replace(/[^a-zA-Z0-9]+/g, "_");
         xml.widget.$.version = packageJson.version;
-        xml.widget.name = uniteConfig.title.replace(/ /g, "-");
+        xml.widget.name = uniteThemeConfig.title.replace(/ /g, "-");
         xml.widget.description = uniteThemeConfig.metaDescription;
         xml.widget.author = xml.widget.author || [];
         xml.widget.author[0] = xml.widget.author[0] || {};
@@ -195,18 +197,18 @@ gulp.task("platform-cordova-gather", async () => {
     const uniteThemeConfig = await uc.getUniteThemeConfig(uniteConfig);
     const packageJson = await packageConfig.getPackageJson();
 
-    const platformFolder = path.join("../", uniteConfig.dirs.platformRoot, "cordova", "www");
+    const platformName = "Cordova";
+    const gatherRoot = path.join("../", uniteConfig.dirs.platformRoot, platformName.toLowerCase(), "www");
 
     await platformUtils.gatherFiles(
         uniteConfig,
         buildConfiguration,
         packageJson,
-        "Cordova",
-        undefined,
-        platformFolder
+        platformName,
+        gatherRoot
     );
 
-    const indexFilename = path.join(platformFolder, "index.html");
+    const indexFilename = path.join(gatherRoot, "index.html");
 
     let indexContent = await util.promisify(fs.readFile)(indexFilename);
 
@@ -227,7 +229,7 @@ gulp.task("platform-cordova-gather", async () => {
     await util.promisify(fs.writeFile)(indexFilename, indexContent);
 });
 
-gulp.task("platform-cordova-configure", async () => {
+gulp.task("platform-cordova-dev", async () => {
     try {
         await util.promisify(runSequence)(
             "platform-cordova-clean",
@@ -285,7 +287,7 @@ gulp.task("platform-cordova-theme", async () => {
     const platformFolder = path.resolve(path.join("../", uniteConfig.dirs.platformRoot, "cordova", "platforms"));
     const uniteThemeConfig = await uc.getUniteThemeConfig(uniteConfig);
 
-    const projectName = uniteConfig.title.replace(/ /g, "-");
+    const projectName = uniteThemeConfig.title.replace(/ /g, "-");
 
     const roots = {};
     const images = {};

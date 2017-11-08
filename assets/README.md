@@ -25,10 +25,12 @@ The following gulp commands are available for the app.
 * e2e [optional]
 * serve
 * version
-* platform-electron-dev [optional]
-* platform-web-package [optional]
-* platform-electron-package [optional]
-* platform-docker-package [optional]
+* platform-cordova-dev [optional - requires cordova platform]
+* platform-cordova-theme [optional - requires cordova platform]
+* platform-docker-package [optional - requires docker platform]
+* platform-electron-dev [optional - requires electron platform]
+* platform-electron-package [optional - requires electron platform]
+* platform-web-package [optional - requires web platform]
 
 ### build
 
@@ -153,55 +155,35 @@ gulp version --part=patch --mode=inc
 gulp version --part=minor --mode=set --value=1
 ```
 
-### platform-electron-dev
+### platform-cordova-dev
 
-This task will create development versions of the electron runtime that will wrap your www folder and allow you to develop in-situ.
+This task will create a cordova development setup in the platform/cordova folder. It defaults to adding the cordova platforms android, ios and windows. You can run this task multiple times without losing any changes you have made to the cordova projects, in fact **you must** run this again if your web app changes so that it copies accross the new content into the cordova/www folder.
 
-``` shell
-gulp platform-electron-dev
-```
-
-Optionally specify the platform architectures and runtime version to override the defaults. If you also specify the --save options the values will be saved as the default for future runs of all the platform-electron-* tasks.
+The meta data used to generate the configurations is all picked up from www/assetsSrc/unite-theme.json such as title, description, organization, namespace, author. The version is read from your www/package.json
 
 ``` shell
-gulp platform-electron-dev --platformArch=win32/ia32,win32/x64 --runtimeVersion=1.7.9 --save
+gulp platform-cordova-dev
 ```
 
-The platform development versions will be created in the ./platform/electron/{platform}-{architecture} folder, where the platforms and architectures are either read from your unite.json or automatically determined from you system.
-
-### platform-web-package
-
-This task will gather all the necessary components of the application and create a folder in the top level packaged directory named {version}/web.
+You can override the default platforms and save them as follows:
 
 ``` shell
-gulp platform-web-package
+gulp platform-cordova-dev --platforms=android,windows --save
 ```
 
-This folder contains a complete set of web deployable files for the application. A zip file named packaged/{version}_web.zip will also be created in the packaged directory.
+### platform-cordova-theme
 
-To see which file are included in a packaged version see the [Platform Packaged Files](#platformpackagedfiles) section.
-
-For configuring options for this task see the [Platform Web](#platformweb) section.
-
-### platform-electron-package
-
-This task will gather all the necessary components of the application and create a folder in the top level packaged directory named {version}/electron.
+This task will generate all the necessary icon and splash screens for your chosen platforms using the ./www/assetsSrc/ logos and your theme colors from unite-theme.json.
 
 ``` shell
-gulp platform-electron-package
+gulp platform-cordova-theme
 ```
 
-Optionally specify the platform architectures and runtime version to override the defaults. If you also specify the --save options the values will be saved as the default for future runs of all the platform-electron-* tasks.
+You can generate the icons for a specific platform as follows:
 
 ``` shell
-gulp platform-electron-package --platformArch=win32/ia32,win32/x64 --runtimeVersion=1.7.9 --save
+gulp platform-cordova-dev --platforms=ios
 ```
-
-This folder will then be used to create a set of platform/architecture electron packages in folders named {version}/electron_{platform}_{architecture} and a corresponding zip file in the packaged root folder.
-
-To see which file are included in a packaged version see the [Platform Packaged Files](#platformpackagedfiles) section.
-
-For configuring options for this task see the [Platform Electron](#platformelectron) section.
 
 ### platform-docker-package
 
@@ -235,6 +217,56 @@ If you want to add additional files to the docker image just place them in ./www
 To replace the default nginx configuration add the following file to ./www/assetSrc/docker/nginx/etc/nginx/nginx.conf
 
 To replace the default httpd configuration add the following file to ./www/assetSrc/docker/httpd/usr/local/apache2/conf/httpd.conf
+
+### platform-electron-dev
+
+This task will create development versions of the electron runtime that will wrap your www folder and allow you to develop in-situ.
+
+``` shell
+gulp platform-electron-dev
+```
+
+Optionally specify the platform architectures and runtime version to override the defaults. If you also specify the --save options the values will be saved as the default for future runs of all the platform-electron-* tasks.
+
+``` shell
+gulp platform-electron-dev --platformArch=win32/ia32,win32/x64 --runtimeVersion=1.7.9 --save
+```
+
+The platform development versions will be created in the ./platform/electron/{platform}-{architecture} folder, where the platforms and architectures are either read from your unite.json or automatically determined from you system.
+
+### platform-electron-package
+
+This task will gather all the necessary components of the application and create a folder in the top level packaged directory named {version}/electron.
+
+``` shell
+gulp platform-electron-package
+```
+
+Optionally specify the platform architectures and runtime version to override the defaults. If you also specify the --save options the values will be saved as the default for future runs of all the platform-electron-* tasks.
+
+``` shell
+gulp platform-electron-package --platformArch=win32/ia32,win32/x64 --runtimeVersion=1.7.9 --save
+```
+
+This folder will then be used to create a set of platform/architecture electron packages in folders named {version}/electron_{platform}_{architecture} and a corresponding zip file in the packaged root folder.
+
+To see which file are included in a packaged version see the [Platform Packaged Files](#platformpackagedfiles) section.
+
+For configuring options for this task see the [Platform Electron](#platformelectron) section.
+
+### platform-web-package
+
+This task will gather all the necessary components of the application and create a folder in the top level packaged directory named {version}/web.
+
+``` shell
+gulp platform-web-package
+```
+
+This folder contains a complete set of web deployable files for the application. A zip file named packaged/{version}_web.zip will also be created in the packaged directory.
+
+To see which file are included in a packaged version see the [Platform Packaged Files](#platformpackagedfiles) section.
+
+For configuring options for this task see the [Platform Web](#platformweb) section.
 
 ---
 

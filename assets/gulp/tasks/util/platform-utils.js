@@ -46,24 +46,17 @@ async function listFiles (uniteConfig, buildConfiguration) {
     return files;
 }
 
-async function gatherFiles (uniteConfig, buildConfiguration, packageJson, platformName, wwwRootFolder, platformFolder) {
+async function gatherFiles (uniteConfig, buildConfiguration, packageJson, platformName, gatherRoot) {
     display.info("Gathering Files", platformName);
 
     const files = await listFiles(uniteConfig, buildConfiguration);
 
-    const platformRoot = platformFolder ? platformFolder : path.join(
-        "../",
-        uniteConfig.dirs.packagedRoot,
-        `/${packageJson.version}/${platformName.toLowerCase()}/`
-    );
-
-    const dest = wwwRootFolder ? path.join(platformRoot, wwwRootFolder) : platformRoot;
-    display.info("Destination", dest);
+    display.info("Destination", gatherRoot);
 
     for (let i = 0; i < files.length; i++) {
-        const fileDest = files[i].moveToRoot ? dest
+        const fileDest = files[i].moveToRoot ? gatherRoot
             : path.join(
-                dest,
+                gatherRoot,
                 files[i].src.indexOf("**") > 0
                     ? files[i].src.replace(/\*\*[/\\]\*(.*)/, "") : path.dirname(files[i].src)
             );
@@ -76,10 +69,8 @@ async function gatherFiles (uniteConfig, buildConfiguration, packageJson, platfo
     }
 
     if (buildConfiguration.pwa) {
-        await themeUtils.buildPwa(uniteConfig, buildConfiguration, packageJson, files, dest, true);
+        await themeUtils.buildPwa(uniteConfig, buildConfiguration, packageJson, files, gatherRoot, true);
     }
-
-    return platformRoot;
 }
 
 function getConfig (uniteConfig, platformName) {
