@@ -157,9 +157,9 @@ gulp version --part=minor --mode=set --value=1
 
 ### platform-cordova-dev
 
-This task will create a cordova development setup in the platform/cordova folder. It defaults to adding the cordova platforms android, ios and windows. You can run this task multiple times without losing any changes you have made to the cordova projects, in fact **you must** run this again if your web app changes so that it copies accross the new content into the cordova/www folder.
+This task will create a cordova development setup in the ./platform/cordova folder. It defaults to adding the cordova platforms android, ios and windows. You can run this task multiple times without losing any changes you have made to the cordova projects, in fact **you must** run this again if your web app changes so that it copies accross the new content into the ./platform/cordova/www folder.
 
-The meta data used to generate the configurations is all picked up from www/assetsSrc/unite-theme.json such as title, description, organization, namespace, author. The version is read from your www/package.json
+The meta data used to generate the configurations is all picked up from ./www/assetsSrc/unite-theme.json such as title, description, organization, namespace, author. The version is read from your ./www/package.json
 
 There are no packaging tasks available for cordova as the build processes are platform specific. Once you have generated the projects you can use all the regular cordova commands, see [Cordova Project](https://cordova.apache.org/docs/en/latest/) for more details.
 
@@ -175,7 +175,7 @@ gulp platform-cordova-dev --platforms=android,windows --save
 
 ### platform-cordova-theme
 
-This task will generate all the necessary icon and splash screens for your chosen platforms using the ./www/assetsSrc/ logos and your theme colors from unite-theme.json.
+This task will generate all the necessary icons and splash screens for your chosen platforms using the ./www/assetsSrc/ logos and your theme colors from ./www/assetsSrc/theme/unite-theme.json.
 
 ``` shell
 gulp platform-cordova-theme
@@ -184,7 +184,7 @@ gulp platform-cordova-theme
 You can generate the icons for a specific platform as follows:
 
 ``` shell
-gulp platform-cordova-dev --platforms=ios
+gulp platform-cordova-theme --platforms=ios
 ```
 
 ### platform-docker-package
