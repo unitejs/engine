@@ -161,6 +161,8 @@ This task will create a cordova development setup in the platform/cordova folder
 
 The meta data used to generate the configurations is all picked up from www/assetsSrc/unite-theme.json such as title, description, organization, namespace, author. The version is read from your www/package.json
 
+There are no packaging tasks available for cordova as the build processes are platform specific. Once you have generated the projects you can use all the regular cordova commands, see [Cordova Project](https://cordova.apache.org/docs/en/latest/) for more details.
+
 ``` shell
 gulp platform-cordova-dev
 ```

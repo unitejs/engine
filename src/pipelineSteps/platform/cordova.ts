@@ -11,6 +11,7 @@ import { PipelineStepBase } from "../../engine/pipelineStepBase";
 export class Cordova extends PipelineStepBase {
     private static PLATFORM: string = "Cordova";
     private static FILENAME: string = "platform-cordova.js";
+    private static FILENAME_PROJ: string = "cordova.jsproj";
 
     public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined {
         return super.objectCondition(uniteConfiguration.platforms, Cordova.PLATFORM);
@@ -58,12 +59,27 @@ export class Cordova extends PipelineStepBase {
     }
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
-        const buildTasks = fileSystem.pathCombine(engineVariables.www.buildFolder, "/tasks/");
-        if (mainCondition && super.condition(uniteConfiguration.taskManager, "Gulp")) {
-            const assetTasksPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/platform/");
-            return this.copyFile(logger, fileSystem, assetTasksPlatform, Cordova.FILENAME, buildTasks, Cordova.FILENAME, engineVariables.force);
-        } else {
-            return super.fileDeleteText(logger, fileSystem, buildTasks, Cordova.FILENAME, engineVariables.force);
+        let ret = await super.folderCreate(logger, fileSystem, engineVariables.platformRootFolder);
+
+        if (ret === 0) {
+            const buildTasks = fileSystem.pathCombine(engineVariables.www.buildFolder, "/tasks/");
+            const buildAssetPlatform = fileSystem.pathCombine(engineVariables.www.buildFolder, "/assets/platform/cordova/");
+
+            if (mainCondition && super.condition(uniteConfiguration.taskManager, "Gulp")) {
+                const assetTasksPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/platform/");
+                ret = await this.copyFile(logger, fileSystem, assetTasksPlatform, Cordova.FILENAME, buildTasks, Cordova.FILENAME, engineVariables.force);
+
+                const assetPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/assets/platform/cordova/");
+                if (ret === 0) {
+                    ret = await this.copyFile(logger, fileSystem, assetPlatform, Cordova.FILENAME_PROJ, buildAssetPlatform, Cordova.FILENAME_PROJ, engineVariables.force);
+                }
+            } else {
+                ret = await super.fileDeleteText(logger, fileSystem, buildTasks, Cordova.FILENAME, engineVariables.force);
+                if (ret === 0) {
+                    ret = await super.fileDeleteText(logger, fileSystem, buildAssetPlatform, Cordova.FILENAME_PROJ, engineVariables.force);
+                }
+            }
         }
+        return ret;
     }
 }

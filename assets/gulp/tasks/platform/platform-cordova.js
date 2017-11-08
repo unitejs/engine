@@ -46,6 +46,19 @@ function execCordova (args, cwd) {
     return exec.launch(`cordova${winExt}`, args, cwd);
 }
 
+function addPreference (xml, name, value) {
+    const idx = xml.widget.preference
+        .findIndex(pref => pref.$.name === name);
+    if (idx < 0) {
+        const pref = {"$": {}};
+        pref.$.name = name;
+        pref.$.value = value;
+        xml.widget.preference.push(pref);
+    } else {
+        xml.widget.preference[idx].$.value = value;
+    }
+}
+
 gulp.task("platform-cordova-clean", async () => {
     const uniteConfig = await uc.getUniteConfig();
 
@@ -116,38 +129,44 @@ gulp.task("platform-cordova-update-config", async () => {
         } else {
             xml.widget.$.id += "org.package.";
         }
-        xml.widget.$.id += packageJson.name.replace(/[^a-zA-Z0-9]+/g, "_");
+        xml.widget.$.id += packageJson.name.replace(/[^a-zA-Z0-9]+/g, "");
         xml.widget.$.version = packageJson.version;
         xml.widget.name = uniteThemeConfig.title.replace(/ /g, "-");
         xml.widget.description = uniteThemeConfig.metaDescription;
         xml.widget.author = xml.widget.author || [];
-        xml.widget.author[0] = xml.widget.author[0] || {};
-        xml.widget.author[0]._ = uniteThemeConfig.metaAuthor;
-        xml.widget.author[0].$ = xml.widget.author.$ || {};
-        xml.widget.author[0].$.email = uniteThemeConfig.metaAuthorEmail;
-        xml.widget.author[0].$.href = uniteThemeConfig.metaAuthorWebSite;
+        if (uniteThemeConfig.metaAuthor && uniteThemeConfig.metaAuthor.length > 0) {
+            xml.widget.author[0] = xml.widget.author[0] || {};
+            xml.widget.author[0]._ = uniteThemeConfig.metaAuthor;
+            xml.widget.author[0].$ = xml.widget.author.$ || {};
+            if (uniteThemeConfig.metaAuthorEmail && uniteThemeConfig.metaAuthorEmail.length > 0) {
+                xml.widget.author[0].$.email = uniteThemeConfig.metaAuthorEmail;
+            }
+            if (uniteThemeConfig.metaAuthorWebSite && uniteThemeConfig.metaAuthorWebSite.length > 0) {
+                xml.widget.author[0].$.href = uniteThemeConfig.metaAuthorWebSite;
+            }
+        }
 
         xml.widget.preference = xml.widget.preference || [];
-        const winTargetIndex = xml.widget.preference.findIndex(pref => pref.$.name === "windows-target-version");
-        if (winTargetIndex < 0) {
-            const pref = {"$": {}};
-            pref.$.name = "windows-target-version";
-            pref.$.value = "10.0";
-            xml.widget.preference.push(pref);
-        }
-        const splashBackgroundIndex = xml.widget.preference
-            .findIndex(pref => pref.$.name === "SplashScreenBackgroundColor");
-        if (splashBackgroundIndex < 0) {
-            const pref = {"$": {}};
-            pref.$.name = "SplashScreenBackgroundColor";
-            pref.$.value = uniteThemeConfig.backgroundColor;
-            xml.widget.preference.push(pref);
+        addPreference(xml, "windows-target-version", "10.0");
+        if (uniteThemeConfig.backgroundColor && uniteThemeConfig.backgroundColor.length > 0) {
+            addPreference(xml, "SplashScreenBackgroundColor", uniteThemeConfig.backgroundColor);
         }
 
         const outXml = new xml2js.Builder().buildObject(xml);
         await util.promisify(fs.writeFile)(cordovaConfigFile, outXml);
 
         await del(path.join(platformFolder, "res"), {"force": true});
+
+        const cordovaJsProj = path.join(platformFolder, "cordova.jsproj");
+        const projExists = await asyncUtil.fileExists(cordovaJsProj);
+        if (!projExists) {
+            const projContent = await util.promisify(fs.readFile)(path.join(
+                uniteConfig.dirs.www.build,
+                "/assets/platform/cordova/cordova.jsproj"
+            ));
+
+            await util.promisify(fs.writeFile)(cordovaJsProj, projContent);
+        }
     } catch (err) {
         display.error("Unhandled error during task", err);
         process.exit(1);
