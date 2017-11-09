@@ -11,4 +11,5 @@ export declare class Yarn extends PipelineStepBase implements IPackageManager {
     info(logger: ILogger, fileSystem: IFileSystem, packageName: string, version: string): Promise<PackageConfiguration>;
     add(logger: ILogger, fileSystem: IFileSystem, workingDirectory: string, packageName: string, version: string, isDev: boolean): Promise<any>;
     remove(logger: ILogger, fileSystem: IFileSystem, workingDirectory: string, packageName: string, isDev: boolean): Promise<any>;
+    getInstallCommand(packageName: string, isGlobal: boolean): string;
 }

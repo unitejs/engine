@@ -5,7 +5,9 @@ import * as Chai from "chai";
 import * as Sinon from "sinon";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
+import { TypeScriptConfiguration } from "../../../../../src/configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
+import { JavaScriptConfiguration } from "../../../../../src/configuration/models/vscode/javaScriptConfiguration";
 import { EngineVariables } from "../../../../../src/engine/engineVariables";
 import { Npm } from "../../../../../src/pipelineSteps/packageManager/npm";
 import { PackageUtils } from "../../../../../src/pipelineSteps/packageUtils";
@@ -71,12 +73,16 @@ describe("Npm", () => {
             Chai.expect(res).to.be.equal(0);
         });
 
-        it("can succeed and add to gitignore", async () => {
+        it("can succeed and add to config", async () => {
             engineVariablesStub.setConfiguration("GitIgnore", []);
+            engineVariablesStub.setConfiguration("TypeScript", { exclude: []});
+            engineVariablesStub.setConfiguration("JavaScript", { exclude: []});
             const obj = new Npm();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration("GitIgnore")).to.be.deep.equal(["node_modules"]);
+            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").exclude).to.be.deep.equal(["node_modules"]);
+            Chai.expect(engineVariablesStub.getConfiguration<JavaScriptConfiguration>("JavaScript").exclude).to.be.deep.equal(["node_modules"]);
         });
 
         it("can be called with no configurations with false mainCondition", async () => {
@@ -87,10 +93,14 @@ describe("Npm", () => {
 
         it("can be called with configurations with false mainCondition", async () => {
             engineVariablesStub.setConfiguration("GitIgnore", ["node_modules"]);
+            engineVariablesStub.setConfiguration("TypeScript", { exclude: ["node_modules"]});
+            engineVariablesStub.setConfiguration("JavaScript", { exclude: ["node_modules"]});
             const obj = new Npm();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<string[]>("GitIgnore")).not.contains("node_modules");
+            Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").exclude).not.contains("node_modules");
+            Chai.expect(engineVariablesStub.getConfiguration<JavaScriptConfiguration>("JavaScript").exclude).not.contains("node_modules");
         });
     });
 
@@ -195,6 +205,26 @@ describe("Npm", () => {
             Chai.expect(stub.args[0][4]).to.contain("uninstall");
             Chai.expect(stub.args[0][4]).to.contain("package");
             Chai.expect(stub.args[0][4]).to.contain("--save");
+        });
+    });
+
+    describe("getInstallCommand", () => {
+        it("can call as plain install", async () => {
+            const obj = new Npm();
+            const res = obj.getInstallCommand("", false);
+            Chai.expect(res).to.contain("npm install");
+        });
+
+        it("can call to install a package", async () => {
+            const obj = new Npm();
+            const res = obj.getInstallCommand("package", false);
+            Chai.expect(res).to.contain("npm install package");
+        });
+
+        it("can call to install a global package", async () => {
+            const obj = new Npm();
+            const res = obj.getInstallCommand("package", true);
+            Chai.expect(res).to.contain("npm -g install package");
         });
     });
 });

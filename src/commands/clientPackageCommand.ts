@@ -228,7 +228,7 @@ export class ClientPackageCommand extends EngineCommandBase implements IEngineCo
         const ret = await this._pipeline.run(uniteConfiguration, engineVariables);
 
         if (ret === 0) {
-            this._logger.banner("Successfully Completed.");
+            this.displayCompletionMessage(engineVariables, false);
         }
 
         return ret;
@@ -255,7 +255,7 @@ export class ClientPackageCommand extends EngineCommandBase implements IEngineCo
         const ret = await this._pipeline.run(uniteConfiguration, engineVariables);
 
         if (ret === 0) {
-            this._logger.banner("Successfully Completed.");
+            this.displayCompletionMessage(engineVariables, false);
         }
 
         return ret;

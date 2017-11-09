@@ -147,4 +147,15 @@ export abstract class EngineCommandBase {
 
         return parsedMap;
     }
+
+    protected displayCompletionMessage(engineVariables: EngineVariables, showPackageUpdate: boolean) : void {
+        engineVariables.additionalCompletionMessages.forEach(message => {
+            this._logger.warning(message);
+        });
+        if (showPackageUpdate) {
+            this._logger.warning(`Packages may have changed, you should update them using the following command before running any tasks:`);
+            this._logger.warning(`   ${engineVariables.packageManager.getInstallCommand("", false)}`);
+        }
+        this._logger.banner("Successfully Completed.");
+    }
 }

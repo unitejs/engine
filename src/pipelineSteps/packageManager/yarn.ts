@@ -77,4 +77,21 @@ export class Yarn extends PipelineStepBase implements IPackageManager {
                 throw new Error(`Unable to remove package: ${err}`);
             });
     }
+
+    public getInstallCommand(packageName: string, isGlobal: boolean) : string {
+        const parts = [];
+
+        parts.push("yarn");
+        if (isGlobal) {
+            parts.push("global");
+        }
+        if (packageName && packageName.length > 0) {
+            parts.push("add");
+            parts.push(packageName);
+        } else {
+            parts.push("install");
+        }
+
+        return parts.join(" ");
+    }
 }

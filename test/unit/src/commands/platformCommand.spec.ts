@@ -151,6 +151,19 @@ describe("PlatformCommand", () => {
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("platformName");
         });
 
+        it("can fail when calling with undefined packageManager", async () => {
+            const obj = new PlatformCommand();
+            uniteJson.packageManager = undefined;
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                operation: "add",
+                platformName: "Web",
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("packageManager");
+        });
+
         it("can fail if pipeline step fails", async () => {
             fileWriteJsonErrors = true;
 

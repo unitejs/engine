@@ -28,6 +28,10 @@ export class PlatformCommand extends EngineCommandBase implements IEngineCommand
             return 1;
         }
 
+        if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("packageManager", uniteConfiguration.packageManager))) {
+            return 1;
+        }
+
         this._logger.info("");
 
         if (args.operation === "add") {
@@ -50,8 +54,7 @@ export class PlatformCommand extends EngineCommandBase implements IEngineCommand
         const ret = await this._pipeline.run(uniteConfiguration, engineVariables);
 
         if (ret === 0) {
-            this._logger.warning(`Packages updated, you should probably run ${uniteConfiguration.packageManager.toLowerCase()} install before running any gulp commands.`);
-            this._logger.banner("Successfully Completed.");
+            this.displayCompletionMessage(engineVariables, true);
         }
 
         return ret;
@@ -74,8 +77,7 @@ export class PlatformCommand extends EngineCommandBase implements IEngineCommand
 
         const ret = await this._pipeline.run(uniteConfiguration, engineVariables);
         if (ret === 0) {
-            this._logger.warning(`Packages updated, you should probably run ${uniteConfiguration.packageManager.toLowerCase()} install to remove any unnecessary packages.`);
-            this._logger.banner("Successfully Completed.");
+            this.displayCompletionMessage(engineVariables, true);
         }
 
         return ret;

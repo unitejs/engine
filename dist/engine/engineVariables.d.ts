@@ -43,6 +43,7 @@ export declare class EngineVariables {
     syntheticImport: string;
     moduleId: string;
     packageManager: IPackageManager;
+    additionalCompletionMessages: string[];
     private _configuration;
     private _requiredDevDependencies;
     private _removedDevDependencies;

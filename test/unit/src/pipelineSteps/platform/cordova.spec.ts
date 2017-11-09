@@ -8,6 +8,7 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
 import { UniteThemeConfiguration } from "../../../../../src/configuration/models/uniteTheme/uniteThemeConfiguration";
 import { EngineVariables } from "../../../../../src/engine/engineVariables";
+import { IPackageManager } from "../../../../../src/interfaces/IPackageManager";
 import { Cordova } from "../../../../../src/pipelineSteps/platform/cordova";
 import { FileSystemMock } from "../../fileSystem.mock";
 
@@ -33,6 +34,10 @@ describe("Cordova", () => {
         engineVariablesStub.engineAssetsFolder = "./assets/";
         engineVariablesStub.setupDirectories(fileSystemMock, "./test/unit/temp");
         engineVariablesStub.findDependencyVersion = sandbox.stub().returns("1.2.3");
+
+        const packageManagerStub: IPackageManager = <IPackageManager>{};
+        packageManagerStub.getInstallCommand = sandbox.stub();
+        engineVariablesStub.packageManager = packageManagerStub;
     });
 
     afterEach(async () => {

@@ -48,6 +48,7 @@ export class EngineVariables {
     public moduleId: string;
 
     public packageManager: IPackageManager;
+    public additionalCompletionMessages: string[];
 
     private _configuration: { [id: string]: any };
 
@@ -72,6 +73,8 @@ export class EngineVariables {
         this._requiredClientPackages = {};
         this._removedClientPackages = {};
         this._existingClientPackages = {};
+
+        this.additionalCompletionMessages = [];
     }
 
     public setConfiguration(name: string, config: any): void {

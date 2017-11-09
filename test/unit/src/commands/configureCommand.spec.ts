@@ -1153,7 +1153,7 @@ describe("ConfigureCommand", () => {
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(loggerWarningSpy.args[0][0]).to.contain("should probably");
+            Chai.expect(loggerWarningSpy.args[0][0]).to.contain("you should update");
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
         });
 
@@ -1196,7 +1196,7 @@ describe("ConfigureCommand", () => {
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(loggerWarningSpy.args[0][0]).to.contain("should probably");
+            Chai.expect(loggerWarningSpy.args[0][0]).to.contain("you should update");
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
         });
 
@@ -1239,7 +1239,7 @@ describe("ConfigureCommand", () => {
                 outputDirectory: "./test/unit/temp/www"
             });
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(loggerWarningSpy.args[0][0]).to.contain("should probably");
+            Chai.expect(loggerWarningSpy.args[0][0]).to.contain("you should update");
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
         });
 
@@ -1282,7 +1282,7 @@ describe("ConfigureCommand", () => {
                 outputDirectory: "./test/unit/temp"
             });
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(loggerWarningSpy.args[0][0]).to.contain("should probably");
+            Chai.expect(loggerWarningSpy.args[0][0]).to.contain("you should update");
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
         });
 
@@ -1325,7 +1325,7 @@ describe("ConfigureCommand", () => {
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(loggerWarningSpy.args[0][0]).to.contain("should probably");
+            Chai.expect(loggerWarningSpy.args[0][0]).to.contain("you should update");
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
         });
 
@@ -1668,7 +1668,7 @@ describe("ConfigureCommand", () => {
                 outputDirectory: "./test/unit/temp"
             });
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(loggerWarningSpy.args[0][0]).to.contain("should probably");
+            Chai.expect(loggerWarningSpy.args[0][0]).to.contain("you should update");
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
         });
 
@@ -1711,7 +1711,7 @@ describe("ConfigureCommand", () => {
                 outputDirectory: "./test/unit/temp"
             });
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(loggerWarningSpy.args[0][0]).to.contain("should probably");
+            Chai.expect(loggerWarningSpy.args[0][0]).to.contain("you should update");
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
 
             Chai.expect(uniteJsonThemeWritten.title).to.be.equal("my-app");

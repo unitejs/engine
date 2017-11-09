@@ -28,6 +28,12 @@ export class Docker extends PipelineStepBase {
                 ret = await super.fileDeleteText(logger, fileSystem, buildTasks, Docker.FILENAME, engineVariables.force);
             }
         }
+
+        if (mainCondition) {
+            engineVariables.additionalCompletionMessages.push("Make sure you have docker installed and running before trying to run any of the new tasks.");
+            engineVariables.additionalCompletionMessages.push("    see https://docs.docker.com/engine/installation/ for more details");
+        }
+
         return ret;
     }
 }

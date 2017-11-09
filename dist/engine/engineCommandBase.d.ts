@@ -26,4 +26,5 @@ export declare abstract class EngineCommandBase {
     protected mapFromArrayParser(input: string[]): {
         [id: string]: string;
     };
+    protected displayCompletionMessage(engineVariables: EngineVariables, showPackageUpdate: boolean): void;
 }

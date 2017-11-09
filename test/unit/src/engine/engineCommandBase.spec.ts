@@ -8,6 +8,7 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../../../src/configuration/models/unite/uniteConfiguration";
 import { EngineCommandBase } from "../../../../src/engine/engineCommandBase";
 import { EngineVariables } from "../../../../src/engine/engineVariables";
+import { IPackageManager } from "../../../../src/interfaces/IPackageManager";
 import { ReadOnlyFileSystemMock } from "../readOnlyFileSystem.mock";
 
 class TestCommand extends EngineCommandBase {
@@ -30,12 +31,18 @@ class TestCommand extends EngineCommandBase {
     public testMapFromArrayParser(input: string[]): { [id: string]: string } {
         return super.mapFromArrayParser(input);
     }
+
+    public testDisplayCompletionMessage(engineVariables: EngineVariables, showPackageUpdate: boolean): void {
+        return super.displayCompletionMessage(engineVariables, showPackageUpdate);
+    }
 }
 
 describe("EngineCommandBase", () => {
     let sandbox: Sinon.SinonSandbox;
     let loggerStub: ILogger;
     let fileSystemStub: IFileSystem;
+    let loggerWarningSpy: Sinon.SinonSpy;
+    let loggerBannerSpy: Sinon.SinonSpy;
 
     beforeEach(() => {
         sandbox = Sinon.sandbox.create();
@@ -44,6 +51,9 @@ describe("EngineCommandBase", () => {
         loggerStub.info = () => { };
         loggerStub.error = () => { };
         loggerStub.warning = () => { };
+
+        loggerWarningSpy = sandbox.spy(loggerStub, "warning");
+        loggerBannerSpy = sandbox.spy(loggerStub, "banner");
 
         fileSystemStub = new ReadOnlyFileSystemMock();
     });
@@ -247,6 +257,46 @@ describe("EngineCommandBase", () => {
             obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
             const res = obj.testMapFromArrayParser(["a", "b"]);
             Chai.expect(res).to.be.deep.equal({ a: "b" });
+        });
+    });
+
+    describe("displayCompletionMessage", () => {
+        it("can be called with no additional messages and no package update", async () => {
+            const obj = new TestCommand();
+            obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
+            const engineVariablesStub = new EngineVariables();
+            obj.testDisplayCompletionMessage(engineVariablesStub, false);
+            Chai.expect(loggerWarningSpy.args.length).to.be.equal(0);
+            Chai.expect(loggerBannerSpy.args.length).to.be.equal(1);
+        });
+
+        it("can be called with no additional messages and package update", async () => {
+            const obj = new TestCommand();
+            obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
+            const engineVariablesStub = new EngineVariables();
+            const packageManagerStub: IPackageManager = <IPackageManager>{};
+            packageManagerStub.getInstallCommand = sandbox.stub();
+            engineVariablesStub.packageManager = packageManagerStub;
+
+            obj.testDisplayCompletionMessage(engineVariablesStub, true);
+            Chai.expect(loggerWarningSpy.args.length).to.be.equal(2);
+            Chai.expect(loggerBannerSpy.args.length).to.be.equal(1);
+        });
+
+        it("can be called with additional messages and package update", async () => {
+            const obj = new TestCommand();
+            obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
+            const engineVariablesStub = new EngineVariables();
+            engineVariablesStub.additionalCompletionMessages.push("a");
+            engineVariablesStub.additionalCompletionMessages.push("b");
+            engineVariablesStub.additionalCompletionMessages.push("c");
+            const packageManagerStub: IPackageManager = <IPackageManager>{};
+            packageManagerStub.getInstallCommand = sandbox.stub();
+            engineVariablesStub.packageManager = packageManagerStub;
+
+            obj.testDisplayCompletionMessage(engineVariablesStub, true);
+            Chai.expect(loggerWarningSpy.args.length).to.be.equal(5);
+            Chai.expect(loggerBannerSpy.args.length).to.be.equal(1);
         });
     });
 });

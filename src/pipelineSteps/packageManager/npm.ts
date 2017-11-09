@@ -82,4 +82,19 @@ export class Npm extends PipelineStepBase implements IPackageManager {
                 throw new Error(`Unable to remove package: ${err}`);
             });
     }
+
+    public getInstallCommand(packageName: string, isGlobal: boolean) : string {
+        const parts = [];
+
+        parts.push("npm");
+        if (isGlobal) {
+            parts.push("-g");
+        }
+        parts.push("install");
+        if (packageName && packageName.length > 0) {
+            parts.push(packageName);
+        }
+
+        return parts.join(" ");
+    }
 }

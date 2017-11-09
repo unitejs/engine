@@ -232,7 +232,7 @@ describe("Engine", () => {
                 outputDirectory: "./test/unit/temp"
             });
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(loggerWarningSpy.args[0][0]).to.contain("should probably");
+            Chai.expect(loggerWarningSpy.args[0][0]).to.contain("you should update");
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
         });
 

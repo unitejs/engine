@@ -80,6 +80,12 @@ export class Cordova extends PipelineStepBase {
                 }
             }
         }
+
+        if (mainCondition) {
+            engineVariables.additionalCompletionMessages.push("Make sure you have installed the cordova package globally using:");
+            engineVariables.additionalCompletionMessages.push(`   ${engineVariables.packageManager.getInstallCommand("cordova", true)}`);
+        }
+
         return ret;
     }
 }

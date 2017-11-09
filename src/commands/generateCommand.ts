@@ -185,7 +185,7 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
         }
 
         if (ret === 0) {
-            this._logger.banner("Successfully Completed.");
+            this.displayCompletionMessage(engineVariables, false);
         }
 
         return ret;
