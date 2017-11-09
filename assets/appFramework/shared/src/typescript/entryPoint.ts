@@ -42,7 +42,7 @@ const loaderHideId = setInterval(
     },
     10);
 
-if ((<any>window).cordova) {
+if ((window as any).cordova) {
     document.addEventListener("deviceready", () => {
         bootstrap();
     });
