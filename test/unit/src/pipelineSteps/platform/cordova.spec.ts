@@ -77,7 +77,12 @@ describe("Cordova", () => {
         });
 
         it("can be called with false mainCondition and cordova", async () => {
-            engineVariablesStub.setConfiguration("UniteTheme", { cordova: {}});
+            engineVariablesStub.setConfiguration("UniteTheme", { cordova: [
+                "Content-Security-Policy",
+                "format-detection",
+                "msapplication-tap-highlight",
+                "cordova.js"
+            ] });
 
             const obj = new Cordova();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
@@ -101,19 +106,16 @@ describe("Cordova", () => {
             const packageJsonDevDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
             Chai.expect(packageJsonDevDependencies.xml2js).to.be.equal("1.2.3");
-            Chai.expect(engineVariablesStub.getConfiguration<UniteThemeConfiguration>("UniteTheme").cordova.headers.length).to.be.equal(3);
-            Chai.expect(engineVariablesStub.getConfiguration<UniteThemeConfiguration>("UniteTheme").cordova.scriptInclude.length).to.be.equal(1);
-            Chai.expect(engineVariablesStub.getConfiguration<UniteThemeConfiguration>("UniteTheme").cordova.scriptStart.length).to.be.equal(1);
-            Chai.expect(engineVariablesStub.getConfiguration<UniteThemeConfiguration>("UniteTheme").cordova.scriptEnd.length).to.be.equal(1);
+            Chai.expect(engineVariablesStub.getConfiguration<UniteThemeConfiguration>("UniteTheme").cordova.length).to.be.equal(4);
         });
 
         it("can be called with true mainCondition and existing cordova", async () => {
-            engineVariablesStub.setConfiguration("UniteTheme", { cordova: {
-                headers: [1, 2, 3],
-                scriptInclude: [4, 5, 6],
-                scriptStart: [7, 8],
-                scriptEnd: [9, 10]
-            }});
+            engineVariablesStub.setConfiguration("UniteTheme", { cordova: [
+                "Content-Security-Policy",
+                "format-detection",
+                "msapplication-tap-highlight",
+                "cordova.js"
+            ] });
 
             const obj = new Cordova();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
@@ -122,10 +124,7 @@ describe("Cordova", () => {
             const packageJsonDevDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
             Chai.expect(packageJsonDevDependencies.xml2js).to.be.equal("1.2.3");
-            Chai.expect(engineVariablesStub.getConfiguration<UniteThemeConfiguration>("UniteTheme").cordova.headers).to.be.deep.equal([1, 2, 3]);
-            Chai.expect(engineVariablesStub.getConfiguration<UniteThemeConfiguration>("UniteTheme").cordova.scriptInclude).to.be.deep.equal([4, 5, 6]);
-            Chai.expect(engineVariablesStub.getConfiguration<UniteThemeConfiguration>("UniteTheme").cordova.scriptStart).to.be.deep.equal([7, 8]);
-            Chai.expect(engineVariablesStub.getConfiguration<UniteThemeConfiguration>("UniteTheme").cordova.scriptEnd).to.be.deep.equal([9, 10]);
+            Chai.expect(engineVariablesStub.getConfiguration<UniteThemeConfiguration>("UniteTheme").cordova.length).to.be.equal(4);
         });
     });
 

@@ -1,6 +1,7 @@
 /**
  * Pipeline step to generate cordova platform configuration.
  */
+import { ArrayHelper } from "unitejs-framework/dist/helpers/arrayHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
@@ -23,33 +24,27 @@ export class Cordova extends PipelineStepBase {
         const uniteThemeConfiguration = engineVariables.getConfiguration<UniteThemeConfiguration>("UniteTheme");
         if (uniteThemeConfiguration) {
             if (mainCondition) {
-                let headers;
-                let scriptInclude;
-                let scriptStart;
-                let scriptEnd;
-                if (uniteThemeConfiguration.cordova) {
-                    headers = uniteThemeConfiguration.cordova.headers;
-                    scriptInclude = uniteThemeConfiguration.cordova.scriptInclude;
-                    scriptStart = uniteThemeConfiguration.cordova.scriptStart;
-                    scriptEnd = uniteThemeConfiguration.cordova.scriptEnd;
-                }
-                uniteThemeConfiguration.cordova = {
-                    headers: headers || [
-                        // tslint:disable-next-line:max-line-length
-                        "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;\">",
-                        "<meta name=\"format-detection\" content=\"telephone=no\">",
-                        "<meta name=\"msapplication-tap-highlight\" content=\"no\">"
-                    ],
-                    scriptInclude: scriptInclude || [
-                        "<script type=\"text/javascript\" src=\"./cordova.js\"></script>"
-                    ],
-                    scriptStart: scriptStart || [
-                        "document.addEventListener('deviceready', function() {"
-                    ],
-                    scriptEnd: scriptEnd || [
-                        "});"
-                    ]
-                };
+                uniteThemeConfiguration.cordova = uniteThemeConfiguration.cordova || [];
+                ArrayHelper.addRemove(uniteThemeConfiguration.cordova,
+                                      "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self' data: gap: https://ssl.gstatic.com " +
+                                      "'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;\">",
+                                      mainCondition,
+                                      (obj, item) => item.indexOf("Content-Security-Policy") >= 0);
+
+                ArrayHelper.addRemove(uniteThemeConfiguration.cordova,
+                                      "<meta name=\"format-detection\" content=\"telephone=no\">",
+                                      mainCondition,
+                                      (obj, item) => item.indexOf("format-detection") >= 0);
+
+                ArrayHelper.addRemove(uniteThemeConfiguration.cordova,
+                                      "<meta name=\"msapplication-tap-highlight\" content=\"no\">",
+                                      mainCondition,
+                                      (obj, item) => item.indexOf("msapplication-tap-highlight") >= 0);
+
+                ArrayHelper.addRemove(uniteThemeConfiguration.cordova,
+                                      "<script type=\"text/javascript\" src=\"./cordova.js\"></script>",
+                                      mainCondition,
+                                      (obj, item) => item.indexOf("cordova.js") >= 0);
             } else {
                 delete uniteThemeConfiguration.cordova;
             }

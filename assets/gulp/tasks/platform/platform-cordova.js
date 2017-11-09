@@ -59,6 +59,152 @@ function addPreference (xml, name, value) {
     }
 }
 
+function getProjectName (uniteThemeConfig) {
+    return uniteThemeConfig.title.replace(/ /g, "");
+}
+
+function getImageResources () {
+    const images = {};
+    images.android = [
+        // Icons
+        {"name": "icon.png", "size": 96},
+        {"name": "icon-ldpi.png", "size": 36, "density": "ldpi"},
+        {"name": "icon-mdpi.png", "size": 48, "density": "mdpi"},
+        {"name": "icon-hdpi.png", "size": 72, "density": "hdpi"},
+        {"name": "icon-xhdpi.png", "size": 96, "density": "xhdpi"},
+        {"name": "icon-xxhdpi.png", "size": 144, "density": "xxhdpi"},
+        {"name": "icon-xxxhdpi.png", "size": 192, "density": "xxxhdpi"},
+        // Splash
+        {"name": "screen-land-ldpi.png", "width": 320, "height": 200, "density": "land-ldpi"},
+        {"name": "screen-land-mdpi.png", "width": 480, "height": 320, "density": "land-mdpi"},
+        {"name": "screen-land-hdpi.png", "width": 800, "height": 480, "density": "land-hdpi"},
+        {"name": "screen-land-xhdpi.png", "width": 1280, "height": 720, "density": "land-xhdpi"},
+        {"name": "screen-land-xxhdpi.png", "width": 1600, "height": 960, "density": "land-xxhdpi"},
+        {"name": "screen-land-xxxhdpi.png", "width": 1920, "height": 1280, "density": "land-xxxhdpi"},
+        {"name": "screen-port-ldpi.png", "width": 200, "height": 320, "density": "port-ldpi"},
+        {"name": "screen-port-mdpi.png", "width": 320, "height": 480, "density": "port-mdpi"},
+        {"name": "screen-port-hdpi.png", "width": 480, "height": 800, "density": "port-hdpi"},
+        {"name": "screen-port-xhdpi.png", "width": 720, "height": 1280, "density": "port-xhdpi"},
+        {"name": "screen-port-xxhdpi.png", "width": 960, "height": 1600, "density": "port-xxhdpi"},
+        {"name": "screen-port-xxxhdpi.png", "width": 1280, "height": 1920, "density": "port-xxxhdpi"}
+    ];
+
+    images.ios = [
+        // Icons
+        {"name": "icon-20.png", "size": 20},
+        {"name": "icon-20@2x.png", "size": 40},
+        {"name": "icon-20@3x.png", "size": 60},
+        {"name": "icon-40.png", "size": 40},
+        {"name": "icon-40@2x.png", "size": 80},
+        {"name": "icon-50.png", "size": 50},
+        {"name": "icon-50@2x.png", "size": 100},
+        {"name": "icon-60@2x.png", "size": 120},
+        {"name": "icon-60@3x.png", "size": 180},
+        {"name": "icon-72.png", "size": 72},
+        {"name": "icon-72@2x.png", "size": 144},
+        {"name": "icon-76.png", "size": 76},
+        {"name": "icon-76@2x.png", "size": 152},
+        {"name": "icon-83.5@2x.png", "size": 167},
+        {"name": "icon-1024.png", "size": 1024},
+        {"name": "icon-small.png", "size": 29},
+        {"name": "icon-small@2x.png", "size": 58},
+        {"name": "icon-small@3x.png", "size": 87},
+        {"name": "icon.png", "size": 57},
+        {"name": "icon@2x.png", "size": 114},
+        {"name": "AppIcon24x24@2x.png", "size": 48},
+        {"name": "AppIcon27.5x27.5@2x.png", "size": 55},
+        {"name": "AppIcon29x29@2x.png", "size": 58},
+        {"name": "AppIcon29x29@3x.png", "size": 87},
+        {"name": "AppIcon40x40@2x.png", "size": 80},
+        {"name": "AppIcon44x44@2x.png", "size": 88},
+        {"name": "AppIcon86x86@2x.png", "size": 172},
+        {"name": "AppIcon98x98@2x.png", "size": 196},
+        // Splash
+        {"name": "Default~iphone.png", "width": 320, "height": 480},
+        {"name": "Default@2x~iphone.png", "width": 640, "height": 960},
+        {"name": "Default-Portrait~ipad.png", "width": 768, "height": 1024},
+        {"name": "Default-Portrait@2x~ipad.png", "width": 1536, "height": 2048},
+        {"name": "Default-Landscape~ipad.png", "width": 1024, "height": 768},
+        {"name": "Default-Landscape@2x~ipad.png", "width": 2048, "height": 1536},
+        {"name": "Default-568h@2x~iphone.png", "width": 640, "height": 1136},
+        {"name": "Default-667h.png", "width": 750, "height": 1334},
+        {"name": "Default-736h.png", "width": 1242, "height": 2208},
+        {"name": "Default-Landscape-736h.png", "width": 2208, "height": 1242},
+        {"name": "Default-2436h.png", "width": 1125, "height": 2436},
+        {"name": "Default-Landscape-2436h.png", "width": 2436, "height": 1125}
+    ];
+
+    images.windows = [
+        // Icons
+        {"name": "StoreLogo.scale-100.png", "size": 50},
+        {"name": "StoreLogo.scale-125.png", "size": 63},
+        {"name": "StoreLogo.scale-140.png", "size": 70},
+        {"name": "StoreLogo.scale-150.png", "size": 75},
+        {"name": "StoreLogo.scale-180.png", "size": 90},
+        {"name": "StoreLogo.scale-200.png", "size": 100},
+        {"name": "StoreLogo.scale-240.png", "size": 120},
+        {"name": "StoreLogo.scale-400.png", "size": 200},
+
+        {"name": "Square44x44Logo.scale-100.png", "size": 44},
+        {"name": "Square44x44Logo.scale-125.png", "size": 55},
+        {"name": "Square44x44Logo.scale-140.png", "size": 62},
+        {"name": "Square44x44Logo.scale-150.png", "size": 66},
+        {"name": "Square44x44Logo.scale-200.png", "size": 88},
+        {"name": "Square44x44Logo.scale-240.png", "size": 106},
+        {"name": "Square44x44Logo.scale-400.png", "size": 176},
+
+        {"name": "Square30x30Logo.scale-100.png", "size": 30},
+        {"name": "Square70x70Logo.scale-100.png", "size": 70},
+
+        {"name": "Square71x71Logo.scale-100.png", "size": 71},
+        {"name": "Square71x71Logo.scale-125.png", "size": 89},
+        {"name": "Square71x71Logo.scale-140.png", "size": 99},
+        {"name": "Square71x71Logo.scale-150.png", "size": 107},
+        {"name": "Square71x71Logo.scale-200.png", "size": 142},
+        {"name": "Square71x71Logo.scale-240.png", "size": 170},
+        {"name": "Square71x71Logo.scale-400.png", "size": 284},
+
+        {"name": "Square150x150Logo.scale-100.png", "size": 150},
+        {"name": "Square150x150Logo.scale-125.png", "size": 188},
+        {"name": "Square150x150Logo.scale-140.png", "size": 210},
+        {"name": "Square150x150Logo.scale-150.png", "size": 225},
+        {"name": "Square150x150Logo.scale-200.png", "size": 300},
+        {"name": "Square150x150Logo.scale-240.png", "size": 360},
+        {"name": "Square150x150Logo.scale-400.png", "size": 600},
+
+        {"name": "Square310x310Logo.scale-100.png", "size": 310},
+        {"name": "Square310x310Logo.scale-125.png", "size": 388},
+        {"name": "Square310x310Logo.scale-140.png", "size": 434},
+        {"name": "Square310x310Logo.scale-150.png", "size": 465},
+        {"name": "Square310x310Logo.scale-180.png", "size": 558},
+        {"name": "Square310x310Logo.scale-200.png", "size": 620},
+        {"name": "Square310x310Logo.scale-400.png", "size": 1240},
+
+        {"name": "Wide310x150Logo.scale-80.png", "width": 248, "height": 120},
+        {"name": "Wide310x150Logo.scale-100.png", "width": 310, "height": 150},
+        {"name": "Wide310x150Logo.scale-125.png", "width": 388, "height": 188},
+        {"name": "Wide310x150Logo.scale-140.png", "width": 434, "height": 210},
+        {"name": "Wide310x150Logo.scale-150.png", "width": 465, "height": 225},
+        {"name": "Wide310x150Logo.scale-180.png", "width": 558, "height": 270},
+        {"name": "Wide310x150Logo.scale-200.png", "width": 620, "height": 300},
+        {"name": "Wide310x150Logo.scale-240.png", "width": 744, "height": 360},
+        {"name": "Wide310x150Logo.scale-400.png", "width": 1240, "height": 600},
+        // Splash
+        {"name": "SplashScreen.scale-100.png", "width": 620, "height": 300},
+        {"name": "SplashScreen.scale-125.png", "width": 775, "height": 375},
+        {"name": "SplashScreen.scale-140.png", "width": 868, "height": 420},
+        {"name": "SplashScreen.scale-150.png", "width": 930, "height": 450},
+        {"name": "SplashScreen.scale-180.png", "width": 1116, "height": 540},
+        {"name": "SplashScreen.scale-200.png", "width": 1240, "height": 600},
+        {"name": "SplashScreen.scale-400.png", "width": 2480, "height": 1200},
+        {"name": "SplashScreenPhone.scale-240.png", "width": 1152, "height": 1920},
+        {"name": "SplashScreenPhone.scale-140.png", "width": 672, "height": 1120},
+        {"name": "SplashScreenPhone.scale-100.png", "width": 480, "height": 800}
+    ];
+
+    return images;
+}
+
 gulp.task("platform-cordova-clean", async () => {
     const uniteConfig = await uc.getUniteConfig();
 
@@ -83,9 +229,9 @@ gulp.task("platform-cordova-create", async () => {
     try {
         const uniteConfig = await uc.getUniteConfig();
 
-        const platformFolder = path.join("../", uniteConfig.dirs.platformRoot, "cordova");
+        const cordovaFolder = path.join("../", uniteConfig.dirs.platformRoot, "cordova");
 
-        const exists = await asyncUtil.directoryExists(platformFolder);
+        const exists = await asyncUtil.directoryExists(cordovaFolder);
         if (!exists) {
             await execCordova(["create", "../platform/cordova", "cordova"]);
         }
@@ -101,9 +247,9 @@ gulp.task("platform-cordova-update-config", async () => {
         const uniteThemeConfig = await uc.getUniteThemeConfig(uniteConfig);
         const packageJson = await packageConfig.getPackageJson();
 
-        const platformFolder = path.join("../", uniteConfig.dirs.platformRoot, "cordova");
+        const cordovaFolder = path.join("../", uniteConfig.dirs.platformRoot, "cordova");
 
-        const cordovaPackageJsonFile = path.join(platformFolder, "package.json");
+        const cordovaPackageJsonFile = path.join(cordovaFolder, "package.json");
         const cordovaPackageJson = await util.promisify(fs.readFile)(cordovaPackageJsonFile);
 
         const cordovaPackage = JSON.parse(cordovaPackageJson.toString());
@@ -117,21 +263,21 @@ gulp.task("platform-cordova-update-config", async () => {
 
         await util.promisify(fs.writeFile)(cordovaPackageJsonFile, JSON.stringify(cordovaPackage, undefined, "\t"));
 
-        const cordovaConfigFile = path.join(platformFolder, "config.xml");
+        const cordovaConfigFile = path.join(cordovaFolder, "config.xml");
         const cordovaConfigXml = await util.promisify(fs.readFile)(cordovaConfigFile);
         const xml = await util.promisify(xml2js.parseString)(cordovaConfigXml);
         xml.widget.$.id = "";
-        if (uniteThemeConfig.metaNamespace && uniteThemeConfig.metaNamespace.length > 0) {
-            xml.widget.$.id = `${uniteThemeConfig.metaNamespace
+        if (uniteThemeConfig.namespace && uniteThemeConfig.namespace.length > 0) {
+            xml.widget.$.id = uniteThemeConfig.namespace
                 .split(".")
                 .reverse()
-                .join(".")}.${packageJson.name}.`;
+                .join(".");
         } else {
-            xml.widget.$.id += "org.package.";
+            xml.widget.$.id += "org.example";
         }
-        xml.widget.$.id += packageJson.name.replace(/[^a-zA-Z0-9]+/g, "");
+        xml.widget.$.id += `.${packageJson.name.replace(/[^a-zA-Z0-9]+/g, "")}`;
         xml.widget.$.version = packageJson.version;
-        xml.widget.name = uniteThemeConfig.title.replace(/ /g, "-");
+        xml.widget.name = getProjectName(uniteThemeConfig);
         xml.widget.description = uniteThemeConfig.metaDescription;
         xml.widget.author = xml.widget.author || [];
         if (uniteThemeConfig.metaAuthor && uniteThemeConfig.metaAuthor.length > 0) {
@@ -152,12 +298,47 @@ gulp.task("platform-cordova-update-config", async () => {
             addPreference(xml, "SplashScreenBackgroundColor", uniteThemeConfig.backgroundColor);
         }
 
+        xml.widget.platform = xml.widget.platform || [];
+        const platforms = ["android", "ios", "windows"];
+        const images = getImageResources();
+
+        platforms.forEach(platform => {
+            let xmlPlatform = xml.widget.platform.find(p => p.$.name === platform);
+            if (!xmlPlatform) {
+                xmlPlatform = {};
+                xmlPlatform.$ = {};
+                xmlPlatform.$.name = platform;
+                xml.widget.platform.push(xmlPlatform);
+            }
+            xmlPlatform.icon = [];
+            xmlPlatform.splash = [];
+            images[platform].forEach(image => {
+                const src = path.join("res", image.size ? "icons" : "screen", platform, image.name)
+                    .replace(/\\/g, "/");
+                const newImage = {};
+                if (image.size) {
+                    xmlPlatform.icon.push(newImage);
+                } else {
+                    xmlPlatform.splash.push(newImage);
+                }
+
+                newImage.$ = {};
+                newImage.$.src = src;
+                if (platform === "windows") {
+                    newImage.$.target = image.name.split(".")[0];
+                } else if (image.density) {
+                    newImage.$.density = image.density;
+                } else {
+                    newImage.$.width = image.size ? image.size : image.width;
+                    newImage.$.height = image.size ? image.size : image.height;
+                }
+            });
+        });
+
         const outXml = new xml2js.Builder().buildObject(xml);
         await util.promisify(fs.writeFile)(cordovaConfigFile, outXml);
 
-        await del(path.join(platformFolder, "res"), {"force": true});
-
-        const cordovaJsProj = path.join(platformFolder, "cordova.jsproj");
+        const cordovaJsProj = path.join(cordovaFolder, "cordova.jsproj");
         const projExists = await asyncUtil.fileExists(cordovaJsProj);
         if (!projExists) {
             const projContent = await util.promisify(fs.readFile)(path.join(
@@ -234,16 +415,8 @@ gulp.task("platform-cordova-gather", async () => {
     const headTag = "</head>";
     indexContent = indexContent
         .toString()
-        .replace(headTag, `${uniteThemeConfig.cordova.headers.join("\n")}
+        .replace(headTag, `${uniteThemeConfig.cordova.join("\n")}
         ${headTag}`);
-
-    indexContent = indexContent
-        .replace(/<script>([\s\S]*?)<\/script>/g, `${uniteThemeConfig.cordova.scriptInclude.join("\n")}
-        <script>
-        ${uniteThemeConfig.cordova.scriptStart.join("\n")}
-        $1
-        ${uniteThemeConfig.cordova.scriptEnd.join("\n")}
-        </script>`);
 
     await util.promisify(fs.writeFile)(indexFilename, indexContent);
 });
@@ -303,184 +476,42 @@ gulp.task("platform-cordova-save", async () => {
 
 gulp.task("platform-cordova-theme", async () => {
     const uniteConfig = await uc.getUniteConfig();
-    const platformFolder = path.resolve(path.join("../", uniteConfig.dirs.platformRoot, "cordova", "platforms"));
+    const resFolder = path.resolve(path.join("../", uniteConfig.dirs.platformRoot, "cordova", "res"));
     const uniteThemeConfig = await uc.getUniteThemeConfig(uniteConfig);
 
-    const projectName = uniteThemeConfig.title.replace(/ /g, "-");
-
-    const roots = {};
-    const images = {};
-
-    roots.android = "res";
-    images.android = [
-        // Icons
-        {"name": "drawable/icon.png", "size": 96},
-        {"name": "drawable-hdpi/icon.png", "size": 72},
-        {"name": "drawable-ldpi/icon.png", "size": 36},
-        {"name": "drawable-mdpi/icon.png", "size": 48},
-        {"name": "drawable-xhdpi/icon.png", "size": 96},
-        {"name": "drawable-xxhdpi/icon.png", "size": 144},
-        {"name": "drawable-xxxhdpi/icon.png", "size": 192},
-        {"name": "mipmap-hdpi/icon.png", "size": 72},
-        {"name": "mipmap-ldpi/icon.png", "size": 36},
-        {"name": "mipmap-mdpi/icon.png", "size": 48},
-        {"name": "mipmap-xhdpi/icon.png", "size": 96},
-        {"name": "mipmap-xxhdpi/icon.png", "size": 144},
-        {"name": "mipmap-xxxhdpi/icon.png", "size": 192},
-        // Landscape
-        {"name": "drawable-land-ldpi/screen.png", "width": 320, "height": 200},
-        {"name": "drawable-land-mdpi/screen.png", "width": 480, "height": 320},
-        {"name": "drawable-land-hdpi/screen.png", "width": 800, "height": 480},
-        {"name": "drawable-land-xhdpi/screen.png", "width": 1280, "height": 720},
-        {"name": "drawable-land-xxhdpi/screen.png", "width": 1600, "height": 960},
-        {"name": "drawable-land-xxxhdpi/screen.png", "width": 1920, "height": 1280},
-        // Portrait
-        {"name": "drawable-port-ldpi/screen.png", "width": 200, "height": 320},
-        {"name": "drawable-port-mdpi/screen.png", "width": 320, "height": 480},
-        {"name": "drawable-port-hdpi/screen.png", "width": 480, "height": 800},
-        {"name": "drawable-port-xhdpi/screen.png", "width": 720, "height": 1280},
-        {"name": "drawable-port-xxhdpi/screen.png", "width": 960, "height": 1600},
-        {"name": "drawable-port-xxxhdpi/screen.png", "width": 1280, "height": 1920}
-    ];
-
-    roots.ios = `${projectName}/Images.xcassets`;
-    images.ios = [
-        // Icons
-        {"name": "AppIcon.appiconset/icon-20.png", "size": 20},
-        {"name": "AppIcon.appiconset/icon-20@2x.png", "size": 40},
-        {"name": "AppIcon.appiconset/icon-20@3x.png", "size": 60},
-        {"name": "AppIcon.appiconset/icon-40.png", "size": 40},
-        {"name": "AppIcon.appiconset/icon-40@2x.png", "size": 80},
-        {"name": "AppIcon.appiconset/icon-50.png", "size": 50},
-        {"name": "AppIcon.appiconset/icon-50@2x.png", "size": 100},
-        {"name": "AppIcon.appiconset/icon-60@2x.png", "size": 120},
-        {"name": "AppIcon.appiconset/icon-60@3x.png", "size": 180},
-        {"name": "AppIcon.appiconset/icon-72.png", "size": 72},
-        {"name": "AppIcon.appiconset/icon-72@2x.png", "size": 144},
-        {"name": "AppIcon.appiconset/icon-76.png", "size": 76},
-        {"name": "AppIcon.appiconset/icon-76@2x.png", "size": 152},
-        {"name": "AppIcon.appiconset/icon-83.5@2x.png", "size": 167},
-        {"name": "AppIcon.appiconset/icon-1024.png", "size": 1024},
-        {"name": "AppIcon.appiconset/icon-small.png", "size": 29},
-        {"name": "AppIcon.appiconset/icon-small@2x.png", "size": 58},
-        {"name": "AppIcon.appiconset/icon-small@3x.png", "size": 87},
-        {"name": "AppIcon.appiconset/icon.png", "size": 57},
-        {"name": "AppIcon.appiconset/icon@2x.png", "size": 114},
-        {"name": "AppIcon.appiconset/AppIcon24x24@2x.png", "size": 48},
-        {"name": "AppIcon.appiconset/AppIcon27.5x27.5@2x.png", "size": 55},
-        {"name": "AppIcon.appiconset/AppIcon29x29@2x.png", "size": 58},
-        {"name": "AppIcon.appiconset/AppIcon29x29@3x.png", "size": 87},
-        {"name": "AppIcon.appiconset/AppIcon40x40@2x.png", "size": 80},
-        {"name": "AppIcon.appiconset/AppIcon44x44@2x.png", "size": 88},
-        {"name": "AppIcon.appiconset/AppIcon86x86@2x.png", "size": 172},
-        {"name": "AppIcon.appiconset/AppIcon98x98@2x.png", "size": 196},
-        // IPhone
-        {"name": "LaunchImage.launchimage/Default~iphone.png", "width": 320, "height": 480},
-        {"name": "LaunchImage.launchimage/Default@2x~iphone.png", "width": 640, "height": 960},
-        {"name": "LaunchImage.launchimage/Default-568h@2x~iphone.png", "width": 640, "height": 1136},
-        {"name": "LaunchImage.launchimage/Default-667h.png", "width": 750, "height": 1334},
-        {"name": "LaunchImage.launchimage/Default-736h.png", "width": 1242, "height": 2208},
-        {"name": "LaunchImage.launchimage/Default-Landscape-736h.png", "width": 2208, "height": 1242},
-        {"name": "LaunchImage.launchimage/Default-2436h.png", "width": 1125, "height": 2436},
-        {"name": "LaunchImage.launchimage/Default-Landscape-2436h.png", "width": 2436, "height": 1125},
-        // IPad
-        {"name": "LaunchImage.launchimage/Default-Portrait~ipad.png", "width": 768, "height": 1024},
-        {"name": "LaunchImage.launchimage/Default-Portrait@2x~ipad.png", "width": 1536, "height": 2048},
-        {"name": "LaunchImage.launchimage/Default-Landscape~ipad.png", "width": 1024, "height": 768},
-        {"name": "LaunchImage.launchimage/Default-Landscape@2x~ipad.png", "width": 2048, "height": 1536}
-    ];
-
-    roots.windows = "images";
-    images.windows = [
-        // Icons
-        {"name": "StoreLogo.scale-100.png", "size": 50},
-        {"name": "StoreLogo.scale-125.png", "size": 63},
-        {"name": "StoreLogo.scale-140.png", "size": 70},
-        {"name": "StoreLogo.scale-150.png", "size": 75},
-        {"name": "StoreLogo.scale-180.png", "size": 90},
-        {"name": "StoreLogo.scale-200.png", "size": 100},
-        {"name": "StoreLogo.scale-240.png", "size": 120},
-        {"name": "StoreLogo.scale-400.png", "size": 200},
-
-        {"name": "Square44x44Logo.scale-100.png", "size": 44},
-        {"name": "Square44x44Logo.scale-125.png", "size": 55},
-        {"name": "Square44x44Logo.scale-140.png", "size": 62},
-        {"name": "Square44x44Logo.scale-150.png", "size": 66},
-        {"name": "Square44x44Logo.scale-200.png", "size": 88},
-        {"name": "Square44x44Logo.scale-240.png", "size": 106},
-        {"name": "Square44x44Logo.scale-400.png", "size": 176},
-
-        {"name": "Square30x30Logo.scale-100.png", "size": 30},
-        {"name": "Square70x70Logo.scale-100.png", "size": 70},
-
-        {"name": "Square71x71Logo.scale-100.png", "size": 71},
-        {"name": "Square71x71Logo.scale-125.png", "size": 89},
-        {"name": "Square71x71Logo.scale-140.png", "size": 99},
-        {"name": "Square71x71Logo.scale-150.png", "size": 107},
-        {"name": "Square71x71Logo.scale-200.png", "size": 142},
-        {"name": "Square71x71Logo.scale-240.png", "size": 170},
-        {"name": "Square71x71Logo.scale-400.png", "size": 284},
-
-        {"name": "Square150x150Logo.scale-100.png", "size": 150},
-        {"name": "Square150x150Logo.scale-125.png", "size": 188},
-        {"name": "Square150x150Logo.scale-140.png", "size": 210},
-        {"name": "Square150x150Logo.scale-150.png", "size": 225},
-        {"name": "Square150x150Logo.scale-200.png", "size": 300},
-        {"name": "Square150x150Logo.scale-240.png", "size": 360},
-        {"name": "Square150x150Logo.scale-400.png", "size": 600},
-
-        {"name": "Square310x310Logo.scale-100.png", "size": 310},
-        {"name": "Square310x310Logo.scale-125.png", "size": 388},
-        {"name": "Square310x310Logo.scale-140.png", "size": 434},
-        {"name": "Square310x310Logo.scale-150.png", "size": 465},
-        {"name": "Square310x310Logo.scale-180.png", "size": 558},
-        {"name": "Square310x310Logo.scale-200.png", "size": 620},
-        {"name": "Square310x310Logo.scale-400.png", "size": 1240},
-
-        {"name": "Wide310x150Logo.scale-80.png", "width": 248, "height": 120},
-        {"name": "Wide310x150Logo.scale-100.png", "width": 310, "height": 150},
-        {"name": "Wide310x150Logo.scale-125.png", "width": 388, "height": 188},
-        {"name": "Wide310x150Logo.scale-140.png", "width": 434, "height": 210},
-        {"name": "Wide310x150Logo.scale-150.png", "width": 465, "height": 225},
-        {"name": "Wide310x150Logo.scale-180.png", "width": 558, "height": 270},
-        {"name": "Wide310x150Logo.scale-200.png", "width": 620, "height": 300},
-        {"name": "Wide310x150Logo.scale-240.png", "width": 744, "height": 360},
-        {"name": "Wide310x150Logo.scale-400.png", "width": 1240, "height": 600},
-        // Landscape
-        {"name": "SplashScreen.scale-100.png", "width": 620, "height": 300},
-        {"name": "SplashScreen.scale-125.png", "width": 775, "height": 375},
-        {"name": "SplashScreen.scale-140.png", "width": 868, "height": 420},
-        {"name": "SplashScreen.scale-150.png", "width": 930, "height": 450},
-        {"name": "SplashScreen.scale-180.png", "width": 1116, "height": 540},
-        {"name": "SplashScreen.scale-200.png", "width": 1240, "height": 600},
-        {"name": "SplashScreen.scale-400.png", "width": 2480, "height": 1200},
-        // Portrait
-        {"name": "SplashScreenPhone.scale-240.png", "width": 1152, "height": 1920},
-        {"name": "SplashScreenPhone.scale-140.png", "width": 672, "height": 1120},
-        {"name": "SplashScreenPhone.scale-100.png", "width": 480, "height": 800}
-    ];
+    const images = getImageResources();
 
     const options = loadOptions(uniteConfig);
     const platformsToCreate = options.platforms.split(",");
     for (let i = 0; i < platformsToCreate.length; i++) {
         const platform = platformsToCreate[i];
-        if (images[platform] && roots[platform]) {
+        if (images[platform]) {
+            await del(
+                [
+                    path.join(resFolder, "icons", platform),
+                    path.join(resFolder, "screen", platform)
+                ]
+                , {"force": true}
+            );
+
             for (let j = 0; j < images[platform].length; j++) {
+                const img = images[platform][j];
+
                 const params = {
                     "command": "svgToPng",
                     "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSrc, "theme", "logo-tile.svg")}`,
-                    "destFile": `${path.join(platformFolder, platform, roots[platform], images[platform][j].name)}`,
+                    "destFile": `${path.join(resFolder, img.size ? "icons" : "screen", platform, img.name)}`,
                     "background": uniteThemeConfig.backgroundColor
                 };
 
-                if (images[platform][j].size) {
-                    params.width = images[platform][j].size;
-                    params.height = images[platform][j].size;
-                    params.marginX = Math.round(images[platform][j].size / 10);
-                    params.marginY = Math.round(images[platform][j].size / 10);
+                if (img.size) {
+                    params.width = img.size;
+                    params.height = img.size;
+                    params.marginX = Math.round(img.size / 10);
+                    params.marginY = Math.round(img.size / 10);
                 } else {
-                    params.width = images[platform][j].width;
-                    params.height = images[platform][j].height;
+                    params.width = img.width;
+                    params.height = img.height;
                     if (params.width > params.height) {
                         params.marginX = Math.round((params.width - (params.height / 2)) / 2);
                         params.marginY = Math.round(params.height / 4);
