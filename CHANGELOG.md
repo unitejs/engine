@@ -1,10 +1,13 @@
 # Changelog
 
-## 1.6.4
+## 1.6.5
 
 * Added cordova support
 * Added additional optional meta data for configure command (description, shortName, organization, keywords,
 * namespace, webSite, copyright, author, authorEmail, authorWebSite)
+
+## 1.6.4
+
 * Change title property moved from unite.json to unite-theme.json
 * Change updated completion messages for platforms with more information about required pre-requisites
 

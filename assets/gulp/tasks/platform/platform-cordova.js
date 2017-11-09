@@ -233,7 +233,7 @@ gulp.task("platform-cordova-create", async () => {
 
         const exists = await asyncUtil.directoryExists(cordovaFolder);
         if (!exists) {
-            await execCordova(["create", "../platform/cordova", "cordova"]);
+            await execCordova(["create", "../platform/cordova", "cordova", " --no-telemetry"]);
         }
     } catch (err) {
         display.error("Unhandled error during task", err);
@@ -297,43 +297,6 @@ gulp.task("platform-cordova-update-config", async () => {
         if (uniteThemeConfig.backgroundColor && uniteThemeConfig.backgroundColor.length > 0) {
             addPreference(xml, "SplashScreenBackgroundColor", uniteThemeConfig.backgroundColor);
         }
-
-        xml.widget.platform = xml.widget.platform || [];
-        const platforms = ["android", "ios", "windows"];
-        const images = getImageResources();
-
-        platforms.forEach(platform => {
-            let xmlPlatform = xml.widget.platform.find(p => p.$.name === platform);
-            if (!xmlPlatform) {
-                xmlPlatform = {};
-                xmlPlatform.$ = {};
-                xmlPlatform.$.name = platform;
-                xml.widget.platform.push(xmlPlatform);
-            }
-            xmlPlatform.icon = [];
-            xmlPlatform.splash = [];
-            images[platform].forEach(image => {
-                const src = path.join("res", image.size ? "icons" : "screen", platform, image.name)
-                    .replace(/\\/g, "/");
-                const newImage = {};
-                if (image.size) {
-                    xmlPlatform.icon.push(newImage);
-                } else {
-                    xmlPlatform.splash.push(newImage);
-                }
-
-                newImage.$ = {};
-                newImage.$.src = src;
-                if (platform === "windows") {
-                    newImage.$.target = image.name.split(".")[0];
-                } else if (image.density) {
-                    newImage.$.density = image.density;
-                } else {
-                    newImage.$.width = image.size ? image.size : image.width;
-                    newImage.$.height = image.size ? image.size : image.height;
-                }
-            });
-        });
 
         const outXml = new xml2js.Builder().buildObject(xml);
         await util.promisify(fs.writeFile)(cordovaConfigFile, outXml);
@@ -476,8 +439,14 @@ gulp.task("platform-cordova-save", async () => {
 
 gulp.task("platform-cordova-theme", async () => {
     const uniteConfig = await uc.getUniteConfig();
-    const resFolder = path.resolve(path.join("../", uniteConfig.dirs.platformRoot, "cordova", "res"));
+    const cordovaFolder = path.join("../", uniteConfig.dirs.platformRoot, "cordova");
+    const resFolder = path.resolve(path.join(cordovaFolder, "res"));
     const uniteThemeConfig = await uc.getUniteThemeConfig(uniteConfig);
+
+    const cordovaConfigFile = path.join(cordovaFolder, "config.xml");
+    const cordovaConfigXml = await util.promisify(fs.readFile)(cordovaConfigFile);
+    const xml = await util.promisify(xml2js.parseString)(cordovaConfigXml);
+    xml.widget.platform = xml.widget.platform || [];
 
     const images = getImageResources();
 
@@ -485,10 +454,21 @@ gulp.task("platform-cordova-theme", async () => {
     const platformsToCreate = options.platforms.split(",");
     for (let i = 0; i < platformsToCreate.length; i++) {
         const platform = platformsToCreate[i];
+
+        let xmlPlatform = xml.widget.platform.find(p => p.$.name === platform);
+        if (!xmlPlatform) {
+            xmlPlatform = {};
+            xmlPlatform.$ = {};
+            xmlPlatform.$.name = platform;
+            xml.widget.platform.push(xmlPlatform);
+        }
+        xmlPlatform.icon = [];
+        xmlPlatform.splash = [];
+
         if (images[platform]) {
             await del(
                 [
-                    path.join(resFolder, "icons", platform),
+                    path.join(resFolder, "icon", platform),
                     path.join(resFolder, "screen", platform)
                 ]
                 , {"force": true}
@@ -497,10 +477,12 @@ gulp.task("platform-cordova-theme", async () => {
             for (let j = 0; j < images[platform].length; j++) {
                 const img = images[platform][j];
 
+                const iconOrScreen = img.size ? "icon" : "screen";
+
                 const params = {
                     "command": "svgToPng",
                     "sourceFile": `${path.join(uniteConfig.dirs.www.assetsSrc, "theme", "logo-tile.svg")}`,
-                    "destFile": `${path.join(resFolder, img.size ? "icons" : "screen", platform, img.name)}`,
+                    "destFile": `${path.join(resFolder, iconOrScreen, platform, img.name)}`,
                     "background": uniteThemeConfig.backgroundColor
                 };
 
@@ -522,8 +504,31 @@ gulp.task("platform-cordova-theme", async () => {
                 }
 
                 await themeUtils.callUniteImage(params);
+
+                const src = path.join("res", iconOrScreen, platform, img.name)
+                    .replace(/\\/g, "/");
+                const newImage = {};
+                if (img.size) {
+                    xmlPlatform.icon.push(newImage);
+                } else {
+                    xmlPlatform.splash.push(newImage);
+                }
+
+                newImage.$ = {};
+                newImage.$.src = src;
+                if (platform === "windows") {
+                    newImage.$.target = img.name.split(".")[0];
+                } else if (img.density) {
+                    newImage.$.density = img.density;
+                } else {
+                    newImage.$.width = img.size ? img.size : img.width;
+                    newImage.$.height = img.size ? img.size : img.height;
+                }
             }
         }
+
+        const outXml = new xml2js.Builder().buildObject(xml);
+        await util.promisify(fs.writeFile)(cordovaConfigFile, outXml);
     }
 });
 
