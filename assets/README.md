@@ -173,6 +173,12 @@ You can override the default platforms and save them as follows:
 gulp platform-cordova-dev --platforms=android,windows --save
 ```
 
+You will also need to match the configuration used by the build, you can do this with the buildConfiguration argument.
+
+``` shell
+gulp platform-cordova-dev --buildConfiguration=prod
+```
+
 ### platform-cordova-theme
 
 This task will generate all the necessary icons and splash screens for your chosen platforms using the ./www/assetsSrc/ logos and your theme colors from ./www/assetsSrc/theme/unite-theme.json.
@@ -193,6 +199,12 @@ This task will package your web app into the docker image that you choose, if yo
 
 ``` shell
 gulp platform-docker-package
+```
+
+You will also need to match the configuration used by the build, you can do this with the buildConfiguration argument.
+
+``` shell
+gulp platform-docker-package --buildConfiguration=prod
 ```
 
 Optionally specify the docker base image and where you want the web content within that image. If you also specify the --save options the values will be saved as the default for future runs of all the platform-docker-* tasks.
@@ -244,6 +256,12 @@ This task will gather all the necessary components of the application and create
 gulp platform-electron-package
 ```
 
+You will also need to match the configuration used by the build, you can do this with the buildConfiguration argument.
+
+``` shell
+gulp platform-electron-package --buildConfiguration=prod
+```
+
 Optionally specify the platform architectures and runtime version to override the defaults. If you also specify the --save options the values will be saved as the default for future runs of all the platform-electron-* tasks.
 
 ``` shell
@@ -262,6 +280,12 @@ This task will gather all the necessary components of the application and create
 
 ``` shell
 gulp platform-web-package
+```
+
+You will also need to match the configuration used by the build, you can do this with the buildConfiguration argument.
+
+``` shell
+gulp platform-web-package --buildConfiguration=prod
 ```
 
 This folder contains a complete set of web deployable files for the application. A zip file named packaged/{version}_web.zip will also be created in the packaged directory.

@@ -13,10 +13,14 @@ async function listFiles (uniteConfig, buildConfiguration) {
     if (buildConfiguration.bundle && !bundleExists) {
         display.error(`You have specified configuration '${buildConfiguration.name}' which is bundled,` +
             " but the dist folder contains a non bundled build.");
+        display.error("Please add the --buildConfiguration argument to this task," +
+            " or rebuild the app with a different configuration.");
         process.exit(1);
     } else if (!buildConfiguration.bundle && bundleExists) {
         display.error(`You have specified configuration '${buildConfiguration.name}' which is not bundled,` +
             " but the dist folder contains a bundled build.");
+        display.error("Please add the --buildConfiguration argument to this task," +
+            " or rebuild the app with a different configuration.");
         process.exit(1);
     }
 
