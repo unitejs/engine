@@ -98,7 +98,7 @@ export class WebdriverIo extends PipelineStepBase {
 
     private finaliseConfig(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): string[] {
         const lines: string[] = [];
-        lines.push(`exports.config = ${JsonHelper.codify(this._configuration)}`);
+        lines.push(`exports.config = ${JsonHelper.codify(this._configuration)};`);
         lines.push("exports.config.before = () => {");
         this._plugins.forEach(plugin => {
             const pluginPath = fileSystem.pathToWeb(fileSystem.pathFileRelative

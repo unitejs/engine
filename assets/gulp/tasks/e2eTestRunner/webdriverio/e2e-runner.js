@@ -7,10 +7,12 @@ const uc = require("./util/unite-config");
 const exec = require("./util/exec");
 const path = require("path");
 const util = require("util");
+const fs = require("fs");
 const webdriver = require("gulp-webdriver");
 const selenium = require("selenium-standalone");
 const browserSync = require("browser-sync");
 const asyncUtil = require("./util/async-util");
+const jsonHelper = require("./util/json-helper");
 const minimist = require("minimist");
 
 let seleniumInstance = null;
@@ -49,55 +51,72 @@ gulp.task("e2e-run-test", async () => {
     const uniteConfig = await uc.getUniteConfig();
     let hasError = false;
 
-    try {
-        await asyncUtil.stream(gulp.src("wdio.conf.js")
-            .pipe(webdriver({
-                "baseUrl": url,
-                "capabilities": [
-                    {
-                        "browserName": options.browser,
-                        "chromeOptions": {
-                            "args": [
-                                "headless",
-                                "disable-gpu",
-                                "no-sandbox"
-                            ]
-                        }
-                    }
-                ]
-            })));
-    } catch (err) {
-        hasError = true;
-        display.error("Executing WebdriverIO", err);
-    }
+    const configContent = await util.promisify(fs.readFile)("./wdio.conf.js");
 
-    try {
-        seleniumInstance.kill();
-    } catch (err) {
-        // Ignore
-    }
-    try {
-        browserSyncInstance.exit();
-    } catch (err) {
-        // Ignore
-    }
+    const parts = (/(.*)({[\s|\S]*})([\s|\S]*exports[\s|\S]*)/).exec(configContent);
 
-    if (hasError) {
-        process.exit(1);
-    } else {
-        display.info("Running", "Allure Report Generation");
+    if (parts.length === 4) {
+        try {
+            const opts = jsonHelper.parseCode(parts[2]);
+            opts.baseUrl = url;
+
+            const oldChromeOptions = opts.capabilities && opts.capabilities.length > 0
+                ? opts.capabilities[0].chromeOptions : undefined;
+
+            opts.capabilities = [
+                {
+                    "browserName": options.browser
+                }
+            ];
+
+            if (options.browser === "chrome" && oldChromeOptions) {
+                opts.capabilities[0].chromeOptions = oldChromeOptions;
+            }
+
+            const plugins = parts[3]
+                .replace(/require\('.\/node_modules/g, "require('../../../node_modules");
+
+            const tempFilename = path.join(uniteConfig.dirs.www.e2eTestDist, "wdio.tmp.conf.js");
+            await util.promisify(fs.writeFile)(tempFilename, `${parts[1]}${jsonHelper.codify(opts)}${plugins}`);
+
+            await asyncUtil.stream(gulp.src(tempFilename)
+                .pipe(webdriver()));
+        } catch (err) {
+            hasError = true;
+            display.error("Executing WebdriverIO", err);
+        }
 
         try {
-            await exec.npmRun("allure", [
-                "generate",
-                path.join(uniteConfig.dirs.www.reports, "/e2etemp/"),
-                "-o",
-                path.join(uniteConfig.dirs.www.reports, "/e2e/")
-            ]);
+            seleniumInstance.kill();
         } catch (err) {
-            display.error("Executing Allure", err);
-            process.exit(1);
+            // Ignore
         }
+        try {
+            browserSyncInstance.exit();
+        } catch (err) {
+            // Ignore
+        }
+
+        if (hasError) {
+            process.exit(1);
+        } else {
+            display.info("Running", "Allure Report Generation");
+
+            try {
+                await exec.npmRun("allure", [
+                    "generate",
+                    path.join(uniteConfig.dirs.www.reports, "/e2etemp/"),
+                    "-o",
+                    path.join(uniteConfig.dirs.www.reports, "/e2e/")
+                ]);
+            } catch (err) {
+                display.error("Executing Allure", err);
+                process.exit(1);
+            }
+        }
+    } else {
+        display.error("Unable to parse wdio.conf.js");
+        process.exit(1);
     }
 });
 
@@ -111,10 +130,10 @@ gulp.task("e2e-serve", async () => {
             "port": "9000"
         },
         "boolean": [
-            "browser",
             "secure"
         ],
         "string": [
+            "browser",
             "port"
         ]
     };
@@ -130,12 +149,12 @@ gulp.task("e2e-serve", async () => {
         "online": true,
         "open": false,
         "port": options.port,
-        "server": {"baseDir": ["."]}
+        "server": { "baseDir": ["."] }
     });
 
     display.info("Running", "Selenium");
     try {
-        const opts = {"drivers": {}};
+        const opts = { "drivers": {} };
         opts.drivers[options.browser] = {};
         seleniumInstance = await util.promisify(selenium.start)(opts);
     } catch (err) {

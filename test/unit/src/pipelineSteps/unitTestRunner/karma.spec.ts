@@ -90,7 +90,7 @@ describe("Karma", () => {
 
         it("can succeed when file does exist", async () => {
             fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
-            fileSystemMock.fileReadText = sandbox.stub().resolves("config.set({ reporters: [\"story2\"] });");
+            fileSystemMock.fileReadText = sandbox.stub().resolves("config.set({\nreporters: [\"story2\"] });");
             const obj = new Karma();
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
@@ -105,7 +105,7 @@ describe("Karma", () => {
                 { pattern: "bing", includeType: "moduleLoader" },
                 { pattern: "doh", includeType: "fixed" }
             ];
-            fileSystemMock.fileReadText = sandbox.stub().resolves(`config.set({ files: ${JsonHelper.codify(data)} });`);
+            fileSystemMock.fileReadText = sandbox.stub().resolves(`config.set({\nfiles: ${JsonHelper.codify(data)} });`);
             const obj = new Karma();
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.6.6
+
+* Change Webdriver e2e tasks now use more specific drivers and options when running
+* Fixed title is picked up correctly from old versions of unite.json
+* Fixed json helper now correctly parses params
+
 ## 1.6.5
 
 * Added cordova support
