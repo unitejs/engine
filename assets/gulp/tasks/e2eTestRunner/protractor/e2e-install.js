@@ -9,7 +9,7 @@ const minimist = require("minimist");
 gulp.task("e2e-install", async () => {
     display.info("Running", "Webdriver Manager");
 
-    const allDrivers = ["chrome", "gecko", "edge", "ie64", "ie"];
+    const allDrivers = ["chrome", "firefox", "edge", "ie"];
     const knownOptions = {
         "default": {
             "drivers": allDrivers.join(",")
@@ -22,9 +22,10 @@ gulp.task("e2e-install", async () => {
     const options = minimist(process.argv.slice(2), knownOptions);
 
     const args = ["update"];
-    const drivers = options.drivers.split(",");
+    const selectedDrivers = options.drivers.split(",");
     allDrivers.forEach(driver => {
-        args.push(`--${driver}${drivers.indexOf(driver) >= 0 ? "" : " false"}`);
+        const actualDriver = driver === "firefox" ? "gecko" : driver;
+        args.push(`--${actualDriver}${selectedDrivers.indexOf(driver) >= 0 ? "" : " false"}`);
     });
 
     try {

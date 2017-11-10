@@ -149,12 +149,12 @@ gulp.task("e2e-serve", async () => {
         "online": true,
         "open": false,
         "port": options.port,
-        "server": { "baseDir": ["."] }
+        "server": {"baseDir": ["."]}
     });
 
     display.info("Running", "Selenium");
     try {
-        const opts = { "drivers": {} };
+        const opts = {"drivers": {}};
         opts.drivers[options.browser] = {};
         seleniumInstance = await util.promisify(selenium.start)(opts);
     } catch (err) {

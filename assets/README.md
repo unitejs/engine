@@ -94,6 +94,14 @@ This will install all the necessary components required for the e2e tests, it ne
 gulp e2e-install
 ```
 
+The Selenium runtime will always be installed, but you can limit the browser driver to only a specific set by supplying a comma separated list as follows.
+
+``` shell
+gulp e2e-install --drivers=chrome,firefox
+```
+
+The drivers can be any of the following chrome/edge/firefox/ie.
+
 ### e2e
 
 This will run e2e tests for the app and generate reports in the test/reports folder. This task is only available if you specified an e2e test runner and framework during configuration.

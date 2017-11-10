@@ -9,7 +9,7 @@ const minimist = require("minimist");
 gulp.task("e2e-install", async () => {
     display.info("Running", "Selenium Standalone");
 
-    const allDrivers = ["chrome", "gecko", "edge", "ie"];
+    const allDrivers = ["chrome", "firefox", "edge", "ie"];
     const knownOptions = {
         "default": {
             "drivers": allDrivers.join(",")
