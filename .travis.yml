@@ -2,6 +2,10 @@ language: node_js
 node_js:
   - "node"
 install:
+  - git clone --branch=develop https://github.com/unitejs/framework.git unitejs/framework
+  - cd unitejs/framework
+  - npm link
+  - cd ../../
   - npm install
 script: 
   - gulp build || travis_terminate 1
