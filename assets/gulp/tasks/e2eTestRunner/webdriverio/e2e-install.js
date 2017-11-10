@@ -4,12 +4,33 @@
 const display = require("./util/display");
 const exec = require("./util/exec");
 const gulp = require("gulp");
+const minimist = require("minimist");
 
 gulp.task("e2e-install", async () => {
     display.info("Running", "Selenium Standalone");
 
+    const allDrivers = ["chrome", "gecko", "edge", "ie"];
+    const knownOptions = {
+        "default": {
+            "drivers": allDrivers.join(",")
+        },
+        "string": [
+            "drivers"
+        ]
+    };
+
+    const options = minimist(process.argv.slice(2), knownOptions);
+
+    const drivers = options.drivers.split(",");
+
     try {
-        await exec.npmRun("selenium-standalone", ["install"]);
+        for (let i = 0; i < drivers.length; i++) {
+            if (drivers[i] === "gecko") {
+                drivers[i] = "firefox";
+            }
+
+            await exec.npmRun("selenium-standalone", ["install", `--singleDriverInstall=${drivers[i]}`]);
+        }
     } catch (err) {
         display.error("Executing selenium-standalone", err);
         process.exit(1);

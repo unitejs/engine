@@ -55,7 +55,14 @@ gulp.task("e2e-run-test", async () => {
                 "baseUrl": url,
                 "capabilities": [
                     {
-                        "browserName": options.browser
+                        "browserName": options.browser,
+                        "chromeOptions": {
+                            "args": [
+                                "headless",
+                                "disable-gpu",
+                                "no-sandbox"
+                            ]
+                        }
                     }
                 ]
             })));
