@@ -61,7 +61,7 @@ export class Protractor extends PipelineStepBase {
         defaultConfiguration.capabilities = {
             browserName: "chrome",
             chromeOptions: {
-                args: ["--headless", "--disable-gpu"]
+                args: ["--headless", "--disable-gpu", "--no-sandbox"]
             }
         };
 
