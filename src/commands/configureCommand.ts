@@ -28,7 +28,7 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
         uniteConfiguration.packageName = args.packageName || uniteConfiguration.packageName;
 
         // title has moved to unite-theme.json and is now optional so remove from uniteConfiguration
-        meta.title = args.title || uniteConfiguration.title || uniteConfiguration.packageName;
+        meta.title = args.title || uniteConfiguration.title;
         delete uniteConfiguration.title;
 
         meta.description = args.description;

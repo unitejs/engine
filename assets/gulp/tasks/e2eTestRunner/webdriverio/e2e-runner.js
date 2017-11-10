@@ -106,10 +106,12 @@ gulp.task("e2e-serve", async () => {
 
     const knownOptions = {
         "default": {
+            "browser": "chrome",
             "secure": false,
             "port": "9000"
         },
         "boolean": [
+            "browser",
             "secure"
         ],
         "string": [
@@ -133,7 +135,9 @@ gulp.task("e2e-serve", async () => {
 
     display.info("Running", "Selenium");
     try {
-        seleniumInstance = await util.promisify(selenium.start)();
+        const opts = {"drivers": {}};
+        opts.drivers[options.browser] = {};
+        seleniumInstance = await util.promisify(selenium.start)(opts);
     } catch (err) {
         display.error("Starting selenium", err);
         process.exit(1);
