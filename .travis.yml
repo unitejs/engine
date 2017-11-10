@@ -6,7 +6,7 @@ install:
   - cd unitejs/framework
   - npm link
   - cd ../../
-  - npm install
+  - npm link "unitejs-framework"
 script: 
   - gulp build || travis_terminate 1
   - gulp unit || travis_terminate 1
