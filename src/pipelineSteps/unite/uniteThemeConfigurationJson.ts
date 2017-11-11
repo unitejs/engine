@@ -45,6 +45,18 @@ export class UniteThemeConfigurationJson extends PipelineStepBase {
         this._configuration.copyright = meta.copyright || this._configuration.copyright;
         this._configuration.webSite = meta.webSite || this._configuration.webSite;
 
+        meta.title = this._configuration.title;
+        meta.shortName = this._configuration.shortName;
+        meta.description = this._configuration.metaDescription;
+        meta.keywords =  this._configuration.metaKeywords;
+        meta.author = this._configuration.metaAuthor;
+        meta.authorEmail = this._configuration.metaAuthorEmail;
+        meta.authorWebSite = this._configuration.metaAuthorWebSite;
+        meta.namespace = this._configuration.namespace;
+        meta.organization = this._configuration.organization;
+        meta.copyright = this._configuration.copyright;
+        meta.webSite = this._configuration.webSite;
+
         return 0;
     }
 

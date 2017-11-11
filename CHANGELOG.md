@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.7
+
+* Fixed title in generated readme.md
+
 ## 1.6.6
 
 * Change Webdriver e2e tasks now use more specific drivers and options when running
