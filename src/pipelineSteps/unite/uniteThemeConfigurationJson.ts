@@ -57,6 +57,8 @@ export class UniteThemeConfigurationJson extends PipelineStepBase {
         meta.copyright = this._configuration.copyright;
         meta.webSite = this._configuration.webSite;
 
+        engineVariables.meta = meta;
+
         return 0;
     }
 
