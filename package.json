@@ -1,6 +1,6 @@
 {
     "name": "unitejs-engine",
-    "version": "1.6.7",
+    "version": "1.6.8",
     "description": "Engine for the UniteJS zero configuration web app creation tool.",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",

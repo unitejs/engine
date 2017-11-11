@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.6.7
+## 1.6.8
 
 * Fixed title in generated readme.md
 
