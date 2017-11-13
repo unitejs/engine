@@ -67,6 +67,7 @@ export class Preact extends SharedAppFramework {
             preactPackage.transpile.sources = [ "dist/preact.esm.js" ];
 
             preactRouterPackage.main = "dist/preact-router.es.js";
+            preactRouterPackage.mainMinified = undefined;
             preactRouterPackage.transpile = new UniteClientPackageTranspile();
             preactRouterPackage.transpile.alias = "preact-router-transpiled";
             preactRouterPackage.transpile.language = "JavaScript";
