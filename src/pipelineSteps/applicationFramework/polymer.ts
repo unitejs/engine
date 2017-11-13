@@ -50,6 +50,7 @@ export class Polymer extends SharedAppFramework {
         engineVariables.toggleClientPackage("@webcomponents/webcomponentsjs-es5adapter", {
                                                 name: "@webcomponents/webcomponentsjs",
                                                 main: "custom-elements-es5-adapter.js",
+                                                mainMinified: "custom-elements-es5-adapter.js",
                                                 includeMode: "both",
                                                 scriptIncludeMode: "both"
                                             },
@@ -58,6 +59,7 @@ export class Polymer extends SharedAppFramework {
         engineVariables.toggleClientPackage("@webcomponents/webcomponentsjs", {
                                                 name: "@webcomponents/webcomponentsjs",
                                                 main: "webcomponents-lite.js",
+                                                mainMinified: "webcomponents-lite.js",
                                                 includeMode: "both",
                                                 scriptIncludeMode: "both"
                                             },

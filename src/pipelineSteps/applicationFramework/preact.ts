@@ -54,6 +54,7 @@ export class Preact extends SharedAppFramework {
         const preactRouterPackage: UniteClientPackage = {
                                 name: "preact-router",
                                 main: "dist/preact-router.js",
+                                mainMinified: "dist/preact-router.js",
                                 includeMode: "both"
                             };
 

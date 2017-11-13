@@ -166,10 +166,13 @@ async function getBundleVendorPackages (uniteConfig) {
 
                     files.forEach(file => {
                         const itemKey = file.replace(new RegExp(`(?:.*)${pkgLocation}(.*).js`), `${pkg.name}$1`);
-                        vendorPackages[itemKey] = file;
+                        vendorPackages[itemKey] = {file, "isMinified": Boolean(pkg.mainMinified)};
                     });
                 } else {
-                    vendorPackages[pkg.name] = path.join(uniteConfig.dirs.www.package, `${pkg.name}/${pkgMain}`);
+                    vendorPackages[pkg.name] = {
+                        "file": path.join(uniteConfig.dirs.www.package, `${pkg.name}/${pkgMain}`),
+                        "isMinified": Boolean(pkg.mainMinified)
+                    };
                 }
             }
         }

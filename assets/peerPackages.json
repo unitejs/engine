@@ -164,6 +164,7 @@
     "tslint": "^5.8.0",
     "typescript": "^2.6.1",
     "uglify-js": "^3.1.6",
+    "uglifyify": "^4.0.4",
     "uglifyjs-webpack-plugin": "^1.0.1",
     "unitejs-aurelia-webdriver-plugin": "^1.0.0",
     "unitejs-image-cli": "^1.0.0",

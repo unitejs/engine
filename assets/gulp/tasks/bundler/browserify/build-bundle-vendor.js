@@ -9,8 +9,6 @@ const buffer = require("vinyl-buffer");
 const uc = require("./util/unite-config");
 const asyncUtil = require("./util/async-util");
 const clientPackages = require("./util/client-packages");
-const gutil = require("gulp-util");
-const uglify = require("gulp-uglify");
 
 gulp.task("build-bundle-vendor", async () => {
     const uniteConfig = await uc.getUniteConfig();
@@ -26,25 +24,29 @@ gulp.task("build-bundle-vendor", async () => {
             "global": true
         });
 
+        const excludeMinify = [];
         const vendorPackages = await clientPackages.getBundleVendorPackages(uniteConfig);
 
         Object.keys(vendorPackages).forEach((key) => {
             const idx = key.indexOf("systemjs");
             if (idx < 0) {
                 display.info("Adding", key);
-                bVendor.require(`./${vendorPackages[key]}`, {"expose": key});
+                bVendor.require(`./${vendorPackages[key].file}`, {"expose": key});
+                if (vendorPackages[key].isMinified) {
+                    excludeMinify.push(vendorPackages[key].file);
+                }
             }
         });
+
+        if (buildConfiguration.minify) {
+            bVendor.transform("uglifyify", {"sourceMap": buildConfiguration.sourcemaps, "x": excludeMinify});
+        }
 
         return asyncUtil.stream(bVendor.bundle().on("error", (err) => {
             display.error(err);
         })
             .pipe(source("vendor-bundle.js"))
             .pipe(buffer())
-            .pipe(buildConfiguration.minify ? uglify()
-                .on("error", (err) => {
-                    display.error(err.toString());
-                }) : gutil.noop())
             .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
     }
 });
