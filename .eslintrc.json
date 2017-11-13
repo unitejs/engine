@@ -58,7 +58,11 @@
 		"promise/avoid-new": "off",
 		"max-depth": "off",
         "no-extra-parens": "off",
-        "no-console": "off"
+        "no-console": "off",
+        "require-await": "off",
+        "space-before-function-paren": "off",
+        "quote-props": "off",
+        "object-curly-spacing": "off"
 	},
 	"plugins": [
 		"node",

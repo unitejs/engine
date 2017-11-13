@@ -1,3 +1,4 @@
 ./src
 ./dist
 ./test
+./assets/gulp/src

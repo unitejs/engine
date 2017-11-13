@@ -1,0 +1,26 @@
+{
+  "name": "unitejs-gulp-tasks",
+  "version": "1.0.0",
+  "description": "Gulp script used for UniteJS Building.",
+  "main": "dist/gulpfile.js",
+  "author": "Martyn Janes",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/browserify": "^12.0.33",
+    "@types/glob": "^5.0.33",
+    "@types/gulp": "^4.0.5",
+    "@types/gulp-insert": "^0.5.7",
+    "@types/gulp-rename": "0.0.33",
+    "@types/gulp-replace": "0.0.31",
+    "@types/gulp-uglify": "^3.0.3",
+    "@types/gulp-util": "^3.0.34",
+    "@types/minimist": "^1.2.0",
+    "@types/mkdirp": "^0.5.1",
+    "@types/node": "^8.0.51",
+    "@types/require-dir": "^0.3.0",
+    "@types/vinyl-buffer": "0.0.30",
+    "@types/vinyl-source-stream": "0.0.30",
+    "gulp-jsbeautifier": "^2.1.1",
+    "tslint-microsoft-contrib": "^5.0.1"
+  }
+}

@@ -64,6 +64,7 @@
         "node": ">=8.0.0"
     },
     "devDependencies": {
+        "@types/archiver": "^2.0.1",
         "@types/chai": "^4.0.4",
         "@types/mocha": "^2.2.44",
         "@types/node": "^8.0.47",
