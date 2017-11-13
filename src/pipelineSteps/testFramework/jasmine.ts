@@ -45,7 +45,7 @@ export class Jasmine extends PipelineStepBase {
         const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
         if (protractorConfiguration) {
             ObjectHelper.addRemove(protractorConfiguration, "framework", "jasmine", mainCondition && isE2E);
-            ObjectHelper.addRemove(protractorConfiguration, "jasmineNodeOpts",  { showColors: true }, mainCondition && isE2E);
+            ObjectHelper.addRemove(protractorConfiguration, "jasmineNodeOpts", { showColors: true }, mainCondition && isE2E);
         }
 
         const webdriverIoConfiguration = engineVariables.getConfiguration<WebdriverIoConfiguration>("WebdriverIO");
@@ -64,8 +64,8 @@ export class Jasmine extends PipelineStepBase {
             if (protractorScriptEnd) {
                 const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.reportsFolder));
 
+                protractorScriptEnd.push("exports.config.jasmineNodeOpts.print = function() {};");
                 protractorScriptEnd.push("exports.config.onPrepare = () => {");
-                protractorScriptEnd.push("    jasmine.getEnv().clearReporters();");
                 protractorScriptEnd.push("    jasmine.getEnv().addReporter(");
                 protractorScriptEnd.push("        new Jasmine2HtmlReporter({");
                 protractorScriptEnd.push(`            savePath: '${reportsFolder}/e2e/',`);

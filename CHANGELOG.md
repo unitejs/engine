@@ -3,6 +3,7 @@
 ## 1.6.9
 
 * Change Browserify no longer minifies already minified vendor packages
+* Fixed Protractor Jasmine E2E tests now exit correctly when there are errors
 
 ## 1.6.8
 
