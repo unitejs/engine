@@ -25,9 +25,10 @@ gulp.task("e2e-install", async () => {
     const selectedDrivers = options.drivers.split(",");
     allDrivers.forEach(driver => {
         const actualDriver = driver === "firefox" ? "gecko" : driver;
-        args.push(`--${actualDriver}${selectedDrivers.indexOf(driver) >= 0 ? "" : " false"}`);
+        args.push(`--${actualDriver}${selectedDrivers.indexOf(driver) >= 0 ? "=true" : "=false"}`);
     });
 
+    display.info("Args", args);
     try {
         await exec.npmRun("webdriver-manager", args);
     } catch (err) {
