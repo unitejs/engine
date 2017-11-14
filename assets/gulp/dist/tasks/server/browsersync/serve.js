@@ -27,15 +27,19 @@ gulp.task("serve", async () => {
     const uniteConfig = await uc.getUniteConfig();
     envUtil.set("transpileContinueOnError", true);
     gulp.watch(path.join(uniteConfig.dirs.www.src, `**/*.${uc.extensionMap(uniteConfig.sourceExtensions)}`), () => {
+        require("./build");
         runSequence("build-src-all", "serve-reload");
     });
     gulp.watch(path.join(uniteConfig.dirs.www.src, `**/*.${uc.extensionMap(uniteConfig.viewExtensions)}`), () => {
+        require("./build");
         runSequence("build-src-view-all", "serve-reload");
     });
     gulp.watch(path.join(uniteConfig.dirs.www.src, `**/*.${uniteConfig.styleExtension}`), () => {
+        require("./build");
         runSequence("build-src-style-all", "serve-reload");
     });
     gulp.watch(path.join(uniteConfig.dirs.www.cssSrc, `**/*.${uniteConfig.styleExtension}`), () => {
+        require("./build");
         runSequence("build-css-all", "serve-reload");
     });
     browserSyncInstance = browserSync.create();

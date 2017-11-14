@@ -122,10 +122,22 @@ gulp.task("unit-run-test", async () => {
         karmaConf.singleRun = false;
         envUtil.set("transpileContinueOnError", true);
         gulp.watch(path.join(uniteConfig.dirs.www.unitTestSrc, `**/*.${uc.extensionMap(uniteConfig.sourceExtensions)}`), () => runSequence("unit-transpile"));
-        gulp.watch(path.join(uniteConfig.dirs.www.src, `**/*.${uc.extensionMap(uniteConfig.sourceExtensions)}`), () => runSequence("build-src-all"));
-        gulp.watch(path.join(uniteConfig.dirs.www.src, `**/*.${uc.extensionMap(uniteConfig.viewExtensions)}`), () => runSequence("build-src-view-all"));
-        gulp.watch(path.join(uniteConfig.dirs.www.src, `**/*.${uniteConfig.styleExtension}`), () => runSequence("build-src-style-all"));
-        gulp.watch(path.join(uniteConfig.dirs.www.cssSrc, `**/*.${uniteConfig.styleExtension}`), () => runSequence("build-css-all"));
+        gulp.watch(path.join(uniteConfig.dirs.www.src, `**/*.${uc.extensionMap(uniteConfig.sourceExtensions)}`), () => {
+            require("./build");
+            runSequence("build-src-all");
+        });
+        gulp.watch(path.join(uniteConfig.dirs.www.src, `**/*.${uc.extensionMap(uniteConfig.viewExtensions)}`), () => {
+            require("./build");
+            runSequence("build-src-view-all");
+        });
+        gulp.watch(path.join(uniteConfig.dirs.www.src, `**/*.${uniteConfig.styleExtension}`), () => {
+            require("./build");
+            runSequence("build-src-style-all");
+        });
+        gulp.watch(path.join(uniteConfig.dirs.www.cssSrc, `**/*.${uniteConfig.styleExtension}`), () => {
+            require("./build");
+            runSequence("build-src-css-all");
+        });
     }
     return new Promise((resolve, reject) => {
         const server = new karma.Server(karmaConf, (exitCode) => {

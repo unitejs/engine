@@ -149,19 +149,31 @@ gulp.task("unit-run-test", async () => {
 
         gulp.watch(
             path.join(uniteConfig.dirs.www.src, `**/*.${uc.extensionMap(uniteConfig.sourceExtensions)}`),
-            () => runSequence("build-src-all")
+            () => {
+                require("./build");
+                runSequence("build-src-all");
+            }
         );
         gulp.watch(
             path.join(uniteConfig.dirs.www.src, `**/*.${uc.extensionMap(uniteConfig.viewExtensions)}`),
-            () => runSequence("build-src-view-all")
+            () => {
+                require("./build");
+                runSequence("build-src-view-all");
+            }
         );
         gulp.watch(
             path.join(uniteConfig.dirs.www.src, `**/*.${uniteConfig.styleExtension}`),
-            () => runSequence("build-src-style-all")
+            () => {
+                require("./build");
+                runSequence("build-src-style-all");
+            }
         );
         gulp.watch(
             path.join(uniteConfig.dirs.www.cssSrc, `**/*.${uniteConfig.styleExtension}`),
-            () => runSequence("build-css-all")
+            () => {
+                require("./build");
+                runSequence("build-src-css-all");
+            }
         );
     }
 
