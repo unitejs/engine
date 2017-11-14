@@ -1,10 +1,13 @@
 # Changelog
 
-## 1.6.9
+## 1.7.0
 
+* Change Gulp tasks written in TypeScript and transpiled JavaScript
 * Change Browserify no longer minifies already minified vendor packages
+* Change Improved speed of gulp tasks by only including those required by task
 * Fixed Protractor Jasmine E2E tests now exit correctly when there are errors
 * Fixed Webdriver manager e2e-install correctly disables unused drivers
+* Fixed Author field in cordova config.xml
 
 ## 1.6.8
 
