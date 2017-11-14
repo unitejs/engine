@@ -7,11 +7,12 @@ import * as typescript from "gulp-typescript";
 import * as uglify from "gulp-uglify";
 import * as gutil from "gulp-util";
 import * as path from "path";
+import * as stream from "stream";
 import * as asyncUtil from "../../util/async-util";
 import * as display from "../../util/display";
 import * as errorUtil from "../../util/error-util";
 import * as uc from "../../util/unite-config";
-// {TRANSPILEINCLUDE}
+/*! {TRANSPILEINCLUDE} */
 
 gulp.task("build-transpile", async () => {
     display.info("Running", "TypeScript");
@@ -28,7 +29,7 @@ gulp.task("build-transpile", async () => {
         `**/*.${uc.extensionMap(uniteConfig.sourceExtensions)}`
     ))
         .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : gutil.noop())
-// {TRANSPILEPREBUILD}
+        .pipe(<stream.Transform><any>"{TRANSPILEPREBUILD}")
         .pipe(tsProject(typescript.reporter.nullReporter()))
         .on("error", (err) => {
             display.error(err.message);
@@ -36,7 +37,7 @@ gulp.task("build-transpile", async () => {
         })
         .on("error", errorUtil.handleErrorEvent)
         .js
-// {TRANSPILEPOSTBUILD}
+        .pipe(<stream.Transform><any>"{TRANSPILEPOSTBUILD}")
         .pipe(buildConfiguration.minify ? uglify()
             .on("error", (err) => {
                 display.error(err.toString());

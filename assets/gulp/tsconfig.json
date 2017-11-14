@@ -21,7 +21,8 @@
         "typeRoots": [
             "./customTypes",
             "./node_modules/@types"
-        ]
+        ],
+        "removeComments": false
     },
     "include": [
         "src/**/*"

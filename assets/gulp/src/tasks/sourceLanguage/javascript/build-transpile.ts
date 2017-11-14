@@ -7,11 +7,12 @@ import * as sourcemaps from "gulp-sourcemaps";
 import * as uglify from "gulp-uglify";
 import * as gutil from "gulp-util";
 import * as path from "path";
+import * as stream from "stream";
 import * as asyncUtil from "../../util/async-util";
 import * as display from "../../util/display";
 import * as errorUtil from "../../util/error-util";
 import * as uc from "../../util/unite-config";
-// {TRANSPILEINCLUDE}
+/*! {TRANSPILEINCLUDE} */
 
 gulp.task("build-transpile", async () => {
     display.info("Running", "Babel");
@@ -26,9 +27,8 @@ gulp.task("build-transpile", async () => {
         `**/*.${uc.extensionMap(uniteConfig.sourceExtensions)}`
     ))
         .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : gutil.noop())
-// {TRANSPILEPREBUILD}
+        .pipe(<stream.Transform><any>"{TRANSPILEPREBUILD}")
         .pipe(babel())
-// {TRANSPILEPOSTBUILD}
         .on("error", (err) => {
             display.error(err.message);
             if (err.codeFrame) {
@@ -36,6 +36,7 @@ gulp.task("build-transpile", async () => {
             }
             errorCount++;
         })
+        .pipe(<stream.Transform><any>"{TRANSPILEPOSTBUILD}")
         .on("error", errorUtil.handleErrorEvent)
         .pipe(buildConfiguration.minify ? uglify()
             .on("error", (err) => {

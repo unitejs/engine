@@ -11,7 +11,7 @@ const asyncUtil = require("../../util/async-util");
 const display = require("../../util/display");
 const errorUtil = require("../../util/error-util");
 const uc = require("../../util/unite-config");
-// {TRANSPILEINCLUDE}
+/*! {TRANSPILEINCLUDE} */
 gulp.task("build-transpile", async () => {
     display.info("Running", "Babel");
     const uniteConfig = await uc.getUniteConfig();
@@ -19,6 +19,7 @@ gulp.task("build-transpile", async () => {
     let errorCount = 0;
     return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.src, `**/*.${uc.extensionMap(uniteConfig.sourceExtensions)}`))
         .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : gutil.noop())
+        .pipe("{TRANSPILEPREBUILD}")
         .pipe(babel())
         .on("error", (err) => {
             display.error(err.message);
@@ -27,6 +28,7 @@ gulp.task("build-transpile", async () => {
             }
             errorCount++;
         })
+        .pipe("{TRANSPILEPOSTBUILD}")
         .on("error", errorUtil.handleErrorEvent)
         .pipe(buildConfiguration.minify ? uglify()
             .on("error", (err) => {

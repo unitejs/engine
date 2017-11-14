@@ -38,7 +38,7 @@ export class Angular extends SharedAppFramework {
             engineVariables.buildTranspileInclude.push("const inline = require(\"gulp-inline-ng2-template\");");
             engineVariables.buildTranspileInclude.push("const replace = require(\"gulp-replace\");");
 
-            engineVariables.buildTranspilePreBuild.push(".pipe(buildConfiguration.bundle ? inline({");
+            engineVariables.buildTranspilePreBuild.push("        .pipe(buildConfiguration.bundle ? inline({");
             engineVariables.buildTranspilePreBuild.push("                useRelativePaths: true,");
             engineVariables.buildTranspilePreBuild.push("                removeLineBreaks: true,");
             engineVariables.buildTranspilePreBuild.push("                customFilePath: (ext, inlinePath) => ext[0] === \".css\" ?");

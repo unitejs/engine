@@ -90,7 +90,7 @@ export class Vue extends SharedAppFramework {
             if (super.condition(uniteConfiguration.bundler, "RequireJS")) {
                 super.createLoaderTypeMapReplacement(engineVariables, "css", "css");
             }
-            engineVariables.buildTranspilePostBuild.push(`.pipe(inlineVue())`);
+            engineVariables.buildTranspilePostBuild.push(`        .pipe(inlineVue())`);
         }
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");

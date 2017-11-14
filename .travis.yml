@@ -11,6 +11,9 @@ script:
   - gulp build || travis_terminate 1
   - gulp unit || travis_terminate 1
   - gulp coveralls || travis_terminate 1
+  - cd assets/gulp || travis_terminate 1
+  - npm install || travis_terminate 1
+  - gulp build || travis_terminate 1
 cache:
   directories:
   - node_modules
