@@ -6,6 +6,7 @@
   "author": "Martyn Janes",
   "license": "MIT",
   "devDependencies": {
+    "@types/archiver": "^2.0.1",
     "@types/browser-sync": "0.0.37",
     "@types/browserify": "^12.0.33",
     "@types/del": "^3.0.0",
@@ -30,8 +31,6 @@
     "@types/vinyl-source-stream": "0.0.30",
     "@types/webpack": "^3.8.1",
     "@types/webpack-stream": "^3.2.8",
-    "@types/xml2js": "^0.4.1",
-    "gulp-jsbeautifier": "^2.1.1",
-    "tslint-microsoft-contrib": "^5.0.1"
+    "@types/xml2js": "^0.4.1"
   }
 }
