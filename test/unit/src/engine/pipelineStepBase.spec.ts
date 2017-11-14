@@ -146,8 +146,8 @@ describe("PipelineStepBase", () => {
             const obj = new TestPipelineStep();
             await fileSystemStub.fileWriteText("./test/unit/temp/", "sourceFile.txt", "{SUB1}\n{SUB2}");
             const res = await obj.copyFile(loggerStub, fileSystemStub, "./test/unit/temp/", "sourceFile.txt", "./test/unit/temp/sub/", "destFile.txt", false, {
-                SUB1: ["foo"],
-                SUB2: ["bar"]
+                "{SUB1}": ["foo"],
+                "{SUB2}": ["bar"]
             });
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerInfoSpy.args[0][0]).to.contain("Copying");
