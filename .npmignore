@@ -16,4 +16,9 @@ src/
 tsconfig.json
 tslint.json
 test/unit/reports/**/*
+assets/gulp/src/
+assets/gulp/dist/types/
+assets/gulp/package.json
+assets/gulp/gulpfile.js
+assets/gulp/customTypes
 .github
