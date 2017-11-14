@@ -52,8 +52,8 @@ async function findAppFiles(uniteConfig: IUniteConfiguration, viewPrefix: string
     return files;
 }
 
-function performAppOptimize(uniteConfig: IUniteConfiguration, buildConfiguration: IUniteBuildConfiguration, moduleConfig: IModuleConfig): Promise<void> {
-    return new Promise((resolve, reject) => {
+async function performAppOptimize(uniteConfig: IUniteConfiguration, buildConfiguration: IUniteBuildConfiguration, moduleConfig: IModuleConfig): Promise<void> {
+    return new Promise<void>(async(resolve, reject) => {
         try {
             const map: { [id: string]: { [id: string]: string}} = { "*": {} };
             const paths: { [id: string]: string} = {};
@@ -77,42 +77,44 @@ function performAppOptimize(uniteConfig: IUniteConfiguration, buildConfiguration
             });
 
             requireJs.optimize({
-                baseUrl: "./",
-                generateSourceMaps: buildConfiguration.sourcemaps,
-                logLevel: 2,
-                name: `${uniteConfig.dirs.www.dist.replace(/^\.\//, "")}app-bundle-init`,
-                optimize: buildConfiguration.minify ? "uglify" : "none",
-                out: path.join(uniteConfig.dirs.www.dist, "app-bundle.js"),
-                paths: moduleConfig.paths,
-                map,
-                exclude: [moduleConfig.map.text]
-            },                 async (result) => {
-                display.log(result);
+                                baseUrl: "./",
+                                generateSourceMaps: buildConfiguration.sourcemaps,
+                                logLevel: 2,
+                                name: `${uniteConfig.dirs.www.dist.replace(/^\.\//, "")}app-bundle-init`,
+                                optimize: buildConfiguration.minify ? "uglify" : "none",
+                                out: path.join(uniteConfig.dirs.www.dist, "app-bundle.js"),
+                                paths: moduleConfig.paths,
+                                map,
+                                exclude: [moduleConfig.map.text]
+                            },
+                               async (result) => {
+                                    display.log(result);
 
-                let bootstrap = "require.config({";
-                bootstrap += `paths: ${JSON.stringify(paths)},`;
-                bootstrap += `map: ${JSON.stringify(map)}`;
-                bootstrap += "});";
-                if (moduleConfig.preload.length > 0) {
-                    bootstrap += `require(${JSON.stringify(moduleConfig.preload)}, function() {`;
-                }
-                bootstrap += `require(['${uniteConfig.dirs.www.dist.replace(/^\.\//, "")}entryPoint']);`;
-                if (moduleConfig.preload.length > 0) {
-                    bootstrap += "});";
-                }
+                                    let bootstrap = "require.config({";
+                                    bootstrap += `paths: ${JSON.stringify(paths)},`;
+                                    bootstrap += `map: ${JSON.stringify(map)}`;
+                                    bootstrap += "});";
+                                    if (moduleConfig.preload.length > 0) {
+                                        bootstrap += `require(${JSON.stringify(moduleConfig.preload)}, function() {`;
+                                    }
+                                    bootstrap += `require(['${uniteConfig.dirs.www.dist.replace(/^\.\//, "")}entryPoint']);`;
+                                    if (moduleConfig.preload.length > 0) {
+                                        bootstrap += "});";
+                                    }
 
-                await asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.dist, "app-bundle.js"))
-                    .pipe(buildConfiguration.sourcemaps
-                        ? sourcemaps.init({ loadMaps: true }) : gutil.noop())
-                    .pipe(insert.append(bootstrap))
-                    .pipe(buildConfiguration.sourcemaps
-                        ? sourcemaps.write({ includeContent: true }) : gutil.noop())
-                    .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
+                                    await asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.dist, "app-bundle.js"))
+                                        .pipe(buildConfiguration.sourcemaps
+                                            ? sourcemaps.init({ loadMaps: true }) : gutil.noop())
+                                        .pipe(insert.append(bootstrap))
+                                        .pipe(buildConfiguration.sourcemaps
+                                            ? sourcemaps.write({ includeContent: true }) : gutil.noop())
+                                        .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
 
-                resolve();
-            },                 (err) => {
-                reject(err);
-            });
+                                    resolve();
+                                },
+                               async (err) => {
+                                    reject(err);
+                                });
         } catch (err) {
             reject(err);
         }

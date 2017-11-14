@@ -10,6 +10,7 @@ import { PipelineStepBase } from "../../engine/pipelineStepBase";
 export class Gulp extends PipelineStepBase {
     private _tasksFolder: string;
     private _utilFolder: string;
+    private _distFolder: string;
 
     private _files: { sourceFolder: string; sourceFile: string; destFolder: string; destFile: string; keep: boolean; replacements: { [id: string]: string[]} }[];
 
@@ -43,9 +44,11 @@ export class Gulp extends PipelineStepBase {
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         this._tasksFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "build/tasks");
         this._utilFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, "build/tasks/util");
+        this._distFolder = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/dist/tasks/");
+
         this._files = [];
 
-        const assetGulp = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp");
+        const assetGulp = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/dist/");
         this.toggleFile(assetGulp, "gulpfile.js", engineVariables.wwwRootFolder, "gulpfile.js", mainCondition);
 
         this.generateBuildFiles(logger, fileSystem, uniteConfiguration, engineVariables, mainCondition);
@@ -66,7 +69,12 @@ export class Gulp extends PipelineStepBase {
                                            this._files[i].destFolder,
                                            this._files[i].destFile,
                                            engineVariables.force,
-                                           this._files[i].replacements);
+                                           {
+                                                "\\\"../../../util/": ["\"./util/"],
+                                                "\\\"../../util/": ["\"./util/"],
+                                                "\\\"../util/": ["\"./util/"],
+                                                ...this._files[i].replacements
+                                            });
             } else {
                 ret = await super.fileDeleteText(logger, fileSystem, this._files[i].destFolder, this._files[i].destFile, engineVariables.force);
             }
@@ -111,17 +119,16 @@ export class Gulp extends PipelineStepBase {
     private generateBuildFiles(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): void {
         logger.info("Generating gulp tasks for build in", { gulpTasksFolder: this._tasksFolder });
 
-        const assetTasks = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/");
-        const assetTasksLanguage = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/sourceLanguage/${uniteConfiguration.sourceLanguage.toLowerCase()}/`);
-        const assetTasksBundler = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/bundler/${uniteConfiguration.bundler.toLowerCase()}/`);
-        const assetTasksLinter = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/linter/${uniteConfiguration.linter.toLowerCase()}/`);
-        const assetTasksCssPre = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/cssPre/${uniteConfiguration.cssPre.toLowerCase()}/`);
-        const assetTasksCssPost = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/cssPost/${uniteConfiguration.cssPost.toLowerCase()}/`);
+        const assetTasksLanguage = fileSystem.pathCombine(this._distFolder, `sourceLanguage/${uniteConfiguration.sourceLanguage.toLowerCase()}/`);
+        const assetTasksBundler = fileSystem.pathCombine(this._distFolder, `bundler/${uniteConfiguration.bundler.toLowerCase()}/`);
+        const assetTasksLinter = fileSystem.pathCombine(this._distFolder, `linter/${uniteConfiguration.linter.toLowerCase()}/`);
+        const assetTasksCssPre = fileSystem.pathCombine(this._distFolder, `cssPre/${uniteConfiguration.cssPre.toLowerCase()}/`);
+        const assetTasksCssPost = fileSystem.pathCombine(this._distFolder, `cssPost/${uniteConfiguration.cssPost.toLowerCase()}/`);
 
         this.toggleFile(assetTasksLanguage, "build-transpile.js", this._tasksFolder, "build-transpile.js", mainCondition, {
-            TRANSPILEINCLUDE: engineVariables.buildTranspileInclude,
-            TRANSPILEPREBUILD: engineVariables.buildTranspilePreBuild,
-            TRANSPILEPOSTBUILD: engineVariables.buildTranspilePostBuild
+            "// {TRANSPILEINCLUDE}": engineVariables.buildTranspileInclude,
+            "// {TRANSPILEPREBUILD}": engineVariables.buildTranspilePreBuild,
+            "// {TRANSPILEPOSTBUILD}": engineVariables.buildTranspilePostBuild
         });
         this.toggleFile(assetTasksBundler, "build-bundle-app.js", this._tasksFolder, "build-bundle-app.js", mainCondition);
         this.toggleFile(assetTasksBundler, "build-bundle-vendor.js", this._tasksFolder, "build-bundle-vendor.js", mainCondition);
@@ -131,9 +138,9 @@ export class Gulp extends PipelineStepBase {
         this.toggleFile(assetTasksCssPost, "build-css-post-app.js", this._tasksFolder, "build-css-post-app.js", mainCondition);
         this.toggleFile(assetTasksCssPost, "build-css-post-components.js", this._tasksFolder, "build-css-post-components.js", mainCondition);
 
-        this.toggleFile(assetTasks, "build.js", this._tasksFolder, "build.js", mainCondition);
-        this.toggleFile(assetTasks, "build-transpile-modules.js", this._tasksFolder, "build-transpile-modules.js", mainCondition);
-        this.toggleFile(assetTasks, "version.js", this._tasksFolder, "version.js", mainCondition);
+        this.toggleFile(this._distFolder, "build.js", this._tasksFolder, "build.js", mainCondition);
+        this.toggleFile(this._distFolder, "build-transpile-modules.js", this._tasksFolder, "build-transpile-modules.js", mainCondition);
+        this.toggleFile(this._distFolder, "version.js", this._tasksFolder, "version.js", mainCondition);
     }
 
     private generateUnitDependencies(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): void {
@@ -143,18 +150,16 @@ export class Gulp extends PipelineStepBase {
         const hasUnit = !super.condition(uniteConfiguration.unitTestRunner, "None");
         logger.info("Generating gulp tasks for unit in", { gulpTasksFolder: this._tasksFolder });
 
-        const assetUnitTest = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/");
+        const assetUnitTestLanguage = fileSystem.pathCombine(this._distFolder,
+                                                             `sourceLanguage/${uniteConfiguration.sourceLanguage.toLowerCase()}/`);
 
-        const assetUnitTestLanguage = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
-                                                             `gulp/tasks/sourceLanguage/${uniteConfiguration.sourceLanguage.toLowerCase()}/`);
+        const assetLinter = fileSystem.pathCombine(this._distFolder,
+                                                   `linter/${uniteConfiguration.linter.toLowerCase()}/`);
 
-        const assetLinter = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
-                                                   `gulp/tasks/linter/${uniteConfiguration.linter.toLowerCase()}/`);
+        const assetUnitTestRunner = fileSystem.pathCombine(this._distFolder,
+                                                           `unitTestRunner/${uniteConfiguration.unitTestRunner.toLowerCase()}/`);
 
-        const assetUnitTestRunner = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
-                                                           `gulp/tasks/unitTestRunner/${uniteConfiguration.unitTestRunner.toLowerCase()}/`);
-
-        this.toggleFile(assetUnitTest, "unit.js", this._tasksFolder, "unit.js", hasUnit);
+        this.toggleFile(this._distFolder, "unit.js", this._tasksFolder, "unit.js", hasUnit);
         this.toggleFile(assetUnitTestLanguage, "unit-transpile.js", this._tasksFolder, "unit-transpile.js", hasUnit);
         this.toggleFile(assetLinter, "unit-lint.js", this._tasksFolder, "unit-lint.js", hasUnit);
         this.toggleFile(assetUnitTestRunner, "unit-runner.js", this._tasksFolder, "unit-runner.js", hasUnit);
@@ -169,18 +174,16 @@ export class Gulp extends PipelineStepBase {
         const hasE2e = !super.condition(uniteConfiguration.e2eTestRunner, "None");
         logger.info("Generating gulp tasks for e2e in", { gulpTasksFolder: this._tasksFolder });
 
-        const assetE2eTest = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/");
+        const assetUnitTestLanguage = fileSystem.pathCombine(this._distFolder,
+                                                             `sourceLanguage/${uniteConfiguration.sourceLanguage.toLowerCase()}/`);
 
-        const assetUnitTestLanguage = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
-                                                             `gulp/tasks/sourceLanguage/${uniteConfiguration.sourceLanguage.toLowerCase()}/`);
+        const assetLinter = fileSystem.pathCombine(this._distFolder,
+                                                   `linter/${uniteConfiguration.linter.toLowerCase()}/`);
 
-        const assetLinter = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
-                                                   `gulp/tasks/linter/${uniteConfiguration.linter.toLowerCase()}/`);
+        const assetE2eTestRunner = fileSystem.pathCombine(this._distFolder,
+                                                          `e2eTestRunner/${uniteConfiguration.e2eTestRunner.toLowerCase()}/`);
 
-        const assetE2eTestRunner = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
-                                                          `gulp/tasks/e2eTestRunner/${uniteConfiguration.e2eTestRunner.toLowerCase()}/`);
-
-        this.toggleFile(assetE2eTest, "e2e.js", this._tasksFolder, "e2e.js", hasE2e);
+        this.toggleFile(this._distFolder, "e2e.js", this._tasksFolder, "e2e.js", hasE2e);
         this.toggleFile(assetUnitTestLanguage, "e2e-transpile.js", this._tasksFolder, "e2e-transpile.js", hasE2e);
         this.toggleFile(assetLinter, "e2e-lint.js", this._tasksFolder, "e2e-lint.js", hasE2e);
         this.toggleFile(assetE2eTestRunner, "e2e-runner.js", this._tasksFolder, "e2e-runner.js", hasE2e);
@@ -194,7 +197,7 @@ export class Gulp extends PipelineStepBase {
     private generateServeFiles(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): void {
         logger.info("Generating gulp tasks serve in", { gulpTasksFolder: this._tasksFolder });
 
-        const assetTasksServer = fileSystem.pathCombine(engineVariables.engineAssetsFolder, `gulp/tasks/server/${uniteConfiguration.server.toLowerCase()}`);
+        const assetTasksServer = fileSystem.pathCombine(this._distFolder, `server/${uniteConfiguration.server.toLowerCase()}`);
 
         this.toggleFile(assetTasksServer, "serve.js", this._tasksFolder, "serve.js", mainCondition);
     }
@@ -202,9 +205,7 @@ export class Gulp extends PipelineStepBase {
     private generateThemeFiles(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): void {
         logger.info("Generating gulp tasks theme in", { gulpTasksFolder: this._tasksFolder });
 
-        const assetTasksTheme = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/");
-
-        this.toggleFile(assetTasksTheme, "theme.js", this._tasksFolder, "theme.js", mainCondition);
+        this.toggleFile(this._distFolder, "theme.js", this._tasksFolder, "theme.js", mainCondition);
     }
 
     private generateUtilsDependencies(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): void {
@@ -214,7 +215,7 @@ export class Gulp extends PipelineStepBase {
     private generateUtilsFiles(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): void {
         logger.info("Generating gulp tasks utils in", { gulpUtilFolder: this._utilFolder });
 
-        const assetUtils = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/util/");
+        const assetUtils = fileSystem.pathCombine(this._distFolder, "util/");
 
         this.toggleFile(assetUtils, "async-util.js", this._utilFolder, "async-util.js", mainCondition);
         this.toggleFile(assetUtils, "client-packages.js", this._utilFolder, "client-packages.js", mainCondition);
@@ -227,6 +228,7 @@ export class Gulp extends PipelineStepBase {
         this.toggleFile(assetUtils, "module-config.js", this._utilFolder, "module-config.js", mainCondition);
         this.toggleFile(assetUtils, "package-config.js", this._utilFolder, "package-config.js", mainCondition);
         this.toggleFile(assetUtils, "platform-utils.js", this._utilFolder, "platform-utils.js", mainCondition);
+        this.toggleFile(assetUtils, "regex-utils.js", this._utilFolder, "regex-utils.js", mainCondition);
         this.toggleFile(assetUtils, "theme-utils.js", this._utilFolder, "theme-utils.js", mainCondition);
         this.toggleFile(assetUtils, "unite-config.js", this._utilFolder, "unite-config.js", mainCondition);
 

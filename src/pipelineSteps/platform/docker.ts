@@ -22,8 +22,9 @@ export class Docker extends PipelineStepBase {
             const buildTasks = fileSystem.pathCombine(engineVariables.www.buildFolder, "/tasks/");
 
             if (mainCondition && super.condition(uniteConfiguration.taskManager, "Gulp")) {
-                const assetTasksPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/platform/");
-                ret = await this.copyFile(logger, fileSystem, assetTasksPlatform, Docker.FILENAME, buildTasks, Docker.FILENAME, engineVariables.force);
+                const assetTasksPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/dist/tasks/platform/");
+                ret = await this.copyFile(logger, fileSystem, assetTasksPlatform, Docker.FILENAME, buildTasks, Docker.FILENAME, engineVariables.force,
+                                          { "\\\"../util/": ["\"./util/"] });
             } else {
                 ret = await super.fileDeleteText(logger, fileSystem, buildTasks, Docker.FILENAME, engineVariables.force);
             }

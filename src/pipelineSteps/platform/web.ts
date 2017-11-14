@@ -24,8 +24,9 @@ export class Web extends PipelineStepBase {
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         const buildTasks = fileSystem.pathCombine(engineVariables.www.buildFolder, "/tasks/");
         if (mainCondition && super.condition(uniteConfiguration.taskManager, "Gulp")) {
-            const assetTasksPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/platform/");
-            return this.copyFile(logger, fileSystem, assetTasksPlatform, Web.FILENAME, buildTasks, Web.FILENAME, engineVariables.force);
+            const assetTasksPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/dist/tasks/platform/");
+            return this.copyFile(logger, fileSystem, assetTasksPlatform, Web.FILENAME, buildTasks, Web.FILENAME, engineVariables.force,
+                                 { "\\\"../util/": ["\"./util/"] });
         } else {
             return super.fileDeleteText(logger, fileSystem, buildTasks, Web.FILENAME, engineVariables.force);
         }

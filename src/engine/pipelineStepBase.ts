@@ -67,7 +67,7 @@ export abstract class PipelineStepBase implements IPipelineStep {
                     let txt = await fileSystem.fileReadText(sourceFolder, sourceFilename);
                     if (replacements) {
                         Object.keys(replacements).forEach(replacementKey => {
-                            txt = txt.replace(new RegExp(`{${replacementKey}}`, "g"), replacements[replacementKey].join("\r\n"));
+                            txt = txt.replace(new RegExp(replacementKey, "g"), replacements[replacementKey].join("\r\n"));
                         });
                     }
                     await fileSystem.fileWriteText(destFolder, destFilename, txt);

@@ -258,7 +258,7 @@ export async function buildThemeHeaders(uniteConfig: IUniteConfiguration,
     }
 }
 
-async function callUniteImage(config: IUniteImageCliCommand): Promise<void> {
+export async function callUniteImage(config: IUniteImageCliCommand): Promise<void> {
     const params = [];
 
     params.push(config.command);

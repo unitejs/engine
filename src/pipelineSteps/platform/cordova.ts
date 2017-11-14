@@ -61,8 +61,9 @@ export class Cordova extends PipelineStepBase {
             const buildAssetPlatform = fileSystem.pathCombine(engineVariables.www.buildFolder, "/assets/platform/cordova/");
 
             if (mainCondition && super.condition(uniteConfiguration.taskManager, "Gulp")) {
-                const assetTasksPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/tasks/platform/");
-                ret = await this.copyFile(logger, fileSystem, assetTasksPlatform, Cordova.FILENAME, buildTasks, Cordova.FILENAME, engineVariables.force);
+                const assetTasksPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/dist/tasks/platform/");
+                ret = await this.copyFile(logger, fileSystem, assetTasksPlatform, Cordova.FILENAME, buildTasks, Cordova.FILENAME, engineVariables.force,
+                                          { "\\\"../util/": ["\"./util/"] });
 
                 const assetPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/assets/platform/cordova/");
                 if (ret === 0) {

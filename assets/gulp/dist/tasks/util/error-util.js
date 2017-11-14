@@ -3,10 +3,12 @@
  */
 const envUtil = require("./env-util");
 
-function handleErrorEvent(gulpStream) {
+function handleErrorEvent() {
     const transpileContinueOnError = envUtil.get("transpileContinueOnError");
     if (transpileContinueOnError) {
-        gulpStream.emit("end");
+        // @ts-ignore
+        // tslint:disable-next-line:no-invalid-this
+        this.emit("end");
     }
 }
 exports.handleErrorEvent = handleErrorEvent;

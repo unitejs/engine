@@ -9,6 +9,7 @@ import { PipelineStepBase } from "../../engine/pipelineStepBase";
 export declare class Gulp extends PipelineStepBase {
     private _tasksFolder;
     private _utilFolder;
+    private _distFolder;
     private _files;
     mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined;
     configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number>;

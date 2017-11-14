@@ -3,10 +3,12 @@
  */
 import * as envUtil from "./env-util";
 
-export function handleErrorEvent(gulpStream: NodeJS.ReadWriteStream): void {
+export function handleErrorEvent(): void {
     const transpileContinueOnError = envUtil.get("transpileContinueOnError");
     if (transpileContinueOnError) {
-        gulpStream.emit("end");
+        // @ts-ignore
+        // tslint:disable-next-line:no-invalid-this
+        (<NodeJS.ReadWriteStream>this).emit("end");
     }
 }
 

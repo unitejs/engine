@@ -7,7 +7,7 @@ export function log (text: string): void {
     gutil.log(text);
 }
 
-export function info (caption: string, args: any | any[]): void {
+export function info (caption: string, args?: any | any[]): void {
     if (args === undefined) {
         gutil.log(`[${gutil.colors.cyan(caption)}]`);
     } else if (Array.isArray(args)) {

@@ -206,6 +206,7 @@ async function callUniteImage(config) {
         process.exit(1);
     }
 }
+exports.callUniteImage = callUniteImage;
 async function generateFavIcons(uniteConfig, uniteThemeConfig, favIconDirectory) {
     const images = [{
             command: "svgToPng",
