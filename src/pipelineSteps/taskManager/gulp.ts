@@ -126,9 +126,9 @@ export class Gulp extends PipelineStepBase {
         const assetTasksCssPost = fileSystem.pathCombine(this._distFolder, `cssPost/${uniteConfiguration.cssPost.toLowerCase()}/`);
 
         this.toggleFile(assetTasksLanguage, "build-transpile.js", this._tasksFolder, "build-transpile.js", mainCondition, {
-            "^(.*){TRANSPILEINCLUDE}(.*)": engineVariables.buildTranspileInclude,
-            "^(.*){TRANSPILEPREBUILD}(.*)": engineVariables.buildTranspilePreBuild,
-            "^(.*){TRANSPILEPOSTBUILD}(.*)": engineVariables.buildTranspilePostBuild
+            "^(?:.*){TRANSPILEINCLUDE}(?:.*)": engineVariables.buildTranspileInclude,
+            "^(?:.*){TRANSPILEPREBUILD}(?:.*)": engineVariables.buildTranspilePreBuild,
+            "^(?:.*){TRANSPILEPOSTBUILD}(?:.*)": engineVariables.buildTranspilePostBuild
         });
         this.toggleFile(assetTasksBundler, "build-bundle-app.js", this._tasksFolder, "build-bundle-app.js", mainCondition);
         this.toggleFile(assetTasksBundler, "build-bundle-vendor.js", this._tasksFolder, "build-bundle-vendor.js", mainCondition);
