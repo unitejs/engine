@@ -5,7 +5,7 @@ install:
   - git clone --branch=develop https://github.com/unitejs/framework.git ../unitejs/framework
   - cd ../unitejs/framework
   - npm link
-  - cd ../unitejs/engine
+  - cd ../../unitejs/engine
   - npm link "unitejs-framework"
   - npm install gulp -g
 script: 
