@@ -17,7 +17,5 @@ export declare class UniteThemeConfiguration {
     themeHeaders: string[];
     backgroundColor: string;
     themeColor: string;
-    appLoaderStyle: string[];
-    appLoader: string[];
     cordova: string[];
 }

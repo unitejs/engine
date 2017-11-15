@@ -17,8 +17,6 @@ export interface IUniteThemeConfiguration {
     themeHeaders: string[];
     backgroundColor: string;
     themeColor: string;
-    appLoaderStyle: string[];
-    appLoader: string[];
     cordova: string[];
 }
 

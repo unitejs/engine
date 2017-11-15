@@ -90,19 +90,29 @@ export async function buildIndex(uniteConfig: IUniteConfiguration,
 
     headers.push("<link rel=\"manifest\" href=\"./assets/favicon/manifest.json\">");
 
-    if (uniteThemeConfig.appLoaderStyle && uniteThemeConfig.appLoaderStyle.length > 0) {
-        headers = headers.concat(uniteThemeConfig.appLoaderStyle);
+    const substTheme = (line: string) =>
+        line.replace("THEME_COLOR", uniteThemeConfig.themeColor)
+            .replace("THEME_BACKGROUND_COLOR", uniteThemeConfig.backgroundColor);
+
+    const loaderCssFilename = path.join(uniteConfig.dirs.www.assetsSrc, "theme", "loader.css");
+    const cssExists = await asyncUtil.fileExists(loaderCssFilename);
+    if (cssExists) {
+        const loaderCss = await util.promisify(fs.readFile)(loaderCssFilename);
+        const loaderCssLines = loaderCss.toString().split("\n");
+
+        if (loaderCssLines && loaderCssLines.length > 0) {
+            headers.push("<style>");
+            headers = headers.concat(loaderCssLines.map(substTheme));
+            headers.push("</style>");
+        }
     }
 
-    const substTheme = (line: string) =>
-        line.replace("{THEME_COLOR}", uniteThemeConfig.themeColor)
-            .replace("{THEME_BACKGROUND_COLOR}", uniteThemeConfig.backgroundColor);
-
-    headers = headers.map(substTheme);
-
+    const loaderHtmlFilename = path.join(uniteConfig.dirs.www.assetsSrc, "theme", "loader.html");
+    const htmlExists = await asyncUtil.fileExists(loaderHtmlFilename);
     let appLoader: string[] = [];
-    if (uniteThemeConfig.appLoader) {
-        appLoader = uniteThemeConfig.appLoader.map(substTheme);
+    if (htmlExists) {
+        const loaderHtml = await util.promisify(fs.readFile)(loaderHtmlFilename);
+        appLoader = loaderHtml.toString().split("\n").map(substTheme);
     }
 
     const scriptIncludes = clientPackages.getScriptIncludes(uniteConfig, buildConfiguration.bundle);

@@ -7,8 +7,10 @@ import { UniteConfiguration } from "../../configuration/models/unite/uniteConfig
 import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 export declare class Assets extends PipelineStepBase {
-    private static FILENAME;
-    private static FILENAME2;
+    private static FILENAME_TILE;
+    private static FILENAME_TILE_TRANSPARENT;
+    private static FILENAME_LOADER_CSS;
+    private static FILENAME_LOADER_HTML;
     configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number>;
     finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number>;
 }

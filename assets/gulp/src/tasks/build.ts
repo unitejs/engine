@@ -119,7 +119,7 @@ gulp.task("build-index-min", async () => {
 
     if (buildConfiguration.minify) {
         return asyncUtil.stream(gulp.src("./index.html")
-            .pipe(htmlMin({collapseWhitespace: true, removeComments: true}))
+            .pipe(htmlMin({collapseWhitespace: true, removeComments: true, minifyCSS: true, minifyJS: true}))
             .pipe(gulp.dest("./")));
     }
 });

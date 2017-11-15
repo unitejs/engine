@@ -2,9 +2,11 @@
 
 ## 1.7.0
 
-* Change Gulp tasks written in TypeScript and transpiled JavaScript
+* Change Gulp tasks written in TypeScript and transpiled to JavaScript
 * Change Browserify no longer minifies already minified vendor packages
 * Change Improved speed of gulp tasks by only including those required by task
+* Change Loading spinner separated into theme css and html files, default is now pure css no svg
+* Change index.html has additional minification applied for inline css and js
 * Fixed Protractor Jasmine E2E tests now exit correctly when there are errors
 * Fixed Webdriver manager e2e-install correctly disables unused drivers
 * Fixed Author field in cordova config.xml
