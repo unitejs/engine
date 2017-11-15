@@ -17,9 +17,6 @@ script:
   - npm install || travis_terminate 1
   - cd ../../ || travis_terminate 1
   - gulp build-gulp || travis_terminate 1
-cache:
-  directories:
-  - node_modules
 notifications:
   webhooks:
     urls:
