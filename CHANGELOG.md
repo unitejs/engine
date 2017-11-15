@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.1
+
+* Added StyleLint
+* Added SassLint
+
 ## 1.7.0
 
 * Change Gulp tasks written in TypeScript and transpiled to JavaScript

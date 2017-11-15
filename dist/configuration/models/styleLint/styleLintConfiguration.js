@@ -1,0 +1,10 @@
+"use strict";
+/**
+ * Model of StyleLint Configuration (.stylelintrc.json) file.
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+class StyleLintConfiguration {
+}
+exports.StyleLintConfiguration = StyleLintConfiguration;
+
+//# sourceMappingURL=data:application/json;charset=utf8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy9jb25maWd1cmF0aW9uL21vZGVscy9zdHlsZUxpbnQvc3R5bGVMaW50Q29uZmlndXJhdGlvbi50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUE7O0dBRUc7O0FBRUg7Q0FHQztBQUhELHdEQUdDIiwiZmlsZSI6ImNvbmZpZ3VyYXRpb24vbW9kZWxzL3N0eWxlTGludC9zdHlsZUxpbnRDb25maWd1cmF0aW9uLmpzIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBNb2RlbCBvZiBTdHlsZUxpbnQgQ29uZmlndXJhdGlvbiAoLnN0eWxlbGludHJjLmpzb24pIGZpbGUuXG4gKi9cblxuZXhwb3J0IGNsYXNzIFN0eWxlTGludENvbmZpZ3VyYXRpb24ge1xuICAgIHB1YmxpYyBleHRlbmRzOiBzdHJpbmc7XG4gICAgcHVibGljIHJ1bGVzOiB7IFtpZDogc3RyaW5nXTogYW55IH07XG59XG4iXX0=

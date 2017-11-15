@@ -25,6 +25,8 @@ require("./build-bundle-vendor");
 require("./build-lint");
 require("./build-css-app");
 require("./build-css-components");
+require("./build-css-lint-app");
+require("./build-css-lint-components");
 require("./build-css-post-app");
 require("./build-css-post-components");
 gulp.task("build-clean", async () => {
@@ -183,7 +185,7 @@ gulp.task("build", async () => {
     const options = minimist(process.argv.slice(2), knownOptions);
     envUtil.set("transpileContinueOnError", false);
     try {
-        await util.promisify(runSequence)("build-pre", "build-clean", "build-css-components", "build-css-post-components", "build-transpile-modules", "build-transpile", "build-lint", "build-css-app", "build-css-post-app", "build-copy-components", "build-module-config", "build-html-min", "build-bundle-vendor", "build-bundle-app", "build-copy-index", "build-index-min", "build-post-clean", "build-create-pwa");
+        await util.promisify(runSequence)("build-pre", "build-clean", "build-css-components", "build-css-lint-components", "build-css-post-components", "build-transpile-modules", "build-transpile", "build-lint", "build-css-app", "build-css-lint-app", "build-css-post-app", "build-copy-components", "build-module-config", "build-html-min", "build-bundle-vendor", "build-bundle-app", "build-copy-index", "build-index-min", "build-post-clean", "build-create-pwa");
         if (options.watch) {
             display.info("Watching for changes");
             envUtil.set("transpileContinueOnError", true);

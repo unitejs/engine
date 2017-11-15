@@ -114,6 +114,8 @@ export class Gulp extends PipelineStepBase {
         engineVariables.toggleDevDependency(["gulp-stylus"], mainCondition && super.condition(uniteConfiguration.cssPre, "Stylus"));
         engineVariables.toggleDevDependency(["gulp-postcss"], mainCondition && super.condition(uniteConfiguration.cssPost, "PostCss"));
         engineVariables.toggleDevDependency(["gulp-cssnano"], mainCondition);
+        engineVariables.toggleDevDependency(["gulp-stylelint"], mainCondition && super.condition(uniteConfiguration.cssLinter, "StyleLint"));
+        engineVariables.toggleDevDependency(["gulp-sass-lint"], mainCondition && super.condition(uniteConfiguration.cssLinter, "SassLint"));
     }
 
     private generateBuildFiles(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): void {
@@ -124,6 +126,7 @@ export class Gulp extends PipelineStepBase {
         const assetTasksLinter = fileSystem.pathCombine(this._distFolder, `linter/${uniteConfiguration.linter.toLowerCase()}/`);
         const assetTasksCssPre = fileSystem.pathCombine(this._distFolder, `cssPre/${uniteConfiguration.cssPre.toLowerCase()}/`);
         const assetTasksCssPost = fileSystem.pathCombine(this._distFolder, `cssPost/${uniteConfiguration.cssPost.toLowerCase()}/`);
+        const assetTasksCssLinter = fileSystem.pathCombine(this._distFolder, `cssLinter/${uniteConfiguration.cssLinter.toLowerCase()}/`);
 
         this.toggleFile(assetTasksLanguage, "build-transpile.js", this._tasksFolder, "build-transpile.js", mainCondition, {
             "^(?:.*){TRANSPILEINCLUDE}(?:.*)": engineVariables.buildTranspileInclude,
@@ -135,6 +138,8 @@ export class Gulp extends PipelineStepBase {
         this.toggleFile(assetTasksLinter, "build-lint.js", this._tasksFolder, "build-lint.js", mainCondition);
         this.toggleFile(assetTasksCssPre, "build-css-app.js", this._tasksFolder, "build-css-app.js", mainCondition);
         this.toggleFile(assetTasksCssPre, "build-css-components.js", this._tasksFolder, "build-css-components.js", mainCondition);
+        this.toggleFile(assetTasksCssLinter, "build-css-lint-app.js", this._tasksFolder, "build-css-lint-app.js", mainCondition);
+        this.toggleFile(assetTasksCssLinter, "build-css-lint-components.js", this._tasksFolder, "build-css-lint-components.js", mainCondition);
         this.toggleFile(assetTasksCssPost, "build-css-post-app.js", this._tasksFolder, "build-css-post-app.js", mainCondition);
         this.toggleFile(assetTasksCssPost, "build-css-post-components.js", this._tasksFolder, "build-css-post-components.js", mainCondition);
 

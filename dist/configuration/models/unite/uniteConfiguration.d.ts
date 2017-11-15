@@ -20,6 +20,7 @@ export declare class UniteConfiguration {
     e2eTestFramework: string;
     cssPre: string;
     cssPost: string;
+    cssLinter: string;
     server: string;
     taskManager: string;
     packageManager: string;

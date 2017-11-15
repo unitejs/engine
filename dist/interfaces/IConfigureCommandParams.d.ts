@@ -16,6 +16,7 @@ export interface IConfigureCommandParams extends IEngineCommandParams {
     linter: string | undefined | null;
     cssPre: string | undefined | null;
     cssPost: string | undefined | null;
+    cssLinter: string | undefined | null;
     ides: string[] | undefined | null;
     server: string | undefined | null;
     taskManager: string | undefined | null;

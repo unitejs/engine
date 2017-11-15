@@ -22,7 +22,14 @@ export function info (caption: string, args?: any | any[]): void {
 export function error (text: string, err?: string | Error): void {
     gutil.log(gutil.colors.red(`[ERROR] ${text}`));
     if (err !== undefined) {
-        gutil.log(gutil.colors.red(`${err}`));
+        if (err instanceof Error) {
+            gutil.log(gutil.colors.red(`${err.message}`));
+            if (err.stack) {
+                gutil.log(gutil.colors.red(`${err.stack}`));
+            }
+        } else {
+            gutil.log(gutil.colors.red(`${err}`));
+        }
     }
 }
 
