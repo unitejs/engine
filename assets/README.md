@@ -312,24 +312,29 @@ During the app generation 3 files will have been created, if you change any of t
 * assetsSource/theme/logo-transparent.svg
 * assetsSource/theme/unite-theme.json
 
+In addition there are 2 more files for the default loader which you can modify, these are absorbed into your index.html during build.
+
+* assetsSource/theme/loader.css
+* assetsSource/theme/loader.html
+
 The logo-tile.svg image should have a design that works well on a tile, e.g. a white icon with transparent background (the background color can be specified as part of the unite-theme.json configuration).
 
 The logo-transparent.svg image should be a normal colored icon also on a transparent background, mostly used for the .ico image.
 
-The fields in the unite-theme.json should be self explanatory in terms of what they generate in the index.html page. The themeHeaders will get overwritten when you run theme-build again so any custom headers you want should go in the customHeaders property. The backgroundColor is used for tile backgrounds and the themeColor is used to color the safari pinned icon mask.
+The fields in the unite-theme.json should be self explanatory in terms of what they generate in the index.html page. The themeHeaders will get overwritten when you run theme-build again so any custom headers you want should go in the customHeaders property. The backgroundColor is used for tile backgrounds and the themeColor is used to color the safari pinned icon mask, as well as during asset generation from your svg icons.
 
-Some of the fields are used to generate the ./assets/favicon/manifest.json which is used by some browsers when the web site is pinned. The manifest.json also contains fields (shortName) used by Progressive Web Apps (pwa) should one of your buildConfigurations have the pwa flag enabled.
+Some of the fields are used to generate the ./assets/favicon/manifest.json which is used by some browsers when the web site is pinned, others are used during platform generation e.g. PWAs, Cordova.
 
-There are also properties for the index page loading spinner which can be customised, to remove the spinner entirely just leave the entries as empty arrays. The appLoaderStyle and appLoader entries can be any valid html you like, they both have the {THEME_COLOR} and {THEME_BACKGROUND_COLOR} substitutions applied to them from the other variables in the json file.
+Information tags passed as args into the unite configure command are stored in unite-theme.json and are mapped to other properties i.e. title, shortName, description, keywords, organization, copyright, webSite, author, authorEmail, authorWebSite, namespace.
 
 ``` json
 {
-    "metaDescription": "Test CSS",
-    "metaKeywords": [
-        "Test",
-        "CSS"
+    "title": "UniteJS",
+    "metaDescription": "UniteJS Web Site", // description
+    "metaKeywords": [ // keywords
+        "UniteJS",
+        "CLI"
     ],
-    "metaAuthor": "Unite JS",
     "customHeaders": [
         "<meta property=\"twitter:site\" content=\"@unitejs\">"
     ],
@@ -338,30 +343,14 @@ There are also properties for the index page loading spinner which can be custom
     ],
     "backgroundColor": "#339933",
     "themeColor": "#339933",
-    "shortName": "Test",
-    "appLoaderStyle": [
-        "<style>",
-        "#app-loader",
-        "{",
-        "width:200px;",
-        "height:200px;",
-        "position:absolute;",
-        "top:0;",
-        "bottom:0;",
-        "left:0;",
-        "right:0;",
-        "margin:auto;",
-        "}",
-        "</style>"
-    ],
-    "appLoader": [
-        "<svg width=\"200px\" height=\"200px\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" preserveAspectRatio=\"xMidYMid\">",
-        "<circle cx=\"50\" cy=\"50\" fill=\"none\" stroke=\"{THEME_COLOR}\" stroke-width=\"2\" r=\"35\" stroke-dasharray=\"164.93361431346415 56.97787143782138\" transform=\"rotate(330 50 50)\">",
-        "<animateTransform attributeName=\"transform\" type=\"rotate\" calcMode=\"linear\" values=\"0 50 50;360 50 50\" keyTimes=\"0;1\" dur=\"1s\" begin=\"0s\" repeatCount=\"indefinite\">",
-        "</animateTransform>",
-        "</circle>",
-        "</svg>"
-    ]
+    "shortName": "UJS",
+    "organization": "2017 Obany Ltd",
+    "copyright": "2017 Obany Ltd",
+    "webSite": "http://unitejs.com",
+    "metaAuthor": "Unite JS", // author
+    "metaAuthorEmail": "fake@unitejs.com", //authorEmail
+    "metaAuthorWebSite": "http://unitejs.com", // authorWebSite
+    "namespace": "unitejs.com"
 }
 ```
 
