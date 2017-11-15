@@ -8,6 +8,7 @@
 * Fixed Protractor Jasmine E2E tests now exit correctly when there are errors
 * Fixed Webdriver manager e2e-install correctly disables unused drivers
 * Fixed Author field in cordova config.xml
+* Fixed constructor for react components in generated tests
 
 ## 1.6.8
 
