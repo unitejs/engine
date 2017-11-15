@@ -2,8 +2,9 @@ language: node_js
 node_js:
   - "node"
 install:
-  - git clone --branch=develop https://github.com/unitejs/framework.git ../framework
-  - cd ../framework
+  - cd unitejs
+  - git clone --branch=develop https://github.com/unitejs/framework.git framework
+  - cd framework
   - npm link
   - cd ../engine
   - npm install gulp -g
