@@ -116,6 +116,7 @@ export class Gulp extends PipelineStepBase {
         engineVariables.toggleDevDependency(["gulp-cssnano"], mainCondition);
         engineVariables.toggleDevDependency(["gulp-stylelint"], mainCondition && super.condition(uniteConfiguration.cssLinter, "StyleLint"));
         engineVariables.toggleDevDependency(["gulp-sass-lint"], mainCondition && super.condition(uniteConfiguration.cssLinter, "SassLint"));
+        engineVariables.toggleDevDependency(["gulp-lesshint"], mainCondition && super.condition(uniteConfiguration.cssLinter, "LessHint"));
     }
 
     private generateBuildFiles(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): void {

@@ -1,5 +1,5 @@
 /**
- * Gulp tasks for linting css.
+ * Gulp tasks for linting app with style lint.
  */
 const gulp = require("gulp");
 const styleLint = require("gulp-stylelint");

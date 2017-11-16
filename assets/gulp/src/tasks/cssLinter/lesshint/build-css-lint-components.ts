@@ -1,24 +1,24 @@
 /**
- * Gulp tasks for linting components with sass lint.
+ * Gulp tasks for linting components with less hint.
  */
 import * as gulp from "gulp";
-import * as sassLint from "gulp-sass-lint";
+import * as lessHint from "gulp-lesshint";
 import * as path from "path";
 import * as streamToPromise from "stream-to-promise";
 import * as display from "../../util/display";
 import * as uc from "../../util/unite-config";
 
 gulp.task("build-css-lint-components", async () => {
-    display.info("Running", "SassLint for Components");
+    display.info("Running", "LessHint for Components");
 
     const uniteConfig = await uc.getUniteConfig();
 
     return streamToPromise(gulp.src(path.join(uniteConfig.dirs.www.src, `**/*.${uniteConfig.styleExtension}`))
-        .pipe(sassLint())
-        .pipe(sassLint.format())
-        .pipe(sassLint.failOnError())
+        .pipe(lessHint())
+        .pipe(lessHint.reporter())
+        .pipe(lessHint.failOnError())
         .on("error", (err) => {
-            display.error("SassLint failed", err);
+            display.error("LessHint failed", err);
             process.exit(1);
         }));
 });

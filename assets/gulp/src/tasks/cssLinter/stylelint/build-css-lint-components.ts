@@ -1,5 +1,5 @@
 /**
- * Gulp tasks for linting css.
+ * Gulp tasks for linting components with style lint.
  */
 import * as gulp from "gulp";
 import * as styleLint from "gulp-stylelint";

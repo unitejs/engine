@@ -4,6 +4,7 @@
 
 * Added StyleLint
 * Added SassLint
+* Added LessHint
 
 ## 1.7.0
 

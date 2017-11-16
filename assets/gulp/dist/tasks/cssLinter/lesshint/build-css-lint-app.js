@@ -1,21 +1,21 @@
 /**
- * Gulp tasks for linting app with sass lint.
+ * Gulp tasks for linting app with less hint.
  */
 const gulp = require("gulp");
-const sassLint = require("gulp-sass-lint");
+const lessHint = require("gulp-lesshint");
 const path = require("path");
 const streamToPromise = require("stream-to-promise");
 const display = require("../../util/display");
 const uc = require("../../util/unite-config");
 gulp.task("build-css-lint-app", async () => {
-    display.info("Running", "SassLint for App");
+    display.info("Running", "LessHint for App");
     const uniteConfig = await uc.getUniteConfig();
     return streamToPromise(gulp.src(path.join(uniteConfig.dirs.www.cssSrc, `**/*.${uniteConfig.styleExtension}`))
-        .pipe(sassLint())
-        .pipe(sassLint.format())
-        .pipe(sassLint.failOnError())
+        .pipe(lessHint())
+        .pipe(lessHint.reporter())
+        .pipe(lessHint.failOnError())
         .on("error", (err) => {
-            display.error("SassLint failed", err);
+            display.error("LessHint failed", err);
             process.exit(1);
         }));
 });
