@@ -1,0 +1,7 @@
+"use strict";
+/**
+ * Model of Stylint Configuration (.stylintrc) file.
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+
+//# sourceMappingURL=data:application/json;charset=utf8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy9jb25maWd1cmF0aW9uL21vZGVscy9zdHlsaW50L3N0eWxpbnRDb25maWd1cmF0aW9uUnVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUE7O0dBRUciLCJmaWxlIjoiY29uZmlndXJhdGlvbi9tb2RlbHMvc3R5bGludC9zdHlsaW50Q29uZmlndXJhdGlvblJ1bGUuanMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIE1vZGVsIG9mIFN0eWxpbnQgQ29uZmlndXJhdGlvbiAoLnN0eWxpbnRyYykgZmlsZS5cbiAqL1xuXG5leHBvcnQgdHlwZSBTdHlsaW50Q29uZmlndXJhdGlvblJ1bGU8VD4gPSBib29sZWFuIHwgVCB8IHsgZXhwZWN0PzogVDsgZXJyb3I/OiBib29sZWFuIH07XG4iXX0=

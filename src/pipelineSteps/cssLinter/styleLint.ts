@@ -10,7 +10,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class StyleLint extends PipelineStepBase {
-    private static FILENAME: string = ".stylelintrc.json";
+    private static FILENAME: string = ".stylelintrc";
 
     private _configuration: StyleLintConfiguration;
 
@@ -47,8 +47,8 @@ export class StyleLint extends PipelineStepBase {
         engineVariables.toggleDevDependency(["stylelint-config-standard"], mainCondition && !isSass);
         engineVariables.toggleDevDependency(["stylelint-scss", "stylelint-config-recommended-scss"], mainCondition && isSass);
 
-        if (isSass && this._configuration) {
-            this._configuration.extends = "stylelint-config-recommended-scss";
+        if (this._configuration) {
+            this._configuration.extends = isSass ? "stylelint-config-recommended-scss" : "stylelint-config-recommended";
         }
 
         return 0;
@@ -68,7 +68,6 @@ export class StyleLint extends PipelineStepBase {
     private configDefaults(engineVariables: EngineVariables): void {
         const defaultConfiguration = new StyleLintConfiguration();
 
-        defaultConfiguration.extends = "stylelint-config-recommended";
         defaultConfiguration.rules = {};
 
         this._configuration = ObjectHelper.merge(defaultConfiguration, this._configuration);

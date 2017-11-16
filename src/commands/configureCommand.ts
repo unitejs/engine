@@ -89,7 +89,7 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
         if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("bundler", uniteConfiguration.bundler))) {
             return 1;
         }
-        if (uniteConfiguration.unitTestRunner === "None") {
+        if (/none/i.test(uniteConfiguration.unitTestRunner)) {
             if (uniteConfiguration.unitTestFramework !== null && uniteConfiguration.unitTestFramework !== undefined) {
                 this._logger.error("unitTestFramework is not valid if unitTestRunner is None");
                 return 1;
@@ -109,7 +109,7 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
                 return 1;
             }
         }
-        if (uniteConfiguration.e2eTestRunner === "None") {
+        if (/none/i.test(uniteConfiguration.e2eTestRunner)) {
             if (uniteConfiguration.e2eTestFramework !== null && uniteConfiguration.e2eTestFramework !== undefined) {
                 this._logger.error("e2eTestFramework is not valid if e2eTestRunner is None");
                 return 1;
@@ -122,7 +122,7 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
                 return 1;
             }
         }
-        if (uniteConfiguration.linter !== "None") {
+        if (!/none/i.test(uniteConfiguration.linter)) {
             if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("linter", uniteConfiguration.linter))) {
                 return 1;
             }
@@ -133,8 +133,10 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
         if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("cssPost", uniteConfiguration.cssPost))) {
             return 1;
         }
-        if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("cssLinter", uniteConfiguration.cssLinter))) {
-            return 1;
+        if (!/none/i.test(uniteConfiguration.cssLinter)) {
+            if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("cssLinter", uniteConfiguration.cssLinter))) {
+                return 1;
+            }
         }
         if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("server", uniteConfiguration.server))) {
             return 1;

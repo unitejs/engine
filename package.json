@@ -37,6 +37,7 @@
         "stylus",
         "lesshint",
         "sasslint",
+        "stylint",
         "stylelint",
         "postcss",
         "protractor",

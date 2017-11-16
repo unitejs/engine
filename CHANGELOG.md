@@ -5,6 +5,7 @@
 * Added StyleLint
 * Added SassLint
 * Added LessHint
+* Fixed case sensivity of None option for configure args unitTestRunner, e2eTestRunner, linter
 
 ## 1.7.0
 

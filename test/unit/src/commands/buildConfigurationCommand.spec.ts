@@ -86,6 +86,7 @@ describe("BuildConfigurationCommand", () => {
             e2eTestFramework: "MochaChai",
             cssPre: "Sass",
             cssPost: "None",
+            cssLinter: "None",
             linter: "ESLint",
             packageManager: "Yarn",
             taskManager: "Gulp",

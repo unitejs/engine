@@ -10,12 +10,12 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class LessHint extends PipelineStepBase {
-    private static FILENAME: string = ".sasslintrc";
+    private static FILENAME: string = ".lesshintrc";
 
     private _configuration: LessHintConfiguration;
 
     public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined {
-        return super.condition(uniteConfiguration.cssLinter, "SassLint");
+        return super.condition(uniteConfiguration.cssLinter, "LessHint");
     }
 
     public async initialise(logger: ILogger,

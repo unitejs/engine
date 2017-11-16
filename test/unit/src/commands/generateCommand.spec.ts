@@ -92,6 +92,7 @@ describe("GenerateCommand", () => {
             e2eTestFramework: undefined,
             cssPre: undefined,
             cssPost: undefined,
+            cssLinter: undefined,
             linter: undefined,
             packageManager: undefined,
             taskManager: undefined,

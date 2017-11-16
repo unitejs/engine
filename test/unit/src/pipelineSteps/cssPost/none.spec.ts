@@ -68,10 +68,8 @@ describe("None", () => {
 
             Chai.expect(packageJsonDevDependencies.cssnano).to.be.equal("1.2.3");
         });
-    });
 
-    describe("uninstall with false mainCondition", () => {
-        it("can be called", async () => {
+        it("can be called with false mainCondition", async () => {
             const obj = new None();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
