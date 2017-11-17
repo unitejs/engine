@@ -6,7 +6,7 @@ if (process.argv.length >= 3) {
 
     if (parts[0] === "platform" && parts.length > 1) {
         require(`./build/tasks/${parts[0]}-${parts[1]}`);
-    } else if (["build", "unit", "e2e", "theme", "serve", "version"].indexOf(parts[0]) >= 0) {
+    } else if (["build", "unit", "e2e", "theme", "serve", "version", "doc"].indexOf(parts[0]) >= 0) {
         require(`./build/tasks/${parts[0]}`);
     } else {
         const requireDir = require("require-dir");

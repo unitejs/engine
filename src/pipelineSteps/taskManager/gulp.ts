@@ -148,6 +148,7 @@ export class Gulp extends PipelineStepBase {
         this.toggleFile(this._distFolder, "build.js", this._tasksFolder, "build.js", mainCondition);
         this.toggleFile(this._distFolder, "build-transpile-modules.js", this._tasksFolder, "build-transpile-modules.js", mainCondition);
         this.toggleFile(this._distFolder, "version.js", this._tasksFolder, "version.js", mainCondition);
+        this.toggleFile(this._distFolder, "doc.js", this._tasksFolder, "doc.js", mainCondition);
     }
 
     private generateUnitDependencies(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): void {
