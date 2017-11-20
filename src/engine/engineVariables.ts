@@ -19,6 +19,7 @@ export class EngineVariables {
     public wwwRootFolder: string;
     public packagedRootFolder: string;
     public platformRootFolder: string;
+    public docsRootFolder: string;
 
     public www: {
         srcFolder: string;
@@ -90,6 +91,7 @@ export class EngineVariables {
         this.wwwRootFolder = fileSystem.pathCombine(this.rootFolder, "www");
         this.packagedRootFolder = fileSystem.pathCombine(this.rootFolder, "packaged");
         this.platformRootFolder = fileSystem.pathCombine(this.rootFolder, "platform");
+        this.docsRootFolder = fileSystem.pathCombine(this.rootFolder, "docs");
         this.www = {
             srcFolder: fileSystem.pathCombine(this.wwwRootFolder, "src"),
             distFolder: fileSystem.pathCombine(this.wwwRootFolder, "dist"),

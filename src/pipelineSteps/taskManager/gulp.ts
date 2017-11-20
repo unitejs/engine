@@ -129,6 +129,7 @@ export class Gulp extends PipelineStepBase {
         const assetTasksCssPre = fileSystem.pathCombine(this._distFolder, `cssPre/${uniteConfiguration.cssPre.toLowerCase()}/`);
         const assetTasksCssPost = fileSystem.pathCombine(this._distFolder, `cssPost/${uniteConfiguration.cssPost.toLowerCase()}/`);
         const assetTasksCssLinter = fileSystem.pathCombine(this._distFolder, `cssLinter/${uniteConfiguration.cssLinter.toLowerCase()}/`);
+        const assetTasksDocumentor = fileSystem.pathCombine(this._distFolder, `documentor/${uniteConfiguration.documentor.toLowerCase()}/`);
 
         this.toggleFile(assetTasksLanguage, "build-transpile.js", this._tasksFolder, "build-transpile.js", mainCondition, {
             "^(?:.*){TRANSPILEINCLUDE}(?:.*)": engineVariables.buildTranspileInclude,
@@ -144,6 +145,8 @@ export class Gulp extends PipelineStepBase {
         this.toggleFile(assetTasksCssLinter, "build-css-lint-components.js", this._tasksFolder, "build-css-lint-components.js", mainCondition);
         this.toggleFile(assetTasksCssPost, "build-css-post-app.js", this._tasksFolder, "build-css-post-app.js", mainCondition);
         this.toggleFile(assetTasksCssPost, "build-css-post-components.js", this._tasksFolder, "build-css-post-components.js", mainCondition);
+
+        this.toggleFile(assetTasksDocumentor, "doc-generate.js", this._tasksFolder, "doc-generate.js", mainCondition);
 
         this.toggleFile(this._distFolder, "build.js", this._tasksFolder, "build.js", mainCondition);
         this.toggleFile(this._distFolder, "build-transpile-modules.js", this._tasksFolder, "build-transpile-modules.js", mainCondition);

@@ -1,9 +1,19 @@
 /**
  * Child class.
+ *
+ * @export
+ * @class Child
  */
 export class Child {
+    /**
+     * Message to be displayed in the view.
+     * @type {string}
+     */
     public message: string;
 
+    /**
+     * Creates an instance of Child.
+     */
     constructor() {
         this.message = "Hello UniteJS World!";
     }

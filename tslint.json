@@ -241,6 +241,7 @@
         "no-unbound-method": false,
         "no-unnecessary-class": false,
         "no-implicit-dependencies": false,
+        "no-redundant-jsdoc": false,
 
         /**
          * Deprecated rules.  The following rules are deprecated for various reasons.

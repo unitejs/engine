@@ -22,6 +22,7 @@ export class UniteConfiguration {
     public cssPre: string;
     public cssPost: string;
     public cssLinter: string;
+    public documentor: string;
     public server: string;
     public taskManager: string;
     public packageManager: string;

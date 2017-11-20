@@ -3,19 +3,17 @@
  */
 import * as del from "del";
 import * as deleteEmpty from "delete-empty";
-import * as esdoc from "esdoc";
-import * as fs from "fs";
 import * as gulp from "gulp";
 import * as path from "path";
 import * as runSequence from "run-sequence";
 import * as util from "util";
-import * as asyncUtil from "./util/async-util";
 import * as display from "./util/display";
 import * as uc from "./util/unite-config";
+require("./doc-generate");
 
 gulp.task("doc-clean", async () => {
     const uniteConfig = await uc.getUniteConfig();
-    const docFolder = path.join("../", uniteConfig.dirs.docRoot);
+    const docFolder = path.join("../", uniteConfig.dirs.docsRoot);
 
     const toClean = [
         path.join(docFolder, "**/*")
@@ -30,25 +28,6 @@ gulp.task("doc-clean", async () => {
         display.error(err);
         process.exit(1);
     }
-});
-
-gulp.task("doc-generate", async () => {
-    display.info("Generating", "ESDoc");
-
-    const configFile = path.join(process.cwd(), ".esdoc.json");
-    const configExists = await asyncUtil.fileExists(configFile);
-    let config: esdoc.default.Config;
-
-    if (configExists) {
-        const configContent = await util.promisify(fs.readFile)(configFile);
-        config = JSON.parse(configContent.toString());
-    } else {
-        config = {};
-    }
-
-    esdoc.default.generate(config, (result, cfg) => {
-        display.log(result);
-    });
 });
 
 gulp.task("doc-build", async () => {

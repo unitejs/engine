@@ -1,12 +1,21 @@
 /**
- * Main application class.
+ * Main Application Class.
+ *
+ * @export
+ * @class App
  */
 import { Router, RouterConfiguration } from "aurelia-router";
 
 export class App {
     public router: Router;
 
-    public configureRouter(config: RouterConfiguration, router: Router): any {
+    /**
+     * Configure the router.
+     * @param {RouterConfiguration} config
+     * @param {Router} router
+     * @returns {(Promise<void> | PromiseLike<void> | void)}
+     */
+    public configureRouter(config: RouterConfiguration, router: Router): Promise<void> | PromiseLike<void> | void {
         config.map([
             {
                 route: "", name: "child", moduleId: "./child/child"

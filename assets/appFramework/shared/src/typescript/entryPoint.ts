@@ -28,7 +28,15 @@ if (window.unite.pwa && "serviceWorker" in navigator) {
         });
 }
 
+/**
+ * @ignore
+ * @hidden
+ */
 const rootElement = document.getElementById("root");
+/**
+ * @ignore
+ * @hidden
+ */
 const loaderHideId = setInterval(
     () => {
         if ((rootElement.innerText && rootElement.innerText.length > 0) ||

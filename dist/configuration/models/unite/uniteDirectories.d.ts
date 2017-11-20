@@ -6,5 +6,6 @@ export declare class UniteDirectories {
     wwwRoot: string;
     packagedRoot: string;
     platformRoot: string;
+    docsRoot: string;
     www: UniteWwwDirectories;
 }

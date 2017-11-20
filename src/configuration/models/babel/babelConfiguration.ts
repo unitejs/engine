@@ -6,6 +6,7 @@ export class BabelConfiguration {
     public ast: boolean;
     public auxiliaryCommentAfter: string;
     public auxiliaryCommentBefore: string;
+    public babelrc: boolean;
     public code: boolean;
     public comments: boolean;
     public compact: string;

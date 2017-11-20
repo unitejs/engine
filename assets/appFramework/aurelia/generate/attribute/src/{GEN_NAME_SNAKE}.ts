@@ -1,5 +1,8 @@
 /**
- * {GEN_NAME_HUMAN} component class.
+ * {GEN_NAME_HUMAN} attribute class.
+ *
+ * @export
+ * @class {GEN_NAME_PASCAL}
  */
 import { inject } from "aurelia-dependency-injection";
 
@@ -7,10 +10,19 @@ import { inject } from "aurelia-dependency-injection";
 export class {GEN_NAME_PASCAL}Attribute {
     private _element: Element;
 
+    /**
+     * Creates an instance of {GEN_NAME_PASCAL}.
+     */
     constructor(element: Element) {
         this._element = element;
     }
 
-    public valueChanged(newValue: string, oldValue: string): void {
+    /**
+     * Attribute value has changed.
+     * @param {any} newValue
+     * @param {any} oldValue
+     * @returns {void}
+     */
+    public valueChanged(newValue: any, oldValue: any): void {
     }
 }

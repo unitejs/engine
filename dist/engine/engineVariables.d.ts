@@ -19,6 +19,7 @@ export declare class EngineVariables {
     wwwRootFolder: string;
     packagedRootFolder: string;
     platformRootFolder: string;
+    docsRootFolder: string;
     www: {
         srcFolder: string;
         distFolder: string;

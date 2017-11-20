@@ -61,6 +61,7 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
         uniteConfiguration.cssPre = args.cssPre || uniteConfiguration.cssPre;
         uniteConfiguration.cssPost = args.cssPost || uniteConfiguration.cssPost;
         uniteConfiguration.cssLinter = args.cssLinter || uniteConfiguration.cssLinter || "None";
+        uniteConfiguration.documentor = args.documentor || uniteConfiguration.documentor || "None";
         uniteConfiguration.buildConfigurations = uniteConfiguration.buildConfigurations || {};
         uniteConfiguration.sourceExtensions = [];
         uniteConfiguration.viewExtensions = [];
@@ -135,6 +136,11 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
         }
         if (!/none/i.test(uniteConfiguration.cssLinter)) {
             if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("cssLinter", uniteConfiguration.cssLinter))) {
+                return 1;
+            }
+        }
+        if (!/none/i.test(uniteConfiguration.documentor)) {
+            if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("documentor", uniteConfiguration.documentor))) {
                 return 1;
             }
         }

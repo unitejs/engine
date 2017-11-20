@@ -7,7 +7,7 @@ export interface IUniteDirectories {
     wwwRoot: string;
     packagedRoot: string;
     platformRoot: string;
-    docRoot: string;
+    docsRoot: string;
 
     www: IUniteWwwDirectories;
 }

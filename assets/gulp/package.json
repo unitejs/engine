@@ -32,6 +32,7 @@
     "@types/vinyl-source-stream": "0.0.30",
     "@types/webpack": "^3.8.1",
     "@types/webpack-stream": "^3.2.8",
-    "@types/xml2js": "^0.4.1"
+    "@types/xml2js": "^0.4.1",
+    "typedoc": "^0.9.0"
   }
 }

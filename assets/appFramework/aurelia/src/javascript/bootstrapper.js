@@ -3,8 +3,13 @@
  */
 import {bootstrap as abootstrap} from "aurelia-bootstrapper";
 
+/**
+ * Bootstrap the application.
+ * @returns {Promise<void>}
+ * @export
+ */
 export function bootstrap () {
-    abootstrap((aurelia) => {
+    return abootstrap((aurelia) => {
         aurelia.use
             .standardConfiguration()
             .plugin("aurelia-dialog")

@@ -1,7 +1,16 @@
 /**
- * Main application class.
+ * Main Application Class.
+ *
+ * @export
+ * @class App
  */
 export class App {
+    /**
+     * Configure the router.
+     * @param {RouterConfiguration} config
+     * @param {Router} router
+     * @returns {(Promise<void> | PromiseLike<void> | void)}
+     */
     configureRouter (config, router) {
         config.map([
             {

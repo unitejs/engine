@@ -7,6 +7,7 @@ export class UniteDirectories {
     public wwwRoot: string;
     public packagedRoot: string;
     public platformRoot: string;
+    public docsRoot: string;
 
     public www: UniteWwwDirectories;
 }

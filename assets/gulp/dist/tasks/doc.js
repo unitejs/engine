@@ -3,18 +3,16 @@
  */
 const del = require("del");
 const deleteEmpty = require("delete-empty");
-const esdoc = require("esdoc");
-const fs = require("fs");
 const gulp = require("gulp");
 const path = require("path");
 const runSequence = require("run-sequence");
 const util = require("util");
-const asyncUtil = require("./util/async-util");
 const display = require("./util/display");
 const uc = require("./util/unite-config");
+require("./doc-generate");
 gulp.task("doc-clean", async () => {
     const uniteConfig = await uc.getUniteConfig();
-    const docFolder = path.join("../", uniteConfig.dirs.docRoot);
+    const docFolder = path.join("../", uniteConfig.dirs.docsRoot);
     const toClean = [
         path.join(docFolder, "**/*")
     ];
@@ -30,21 +28,6 @@ gulp.task("doc-clean", async () => {
         display.error(err);
         process.exit(1);
     }
-});
-gulp.task("doc-generate", async () => {
-    display.info("Generating", "ESDoc");
-    const configFile = path.join(process.cwd(), ".esdoc.json");
-    const configExists = await asyncUtil.fileExists(configFile);
-    let config;
-    if (configExists) {
-        const configContent = await util.promisify(fs.readFile)(configFile);
-        config = JSON.parse(configContent.toString());
-    } else {
-        config = {};
-    }
-    esdoc.default.generate(config, (result, cfg) => {
-        display.log(result);
-    });
 });
 gulp.task("doc-build", async () => {
     try {
