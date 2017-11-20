@@ -146,12 +146,13 @@ export class Gulp extends PipelineStepBase {
         this.toggleFile(assetTasksCssPost, "build-css-post-app.js", this._tasksFolder, "build-css-post-app.js", mainCondition);
         this.toggleFile(assetTasksCssPost, "build-css-post-components.js", this._tasksFolder, "build-css-post-components.js", mainCondition);
 
-        this.toggleFile(assetTasksDocumentor, "doc-generate.js", this._tasksFolder, "doc-generate.js", mainCondition);
+        const hasDocumentor = !super.condition(uniteConfiguration.documentor, "None");
+        this.toggleFile(assetTasksDocumentor, "doc-generate.js", this._tasksFolder, "doc-generate.js", mainCondition && hasDocumentor);
 
         this.toggleFile(this._distFolder, "build.js", this._tasksFolder, "build.js", mainCondition);
         this.toggleFile(this._distFolder, "build-transpile-modules.js", this._tasksFolder, "build-transpile-modules.js", mainCondition);
         this.toggleFile(this._distFolder, "version.js", this._tasksFolder, "version.js", mainCondition);
-        this.toggleFile(this._distFolder, "doc.js", this._tasksFolder, "doc.js", mainCondition);
+        this.toggleFile(this._distFolder, "doc.js", this._tasksFolder, "doc.js", mainCondition && hasDocumentor);
     }
 
     private generateUnitDependencies(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): void {

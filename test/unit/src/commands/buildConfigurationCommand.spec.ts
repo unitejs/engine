@@ -87,6 +87,7 @@ describe("BuildConfigurationCommand", () => {
             cssPre: "Sass",
             cssPost: "None",
             cssLinter: "None",
+            documentor: "None",
             linter: "ESLint",
             packageManager: "Yarn",
             taskManager: "Gulp",

@@ -93,6 +93,7 @@ describe("GenerateCommand", () => {
             cssPre: undefined,
             cssPost: undefined,
             cssLinter: undefined,
+            documentor: undefined,
             linter: undefined,
             packageManager: undefined,
             taskManager: undefined,
@@ -108,6 +109,7 @@ describe("GenerateCommand", () => {
                 wwwRoot: "./www/",
                 packagedRoot: undefined,
                 platformRoot: undefined,
+                docsRoot: undefined,
                 www: {
                     src: "./src/",
                     dist: undefined,

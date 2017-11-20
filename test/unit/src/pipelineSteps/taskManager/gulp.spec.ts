@@ -35,6 +35,7 @@ describe("Gulp", () => {
         uniteConfigurationStub.cssPre = "Css";
         uniteConfigurationStub.cssPost = "PostCss";
         uniteConfigurationStub.cssLinter = "StyleLint";
+        uniteConfigurationStub.documentor = "ESDoc";
         uniteConfigurationStub.server = "BrowserSync";
 
         engineVariablesStub = new EngineVariables();

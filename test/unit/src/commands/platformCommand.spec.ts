@@ -87,6 +87,7 @@ describe("PlatformCommand", () => {
             cssPre: "Sass",
             cssPost: "None",
             cssLinter: "None",
+            documentor: undefined,
             linter: "ESLint",
             packageManager: "Yarn",
             taskManager: "Gulp",
