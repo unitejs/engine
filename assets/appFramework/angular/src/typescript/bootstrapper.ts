@@ -6,12 +6,17 @@ import {enableProdMode} from "@angular/core";
 import {platformBrowserDynamic} from "@angular/platform-browser-dynamic";
 import {AppModule} from "./app.module";
 
+/**
+ * Bootstrap the application.
+ * @returns {void}
+ * @export
+ */
 export function bootstrap(): void {
     const baseElement = document.createElement("base");
     baseElement.href = "./";
     window.document.head.appendChild(baseElement);
 
-    if (window.unite.configName !== "dev") {
+    if (window.unite.bundle) {
         enableProdMode();
     }
 

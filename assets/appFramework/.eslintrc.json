@@ -1,0 +1,78 @@
+{
+    "parser": "babel-eslint",
+    "parserOptions": {
+        "ecmaVersion": 8,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true
+        }
+    },
+    "extends": [
+        "eslint:all",
+        "plugin:promise/recommended",
+        "plugin:react/recommended"
+    ],
+    "env": {
+        "browser": true,
+        "node": true,
+        "jasmine": true,
+        "protractor": true,
+        "es6": true
+    },
+    "globals": {},
+    "rules": {
+        "new-cap": "off",
+        "quote-props": "off",
+        "sort-keys": "off",
+        "lines-around-comment": "off",
+        "no-useless-constructor": "off",
+        "space-before-function-paren": "off",
+        "padded-blocks": "off",
+        "sort-imports": "off",
+        "object-curly-newline": "off",
+        "array-bracket-newline": "off",
+        "object-property-newline": "off",
+        "function-paren-newline": "off",
+        "no-empty-function": "off",
+        "global-require": "off",
+        "dot-location": "off",
+        "arrow-body-style": "off",
+        "max-len": [
+            2,
+            {
+                "code": 120,
+                "tabWidth": 4,
+                "ignoreUrls": true
+            }
+        ],
+        "valid-jsdoc": "off",
+        "class-methods-use-this": "off",
+        "no-unused-vars": "off",
+        "func-style": "off",
+        "no-magic-numbers": "off",
+        "no-underscore-dangle": "off",
+        "no-undefined": "off",
+        "multiline-ternary": "off",
+        "no-ternary": "off",
+        "one-var": "off",
+        "no-extra-parens": "off",
+        "no-inline-comments": "off",
+        "promise/always-return": "off",
+        "babel/new-cap": 1,
+        "babel/object-curly-spacing": 1,
+        "babel/no-invalid-this": 1,
+        "babel/semi": 1,
+        "react/react-in-jsx-scope": "off"
+    },
+    "plugins": [
+        "node",
+        "promise",
+        "react",
+        "babel"
+    ],
+    "settings": {
+        "react": {
+            "pragma": "h"
+        }
+    }
+}

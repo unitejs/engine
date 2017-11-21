@@ -1,12 +1,20 @@
 /**
  * Main application class.
+ *
+ * @export
+ * @class App
  */
 import {BrowserRouter, Route} from "react-router-dom";
 import {Child} from "./child/child";
-import {SYNTHETIC_IMPORT}React from "react";
-import {SYNTHETIC_IMPORT}ReactDOM from "react-dom";
+import /* Synthetic Import */ React from "react";
+import /* Synthetic Import */ ReactDOM from "react-dom";
 
 export class App {
+    /**
+     * Run the application.
+     * @param {Element} rootElement
+     * @returns {void}
+     */
     run (rootElement) {
         ReactDOM.render(
             <BrowserRouter>

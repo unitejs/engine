@@ -1,5 +1,8 @@
 /**
- * Main Application Module class.
+ * Main Application module Class.
+ *
+ * @export
+ * @class App
  */
 import {AppComponent} from "./app.component";
 import {BrowserModule} from "@angular/platform-browser";
@@ -8,20 +11,19 @@ import {NgModule} from "@angular/core";
 import {RouterModule} from "@angular/router";
 
 const appRoutes = [
-    {"path": "", "component": ChildComponent}
+    {path: "", component: ChildComponent}
 ];
 
 @NgModule({
-    "imports": [BrowserModule,
+    imports: [BrowserModule,
         RouterModule.forRoot(appRoutes)
     ],
-    "declarations": [
+    declarations: [
         AppComponent,
         ChildComponent
     ],
-    "bootstrap": [AppComponent]
+    bootstrap: [AppComponent]
 })
-
 export class AppModule {
 }
 

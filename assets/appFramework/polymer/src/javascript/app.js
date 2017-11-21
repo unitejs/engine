@@ -1,5 +1,8 @@
 /**
- * Main application class.
+ * Main Application class.
+ *
+ * @export
+ * @class App
  */
 import "@polymer/app-route/app-location";
 import "@polymer/app-route/app-route";
@@ -10,6 +13,12 @@ import "./child/child";
 
 @customElement("unite-app")
 export class App extends PolymerElement {
+    /**
+     * Get the template.
+     * @readonly
+     * @static
+     * @returns {string}
+     */
     static get template () {
         return `${template}`;
     }

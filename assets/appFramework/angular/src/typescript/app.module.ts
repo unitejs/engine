@@ -1,5 +1,8 @@
 /**
- * Main Application Module class.
+ * Main Application module Class.
+ *
+ * @export
+ * @class App
  */
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";

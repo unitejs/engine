@@ -105,13 +105,8 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
                                        generateTemplatesFolder: string,
                                        generateTemplate: IUniteGenerateTemplate): Promise<number> {
 
-        const substitutions = TemplateHelper.generateSubstitutions("GEN_NAME", args.name);
-        substitutions.ADDITIONAL_EXTENSION = generateTemplate.additionalExtension !== undefined &&
-            generateTemplate.additionalExtension !== null &&
-            generateTemplate.additionalExtension.length > 0 ? `.${generateTemplate.additionalExtension}` : "";
-
-        substitutions.SYNTHETIC_IMPORT = engineVariables.syntheticImport;
-        substitutions.MODULE_ID = engineVariables.moduleId;
+        const substitutions: { [id: string]: string } =
+            Object.assign(TemplateHelper.generateSubstitutions(args.name), TemplateHelper.createCodeSubstitutions(engineVariables));
 
         // See where we are in relation to the www folder
         const baseDirectory = this._fileSystem.pathAbsolute("./");
@@ -159,7 +154,7 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
         if (ret === 0 && uniteConfiguration.unitTestRunner !== "None") {
             const unitSrcFolder = this._fileSystem.pathAbsolute(this._fileSystem.pathCombine(wwwFolder, uniteConfiguration.dirs.www.unitTestSrc));
             const unitSrcOutputFolder = this._fileSystem.pathCombine(unitSrcFolder, srcRelative);
-            substitutions.GEN_UNIT_TEST_RELATIVE = this._fileSystem.pathToWeb(this._fileSystem.pathDirectoryRelative(unitSrcOutputFolder, srcOutputFolder))
+            substitutions[`../../src/`] = this._fileSystem.pathToWeb(this._fileSystem.pathDirectoryRelative(unitSrcOutputFolder, srcOutputFolder))
                 .replace(/^\.\//, "");
 
             ret = await this.copyFiles(generateTemplatesFolder,
@@ -173,7 +168,7 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
         if (ret === 0 && uniteConfiguration.e2eTestRunner !== "None") {
             const e2eSrcFolder = this._fileSystem.pathAbsolute(this._fileSystem.pathCombine(wwwFolder, uniteConfiguration.dirs.www.e2eTestSrc));
             const e2eSrcOutputFolder = this._fileSystem.pathCombine(e2eSrcFolder, srcRelative);
-            substitutions.GEN_E2E_TEST_RELATIVE = this._fileSystem.pathToWeb(this._fileSystem.pathDirectoryRelative(e2eSrcOutputFolder, srcOutputFolder))
+            substitutions[`../../src`] = this._fileSystem.pathToWeb(this._fileSystem.pathDirectoryRelative(e2eSrcOutputFolder, srcOutputFolder))
                 .replace(/^\.\//, "");
 
             ret = await this.copyFiles(generateTemplatesFolder,
@@ -205,10 +200,8 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
 
                 let doneCopy = false;
                 for (let j = 0; j < possibleExtensions.length && !doneCopy; j++) {
-                    let srcFilename2 = srcFilename.replace("{EXTENSION}", possibleExtensions[j]);
-                    srcFilename2 = srcFilename2.replace("{ADDITIONAL_EXTENSION}", "");
-                    let destFilename = TemplateHelper.replaceSubstitutions(substitutions, srcFilename);
-                    destFilename = destFilename.replace("{EXTENSION}", possibleExtensions[j]);
+                    const srcFilename2 = `${srcFilename}.${possibleExtensions[j]}`;
+                    const destFilename = `${TemplateHelper.replaceSubstitutions(substitutions, srcFilename)}.${possibleExtensions[j]}`;
 
                     try {
                         const destExists = await this._fileSystem.fileExists(destFolder, destFilename);

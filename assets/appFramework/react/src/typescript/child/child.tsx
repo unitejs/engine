@@ -1,10 +1,17 @@
 /**
  * Child class.
+ *
+ * @export
+ * @class Child
  */
-import {SYNTHETIC_IMPORT}React from "react";
+import /* Synthetic Import */ React from "react";
 import "./child.css";
 
 export class Child extends React.Component {
+    /**
+     * Render the component.
+     * @returns {JSX.Element}
+     */
     public render(): JSX.Element {
         return (<span className="child">Hello UniteJS World!</span>);
     }

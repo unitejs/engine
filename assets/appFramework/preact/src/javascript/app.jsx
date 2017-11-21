@@ -1,16 +1,25 @@
 /**
  * Main application class.
+ *
+ * @export
+ * @class App
  */
 import {h, render} from "preact";
 import {Router} from "preact-router";
 import {Child} from "./child/child";
 
 export class App {
+    /**
+     * Run the application
+     * @param {Element} rootElement
+     * @param {string} basePath
+     * @returns {void}
+     */
     run (rootElement, basePath) {
         render(<Router>
             <Child path={basePath} />
-          </Router>,
-            rootElement
+        </Router>,
+        rootElement
         );
     }
 }

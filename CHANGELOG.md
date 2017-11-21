@@ -6,6 +6,7 @@
 * Added JsDoc
 * Added TypeDoc
 * Added documentation to framework sources files and generated elements
+* Change Plain App renamed to Vanilla
 
 ## 1.7.1
 

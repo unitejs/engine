@@ -2,7 +2,7 @@
  * Tests for App.
  */
 import { expect } from "chai";
-import { $, browser, by } from "protractor";
+import { $, browser } from "protractor";
 
 describe("App", () => {
     it("the title is set", (done) => {

@@ -3,10 +3,10 @@
         "isShared": true
     },
     "component": {
-        "defaultFolder": "{GEN_NAME_SNAKE}",
-        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
-        "styleFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
+        "defaultFolder": "gen-name-snake",
+        "sourceFiles": ["gen-name-snake"],
+        "styleFiles": ["gen-name-snake"],
+        "unitTestFiles": ["gen-name-snake.spec"]
     },
     "enum": {
         "isShared": true

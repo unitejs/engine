@@ -1,7 +1,7 @@
 /**
  * Tests for App.
  */
-import { $, browser, by } from "protractor";
+import { $, browser } from "protractor";
 
 describe("App", () => {
     it("the title is set", (done) => {

@@ -1,17 +1,13 @@
 /**
  * Template helper
  */
+import { EngineVariables } from "../engine/engineVariables";
 
 export class TemplateHelper {
-    public static generateSubstitutions(prefix: string, name: string): { [id: string]: string } {
+    public static generateSubstitutions(name: string): { [id: string]: string } {
         const substitutions: { [id: string]: string } = {};
 
-        if (name !== undefined &&
-            name !== null &&
-            prefix !== undefined &&
-            prefix !== null &&
-            prefix.trim().length > 0) {
-
+        if (name !== undefined && name !== null) {
             const justAlphaNum = name.replace(/[^a-zA-Z0-9 ]/g, " ").trim();
 
             if (justAlphaNum.length > 0) {
@@ -65,11 +61,10 @@ export class TemplateHelper {
                     }
                 }
 
-                substitutions[`${prefix}`] = name.replace(/\s\s+/g, " ");
-                substitutions[`${prefix}_SNAKE`] = words.join("-").toLowerCase();
-                substitutions[`${prefix}_CAMEL`] = words[0][0].toLowerCase() + words[0].substring(1) + words.slice(1).join("");
-                substitutions[`${prefix}_PASCAL`] = words.join("");
-                substitutions[`${prefix}_HUMAN`] = words.join(" ");
+                substitutions[`gen-name-snake`] = words.join("-").toLowerCase();
+                substitutions[`genNameCamel`] = words[0][0].toLowerCase() + words[0].substring(1) + words.slice(1).join("");
+                substitutions[`GenNamePascal`] = words.join("");
+                substitutions[`Gen Name Human`] = words.join(" ");
             }
         }
 
@@ -81,10 +76,17 @@ export class TemplateHelper {
 
         if (input !== null && input !== undefined && substitutions !== undefined && substitutions !== null) {
             Object.keys(substitutions).forEach(key => {
-                output = output.replace(new RegExp(`{${key}}`, "g"), substitutions[key]);
+                output = output.replace(new RegExp(`${key}`, "g"), substitutions[key]);
             });
         }
 
         return output;
+    }
+
+    public static createCodeSubstitutions(engineVariables: EngineVariables): { [id: string]: string[]} {
+        return {
+            "/\\* Synthetic Import \\*/ ": [engineVariables.syntheticImport],
+            "\"genModuleId\"": [engineVariables.moduleId]
+        };
     }
 }

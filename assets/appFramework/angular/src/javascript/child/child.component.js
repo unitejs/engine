@@ -4,11 +4,20 @@
 import {Component} from "@angular/core";
 
 @Component({
-    moduleId: {MODULE_ID},
+    moduleId: "genModuleId",
     templateUrl: "./child.component.html",
     styleUrls: ["./child.component.css"]
 })
 export class ChildComponent {
+    /**
+     * Message displayed in the view.
+     * @type {string}
+     */
+    message;
+
+    /**
+     * Creates an instance of ChildComponent.
+     */
     constructor () {
         this.message = "Hello UniteJS World!";
     }

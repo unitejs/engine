@@ -1,13 +1,13 @@
 {
     "class": {
-        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
+        "sourceFiles": ["gen-name-snake"],
+        "unitTestFiles": ["gen-name-snake.spec"]
     },
     "enum": {
-        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
+        "sourceFiles": ["gen-name-snake"],
+        "unitTestFiles": ["gen-name-snake.spec"]
     },
     "interface": {
-        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"]
+        "sourceFiles": ["gen-name-snake"]
     }
 }

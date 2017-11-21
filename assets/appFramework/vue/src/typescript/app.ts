@@ -1,13 +1,19 @@
 /**
  * Main application class.
+ *
+ * @export
+ * @class App
  */
-import {SYNTHETIC_IMPORT}Vue from "vue";
+import /* Synthetic Import */ Vue from "vue";
 import Component from "vue-class-component";
 
 @Component({
     template: "./app.vue"
 })
 export class App extends Vue {
+    /**
+     * Creates an instance of App.
+     */
     constructor() {
         super();
     }

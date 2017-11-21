@@ -1,7 +1,7 @@
 /**
  * Tests for App.
  */
-import { expect } from "chai";
+import {expect} from "chai";
 
 describe("App", () => {
     it("the title is set", () => {

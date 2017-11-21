@@ -1,10 +1,17 @@
 /**
  * Child class.
+ *
+ * @export
+ * @class Child
  */
 import {Component, h} from "preact";
 import "./child.css";
 
 export class Child extends Component {
+    /**
+     * Render the component.
+     * @returns {JSX.Element}
+     */
     render () {
         return (<span className="child">Hello UniteJS World!</span>);
     }

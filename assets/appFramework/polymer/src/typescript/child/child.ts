@@ -1,24 +1,39 @@
 /**
  * Child class.
+ *
+ * @export
+ * @class Child
  */
 import { customElement, property } from "@polymer/decorators/src/decorators";
 import { Element as PolymerElement } from "@polymer/polymer/polymer-element";
-import {SYNTHETIC_IMPORT}style from "./child.css";
-import {SYNTHETIC_IMPORT}template from "./child.html";
+import /* Synthetic Import */ style from "./child.css";
+import /* Synthetic Import */ template from "./child.html";
 
 @customElement("unite-child")
 export class Child extends PolymerElement {
+    /**
+     * Message to be displayed in the view.
+     * @type {string}
+     */
     @property({type: String})
     public message: string;
 
+    /**
+     * Creates an instance of Child.
+     */
     constructor() {
         super();
         this.message = "Hello UniteJS World!";
     }
 
+    /**
+     * Get the template.
+     * @readonly
+     * @static
+     * @returns {string}
+     */
     static get template(): string {
-        return `
-        <style>${style}</style>
+        return `<style>${style}</style>
         ${template}`;
     }
 }

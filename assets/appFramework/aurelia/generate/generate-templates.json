@@ -1,30 +1,30 @@
 {
     "attribute": {
         "defaultFolder": "resources/attributes",
-        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
+        "sourceFiles": ["gen-name-snake"],
+        "unitTestFiles": ["gen-name-snake.spec"]
     },
     "binding-behavior": {
         "defaultFolder": "resources/binding-behaviors",
-        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
+        "sourceFiles": ["gen-name-snake"],
+        "unitTestFiles": ["gen-name-snake.spec"]
     },
     "class": {
         "isShared": true
     },
     "component": {
-        "defaultFolder": "components/{GEN_NAME_SNAKE}",
-        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
-        "viewFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
-        "styleFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
+        "defaultFolder": "components/gen-name-snake",
+        "sourceFiles": ["gen-name-snake"],
+        "viewFiles": ["gen-name-snake"],
+        "styleFiles": ["gen-name-snake"],
+        "unitTestFiles": ["gen-name-snake.spec"]
     },
     "element": {
-        "defaultFolder": "resources/elements/{GEN_NAME_SNAKE}",
-        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
-        "viewFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
-        "styleFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
+        "defaultFolder": "resources/elements/gen-name-snake",
+        "sourceFiles": ["gen-name-snake"],
+        "viewFiles": ["gen-name-snake"],
+        "styleFiles": ["gen-name-snake"],
+        "unitTestFiles": ["gen-name-snake.spec"]
     },
     "enum": {
         "isShared": true
@@ -34,12 +34,12 @@
     },
     "pipeline-step": {
         "defaultFolder": "pipeline-steps",
-        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
+        "sourceFiles": ["gen-name-snake"],
+        "unitTestFiles": ["gen-name-snake.spec"]
     },
     "value-converter": {
         "defaultFolder": "resources/value-converters",
-        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
+        "sourceFiles": ["gen-name-snake"],
+        "unitTestFiles": ["gen-name-snake.spec"]
     }
 }

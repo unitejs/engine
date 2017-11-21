@@ -1,5 +1,8 @@
 /**
  * Main application class.
+ *
+ * @export
+ * @class App
  */
 import Vue from "vue";
 import Component from "vue-class-component";
@@ -8,6 +11,9 @@ import Component from "vue-class-component";
     "template": "./app.vue"
 })
 export class App extends Vue {
+    /**
+     * Creates an instance of App.
+     */
     constructor() {
         super();
     }

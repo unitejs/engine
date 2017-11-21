@@ -4,7 +4,6 @@
 export interface IUniteGenerateTemplate {
     defaultFolder?: string;
     isShared?: boolean;
-    additionalExtension?: string;
     sourceFiles?: string[];
     viewFiles?: string[];
     styleFiles?: string[];

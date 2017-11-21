@@ -3,44 +3,37 @@
         "isShared": true
     },
     "component": {
-        "defaultFolder": "{GEN_NAME_SNAKE}",
-        "additionalExtension": "component",
-        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
-        "viewFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
-        "styleFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
+        "defaultFolder": "gen-name-snake",
+        "sourceFiles": ["gen-name-snake.component"],
+        "viewFiles": ["gen-name-snake.component"],
+        "styleFiles": ["gen-name-snake.component"],
+        "unitTestFiles": ["gen-name-snake.component.spec"]
     },
     "directive": {
-        "additionalExtension": "directive",
-        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
+        "sourceFiles": ["gen-name-snake.directive"],
+        "unitTestFiles": ["gen-name-snake.directive.spec"]
     },
     "enum": {
-        "isShared": true,
-        "additionalExtension": "enum"
+        "isShared": true
     },
     "guard": {
-        "additionalExtension": "guard",
-        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
+        "sourceFiles": ["gen-name-snake.guard"],
+        "unitTestFiles": ["gen-name-snake.guard.spec"]
     },
     "interface": {
-        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"]
+        "sourceFiles": ["gen-name-snake"]
     },
     "module": {
-        "defaultFolder": "{GEN_NAME_SNAKE}",
-        "additionalExtension": "module",
-        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
+        "defaultFolder": "gen-name-snake",
+        "sourceFiles": ["gen-name-snake.module"],
+        "unitTestFiles": ["gen-name-snake.module.spec"]
     },
     "pipe": {
-        "additionalExtension": "pipe",
-        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
+        "sourceFiles": ["gen-name-snake.pipe"],
+        "unitTestFiles": ["gen-name-snake.pipe.spec"]
     },
     "service": {
-        "additionalExtension": "directive",
-        "sourceFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.{EXTENSION}"],
-        "unitTestFiles": ["{GEN_NAME_SNAKE}{ADDITIONAL_EXTENSION}.spec.{EXTENSION}"]
+        "sourceFiles": ["gen-name-snake.service"],
+        "unitTestFiles": ["gen-name-snake.service.spec"]
     }
 }

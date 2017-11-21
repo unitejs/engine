@@ -6,6 +6,7 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../engine/engineVariables";
 import { PipelineStepBase } from "../engine/pipelineStepBase";
+import { TemplateHelper } from "../helpers/templateHelper";
 
 export abstract class SharedAppFramework extends PipelineStepBase {
     protected async generateAppSource(logger: ILogger,
@@ -28,10 +29,7 @@ export abstract class SharedAppFramework extends PipelineStepBase {
                                             engineVariables.www.srcFolder,
                                             file,
                                             engineVariables.force,
-                                            {
-                                                "{SYNTHETIC_IMPORT}": [engineVariables.syntheticImport],
-                                                "{MODULE_ID}": [engineVariables.moduleId]
-                                            });
+                                            TemplateHelper.createCodeSubstitutions(engineVariables));
 
             if (ret !== 0) {
                 return ret;
@@ -115,10 +113,7 @@ export abstract class SharedAppFramework extends PipelineStepBase {
                                                 engineVariables.www.unitTestSrcFolder,
                                                 `${spec}`,
                                                 engineVariables.force,
-                                                {
-                                                    "{SYNTHETIC_IMPORT}": [engineVariables.syntheticImport],
-                                                    "{MODULE_ID}": [engineVariables.moduleId]
-                                                });
+                                                TemplateHelper.createCodeSubstitutions(engineVariables));
                 if (ret !== 0) {
                     return ret;
                 }

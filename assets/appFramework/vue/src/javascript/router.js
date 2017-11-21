@@ -1,5 +1,8 @@
 /**
- * Main Router.
+ * Main Router class.
+ *
+ * @export
+ * @class Router
  */
 import Vue from "vue";
 import Router from "vue-router";
