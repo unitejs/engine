@@ -838,6 +838,50 @@ describe("ConfigureCommand", () => {
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("cssLinter");
         });
 
+        it("can fail when calling with undefined documentor", async () => {
+            uniteJson = undefined;
+            const obj = new ConfigureCommand();
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "my-package",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
+                license: "MIT",
+                sourceLanguage: "JavaScript",
+                moduleType: "AMD",
+                bundler: "RequireJS",
+                unitTestRunner: "Karma",
+                unitTestFramework: "Jasmine",
+                unitTestEngine: "PhantomJS",
+                e2eTestRunner: "Protractor",
+                e2eTestFramework: "MochaChai",
+                linter: "ESLint",
+                cssPre: "Sass",
+                cssPost: "None",
+                cssLinter: "None",
+                documentor: "aaa",
+                taskManager: undefined,
+                server: undefined,
+                ides: undefined,
+                packageManager: undefined,
+                applicationFramework: undefined,
+                profile: undefined,
+                force: undefined,
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("documentor");
+        });
+
         it("can fail when calling with undefined server", async () => {
             uniteJson = undefined;
             const obj = new ConfigureCommand();
@@ -868,7 +912,7 @@ describe("ConfigureCommand", () => {
                 cssPre: "Sass",
                 cssPost: "PostCss",
                 cssLinter: "StyleLint",
-                documentor: "None",
+                documentor: "ESDoc",
                 ides: ["VSCode"],
                 taskManager: undefined,
                 server: undefined,

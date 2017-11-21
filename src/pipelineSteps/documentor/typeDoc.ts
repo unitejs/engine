@@ -25,7 +25,7 @@ export class TypeDoc extends PipelineStepBase {
                             mainCondition: boolean): Promise<number> {
         if (mainCondition) {
             if (!super.condition(uniteConfiguration.sourceLanguage, "TypeScript")) {
-                logger.error("You can only use TSDoc when the source language is TypeScript");
+                logger.error("You can only use TypeDoc when the source language is TypeScript");
                 return 1;
             }
             return super.fileReadJson<TypeDocConfiguration>(logger, fileSystem, engineVariables.wwwRootFolder, TypeDoc.FILENAME, engineVariables.force, async (obj) => {
@@ -68,7 +68,8 @@ export class TypeDoc extends PipelineStepBase {
         defaultConfiguration.mode = "file";
         defaultConfiguration.module = super.condition(uniteConfiguration.moduleType, "SystemJS") ? "system" : uniteConfiguration.moduleType.toLowerCase();
         defaultConfiguration.theme = "default";
-        defaultConfiguration.out = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.docsRootFolder));
+        defaultConfiguration.out = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.docsRootFolder))
+            .replace(/^\.\//, "");
         defaultConfiguration.target = "es5";
         defaultConfiguration.moduleResolution = "node";
         defaultConfiguration.includeDeclarations = false;

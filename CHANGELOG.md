@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.7.2
+
+* Added EsDoc
+* Added JsDoc
+* Added TypeDoc
+* Added documentation to framework sources files and generated elements
+
 ## 1.7.1
 
 * Added StyleLint

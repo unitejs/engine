@@ -79,6 +79,7 @@ export class JsDoc extends PipelineStepBase {
 
         defaultConfiguration.opts = {
             destination: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.docsRootFolder))
+                .replace(/^\.\//, "")
         };
 
         defaultConfiguration.plugins = [

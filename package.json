@@ -77,6 +77,7 @@
         "coveralls": "^3.0.0",
         "del": "^3.0.0",
         "eslint": "^4.10.0",
+        "eslint-plugin-babel": "^4.1.2",
         "eslint-plugin-node": "^5.2.1",
         "eslint-plugin-promise": "^3.6.0",
         "eslint-plugin-react": "^7.4.0",
