@@ -20,11 +20,12 @@ The following gulp commands are available for the app.
 
 * build
 * theme-build
-* unit [optional]
-* e2e-install [optional]
-* e2e [optional]
+* unit [optional - available if you have configured a unit test runner]
+* e2e-install [optional - available if you have configured an e2e test runner]
+* e2e [optional - available if you have configured an e2e test runner]
 * serve
 * version
+* doc-build [optional - available if you have configured a documenter]
 * platform-cordova-dev [optional - requires cordova platform]
 * platform-cordova-theme [optional - requires cordova platform]
 * platform-docker-package [optional - requires docker platform]
@@ -162,6 +163,16 @@ Running this task with no parameters will show the current version, alternativel
 gulp version --part=patch --mode=inc
 gulp version --part=minor --mode=set --value=1
 ```
+
+### doc-build
+
+This task will generate documentation from the comments in the source code from your ./www/src folder.
+
+``` shell
+gulp doc-build
+```
+
+The output is created in ./docs/ folder in the root of your project.
 
 ### platform-cordova-dev
 
