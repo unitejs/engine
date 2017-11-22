@@ -66,16 +66,17 @@ export class TypeDoc extends PipelineStepBase {
         const defaultConfiguration = new TypeDocConfiguration();
 
         defaultConfiguration.mode = "file";
-        defaultConfiguration.module = "es2015";
-        defaultConfiguration.target = "es2015";
         defaultConfiguration.theme = "default";
         defaultConfiguration.out = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.docsRootFolder))
             .replace(/^\.\//, "");
-        defaultConfiguration.moduleResolution = "node";
         defaultConfiguration.includeDeclarations = false;
-        defaultConfiguration.experimentalDecorators = true;
         defaultConfiguration.externalPattern = "**/*.d.ts";
         defaultConfiguration.excludeExternals = true;
+
+        defaultConfiguration.module = "es2015";
+        defaultConfiguration.target = "es2015";
+        defaultConfiguration.moduleResolution = "node";
+        defaultConfiguration.experimentalDecorators = true;
         defaultConfiguration.emitDecoratorMetadata = true;
 
         this._configuration = ObjectHelper.merge(defaultConfiguration, this._configuration);

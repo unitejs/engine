@@ -9,6 +9,7 @@ import { BabelConfiguration } from "../../configuration/models/babel/babelConfig
 import { EsLintConfiguration } from "../../configuration/models/eslint/esLintConfiguration";
 import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
 import { TsLintConfiguration } from "../../configuration/models/tslint/tsLintConfiguration";
+import { TypeDocConfiguration } from "../../configuration/models/typeDoc/typeDocConfiguration";
 import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteClientPackage } from "../../configuration/models/unite/uniteClientPackage";
 import { UniteClientPackageTranspile } from "../../configuration/models/unite/uniteClientPackageTranspile";
@@ -144,6 +145,11 @@ export class Preact extends SharedAppFramework {
         const javaScriptConfiguration = engineVariables.getConfiguration<JavaScriptConfiguration>("JavaScript");
         if (javaScriptConfiguration) {
             ObjectHelper.addRemove(javaScriptConfiguration.compilerOptions, "experimentalDecorators", true, mainCondition);
+        }
+
+        const typeDocConfiguration = engineVariables.getConfiguration<TypeDocConfiguration>("TypeDoc");
+        if (typeDocConfiguration) {
+            ObjectHelper.addRemove(typeDocConfiguration, "jsx", "react", mainCondition);
         }
 
         return 0;

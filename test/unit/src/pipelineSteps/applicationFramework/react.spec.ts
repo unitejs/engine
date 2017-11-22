@@ -9,6 +9,7 @@ import { BabelConfiguration } from "../../../../../src/configuration/models/babe
 import { EsLintConfiguration } from "../../../../../src/configuration/models/eslint/esLintConfiguration";
 import { ProtractorConfiguration } from "../../../../../src/configuration/models/protractor/protractorConfiguration";
 import { TsLintConfiguration } from "../../../../../src/configuration/models/tslint/tsLintConfiguration";
+import { TypeDocConfiguration } from "../../../../../src/configuration/models/typeDoc/typeDocConfiguration";
 import { TypeScriptConfiguration } from "../../../../../src/configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
 import { JavaScriptConfiguration } from "../../../../../src/configuration/models/vscode/javaScriptConfiguration";
@@ -124,6 +125,7 @@ describe("React", () => {
             engineVariablesStub.setConfiguration("Babel", { presets: []});
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {}});
             engineVariablesStub.setConfiguration("JavaScript", { compilerOptions: {}});
+            engineVariablesStub.setConfiguration("TypeDoc", { });
             engineVariablesStub.setConfiguration("ESLint", { parserOptions: { ecmaFeatures: {}}, extends: [], plugins: []});
             engineVariablesStub.setConfiguration("TSLint", { rules: { } });
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
@@ -155,6 +157,7 @@ describe("React", () => {
             Chai.expect(engineVariablesStub.getConfiguration<TsLintConfiguration>("TSLint").rules["no-empty"]).not.to.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<JavaScriptConfiguration>("JavaScript").compilerOptions.experimentalDecorators).to.be.equal(true);
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.jsx).to.be.equal("react");
+            Chai.expect(engineVariablesStub.getConfiguration<TypeDocConfiguration>("TypeDoc").jsx).to.be.equal("react");
         });
 
         it("can be called with no configurations with false mainCondition", async () => {

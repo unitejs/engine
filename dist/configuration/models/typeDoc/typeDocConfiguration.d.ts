@@ -3,19 +3,20 @@
  */
 export declare class TypeDocConfiguration {
     mode: string;
-    module: string;
     theme: string;
     out: string;
-    target: string;
-    moduleResolution: string;
-    includeDeclarations: boolean;
     ignoreCompilerErrors: boolean;
-    experimentalDecorators: boolean;
     externalPattern: string;
     excludeExternals: boolean;
-    emitDecoratorMetadata: boolean;
+    includeDeclarations: boolean;
     preserveConstEnums: boolean;
     stripInternal: boolean;
     suppressExcessPropertyErrors: boolean;
     suppressImplicitAnyIndexErrors: boolean;
+    module: string;
+    target: string;
+    moduleResolution: string;
+    experimentalDecorators: boolean;
+    emitDecoratorMetadata: boolean;
+    jsx: string;
 }
