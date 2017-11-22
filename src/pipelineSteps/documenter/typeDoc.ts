@@ -72,6 +72,7 @@ export class TypeDoc extends PipelineStepBase {
         defaultConfiguration.includeDeclarations = false;
         defaultConfiguration.externalPattern = "**/*.d.ts";
         defaultConfiguration.excludeExternals = true;
+        defaultConfiguration.ignoreCompilerErrors = true;
 
         defaultConfiguration.module = "es2015";
         defaultConfiguration.target = "es2015";
