@@ -79,21 +79,6 @@ describe("TypeDoc", () => {
             Chai.expect(loggerErrorSpy.args[0][0]).contains("TypeDoc");
         });
 
-        it("can be called with systemjs module type", async () => {
-            const obj = new TypeDoc();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration<TypeDocConfiguration>("TypeDoc").module).to.be.equal("system");
-        });
-
-        it("can be called with commonjs module type", async () => {
-            uniteConfigurationStub.moduleType = "CommonJS";
-            const obj = new TypeDoc();
-            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
-            Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration<TypeDocConfiguration>("TypeDoc").module).to.be.equal("commonjs");
-        });
-
         it("can succeed when file does exist", async () => {
             fileSystemMock.fileExists = sandbox.stub().onFirstCall().resolves(true);
             fileSystemMock.fileReadJson = sandbox.stub().resolves({ out: "blah" });
