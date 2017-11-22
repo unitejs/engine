@@ -18,7 +18,7 @@ export interface IConfigureCommandParams extends IEngineCommandParams {
     cssPre: string | undefined | null;
     cssPost: string | undefined | null;
     cssLinter: string | undefined | null;
-    documentor: string | undefined | null;
+    documenter: string | undefined | null;
     ides: string[] | undefined | null;
     server: string | undefined | null;
     taskManager: string | undefined | null;
@@ -38,5 +38,6 @@ export interface IConfigureCommandParams extends IEngineCommandParams {
     authorWebSite: string | undefined | null;
     namespace: string | undefined | null;
 
+    noCreateSource: boolean | undefined;
     force: boolean | undefined;
 }

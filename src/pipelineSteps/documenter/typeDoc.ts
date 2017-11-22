@@ -15,7 +15,7 @@ export class TypeDoc extends PipelineStepBase {
     private _configuration: TypeDocConfiguration;
 
     public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined {
-        return super.condition(uniteConfiguration.documentor, "TypeDoc");
+        return super.condition(uniteConfiguration.documenter, "TypeDoc");
     }
 
     public async initialise(logger: ILogger,

@@ -69,6 +69,7 @@ export class Gulp extends PipelineStepBase {
                                            this._files[i].destFolder,
                                            this._files[i].destFile,
                                            engineVariables.force,
+                                           false,
                                            {
                                                 "\\\"../../../util/": ["\"./util/"],
                                                 "\\\"../../util/": ["\"./util/"],
@@ -129,7 +130,7 @@ export class Gulp extends PipelineStepBase {
         const assetTasksCssPre = fileSystem.pathCombine(this._distFolder, `cssPre/${uniteConfiguration.cssPre.toLowerCase()}/`);
         const assetTasksCssPost = fileSystem.pathCombine(this._distFolder, `cssPost/${uniteConfiguration.cssPost.toLowerCase()}/`);
         const assetTasksCssLinter = fileSystem.pathCombine(this._distFolder, `cssLinter/${uniteConfiguration.cssLinter.toLowerCase()}/`);
-        const assetTasksDocumentor = fileSystem.pathCombine(this._distFolder, `documentor/${uniteConfiguration.documentor.toLowerCase()}/`);
+        const assetTasksDocumenter = fileSystem.pathCombine(this._distFolder, `documenter/${uniteConfiguration.documenter.toLowerCase()}/`);
 
         this.toggleFile(assetTasksLanguage, "build-transpile.js", this._tasksFolder, "build-transpile.js", mainCondition, {
             "^(?:.*){TRANSPILEINCLUDE}(?:.*)": engineVariables.buildTranspileInclude,
@@ -146,13 +147,13 @@ export class Gulp extends PipelineStepBase {
         this.toggleFile(assetTasksCssPost, "build-css-post-app.js", this._tasksFolder, "build-css-post-app.js", mainCondition);
         this.toggleFile(assetTasksCssPost, "build-css-post-components.js", this._tasksFolder, "build-css-post-components.js", mainCondition);
 
-        const hasDocumentor = !super.condition(uniteConfiguration.documentor, "None");
-        this.toggleFile(assetTasksDocumentor, "doc-generate.js", this._tasksFolder, "doc-generate.js", mainCondition && hasDocumentor);
+        const hasDocumenter = !super.condition(uniteConfiguration.documenter, "None");
+        this.toggleFile(assetTasksDocumenter, "doc-generate.js", this._tasksFolder, "doc-generate.js", mainCondition && hasDocumenter);
 
         this.toggleFile(this._distFolder, "build.js", this._tasksFolder, "build.js", mainCondition);
         this.toggleFile(this._distFolder, "build-transpile-modules.js", this._tasksFolder, "build-transpile-modules.js", mainCondition);
         this.toggleFile(this._distFolder, "version.js", this._tasksFolder, "version.js", mainCondition);
-        this.toggleFile(this._distFolder, "doc.js", this._tasksFolder, "doc.js", mainCondition && hasDocumentor);
+        this.toggleFile(this._distFolder, "doc.js", this._tasksFolder, "doc.js", mainCondition && hasDocumenter);
     }
 
     private generateUnitDependencies(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): void {

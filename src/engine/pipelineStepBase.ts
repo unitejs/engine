@@ -46,13 +46,17 @@ export abstract class PipelineStepBase implements IPipelineStep {
                           destFolder: string,
                           destFilename: string,
                           force: boolean,
+                          noCreate: boolean,
                           replacements?: { [id: string]: string[] }): Promise<number> {
         const sourceFileExists = await fileSystem.fileExists(sourceFolder, sourceFilename);
 
         if (sourceFileExists) {
             const hasGeneratedMarker = await this.fileHasGeneratedMarker(fileSystem, destFolder, destFilename);
 
-            if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker" || force) {
+            if (hasGeneratedMarker === "FileNotExist" && noCreate) {
+                logger.info(`Skipping ${sourceFilename} as the no create flag is set`,
+                            { from: sourceFolder, to: destFolder });
+            } else if (hasGeneratedMarker === "FileNotExist" || hasGeneratedMarker === "HasMarker" || force) {
                 logger.info(`Copying ${sourceFilename}`, { from: sourceFolder, to: destFolder });
 
                 try {

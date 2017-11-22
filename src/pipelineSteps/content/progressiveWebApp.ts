@@ -13,6 +13,6 @@ export class ProgressiveWebApp extends PipelineStepBase {
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         const assetPwa = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "pwa");
         const buildPwa = fileSystem.pathCombine(engineVariables.wwwRootFolder, "build/assets/pwa");
-        return this.copyFile(logger, fileSystem, assetPwa, ProgressiveWebApp.FILENAME, buildPwa, ProgressiveWebApp.FILENAME, engineVariables.force);
+        return this.copyFile(logger, fileSystem, assetPwa, ProgressiveWebApp.FILENAME, buildPwa, ProgressiveWebApp.FILENAME, engineVariables.force, false);
     }
 }

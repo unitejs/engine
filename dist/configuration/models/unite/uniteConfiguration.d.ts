@@ -21,7 +21,7 @@ export declare class UniteConfiguration {
     cssPre: string;
     cssPost: string;
     cssLinter: string;
-    documentor: string;
+    documenter: string;
     server: string;
     taskManager: string;
     packageManager: string;

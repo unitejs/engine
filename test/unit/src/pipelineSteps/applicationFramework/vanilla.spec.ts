@@ -1,5 +1,5 @@
 /**
- * Tests for PlainApp.
+ * Tests for Vanilla.
  */
 import * as Chai from "chai";
 import * as Sinon from "sinon";
@@ -8,10 +8,10 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { ProtractorConfiguration } from "../../../../../src/configuration/models/protractor/protractorConfiguration";
 import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../../src/engine/engineVariables";
-import { PlainApp } from "../../../../../src/pipelineSteps/applicationFramework/plainApp";
+import { Vanilla } from "../../../../../src/pipelineSteps/applicationFramework/vanilla";
 import { FileSystemMock } from "../../fileSystem.mock";
 
-describe("PlainApp", () => {
+describe("Vanilla", () => {
     let sandbox: Sinon.SinonSandbox;
     let loggerStub: ILogger;
     let fileSystemMock: IFileSystem;
@@ -26,7 +26,7 @@ describe("PlainApp", () => {
 
         fileSystemMock = new FileSystemMock();
         uniteConfigurationStub = new UniteConfiguration();
-        uniteConfigurationStub.applicationFramework = "PlainApp";
+        uniteConfigurationStub.applicationFramework = "Vanilla";
         uniteConfigurationStub.moduleType = "AMD";
         uniteConfigurationStub.bundler = "RequireJS";
         uniteConfigurationStub.unitTestRunner = "Karma";
@@ -54,20 +54,20 @@ describe("PlainApp", () => {
     });
 
     it("can be created", () => {
-        const obj = new PlainApp();
+        const obj = new Vanilla();
         Chai.should().exist(obj);
     });
 
     describe("mainCondition", () => {
         it("can be called with not matching condition", async () => {
-            const obj = new PlainApp();
+            const obj = new Vanilla();
             uniteConfigurationStub.applicationFramework = undefined;
             const res = obj.mainCondition(uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(false);
         });
 
         it("can be called with matching condition", async () => {
-            const obj = new PlainApp();
+            const obj = new Vanilla();
             const res = obj.mainCondition(uniteConfigurationStub, engineVariablesStub);
             Chai.expect(res).to.be.equal(true);
         });
@@ -75,14 +75,14 @@ describe("PlainApp", () => {
 
     describe("initialise", () => {
         it("can be called with application framework not matching", async () => {
-            const obj = new PlainApp();
+            const obj = new Vanilla();
             uniteConfigurationStub.applicationFramework = "Aurelia";
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
         });
 
         it("can be called with application framework matching", async () => {
-            const obj = new PlainApp();
+            const obj = new Vanilla();
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(uniteConfigurationStub.viewExtensions.length).to.be.equal(1);
@@ -91,7 +91,7 @@ describe("PlainApp", () => {
 
     describe("configure", () => {
         it("can be called with not configurations", async () => {
-            const obj = new PlainApp();
+            const obj = new Vanilla();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
         });
@@ -99,7 +99,7 @@ describe("PlainApp", () => {
         it("can be called with configurations", async () => {
             engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "aaaa" }] });
             engineVariablesStub.setConfiguration("WebdriverIO.Plugins", []);
-            const obj = new PlainApp();
+            const obj = new Vanilla();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(2);
@@ -107,15 +107,15 @@ describe("PlainApp", () => {
         });
 
         it("can be called with not configurations with false mainCondition", async () => {
-            const obj = new PlainApp();
+            const obj = new Vanilla();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
         });
 
         it("can be called with configurations with false mainCondition", async () => {
-            engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/unitejs-plain-protractor-plugin" } ] });
-            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", [ "unitejs-plain-webdriver-plugin" ]);
-            const obj = new PlainApp();
+            engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/unitejs-vanilla-protractor-plugin" } ] });
+            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", [ "unitejs-vanilla-webdriver-plugin" ]);
+            const obj = new Vanilla();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(0);
@@ -134,7 +134,7 @@ describe("PlainApp", () => {
                 }
             });
 
-            const obj = new PlainApp();
+            const obj = new Vanilla();
             const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.js");
@@ -151,7 +151,7 @@ describe("PlainApp", () => {
                 }
             });
 
-            const obj = new PlainApp();
+            const obj = new Vanilla();
             const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
             let exists = await fileSystemMock.fileExists("./test/unit/temp/www/src/", "app.js");
@@ -171,7 +171,7 @@ describe("PlainApp", () => {
                 }
             });
 
-            const obj = new PlainApp();
+            const obj = new Vanilla();
             const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(1);
             let exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/e2e/src/", "app.spec.js");
@@ -181,7 +181,7 @@ describe("PlainApp", () => {
         });
 
         it("can complete as javascript", async () => {
-            const obj = new PlainApp();
+            const obj = new Vanilla();
             const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/unit/src/", "app.spec.js");
@@ -190,7 +190,7 @@ describe("PlainApp", () => {
 
         it("can complete as typescript", async () => {
             uniteConfigurationStub.sourceLanguage = "TypeScript";
-            const obj = new PlainApp();
+            const obj = new Vanilla();
             const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/unit/src/", "app.spec.ts");

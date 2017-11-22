@@ -100,12 +100,12 @@ describe("ConfigureCommand", () => {
             cssPre: "Sass",
             cssPost: "None",
             cssLinter: "None",
-            documentor: "None",
+            documenter: "None",
             linter: "ESLint",
             packageManager: "Yarn",
             taskManager: "Gulp",
             server: "BrowserSync",
-            applicationFramework: "PlainApp",
+            applicationFramework: "Vanilla",
             ides: ["VSCode"],
             uniteVersion: "0.0.0",
             sourceExtensions: [],
@@ -164,7 +164,7 @@ describe("ConfigureCommand", () => {
                 cssPre: undefined,
                 cssPost: undefined,
                 cssLinter: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 ides: undefined,
                 taskManager: undefined,
                 server: undefined,
@@ -172,6 +172,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -208,7 +209,7 @@ describe("ConfigureCommand", () => {
                 cssPre: undefined,
                 cssPost: undefined,
                 cssLinter: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 ides: undefined,
                 taskManager: undefined,
                 server: undefined,
@@ -216,6 +217,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -252,7 +254,7 @@ describe("ConfigureCommand", () => {
                 cssPre: undefined,
                 cssPost: undefined,
                 cssLinter: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 ides: undefined,
                 taskManager: undefined,
                 server: undefined,
@@ -260,6 +262,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -296,7 +299,7 @@ describe("ConfigureCommand", () => {
                 cssPre: undefined,
                 cssPost: undefined,
                 cssLinter: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 ides: undefined,
                 taskManager: undefined,
                 server: undefined,
@@ -304,6 +307,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -340,7 +344,7 @@ describe("ConfigureCommand", () => {
                 cssPre: undefined,
                 cssPost: undefined,
                 cssLinter: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 ides: undefined,
                 taskManager: undefined,
                 server: undefined,
@@ -348,6 +352,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -384,7 +389,7 @@ describe("ConfigureCommand", () => {
                 cssPre: undefined,
                 cssPost: undefined,
                 cssLinter: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 ides: undefined,
                 taskManager: undefined,
                 server: undefined,
@@ -392,6 +397,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -428,7 +434,7 @@ describe("ConfigureCommand", () => {
                 cssPre: undefined,
                 cssPost: undefined,
                 cssLinter: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 ides: undefined,
                 taskManager: undefined,
                 server: undefined,
@@ -436,6 +442,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -472,7 +479,7 @@ describe("ConfigureCommand", () => {
                 cssPre: undefined,
                 cssPost: undefined,
                 cssLinter: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 ides: undefined,
                 taskManager: undefined,
                 server: undefined,
@@ -480,6 +487,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -516,7 +524,7 @@ describe("ConfigureCommand", () => {
                 cssPre: undefined,
                 cssPost: undefined,
                 cssLinter: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 ides: undefined,
                 taskManager: undefined,
                 server: undefined,
@@ -524,6 +532,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -560,7 +569,7 @@ describe("ConfigureCommand", () => {
                 cssPre: undefined,
                 cssPost: undefined,
                 cssLinter: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 ides: undefined,
                 taskManager: undefined,
                 server: undefined,
@@ -568,6 +577,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -604,7 +614,7 @@ describe("ConfigureCommand", () => {
                 cssPre: undefined,
                 cssPost: undefined,
                 cssLinter: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 ides: undefined,
                 taskManager: undefined,
                 server: undefined,
@@ -612,6 +622,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -648,7 +659,7 @@ describe("ConfigureCommand", () => {
                 cssPre: undefined,
                 cssPost: undefined,
                 cssLinter: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 ides: undefined,
                 taskManager: undefined,
                 server: undefined,
@@ -656,6 +667,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -692,7 +704,7 @@ describe("ConfigureCommand", () => {
                 cssPre: undefined,
                 cssPost: undefined,
                 cssLinter: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 ides: undefined,
                 taskManager: undefined,
                 server: undefined,
@@ -700,6 +712,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -736,7 +749,7 @@ describe("ConfigureCommand", () => {
                 cssPre: undefined,
                 cssPost: undefined,
                 cssLinter: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 ides: undefined,
                 taskManager: undefined,
                 server: undefined,
@@ -744,6 +757,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -780,7 +794,7 @@ describe("ConfigureCommand", () => {
                 cssPre: "Sass",
                 cssPost: undefined,
                 cssLinter: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 taskManager: undefined,
                 server: undefined,
                 ides: undefined,
@@ -788,6 +802,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -824,7 +839,7 @@ describe("ConfigureCommand", () => {
                 cssPre: "Sass",
                 cssPost: "None",
                 cssLinter: "aaa",
-                documentor: undefined,
+                documenter: undefined,
                 taskManager: undefined,
                 server: undefined,
                 ides: undefined,
@@ -832,13 +847,14 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("cssLinter");
         });
 
-        it("can fail when calling with undefined documentor", async () => {
+        it("can fail when calling with undefined documenter", async () => {
             uniteJson = undefined;
             const obj = new ConfigureCommand();
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
@@ -868,7 +884,7 @@ describe("ConfigureCommand", () => {
                 cssPre: "Sass",
                 cssPost: "None",
                 cssLinter: "None",
-                documentor: "aaa",
+                documenter: "aaa",
                 taskManager: undefined,
                 server: undefined,
                 ides: undefined,
@@ -876,10 +892,11 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
-            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("documentor");
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("documenter");
         });
 
         it("can fail when calling with undefined server", async () => {
@@ -912,7 +929,7 @@ describe("ConfigureCommand", () => {
                 cssPre: "Sass",
                 cssPost: "PostCss",
                 cssLinter: "StyleLint",
-                documentor: "ESDoc",
+                documenter: "ESDoc",
                 ides: ["VSCode"],
                 taskManager: undefined,
                 server: undefined,
@@ -920,6 +937,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -956,7 +974,7 @@ describe("ConfigureCommand", () => {
                 cssPre: "Sass",
                 cssPost: "PostCss",
                 cssLinter: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 ides: ["VSCode"],
                 server: "BrowserSync",
                 taskManager: undefined,
@@ -964,6 +982,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -1000,7 +1019,7 @@ describe("ConfigureCommand", () => {
                 cssPre: "Sass",
                 cssPost: "None",
                 cssLinter: "None",
-                documentor: "None",
+                documenter: "None",
                 ides: ["VSCode"],
                 server: "BrowserSync",
                 taskManager: "Gulp",
@@ -1008,6 +1027,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -1044,7 +1064,7 @@ describe("ConfigureCommand", () => {
                 cssPre: "Sass",
                 cssPost: "None",
                 cssLinter: "None",
-                documentor: "None",
+                documenter: "None",
                 ides: ["VSCode"],
                 server: "BrowserSync",
                 taskManager: "Gulp",
@@ -1052,6 +1072,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -1088,14 +1109,15 @@ describe("ConfigureCommand", () => {
                 cssPre: "Sass",
                 cssPost: "None",
                 cssLinter: "None",
-                documentor: "None",
+                documenter: "None",
                 ides: ["VSCode"],
                 server: "BrowserSync",
                 taskManager: "Gulp",
                 packageManager: "Npm",
-                applicationFramework: "PlainApp",
+                applicationFramework: "Vanilla",
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -1146,14 +1168,15 @@ describe("ConfigureCommand", () => {
                 cssPre: "Sass",
                 cssPost: "None",
                 cssLinter: "None",
-                documentor: "None",
+                documenter: "None",
                 ides: ["VSCode"],
                 server: "BrowserSync",
                 taskManager: "Gulp",
                 packageManager: "Npm",
-                applicationFramework: "PlainApp",
+                applicationFramework: "Vanilla",
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -1191,14 +1214,15 @@ describe("ConfigureCommand", () => {
                 cssPre: "Sass",
                 cssPost: "None",
                 cssLinter: "None",
-                documentor: "None",
+                documenter: "None",
                 ides: ["VSCode"],
                 server: "BrowserSync",
                 taskManager: "Gulp",
                 packageManager: "Npm",
-                applicationFramework: "PlainApp",
+                applicationFramework: "Vanilla",
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -1236,14 +1260,15 @@ describe("ConfigureCommand", () => {
                 cssPre: "Sass",
                 cssPost: "None",
                 cssLinter: "None",
-                documentor: "None",
+                documenter: "None",
                 ides: ["VSCode"],
                 server: "BrowserSync",
                 taskManager: "Gulp",
                 packageManager: "Npm",
-                applicationFramework: "PlainApp",
+                applicationFramework: "Vanilla",
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -1280,14 +1305,15 @@ describe("ConfigureCommand", () => {
                 cssPre: "Sass",
                 cssPost: "None",
                 cssLinter: "None",
-                documentor: "None",
+                documenter: "None",
                 ides: ["VSCode"],
                 server: "BrowserSync",
                 taskManager: "Gulp",
                 packageManager: "Npm",
-                applicationFramework: "PlainApp",
+                applicationFramework: "Vanilla",
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);
@@ -1325,14 +1351,15 @@ describe("ConfigureCommand", () => {
                 cssPre: "Sass",
                 cssPost: "None",
                 cssLinter: "None",
-                documentor: "None",
+                documenter: "None",
                 ides: ["VSCode"],
                 server: "BrowserSync",
                 taskManager: "Gulp",
                 packageManager: "Npm",
-                applicationFramework: "PlainApp",
+                applicationFramework: "Vanilla",
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);
@@ -1370,14 +1397,15 @@ describe("ConfigureCommand", () => {
                 cssPre: "Sass",
                 cssPost: "None",
                 cssLinter: "None",
-                documentor: "None",
+                documenter: "None",
                 ides: ["VSCode"],
                 server: "BrowserSync",
                 taskManager: "Gulp",
                 packageManager: "Npm",
-                applicationFramework: "PlainApp",
+                applicationFramework: "Vanilla",
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: "./test/unit/temp/www"
             });
             Chai.expect(res).to.be.equal(0);
@@ -1415,14 +1443,15 @@ describe("ConfigureCommand", () => {
                 cssPre: "Sass",
                 cssPost: "None",
                 cssLinter: "None",
-                documentor: "None",
+                documenter: "None",
                 ides: ["VSCode"],
                 server: "BrowserSync",
                 taskManager: "Gulp",
                 packageManager: "Npm",
-                applicationFramework: "PlainApp",
+                applicationFramework: "Vanilla",
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: "./test/unit/temp"
             });
             Chai.expect(res).to.be.equal(0);
@@ -1460,7 +1489,7 @@ describe("ConfigureCommand", () => {
                 cssPre: undefined,
                 cssPost: undefined,
                 cssLinter: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 ides: undefined,
                 taskManager: undefined,
                 server: undefined,
@@ -1468,6 +1497,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);
@@ -1505,7 +1535,7 @@ describe("ConfigureCommand", () => {
                 cssPre: undefined,
                 cssPost: undefined,
                 cssLinter: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 ides: undefined,
                 taskManager: undefined,
                 server: undefined,
@@ -1513,6 +1543,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: undefined,
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -1550,13 +1581,14 @@ describe("ConfigureCommand", () => {
                 cssPost: undefined,
                 cssLinter: undefined,
                 ides: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 taskManager: undefined,
                 server: undefined,
                 packageManager: undefined,
                 applicationFramework: undefined,
                 profile: "aaaaa",
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -1594,7 +1626,7 @@ describe("ConfigureCommand", () => {
                 cssPre: undefined,
                 cssPost: undefined,
                 cssLinter: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 ides: undefined,
                 taskManager: undefined,
                 server: undefined,
@@ -1602,6 +1634,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: "AureliaTypeScript",
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -1639,7 +1672,7 @@ describe("ConfigureCommand", () => {
                 cssPre: undefined,
                 cssPost: undefined,
                 cssLinter: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 ides: undefined,
                 taskManager: undefined,
                 server: undefined,
@@ -1647,6 +1680,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: "AureliaTypeScript",
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -1684,13 +1718,14 @@ describe("ConfigureCommand", () => {
                 cssPost: undefined,
                 cssLinter: undefined,
                 ides: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 taskManager: undefined,
                 server: undefined,
                 packageManager: undefined,
                 applicationFramework: undefined,
                 profile: "AureliaTypeScript",
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
@@ -1727,7 +1762,7 @@ describe("ConfigureCommand", () => {
                 cssPre: undefined,
                 cssPost: undefined,
                 cssLinter: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 ides: undefined,
                 taskManager: undefined,
                 server: undefined,
@@ -1735,6 +1770,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: undefined,
                 profile: "AureliaTypeScript",
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);
@@ -1773,7 +1809,7 @@ describe("ConfigureCommand", () => {
                 cssPre: undefined,
                 cssPost: undefined,
                 cssLinter: undefined,
-                documentor: undefined,
+                documenter: undefined,
                 ides: undefined,
                 taskManager: undefined,
                 server: undefined,
@@ -1781,6 +1817,7 @@ describe("ConfigureCommand", () => {
                 applicationFramework: "Angular",
                 profile: "AureliaTypeScript",
                 force: undefined,
+                noCreateSource: undefined,
                 outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);
@@ -1819,14 +1856,15 @@ describe("ConfigureCommand", () => {
                 cssPre: "Sass",
                 cssPost: "None",
                 cssLinter: "None",
-                documentor: "None",
+                documenter: "None",
                 ides: ["VSCode"],
                 server: "BrowserSync",
                 taskManager: "Gulp",
                 packageManager: "Npm",
-                applicationFramework: "PlainApp",
+                applicationFramework: "Vanilla",
                 profile: undefined,
                 force: true,
+                noCreateSource: undefined,
                 outputDirectory: "./test/unit/temp"
             });
             Chai.expect(res).to.be.equal(0);
@@ -1834,7 +1872,53 @@ describe("ConfigureCommand", () => {
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
         });
 
-        it("can succeed with force and existing unite.json", async () => {
+        it("can succeed with noCreateSource", async () => {
+            uniteJson.buildConfigurations = { dev: new UniteBuildConfiguration() };
+            const obj = new ConfigureCommand();
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "my-package",
+                title: undefined,
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
+                license: "MIT",
+                sourceLanguage: "JavaScript",
+                moduleType: "AMD",
+                bundler: "RequireJS",
+                unitTestRunner: "Karma",
+                unitTestFramework: "Jasmine",
+                unitTestEngine: "PhantomJS",
+                e2eTestRunner: "Protractor",
+                e2eTestFramework: "MochaChai",
+                linter: "ESLint",
+                cssPre: "Sass",
+                cssPost: "None",
+                cssLinter: "None",
+                documenter: "None",
+                ides: ["VSCode"],
+                server: "BrowserSync",
+                taskManager: "Gulp",
+                packageManager: "Npm",
+                applicationFramework: "Vanilla",
+                profile: undefined,
+                force: undefined,
+                noCreateSource: true,
+                outputDirectory: "./test/unit/temp"
+            });
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(loggerWarningSpy.args[0][0]).to.contain("you should update");
+            Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
+        });
+
+        it("can succeed with meta data", async () => {
             uniteJson.buildConfigurations = { dev: new UniteBuildConfiguration() };
             const obj = new ConfigureCommand();
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
@@ -1864,14 +1948,15 @@ describe("ConfigureCommand", () => {
                 cssPre: "Sass",
                 cssPost: "None",
                 cssLinter: "None",
-                documentor: "None",
+                documenter: "None",
                 ides: ["VSCode"],
                 server: "BrowserSync",
                 taskManager: "Gulp",
                 packageManager: "Npm",
-                applicationFramework: "PlainApp",
+                applicationFramework: "Vanilla",
                 profile: undefined,
                 force: true,
+                noCreateSource: undefined,
                 outputDirectory: "./test/unit/temp"
             });
             Chai.expect(res).to.be.equal(0);

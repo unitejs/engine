@@ -9,6 +9,7 @@ import { EngineVariablesMeta } from "./engineVariablesMeta";
 export declare class EngineVariables {
     meta: EngineVariablesMeta;
     force: boolean;
+    noCreateSource: boolean;
     engineRootFolder: string;
     engineAssetsFolder: string;
     engineVersion: string;

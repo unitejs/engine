@@ -93,7 +93,7 @@ describe("GenerateCommand", () => {
             cssPre: undefined,
             cssPost: undefined,
             cssLinter: undefined,
-            documentor: undefined,
+            documenter: undefined,
             linter: undefined,
             packageManager: undefined,
             taskManager: undefined,

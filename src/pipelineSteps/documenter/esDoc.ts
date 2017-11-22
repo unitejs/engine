@@ -16,7 +16,7 @@ export class EsDoc extends PipelineStepBase {
     private _configuration: EsDocConfiguration;
 
     public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined {
-        return super.condition(uniteConfiguration.documentor, "ESDoc");
+        return super.condition(uniteConfiguration.documenter, "ESDoc");
     }
 
     public async initialise(logger: ILogger,

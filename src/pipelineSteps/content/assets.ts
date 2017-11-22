@@ -28,18 +28,22 @@ export class Assets extends PipelineStepBase {
                 const sourceThemeFolder = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "assetsSrc/theme/");
                 const destThemeFolder = fileSystem.pathCombine(engineVariables.www.assetsSrcFolder, "theme/");
 
-                ret = await super.copyFile(logger, fileSystem, sourceThemeFolder, Assets.FILENAME_TILE, destThemeFolder, Assets.FILENAME_TILE, engineVariables.force);
+                ret = await super.copyFile(logger, fileSystem, sourceThemeFolder, Assets.FILENAME_TILE,
+                                           destThemeFolder, Assets.FILENAME_TILE, engineVariables.force, false);
 
                 if (ret === 0) {
-                    ret = await super.copyFile(logger, fileSystem, sourceThemeFolder, Assets.FILENAME_TILE_TRANSPARENT, destThemeFolder, Assets.FILENAME_TILE_TRANSPARENT, engineVariables.force);
+                    ret = await super.copyFile(logger, fileSystem, sourceThemeFolder, Assets.FILENAME_TILE_TRANSPARENT,
+                                               destThemeFolder, Assets.FILENAME_TILE_TRANSPARENT, engineVariables.force, false);
                 }
 
                 if (ret === 0) {
-                    ret = await super.copyFile(logger, fileSystem, sourceThemeFolder, Assets.FILENAME_LOADER_CSS, destThemeFolder, Assets.FILENAME_LOADER_CSS, engineVariables.force);
+                    ret = await super.copyFile(logger, fileSystem, sourceThemeFolder, Assets.FILENAME_LOADER_CSS,
+                                               destThemeFolder, Assets.FILENAME_LOADER_CSS, engineVariables.force, false);
                 }
 
                 if (ret === 0) {
-                    ret = await super.copyFile(logger, fileSystem, sourceThemeFolder, Assets.FILENAME_LOADER_HTML, destThemeFolder, Assets.FILENAME_LOADER_HTML, engineVariables.force);
+                    ret = await super.copyFile(logger, fileSystem, sourceThemeFolder, Assets.FILENAME_LOADER_HTML,
+                                               destThemeFolder, Assets.FILENAME_LOADER_HTML, engineVariables.force, false);
                 }
             }
         }

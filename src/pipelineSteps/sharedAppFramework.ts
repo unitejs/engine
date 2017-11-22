@@ -29,6 +29,7 @@ export abstract class SharedAppFramework extends PipelineStepBase {
                                             engineVariables.www.srcFolder,
                                             file,
                                             engineVariables.force,
+                                            engineVariables.noCreateSource,
                                             TemplateHelper.createCodeSubstitutions(engineVariables));
 
             if (ret !== 0) {
@@ -55,7 +56,8 @@ export abstract class SharedAppFramework extends PipelineStepBase {
                                             `${htmlFile}`,
                                             engineVariables.www.srcFolder,
                                             `${htmlFile}`,
-                                            engineVariables.force);
+                                            engineVariables.force,
+                                            engineVariables.noCreateSource);
             if (ret !== 0) {
                 return ret;
             }
@@ -79,7 +81,8 @@ export abstract class SharedAppFramework extends PipelineStepBase {
                                             `${cssFile}.${uniteConfiguration.styleExtension}`,
                                             engineVariables.www.srcFolder,
                                             `${cssFile}.${uniteConfiguration.styleExtension}`,
-                                            engineVariables.force);
+                                            engineVariables.force,
+                                            engineVariables.noCreateSource);
 
             if (ret !== 0) {
                 return ret;
@@ -113,6 +116,7 @@ export abstract class SharedAppFramework extends PipelineStepBase {
                                                 engineVariables.www.unitTestSrcFolder,
                                                 `${spec}`,
                                                 engineVariables.force,
+                                                engineVariables.noCreateSource,
                                                 TemplateHelper.createCodeSubstitutions(engineVariables));
                 if (ret !== 0) {
                     return ret;
@@ -123,7 +127,8 @@ export abstract class SharedAppFramework extends PipelineStepBase {
                                  "unit-bootstrap.js",
                                  engineVariables.www.unitTestFolder,
                                  "unit-bootstrap.js",
-                                 engineVariables.force);
+                                 engineVariables.force,
+                                 engineVariables.noCreateSource);
 
         } else {
             return 0;
@@ -148,7 +153,8 @@ export abstract class SharedAppFramework extends PipelineStepBase {
                                                 `${spec}`,
                                                 engineVariables.www.e2eTestSrcFolder,
                                                 `${spec}`,
-                                                engineVariables.force);
+                                                engineVariables.force,
+                                                engineVariables.noCreateSource);
 
                 if (ret !== 0) {
                     return ret;
@@ -171,7 +177,8 @@ export abstract class SharedAppFramework extends PipelineStepBase {
         for (const style of styles) {
             const ret = await super.copyFile(logger, fileSystem, assetCssFolder,
                                              `${style}.${uniteConfiguration.styleExtension}`, engineVariables.www.cssSrcFolder, `${style}.${uniteConfiguration.styleExtension}`,
-                                             engineVariables.force);
+                                             engineVariables.force,
+                                             engineVariables.noCreateSource);
 
             if (ret !== 0) {
                 return ret;

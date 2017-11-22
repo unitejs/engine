@@ -15,8 +15,9 @@ import { IEngineCommandParams } from "../interfaces/IEngineCommandParams";
 export class ConfigureCommand extends EngineCommandBase implements IEngineCommand<IEngineCommandParams> {
     public async run(args: IConfigureCommandParams): Promise<number> {
         args.force = args.force === undefined || args.force === null ? false : args.force;
+        args.noCreateSource = args.noCreateSource === undefined || args.noCreateSource === null ? false : args.noCreateSource;
 
-        let uniteConfiguration = await this.loadConfiguration(args.outputDirectory, "configure", args.profile, !!args.force);
+        let uniteConfiguration = await this.loadConfiguration(args.outputDirectory, "configure", args.profile, args.force);
         if (uniteConfiguration === undefined) {
             uniteConfiguration = new UniteConfiguration();
         } else if (uniteConfiguration === null) {
@@ -61,7 +62,7 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
         uniteConfiguration.cssPre = args.cssPre || uniteConfiguration.cssPre;
         uniteConfiguration.cssPost = args.cssPost || uniteConfiguration.cssPost;
         uniteConfiguration.cssLinter = args.cssLinter || uniteConfiguration.cssLinter || "None";
-        uniteConfiguration.documentor = args.documentor || uniteConfiguration.documentor || "None";
+        uniteConfiguration.documenter = args.documenter || uniteConfiguration.documenter || "None";
         uniteConfiguration.buildConfigurations = uniteConfiguration.buildConfigurations || {};
         uniteConfiguration.sourceExtensions = [];
         uniteConfiguration.viewExtensions = [];
@@ -139,8 +140,8 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
                 return 1;
             }
         }
-        if (!/none/i.test(uniteConfiguration.documentor)) {
-            if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("documentor", uniteConfiguration.documentor))) {
+        if (!/none/i.test(uniteConfiguration.documenter)) {
+            if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("documenter", uniteConfiguration.documenter))) {
                 return 1;
             }
         }
@@ -202,17 +203,19 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
         }
 
         this._logger.info("force", { force: args.force });
+        this._logger.info("noCreateSource", { noCreateSource: args.noCreateSource });
 
         this._logger.info("");
 
-        return this.configureRun(args.outputDirectory, uniteConfiguration, meta, args.force);
+        return this.configureRun(args.outputDirectory, uniteConfiguration, meta, args.force, args.noCreateSource);
     }
 
-    private async configureRun(outputDirectory: string, uniteConfiguration: UniteConfiguration, meta: EngineVariablesMeta, force: boolean): Promise<number> {
+    private async configureRun(outputDirectory: string, uniteConfiguration: UniteConfiguration, meta: EngineVariablesMeta, force: boolean, noCreateSource: boolean): Promise<number> {
         const engineVariables = new EngineVariables();
         super.createEngineVariables(outputDirectory, uniteConfiguration, engineVariables);
         engineVariables.meta = meta;
         engineVariables.force = force;
+        engineVariables.noCreateSource = noCreateSource;
 
         this.addPipelinePre();
 

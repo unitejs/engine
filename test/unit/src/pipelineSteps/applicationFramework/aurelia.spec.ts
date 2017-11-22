@@ -81,7 +81,7 @@ describe("Aurelia", () => {
     describe("initialise", () => {
         it("can be called with application framework not matching", async () => {
             const obj = new Aurelia();
-            uniteConfigurationStub.applicationFramework = "PlainApp";
+            uniteConfigurationStub.applicationFramework = "Vanilla";
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
         });

@@ -6,6 +6,8 @@
 * Added JsDoc
 * Added TypeDoc
 * Added documentation to framework sources files and generated elements
+* Change profile command line switch now overrides any current configuration
+* Change application framework template files are now strict code
 * Change Plain App renamed to Vanilla
 
 ## 1.7.1

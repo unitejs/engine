@@ -7,121 +7,112 @@ import { TemplateHelper } from "../../../../src/helpers/templateHelper";
 describe("TemplateHelper", () => {
     describe("generateSubstitutions", () => {
         it("can be called with undefined string", async () => {
-            const res = TemplateHelper.generateSubstitutions(undefined, undefined);
+            const res = TemplateHelper.generateSubstitutions(undefined);
             Chai.expect(res).to.be.deep.equal({});
         });
 
         it("can be called with an empty string", async () => {
-            const res = TemplateHelper.generateSubstitutions("PRE", "");
+            const res = TemplateHelper.generateSubstitutions("");
             Chai.expect(res).to.be.deep.equal({});
         });
 
         it("can be called with an no alpha num string", async () => {
-            const res = TemplateHelper.generateSubstitutions("PRE", "!£$%^&");
+            const res = TemplateHelper.generateSubstitutions("!£$%^&");
             Chai.expect(res).to.be.deep.equal({});
         });
 
         it("can be called with a single lower case character", async () => {
-            const res = TemplateHelper.generateSubstitutions("PRE", "a");
+            const res = TemplateHelper.generateSubstitutions("a");
             Chai.expect(res).to.be.deep.equal({
-                PRE: "a",
-                PRE_SNAKE: "a",
-                PRE_CAMEL: "a",
-                PRE_PASCAL: "A",
-                PRE_HUMAN: "A"
+                "gen-name-snake": "a",
+                genNameCamel: "a",
+                GenNamePascal: "A",
+                "Gen Name Human": "A"
             });
         });
 
         it("can be called with a single upper case character", async () => {
-            const res = TemplateHelper.generateSubstitutions("PRE", "A");
+            const res = TemplateHelper.generateSubstitutions("A");
             Chai.expect(res).to.be.deep.equal({
-                PRE: "A",
-                PRE_SNAKE: "a",
-                PRE_CAMEL: "a",
-                PRE_PASCAL: "A",
-                PRE_HUMAN: "A"
+                "gen-name-snake": "a",
+                genNameCamel: "a",
+                GenNamePascal: "A",
+                "Gen Name Human": "A"
             });
         });
 
         it("can be called with a single whitespace character", async () => {
-            const res = TemplateHelper.generateSubstitutions("PRE", " ");
+            const res = TemplateHelper.generateSubstitutions(" ");
             Chai.expect(res).to.be.deep.equal({});
         });
 
         it("can be called with a single word lower case", async () => {
-            const res = TemplateHelper.generateSubstitutions("PRE", "ape");
+            const res = TemplateHelper.generateSubstitutions("ape");
             Chai.expect(res).to.be.deep.equal({
-                PRE: "ape",
-                PRE_SNAKE: "ape",
-                PRE_CAMEL: "ape",
-                PRE_PASCAL: "Ape",
-                PRE_HUMAN: "Ape"
+                "gen-name-snake": "ape",
+                genNameCamel: "ape",
+                GenNamePascal: "Ape",
+                "Gen Name Human": "Ape"
             });
         });
 
         it("can be called with a single word UPPER case", async () => {
-            const res = TemplateHelper.generateSubstitutions("PRE", "APE");
+            const res = TemplateHelper.generateSubstitutions("APE");
             Chai.expect(res).to.be.deep.equal({
-                PRE: "APE",
-                PRE_SNAKE: "ape",
-                PRE_CAMEL: "aPE",
-                PRE_PASCAL: "APE",
-                PRE_HUMAN: "APE"
+                "gen-name-snake": "ape",
+                genNameCamel: "aPE",
+                GenNamePascal: "APE",
+                "Gen Name Human": "APE"
             });
         });
 
         it("can be called with a multiple words lower case", async () => {
-            const res = TemplateHelper.generateSubstitutions("PRE", "great ape");
+            const res = TemplateHelper.generateSubstitutions("great ape");
             Chai.expect(res).to.be.deep.equal({
-                PRE: "great ape",
-                PRE_SNAKE: "great-ape",
-                PRE_CAMEL: "greatApe",
-                PRE_PASCAL: "GreatApe",
-                PRE_HUMAN: "Great Ape"
+                "gen-name-snake": "great-ape",
+                genNameCamel: "greatApe",
+                GenNamePascal: "GreatApe",
+                "Gen Name Human": "Great Ape"
             });
         });
 
         it("can be called with a multiple words title cased", async () => {
-            const res = TemplateHelper.generateSubstitutions("PRE", "Great Ape");
+            const res = TemplateHelper.generateSubstitutions("Great Ape");
             Chai.expect(res).to.be.deep.equal({
-                PRE: "Great Ape",
-                PRE_SNAKE: "great-ape",
-                PRE_CAMEL: "greatApe",
-                PRE_PASCAL: "GreatApe",
-                PRE_HUMAN: "Great Ape"
+                "gen-name-snake": "great-ape",
+                genNameCamel: "greatApe",
+                GenNamePascal: "GreatApe",
+                "Gen Name Human": "Great Ape"
             });
         });
 
         it("can be called with a multiple words camel cased", async () => {
-            const res = TemplateHelper.generateSubstitutions("PRE", "GreatApe");
+            const res = TemplateHelper.generateSubstitutions("GreatApe");
             Chai.expect(res).to.be.deep.equal({
-                PRE: "GreatApe",
-                PRE_SNAKE: "great-ape",
-                PRE_CAMEL: "greatApe",
-                PRE_PASCAL: "GreatApe",
-                PRE_HUMAN: "Great Ape"
+                "gen-name-snake": "great-ape",
+                genNameCamel: "greatApe",
+                GenNamePascal: "GreatApe",
+                "Gen Name Human": "Great Ape"
             });
         });
 
         it("can be called with a multiple words snake cased", async () => {
-            const res = TemplateHelper.generateSubstitutions("PRE", "great-ape");
+            const res = TemplateHelper.generateSubstitutions("great-ape");
             Chai.expect(res).to.be.deep.equal({
-                PRE: "great-ape",
-                PRE_SNAKE: "great-ape",
-                PRE_CAMEL: "greatApe",
-                PRE_PASCAL: "GreatApe",
-                PRE_HUMAN: "Great Ape"
+                "gen-name-snake": "great-ape",
+                genNameCamel: "greatApe",
+                GenNamePascal: "GreatApe",
+                "Gen Name Human": "Great Ape"
             });
         });
 
         it("can be called with a multiple word and multiple separators", async () => {
-            const res = TemplateHelper.generateSubstitutions("PRE", "great     ape");
+            const res = TemplateHelper.generateSubstitutions("great     ape");
             Chai.expect(res).to.be.deep.equal({
-                PRE: "great ape",
-                PRE_SNAKE: "great-ape",
-                PRE_CAMEL: "greatApe",
-                PRE_PASCAL: "GreatApe",
-                PRE_HUMAN: "Great Ape"
+                "gen-name-snake": "great-ape",
+                genNameCamel: "greatApe",
+                GenNamePascal: "GreatApe",
+                "Gen Name Human": "Great Ape"
             });
         });
     });
@@ -152,7 +143,7 @@ describe("TemplateHelper", () => {
             const res = TemplateHelper.replaceSubstitutions({
                                                                 PRE_NAME: "aaa"
                                                             },
-                                                            "blah {PRE_NAME} poo");
+                                                            "blah PRE_NAME poo");
             Chai.expect(res).to.be.equal("blah aaa poo");
         });
 
@@ -160,7 +151,7 @@ describe("TemplateHelper", () => {
             const res = TemplateHelper.replaceSubstitutions({
                                                                 PRE_NAME: "aaa"
                                                             },
-                                                            "blah {PRE_NAME} poo {PRE_NAME}");
+                                                            "blah PRE_NAME poo PRE_NAME");
             Chai.expect(res).to.be.equal("blah aaa poo aaa");
         });
 
@@ -169,7 +160,7 @@ describe("TemplateHelper", () => {
                                                                 PRE_NAME: "aaa",
                                                                 POST_NAME: "bbb"
                                                             },
-                                                            "blah {PRE_NAME} poo {PRE_NAME} {POST_NAME}");
+                                                            "blah PRE_NAME poo PRE_NAME POST_NAME");
             Chai.expect(res).to.be.equal("blah aaa poo aaa bbb");
         });
     });

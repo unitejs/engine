@@ -16,7 +16,7 @@ export class JsDoc extends PipelineStepBase {
     private _configuration: JsDocConfiguration;
 
     public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined {
-        return super.condition(uniteConfiguration.documentor, "JSDoc");
+        return super.condition(uniteConfiguration.documenter, "JSDoc");
     }
 
     public async initialise(logger: ILogger,

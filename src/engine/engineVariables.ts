@@ -10,6 +10,8 @@ import { EngineVariablesMeta } from "./engineVariablesMeta";
 export class EngineVariables {
     public meta: EngineVariablesMeta;
     public force: boolean;
+    public noCreateSource: boolean;
+
     public engineRootFolder: string;
     public engineAssetsFolder: string;
     public engineVersion: string;

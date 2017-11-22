@@ -37,9 +37,9 @@ export abstract class EngineCommandBase {
     }
 
     protected async loadConfiguration(outputDirectory: string, profileSource: string, profile: string | undefined | null, force: boolean): Promise<UniteConfiguration | undefined | null> {
-        let uniteConfiguration: UniteConfiguration | undefined | null = await this.loadProfile<UniteConfiguration>(profileSource, profile);
+        let uniteConfiguration: UniteConfiguration | undefined | null;
 
-        if (!force && uniteConfiguration !== null) {
+        if (!force) {
             try {
                 const exists = await this._fileSystem.fileExists(outputDirectory, "unite.json");
 
@@ -60,7 +60,14 @@ export abstract class EngineCommandBase {
 
                     }
 
-                    uniteConfiguration = ObjectHelper.merge(uniteConfiguration, existing);
+                    uniteConfiguration = existing;
+                }
+
+                const loadedProfile: UniteConfiguration | undefined | null = await this.loadProfile<UniteConfiguration>(profileSource, profile);
+                if (loadedProfile === null) {
+                    uniteConfiguration = null;
+                } else if (loadedProfile) {
+                    uniteConfiguration = ObjectHelper.merge(uniteConfiguration || {}, loadedProfile);
                 }
             } catch (e) {
                 this._logger.error("Reading existing unite.json", e);
