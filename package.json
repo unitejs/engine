@@ -48,6 +48,7 @@
         "polymer",
         "preact",
         "react",
+        "vanilla",
         "vue",
         "web",
         "pwa",
@@ -59,7 +60,9 @@
         "jsdoc",
         "typedoc",
         "scaffolding",
-        "boilerplate"
+        "boilerplate",
+        "zero",
+        "configuration"
     ],
     "author": "martyn@unitejs.com",
     "license": "MIT",
