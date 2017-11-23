@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.3
+
+* Fixed framework path in ESDoc
+
 ## 1.7.2
 
 * Added EsDoc

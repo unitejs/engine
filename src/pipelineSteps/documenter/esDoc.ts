@@ -1,10 +1,10 @@
 /**
  * Pipeline step to generate esdoc configuration.
  */
+import { ArrayHelper } from "unitejs-framework/dist/helpers/arrayHelper";
 import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { ArrayHelper } from "../../../../framework/dist/helpers/arrayHelper";
 import { EsDocConfiguration } from "../../configuration/models/esDoc/esDocConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
