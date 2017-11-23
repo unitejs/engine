@@ -55,6 +55,9 @@
         "docker",
         "electron",
         "vscode",
+        "esdoc",
+        "jsdoc",
+        "typedoc",
         "scaffolding",
         "boilerplate"
     ],
