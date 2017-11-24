@@ -146,8 +146,8 @@ describe("Vue", () => {
         });
 
         it("can be called with configurations with false mainCondition", async () => {
-            engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/unitejs-vue-protractor-plugin" } ] });
-            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", [ "unitejs-vue-webdriver-plugin" ]);
+            engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/unitejs-protractor-plugin" } ] });
+            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", [ "unitejs-webdriver-plugin" ]);
             engineVariablesStub.setConfiguration("Babel", { plugins: ["transform-decorators-legacy", "transform-class-properties"]});
             engineVariablesStub.setConfiguration("ESLint", { parser: "babel-eslint" });
             engineVariablesStub.setConfiguration("TSLint", { rules: {} });

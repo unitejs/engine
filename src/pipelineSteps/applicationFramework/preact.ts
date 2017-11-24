@@ -41,8 +41,8 @@ export class Preact extends SharedAppFramework {
         engineVariables.toggleDevDependency(["babel-plugin-transform-react-jsx"], mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
         engineVariables.toggleDevDependency(["eslint-plugin-react"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
 
-        engineVariables.toggleDevDependency(["unitejs-preact-protractor-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
-        engineVariables.toggleDevDependency(["unitejs-preact-webdriver-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
+        engineVariables.toggleDevDependency(["unitejs-protractor-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
+        engineVariables.toggleDevDependency(["unitejs-webdriver-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
 
         const isTranspiled = super.condition(uniteConfiguration.moduleType, "AMD") || super.condition(uniteConfiguration.moduleType, "SystemJS");
         const preactPackage: UniteClientPackage = {
@@ -127,12 +127,12 @@ export class Preact extends SharedAppFramework {
         const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
         if (protractorConfiguration) {
             const plugin = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
-                                                                            fileSystem.pathCombine(engineVariables.www.packageFolder, "unitejs-preact-protractor-plugin")));
+                                                                            fileSystem.pathCombine(engineVariables.www.packageFolder, "unitejs-protractor-plugin")));
             ArrayHelper.addRemove(protractorConfiguration.plugins, { path: plugin }, mainCondition, (object, item) => object.path === item.path);
         }
         const webdriverIoPlugins = engineVariables.getConfiguration<string[]>("WebdriverIO.Plugins");
         if (webdriverIoPlugins) {
-            ArrayHelper.addRemove(webdriverIoPlugins, "unitejs-preact-webdriver-plugin", mainCondition);
+            ArrayHelper.addRemove(webdriverIoPlugins, "unitejs-webdriver-plugin", mainCondition);
         }
 
         const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");

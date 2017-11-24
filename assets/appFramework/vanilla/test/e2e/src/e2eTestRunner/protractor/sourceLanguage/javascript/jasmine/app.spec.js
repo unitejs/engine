@@ -15,7 +15,7 @@ describe("App", () => {
     });
 
     it("the root text is set", (done) => {
-        browser.loadAndWaitForVanillaPage("/")
+        browser.uniteLoadAndWaitForPage("/")
             .then(() => {
                 $("#root").getText()
                     .then((rootContent) => {
@@ -26,7 +26,7 @@ describe("App", () => {
     });
 
     it("the font size is set", (done) => {
-        browser.loadAndWaitForVanillaPage("/")
+        browser.uniteLoadAndWaitForPage("/")
             .then(() => {
                 $(".child").getCssValue("font-size")
                     .then((fontSize) => {

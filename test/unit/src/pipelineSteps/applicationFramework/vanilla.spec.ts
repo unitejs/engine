@@ -113,8 +113,8 @@ describe("Vanilla", () => {
         });
 
         it("can be called with configurations with false mainCondition", async () => {
-            engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/unitejs-vanilla-protractor-plugin" } ] });
-            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", [ "unitejs-vanilla-webdriver-plugin" ]);
+            engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/unitejs-protractor-plugin" } ] });
+            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", [ "unitejs-webdriver-plugin" ]);
             const obj = new Vanilla();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);

@@ -42,8 +42,8 @@ export class React extends SharedAppFramework {
         engineVariables.toggleDevDependency(["@types/react", "@types/react-dom", "@types/react-router-dom"],
                                             mainCondition && super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
 
-        engineVariables.toggleDevDependency(["unitejs-react-protractor-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
-        engineVariables.toggleDevDependency(["unitejs-react-webdriver-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
+        engineVariables.toggleDevDependency(["unitejs-protractor-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
+        engineVariables.toggleDevDependency(["unitejs-webdriver-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
 
         engineVariables.toggleClientPackage("react", {
                                                 name: "react",
@@ -116,12 +116,12 @@ export class React extends SharedAppFramework {
         const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
         if (protractorConfiguration) {
             const plugin = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
-                                                                            fileSystem.pathCombine(engineVariables.www.packageFolder, "unitejs-react-protractor-plugin")));
+                                                                            fileSystem.pathCombine(engineVariables.www.packageFolder, "unitejs-protractor-plugin")));
             ArrayHelper.addRemove(protractorConfiguration.plugins, { path: plugin }, mainCondition, (object, item) => object.path === item.path);
         }
         const webdriverIoPlugins = engineVariables.getConfiguration<string[]>("WebdriverIO.Plugins");
         if (webdriverIoPlugins) {
-            ArrayHelper.addRemove(webdriverIoPlugins, "unitejs-react-webdriver-plugin", mainCondition);
+            ArrayHelper.addRemove(webdriverIoPlugins, "unitejs-webdriver-plugin", mainCondition);
         }
 
         const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");

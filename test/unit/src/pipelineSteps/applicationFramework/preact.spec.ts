@@ -183,8 +183,8 @@ describe("Preact", () => {
 
         it("can be called with configurations with false mainCondition", async () => {
             const obj = new Preact();
-            engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/unitejs-preact-protractor-plugin" } ] });
-            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", ["unitejs-preact-webdriver-plugin"]);
+            engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/unitejs-protractor-plugin" } ] });
+            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", ["unitejs-webdriver-plugin"]);
             engineVariablesStub.setConfiguration("Babel", { plugins: [[ "transform-react-jsx", { pragma: "h"} ]]});
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: { jsx: true }});
             engineVariablesStub.setConfiguration("ESLint", { parserOptions: { ecmaFeatures: { jsx: "react"}}, extends: ["plugin:react/recommended", "react"], plugins: ["react"], settings: {}});

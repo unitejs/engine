@@ -107,6 +107,7 @@
         "unitejs-types": "^1.0.0"
     },
     "dependencies": {
-        "unitejs-framework": "^1.0.3"
+        "unitejs-framework": "^1.0.3",
+        "unitejs-packages": "0.0.1"
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Tests for App.
  */
-/// <reference types="unitejs-aurelia-webdriver-plugin"/>
+/// <reference types="unitejs-webdriver-plugin"/>
 import { expect } from "chai";
 
 describe("App", () => {
@@ -17,7 +17,7 @@ describe("App", () => {
 
     it("the root text is set", () => {
         return browser
-            .loadAndWaitForAureliaPage("/")
+            .uniteLoadAndWaitForPage("/")
             .element("router-view")
             .getText()
             .then((routerContent) => {
@@ -27,7 +27,7 @@ describe("App", () => {
 
     it("the font size is set", () => {
         return browser
-            .loadAndWaitForAureliaPage("/")
+            .uniteLoadAndWaitForPage("/")
             .element(".child")
             .getCssProperty("font-size")
             .then((fontSize) => {

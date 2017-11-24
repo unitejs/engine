@@ -1,7 +1,7 @@
 /**
  * Tests for App.
  */
-/// <reference types="unitejs-preact-protractor-plugin"/>
+/// <reference types="unitejs-protractor-plugin"/>
 import { $, browser, by } from "protractor";
 
 describe("App", () => {
@@ -18,7 +18,7 @@ describe("App", () => {
     });
 
     it("the root text is set", (done) => {
-        browser.loadAndWaitForPreactPage("/")
+        browser.uniteLoadAndWaitForPage("/")
             .then(() => {
                 $("#root > span").getText()
                     .then((rootContent) => {
@@ -29,7 +29,7 @@ describe("App", () => {
     });
 
     it("the font size is set", (done) => {
-        browser.loadAndWaitForPreactPage("/")
+        browser.uniteLoadAndWaitForPage("/")
             .then(() => {
                 $(".child").getCssValue("font-size")
                     .then((fontSize) => {

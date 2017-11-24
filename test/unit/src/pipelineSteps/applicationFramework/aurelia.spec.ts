@@ -160,8 +160,8 @@ describe("Aurelia", () => {
         });
 
         it("can be called with configurations with false mainCondition", async () => {
-            engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/aurelia-protractor-plugin" } ] });
-            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", [ "unitejs-aurelia-webdriver-plugin" ]);
+            engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/unitejs-protractor-plugin" } ] });
+            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", [ "unitejs-webdriver-plugin" ]);
             engineVariablesStub.setConfiguration("Babel", { plugins: ["transform-decorators-legacy"] });
             engineVariablesStub.setConfiguration("ESLint", { parser: "babel-eslint" });
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {} });

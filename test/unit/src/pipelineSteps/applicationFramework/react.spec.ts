@@ -169,8 +169,8 @@ describe("React", () => {
 
         it("can be called with configurations with false mainCondition", async () => {
             const obj = new React();
-            engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/unitejs-react-protractor-plugin" } ] });
-            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", ["unitejs-react-webdriver-plugin"]);
+            engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/unitejs-protractor-plugin" } ] });
+            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", ["unitejs-webdriver-plugin"]);
             engineVariablesStub.setConfiguration("Babel", { presets: ["react"]});
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: { jsx: true }});
             engineVariablesStub.setConfiguration("ESLint", { parserOptions: { ecmaFeatures: { jsx: "react"}}, extends: ["plugin:react/recommended", "react"], plugins: ["react"]});

@@ -1,7 +1,7 @@
 /**
  * Tests for App.
  */
-/// <reference types="unitejs-preact-webdriver-plugin"/>
+/// <reference types="unitejs-webdriver-plugin"/>
 
 describe("App", () => {
     it("the title is set", () => {
@@ -16,7 +16,7 @@ describe("App", () => {
 
     it("the root text is set", () => {
         return browser
-            .loadAndWaitForPreactPage("/")
+            .uniteLoadAndWaitForPage("/")
             .element("#root")
             .getText()
             .then((rootContent) => {
@@ -26,7 +26,7 @@ describe("App", () => {
 
     it("the font size is set", () => {
         return browser
-            .loadAndWaitForPreactPage("/")
+            .uniteLoadAndWaitForPage("/")
             .element(".child")
             .getCssProperty("font-size")
             .then((fontSize) => {

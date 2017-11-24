@@ -6,7 +6,7 @@ import { $, browser, by } from "protractor";
 describe("App", () => {
     it("the title is set", (done) => {
         const uniteThemeJson = require("../../../assetsSrc/theme/unite-theme.json");
-        browser.loadAndWaitForAureliaPage("/")
+        browser.uniteLoadAndWaitForPage("/")
             .then(() => {
                 browser.getTitle()
                     .then((title) => {
@@ -17,7 +17,7 @@ describe("App", () => {
     });
 
     it("the root text is set", (done) => {
-        browser.loadAndWaitForAureliaPage("/")
+        browser.uniteLoadAndWaitForPage("/")
             .then(() => {
                 $("router-view").getText()
                     .then((routerContent) => {
@@ -28,7 +28,7 @@ describe("App", () => {
     });
 
     it("the font size is set", (done) => {
-        browser.loadAndWaitForAureliaPage("/")
+        browser.uniteLoadAndWaitForPage("/")
             .then(() => {
                 $(".child").getCssValue("font-size")
                     .then((fontSize) => {

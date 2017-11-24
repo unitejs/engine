@@ -1,7 +1,7 @@
 /**
  * Tests for App.
  */
-/// <reference types="unitejs-polymer-protractor-plugin"/>
+/// <reference types="unitejs-protractor-plugin"/>
 import { expect } from "chai";
 import { $, browser, by, element } from "protractor";
 
@@ -19,7 +19,7 @@ describe("App", () => {
     });
 
     it("the root text is set", (done) => {
-        browser.loadAndWaitForPolymerPage("/")
+        browser.uniteLoadAndWaitForPage("/")
             .then(() => {
                 $("#root").getText()
                     .then((rootContent) => {
@@ -30,7 +30,7 @@ describe("App", () => {
     });
 
     it("the font size is set", (done) => {
-        browser.loadAndWaitForPolymerPage("/")
+        browser.uniteLoadAndWaitForPage("/")
             .then(() => {
                 element(by.customShadowRoot("#root unite-app::sr iron-pages unite-child::sr div "))
                     .getCssValue("font-size")

@@ -5,7 +5,7 @@ describe("App", () => {
     it("the title is set", () => {
         const uniteThemeJson = require("../../../assetsSrc/theme/unite-theme.json");
         return browser
-            .url("/")
+            .uniteLoadAndWaitForPage("/")
             .getTitle()
             .then((title) => {
                 expect(title).toEqual(uniteThemeJson.title);
@@ -14,7 +14,7 @@ describe("App", () => {
 
     it("the root text is set", () => {
         return browser
-            .url("/")
+            .uniteLoadAndWaitForPage("/")
             .waitForText("#root > ng-component > div", 20000)
             .element("#root > ng-component > div")
             .getText()
@@ -25,7 +25,7 @@ describe("App", () => {
 
     it("the font size is set", () => {
         return browser
-            .url("/")
+            .uniteLoadAndWaitForPage("/")
             .waitForText("#root > ng-component > div", 20000)
             .element(".child")
             .getCssProperty("font-size")

@@ -172,8 +172,8 @@ describe("Polymer", () => {
 
         it("can be called with configurations with false mainCondition", async () => {
             const obj = new Polymer();
-            engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/unitejs-polymer-protractor-plugin" } ] });
-            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", ["unitejs-polymer-webdriver-plugin"]);
+            engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/unitejs-protractor-plugin" } ] });
+            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", ["unitejs-webdriver-plugin"]);
             engineVariablesStub.setConfiguration("Babel", { plugins: []});
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
 

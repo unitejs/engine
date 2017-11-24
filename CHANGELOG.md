@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.4
+
+* Unified application framework protractor plugins
+* Unified application framework webdriver plugins
+
 ## 1.7.3
 
 * Fixed framework path in ESDoc

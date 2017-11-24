@@ -6,7 +6,7 @@ import {expect} from "chai";
 describe("App", () => {
     it("the title is set", (done) => {
         const uniteThemeJson = require("../../../assetsSrc/theme/unite-theme.json");
-        browser.get("/")
+        browser.uniteLoadAndWaitForPage("/")
             .then(() => {
                 browser.getTitle()
                     .then((title) => {
@@ -17,7 +17,7 @@ describe("App", () => {
     });
 
     it("the root text is set", (done) => {
-        browser.get("/")
+        browser.uniteLoadAndWaitForPage("/")
             .then(() => {
                 $("#root").getText()
                     .then((rootContent) => {
@@ -28,7 +28,7 @@ describe("App", () => {
     });
 
     it("the font size is set", (done) => {
-        browser.get("/")
+        browser.uniteLoadAndWaitForPage("/")
             .then(() => {
                 $(".child").getCssValue("font-size")
                     .then((fontSize) => {

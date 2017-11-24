@@ -52,6 +52,9 @@ export class Angular extends SharedAppFramework {
 
         engineVariables.toggleDevDependency(["gulp-inline-ng2-template"], mainCondition && usingGulp);
 
+        engineVariables.toggleDevDependency(["unitejs-protractor-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
+        engineVariables.toggleDevDependency(["unitejs-webdriver-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
+
         engineVariables.toggleDevDependency(["babel-plugin-transform-decorators-legacy", "babel-plugin-transform-class-properties"],
                                             mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
         engineVariables.toggleDevDependency(["babel-eslint"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));

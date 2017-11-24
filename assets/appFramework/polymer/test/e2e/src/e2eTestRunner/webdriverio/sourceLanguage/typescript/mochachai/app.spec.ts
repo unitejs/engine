@@ -1,7 +1,7 @@
 /**
  * Tests for App.
  */
-/// <reference types="unitejs-polymer-webdriver-plugin"/>
+/// <reference types="unitejs-webdriver-plugin"/>
 import { expect } from "chai";
 
 describe("App", () => {
@@ -17,7 +17,7 @@ describe("App", () => {
 
     it("the root text is set", () => {
         return browser
-            .loadAndWaitForPolymerPage("/")
+            .uniteLoadAndWaitForPage("/")
             .element("#root")
             .getText()
             .then((rootContent) => {
@@ -27,7 +27,7 @@ describe("App", () => {
 
     it("the font size is set", () => {
         return browser
-            .loadAndWaitForPolymerPage("/")
+            .uniteLoadAndWaitForPage("/")
             .customShadowRoot("#root unite-app::sr iron-pages unite-child::sr div")
             .getCssProperty("font-size")
             .then((fontSize) => {
