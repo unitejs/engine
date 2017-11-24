@@ -7,6 +7,7 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { BabelConfiguration } from "../../configuration/models/babel/babelConfiguration";
 import { EsLintConfiguration } from "../../configuration/models/eslint/esLintConfiguration";
+import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
 import { TsLintConfiguration } from "../../configuration/models/tslint/tsLintConfiguration";
 import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
@@ -60,6 +61,17 @@ export class Angular extends SharedAppFramework {
         engineVariables.toggleDevDependency(["babel-eslint"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
         engineVariables.toggleDevDependency(["@types/systemjs"],
                                             mainCondition && super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
+
+        const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
+        if (protractorConfiguration) {
+            const plugin = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
+                                                                            fileSystem.pathCombine(engineVariables.www.packageFolder, "unitejs-protractor-plugin")));
+            ArrayHelper.addRemove(protractorConfiguration.plugins, { path: plugin }, mainCondition, (object, item) => object.path === item.path);
+        }
+        const webdriverIoPlugins = engineVariables.getConfiguration<string[]>("WebdriverIO.Plugins");
+        if (webdriverIoPlugins) {
+            ArrayHelper.addRemove(webdriverIoPlugins, "unitejs-webdriver-plugin", mainCondition);
+        }
 
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
         if (babelConfiguration) {
