@@ -1,6 +1,7 @@
 /**
  * Tests for App.
  */
+/// <reference types="unitejs-protractor-plugin"/>
 import { $, browser } from "protractor";
 
 describe("App", () => {

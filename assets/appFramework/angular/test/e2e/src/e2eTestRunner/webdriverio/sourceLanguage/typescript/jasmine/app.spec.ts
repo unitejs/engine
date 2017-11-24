@@ -1,6 +1,8 @@
 /**
  * Tests for App.
  */
+/// <reference types="unitejs-webdriver-plugin"/>
+
 describe("App", () => {
     it("the title is set", () => {
         const uniteThemeJson = require("../../../assetsSrc/theme/unite-theme.json");

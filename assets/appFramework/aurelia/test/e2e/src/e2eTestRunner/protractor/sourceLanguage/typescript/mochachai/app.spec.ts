@@ -1,6 +1,7 @@
 /**
  * Tests for App.
  */
+/// <reference types="unitejs-protractor-plugin"/>
 import { expect } from "chai";
 import { $, browser, by } from "protractor";
 

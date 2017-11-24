@@ -1,6 +1,7 @@
 /**
  * Tests for App.
  */
+/// <reference types="unitejs-webdriver-plugin"/>
 import { expect } from "chai";
 
 describe("App", () => {
