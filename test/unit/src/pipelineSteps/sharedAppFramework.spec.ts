@@ -40,7 +40,7 @@ class TestSharedAppFramework extends SharedAppFramework {
         }
 
         if (ret === 0) {
-            ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app.spec.js"]);
+            ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, ["app.spec.js"], true);
         }
 
         if (ret === 0) {

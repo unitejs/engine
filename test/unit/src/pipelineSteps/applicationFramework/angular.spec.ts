@@ -7,6 +7,7 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { BabelConfiguration } from "../../../../../src/configuration/models/babel/babelConfiguration";
 import { EsLintConfiguration } from "../../../../../src/configuration/models/eslint/esLintConfiguration";
+import { ProtractorConfiguration } from "../../../../../src/configuration/models/protractor/protractorConfiguration";
 import { TypeScriptConfiguration } from "../../../../../src/configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../../src/engine/engineVariables";
@@ -51,7 +52,6 @@ describe("Angular", () => {
         engineVariablesStub.engineAssetsFolder = "./assets/";
         engineVariablesStub.setupDirectories(fileSystemMock, "./test/unit/temp");
         engineVariablesStub.findDependencyVersion = sandbox.stub().returns("1.2.3");
-        engineVariablesStub.setConfiguration("Protractor", { plugins: []});
     });
 
     afterEach(async () => {
@@ -80,6 +80,12 @@ describe("Angular", () => {
     });
 
     describe("initialise", () => {
+        it("can be called with false main condition", async () => {
+            const obj = new Angular();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
+            Chai.expect(res).to.be.equal(0);
+        });
+
         it("can be called with application framework not matching", async () => {
             const obj = new Angular();
             uniteConfigurationStub.applicationFramework = "Vanilla";
@@ -108,11 +114,16 @@ describe("Angular", () => {
         it("can be called with javascript", async () => {
             engineVariablesStub.setConfiguration("Babel", { plugins: []});
             engineVariablesStub.setConfiguration("ESLint", { parser: "espree"});
+            engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "aaa" } ] });
+            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", []);
+            engineVariablesStub.setConfiguration("JavaScript", { compilerOptions: {}});
             const obj = new Angular();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(2);
             Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(7);
+            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(2);
+            Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins").length).to.be.equal(1);
             Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins.length).to.be.equal(2);
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parser).to.be.equal("babel-eslint");
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript")).to.be.equal(undefined);
@@ -123,6 +134,7 @@ describe("Angular", () => {
 
         it("can be called with typescript", async () => {
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {}});
+            engineVariablesStub.setConfiguration("TSLint", { rules: { } });
             uniteConfigurationStub.sourceLanguage = "TypeScript";
             uniteConfigurationStub.sourceExtensions = ["ts"];
             const obj = new Angular();
@@ -169,9 +181,13 @@ describe("Angular", () => {
             engineVariablesStub.setConfiguration("Babel", { plugins: ["transform-decorators-legacy"]});
             engineVariablesStub.setConfiguration("ESLint", { parser: "babel-eslint"});
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {}});
+            engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/unitejs-protractor-plugin" } ] });
+            engineVariablesStub.setConfiguration("WebdriverIO.Plugins", ["unitejs-webdriver-plugin"]);
             const obj = new Angular();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(0);
+            Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins").length).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins.length).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parser).to.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.experimentalDecorators).to.be.equal(undefined);
@@ -291,6 +307,12 @@ describe("Angular", () => {
             Chai.expect(exists).to.be.equal(true);
             exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/unit/src/", "app.module.spec.js");
             Chai.expect(exists).to.be.equal(false);
+        });
+
+        it("can complete successfully with false main condition", async () => {
+            const obj = new Angular();
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
+            Chai.expect(res).to.be.equal(0);
         });
 
         it("can complete successfully with javascript", async () => {

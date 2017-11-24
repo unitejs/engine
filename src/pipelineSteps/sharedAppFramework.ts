@@ -139,14 +139,17 @@ export abstract class SharedAppFramework extends PipelineStepBase {
                                     fileSystem: IFileSystem,
                                     uniteConfiguration: UniteConfiguration,
                                     engineVariables: EngineVariables,
-                                    specs: string[]): Promise<number> {
+                                    specs: string[],
+                                    isShared: boolean): Promise<number> {
         if (!super.condition(uniteConfiguration.e2eTestRunner, "None")) {
             logger.info("Generating e2e test scaffold shared", { unitTestSrcFolder: engineVariables.www.e2eTestSrcFolder });
 
+            const appFramework = isShared ? "shared" : uniteConfiguration.applicationFramework.toLowerCase();
+
             const e2eTestsScaffold = fileSystem.pathCombine(engineVariables.engineAssetsFolder,
-                                                            `appFramework/${uniteConfiguration.applicationFramework.toLowerCase()}/test/e2e/src/e2eTestRunner/` +
-                                                            `${uniteConfiguration.e2eTestRunner.toLowerCase()}/sourceLanguage/` +
-                                                            `${uniteConfiguration.sourceLanguage.toLowerCase()}/${uniteConfiguration.e2eTestFramework.toLowerCase()}/`);
+                                                            `appFramework/${appFramework}/test/e2e/src/` +
+                                                            `${uniteConfiguration.e2eTestRunner.toLowerCase()}/` +
+                                                            `${uniteConfiguration.e2eTestFramework.toLowerCase()}/`);
 
             for (const spec of specs) {
                 const ret = await this.copyFile(logger, fileSystem, e2eTestsScaffold,
