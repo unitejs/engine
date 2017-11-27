@@ -12,4 +12,17 @@ import "./gen-name-snake.css";
     "template": "./gen-name-snake.vue"
 })
 export class GenNamePascal extends Vue {
+    /**
+     * Message to be displayed in the view.
+     * @type {string}
+     */
+    message;
+
+    /**
+     * Creates an instance of GenNamePascal.
+     */
+    constructor() {
+        super();
+        this.message = "Hello UniteJS World!";
+    }
 }
