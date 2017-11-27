@@ -38,7 +38,10 @@ export class Preact extends SharedAppFramework {
     }
 
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
-        engineVariables.toggleDevDependency(["babel-plugin-transform-react-jsx"], mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
+        engineVariables.toggleDevDependency(["babel-plugin-transform-react-jsx",
+                                            "babel-plugin-transform-decorators-legacy",
+                                            "babel-plugin-transform-class-properties"],
+                                            mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
         engineVariables.toggleDevDependency(["eslint-plugin-react"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
 
         engineVariables.toggleDevDependency(["unitejs-protractor-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
@@ -120,6 +123,8 @@ export class Preact extends SharedAppFramework {
 
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
         if (babelConfiguration) {
+            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-class-properties", mainCondition);
+            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", mainCondition);
             ArrayHelper.addRemove(babelConfiguration.plugins, [ "transform-react-jsx", { pragma: "h"} ], mainCondition,
                                   (obj, item) => Array.isArray(item) && item.length > 0 && item[0] === obj[0]);
         }

@@ -36,7 +36,10 @@ export class React extends SharedAppFramework {
     }
 
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
-        engineVariables.toggleDevDependency(["babel-preset-react"], mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
+        engineVariables.toggleDevDependency(["babel-preset-react",
+                                            "babel-plugin-transform-decorators-legacy",
+                                            "babel-plugin-transform-class-properties"],
+                                            mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
         engineVariables.toggleDevDependency(["eslint-plugin-react"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
 
         engineVariables.toggleDevDependency(["@types/react", "@types/react-dom", "@types/react-router-dom"],
@@ -110,6 +113,8 @@ export class React extends SharedAppFramework {
 
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
         if (babelConfiguration) {
+            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-class-properties", mainCondition);
+            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", mainCondition);
             ArrayHelper.addRemove(babelConfiguration.presets, "react", mainCondition);
         }
 
