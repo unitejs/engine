@@ -12,13 +12,12 @@ export declare abstract class EngineCommandBase {
         [id: string]: string;
     };
     protected _engineAssetsFolder: string;
-    protected _profilesFolder: string;
     protected _pipeline: Pipeline;
     create(logger: ILogger, fileSystem: IFileSystem, engineRootFolder: string, engineVersion: string, engineDependencies: {
         [id: string]: string;
     }): void;
     protected loadConfiguration(outputDirectory: string, profileSource: string, profile: string | undefined | null, force: boolean): Promise<UniteConfiguration | undefined | null>;
-    protected loadProfile<T>(profileSource: string, profile: string | undefined | null): Promise<T | undefined | null>;
+    protected loadProfile<T>(module: string, location: string, profileFile: string, profile: string | undefined | null): Promise<T | undefined | null>;
     protected createEngineVariables(outputDirectory: string, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void;
     protected mapParser(input: string[]): {
         [id: string]: string;

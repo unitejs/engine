@@ -19,7 +19,6 @@ export abstract class EngineCommandBase {
     protected _engineDependencies: { [id: string]: string };
 
     protected _engineAssetsFolder: string;
-    protected _profilesFolder: string;
 
     protected _pipeline: Pipeline;
 
@@ -31,7 +30,6 @@ export abstract class EngineCommandBase {
         this._engineDependencies = engineDependencies;
 
         this._engineAssetsFolder = this._fileSystem.pathCombine(this._engineRootFolder, "/assets/");
-        this._profilesFolder = this._fileSystem.pathCombine(this._engineAssetsFolder, "/profiles/");
 
         this._pipeline = new Pipeline(this._logger, this._fileSystem, this._engineRootFolder);
     }
@@ -63,7 +61,7 @@ export abstract class EngineCommandBase {
                     uniteConfiguration = existing;
                 }
 
-                const loadedProfile: UniteConfiguration | undefined | null = await this.loadProfile<UniteConfiguration>(profileSource, profile);
+                const loadedProfile: UniteConfiguration | undefined | null = await this.loadProfile<UniteConfiguration>(undefined, "assets/profiles/", "configure.json", profile);
                 if (loadedProfile === null) {
                     uniteConfiguration = null;
                 } else if (loadedProfile) {
@@ -78,14 +76,17 @@ export abstract class EngineCommandBase {
         return uniteConfiguration;
     }
 
-    protected async loadProfile<T>(profileSource: string, profile: string | undefined | null): Promise<T | undefined | null> {
-        if (profileSource !== undefined && profileSource !== null && profile !== undefined && profile !== null) {
-            const configFile = `${profileSource}.json`;
+    protected async loadProfile<T>(module: string, location: string, profileFile: string, profile: string | undefined | null): Promise<T | undefined | null> {
+        if (location !== undefined && location !== null && profile !== undefined && profile !== null) {
             try {
+                const moduleRoot = module !== undefined && module.length > 0 ?
+                    this._fileSystem.pathCombine(this._engineRootFolder, `node_modules/${module}`) : this._engineRootFolder;
 
-                const exists = await this._fileSystem.fileExists(this._profilesFolder, configFile);
+                const profileLocation = this._fileSystem.pathCombine(moduleRoot, location);
+
+                const exists = await this._fileSystem.fileExists(profileLocation, profileFile);
                 if (exists) {
-                    const profiles = await this._fileSystem.fileReadJson<{ [id: string]: T }>(this._profilesFolder, configFile);
+                    const profiles = await this._fileSystem.fileReadJson<{ [id: string]: T }>(profileLocation, profileFile);
 
                     const profileLower = profile.toLowerCase();
                     const keys = Object.keys(profiles);
@@ -98,7 +99,7 @@ export abstract class EngineCommandBase {
                     return null;
                 }
             } catch (err) {
-                this._logger.error(`Reading profile file '${configFile}' failed`, err);
+                this._logger.error(`Reading profile file '${location}' failed`, err);
                 return null;
             }
         }

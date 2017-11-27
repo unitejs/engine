@@ -16,8 +16,8 @@ class TestCommand extends EngineCommandBase {
         return super.loadConfiguration(outputDirectory, profileSource, profile, force);
     }
 
-    public async testLoadProfile<T>(profileSource: string, profile: string | undefined | null): Promise<T | undefined | null> {
-        return super.loadProfile<T>(profileSource, profile);
+    public async testLoadProfile<T>(module: string, location: string, profileSource: string, profile: string | undefined | null): Promise<T | undefined | null> {
+        return super.loadProfile<T>(module, location, profileSource, profile);
     }
 
     public testCreateEngineVariables(outputDirectory: string, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void {
@@ -140,7 +140,7 @@ describe("EngineCommandBase", () => {
         it("can be called with parameters", async () => {
             const obj = new TestCommand();
             obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
-            const res = await obj.testLoadProfile(undefined, undefined);
+            const res = await obj.testLoadProfile(undefined, undefined, undefined, undefined);
             Chai.expect(res).to.be.equal(undefined);
         });
 
@@ -148,7 +148,7 @@ describe("EngineCommandBase", () => {
             sandbox.stub(fileSystemStub, "fileExists").resolves(false);
             const obj = new TestCommand();
             obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
-            const res = await obj.testLoadProfile("configure", "testProfile");
+            const res = await obj.testLoadProfile(undefined, "/assets/profiles/", "configure.json", "testProfile");
             Chai.expect(res).to.be.equal(undefined);
         });
 
@@ -156,7 +156,7 @@ describe("EngineCommandBase", () => {
             sandbox.stub(fileSystemStub, "fileExists").rejects("error");
             const obj = new TestCommand();
             obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
-            const res = await obj.testLoadProfile("configure", "testProfile");
+            const res = await obj.testLoadProfile(undefined, "/assets/profiles/", "configure.json", "testProfile");
             Chai.expect(res).to.be.equal(null);
         });
 
@@ -165,7 +165,7 @@ describe("EngineCommandBase", () => {
             sandbox.stub(fileSystemStub, "fileReadJson").resolves({});
             const obj = new TestCommand();
             obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
-            const res = await obj.testLoadProfile("configure", "testProfile");
+            const res = await obj.testLoadProfile(undefined, "/assets/profiles/", "configure.json", "testProfile");
             Chai.expect(res).to.be.equal(null);
         });
 
@@ -174,7 +174,7 @@ describe("EngineCommandBase", () => {
             sandbox.stub(fileSystemStub, "fileReadJson").resolves({ myProfile: {} });
             const obj = new TestCommand();
             obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
-            const res = await obj.testLoadProfile("configure", "testProfile");
+            const res = await obj.testLoadProfile(undefined, "/assets/profiles/", "configure.json", "testProfile");
             Chai.expect(res).to.be.equal(null);
         });
 
@@ -183,7 +183,7 @@ describe("EngineCommandBase", () => {
             sandbox.stub(fileSystemStub, "fileReadJson").resolves({ testProfile: { a: 1 } });
             const obj = new TestCommand();
             obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
-            const res = await obj.testLoadProfile("configure", "testProfile");
+            const res = await obj.testLoadProfile(undefined, "/assets/profiles/", "configure.json", "testProfile");
             Chai.expect(res).to.be.deep.equal({ a: 1 });
         });
 
@@ -192,7 +192,7 @@ describe("EngineCommandBase", () => {
             sandbox.stub(fileSystemStub, "fileReadJson").resolves({ TESTPROFILE: { a: 1 } });
             const obj = new TestCommand();
             obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
-            const res = await obj.testLoadProfile("configure", "testProfile");
+            const res = await obj.testLoadProfile(undefined, "/assets/profiles/", "configure.json", "testProfile");
             Chai.expect(res).to.be.deep.equal({ a: 1 });
         });
     });

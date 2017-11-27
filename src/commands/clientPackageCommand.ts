@@ -42,7 +42,7 @@ export class ClientPackageCommand extends EngineCommandBase implements IEngineCo
     }
 
     private async clientPackageAdd(args: IClientPackageCommandParams, uniteConfiguration: UniteConfiguration): Promise<number> {
-        let clientPackage = await this.loadProfile<UniteClientPackage>("clientPackage", args.profile);
+        let clientPackage = await this.loadProfile<UniteClientPackage>("unitejs-packages", "assets", "clientPackage.json", args.profile);
         if (clientPackage === null) {
             return 1;
         }
