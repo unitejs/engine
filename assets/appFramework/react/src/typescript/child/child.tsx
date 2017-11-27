@@ -17,7 +17,7 @@ export class Child extends React.Component {
     /**
      * Creates an instance of Child.
      */
-    constructor () {
+    constructor() {
         super(undefined, undefined);
         this.message = "Hello UniteJS World!";
     }
@@ -27,7 +27,7 @@ export class Child extends React.Component {
      * @returns {JSX.Element}
      */
     public render(): JSX.Element {
-        return <span className="child">{ this.message }</span>;
+        return <span className="child">{this.message}</span>;
     }
 }
 

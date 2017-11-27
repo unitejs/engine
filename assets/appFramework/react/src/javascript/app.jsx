@@ -15,7 +15,7 @@ export class App {
      * @param {Element} rootElement
      * @returns {void}
      */
-    run (rootElement) {
+    run(rootElement) {
         ReactDOM.render(
             <BrowserRouter>
                 <Route path="/" component={Child} />

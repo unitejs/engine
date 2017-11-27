@@ -17,8 +17,8 @@ export class App {
      */
     public run(rootElement: Element, basePath: string): void {
         render(<Router>
-                    <Child path={basePath} />
-                </Router>,
+            <Child path={basePath} />
+        </Router>,
                rootElement
         );
     }

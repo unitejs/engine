@@ -98,7 +98,7 @@
          * generally more clear to the reader.
          */
         "adjacent-overload-signatures": true,
-        "array-type": [true, "array"],
+        "array-type": false,
         "arrow-parens": false, // for simple functions the parens on arrow functions are not needed
         "callable-types": true,
         "chai-prefer-contains-to-index-of": true,

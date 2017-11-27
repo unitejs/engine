@@ -27,6 +27,6 @@ export class GenNamePascal extends Component<any, any> {
      * @returns {JSX.Element}
      */
     public render(): JSX.Element {
-        return <span className="gen-name-snake">{ this.message }</span>;
+        return <span className="gen-name-snake">{this.message}</span>;
     }
 }
