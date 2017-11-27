@@ -74,6 +74,7 @@ export class TsLint extends PipelineStepBase {
             }
         ];
         defaultConfiguration.rules["no-reference"] = false;
+        defaultConfiguration.rules["array-type"] = false;
 
         this._configuration = ObjectHelper.merge(defaultConfiguration, this._configuration);
 
