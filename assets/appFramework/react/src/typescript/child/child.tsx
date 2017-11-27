@@ -18,7 +18,7 @@ export class Child extends React.Component {
      * Creates an instance of Child.
      */
     constructor () {
-        super();
+        super(undefined, undefined);
         this.message = "Hello UniteJS World!";
     }
 

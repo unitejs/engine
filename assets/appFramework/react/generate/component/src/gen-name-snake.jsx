@@ -18,7 +18,7 @@ export class GenNamePascal extends React.Component {
      * Creates an instance of GenNamePascal.
      */
     constructor() {
-        super();
+        super(undefined, undefined);
         this.message = "Hello Gen Name Human";
     }
 
