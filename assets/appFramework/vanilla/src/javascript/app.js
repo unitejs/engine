@@ -42,7 +42,7 @@ export class App {
     /**
      * Does the given route match
      * @param lookupRoute {string}
-     * @param testRoute { route: string | string[]; module(): any }
+     * @param testRoute {route}
      * @returns {void}
      */
     matchRoute(lookupRoute, testRoute) {
