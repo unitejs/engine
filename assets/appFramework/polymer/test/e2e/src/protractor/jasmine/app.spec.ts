@@ -20,7 +20,7 @@ describe("App", () => {
     it("the child text is set", (done) => {
         browser.uniteLoadAndWaitForPage("/")
             .then(() => {
-                element(by.customShadowRoot("#root unite-app::sr iron-pages unite-child::sr div "))
+                element(by.customShadowRoot("#root unite-app::sr iron-pages unite-child::sr span"))
                     .getText()
                     .then((rootContent) => {
                         expect(rootContent).toEqual("Hello UniteJS World!");
@@ -32,7 +32,7 @@ describe("App", () => {
     it("the font size is set", (done) => {
         browser.uniteLoadAndWaitForPage("/")
             .then(() => {
-                element(by.customShadowRoot("#root unite-app::sr iron-pages unite-child::sr div "))
+                element(by.customShadowRoot("#root unite-app::sr iron-pages unite-child::sr span"))
                     .getCssValue("font-size")
                     .then((fontSize) => {
                         expect(fontSize).toEqual("20px");

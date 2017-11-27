@@ -25,7 +25,7 @@ describe("App", () => {
     it("the font size is set", () => {
         return browser
             .uniteLoadAndWaitForPage("/")
-            .customShadowRoot("#root unite-app::sr iron-pages unite-child::sr div")
+            .customShadowRoot("#root unite-app::sr iron-pages unite-child::sr span")
             .getCssProperty("font-size")
             .then((fontSize) => {
                 expect(fontSize.value).toEqual("20px");
