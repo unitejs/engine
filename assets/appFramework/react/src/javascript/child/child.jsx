@@ -9,11 +9,25 @@ import "./child.css";
 
 export class Child extends React.Component {
     /**
+     * Message displayed in the view.
+     * @type {string}
+     */
+    message;
+
+    /**
+     * Creates an instance of Child
+     */
+    constructor () {
+        super();
+        this.message = "Hello UniteJS World!";
+    }
+
+    /**
      * Render the component.
      * @returns {JSX.Element}
      */
     render () {
-        return (<span className="child">Hello UniteJS World!</span>);
+        return <span className="child">{ this.message }</span>;
     }
 }
 

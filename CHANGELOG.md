@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.5
+
+* Updated react and preact generate and child code with substituted message in template
+* Updated angular child template to be span not div
+
 ## 1.7.4
 
 * Unified application framework protractor plugins
