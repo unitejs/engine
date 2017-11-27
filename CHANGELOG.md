@@ -2,6 +2,8 @@
 
 ## 1.7.5
 
+* Added routing to Vanilla application
+* Added Vanilla generate component
 * Updated react and preact generate and child code with substituted message in template
 * Updated angular child template to be span not div
 

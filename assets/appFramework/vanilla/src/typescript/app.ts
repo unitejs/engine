@@ -4,22 +4,52 @@
  * @export
  * @class App
  */
+import { Child } from "./child/child";
+
 export class App {
+    private _router: { route: string | string[]; module(): any }[];
+
     /**
      * Run the application
      * @returns {void}
      */
     public run(): void {
-        const style = document.createElement("style");
-        style.type = "text/css";
-        style.appendChild(document.createTextNode(".child { font-size: 20px }"));
-        document.head.appendChild(style);
+        this._router = [
+            { route: ["", "child"], module: () => new Child() }
+        ];
 
-        const child = document.createElement("span");
-        child.innerText = "Hello UniteJS World!";
-        child.className = "child";
+        this.locationChanged();
+        window.addEventListener("popstate", () => this.locationChanged());
+    }
 
-        document.getElementById("root").appendChild(child);
+    /**
+     * The application location has changed try and locate a new module to display
+     * @returns {void}
+     */
+    private locationChanged(): void {
+        const root = document.getElementById("root");
+
+        const lookupRoute = (window.location.hash || "").replace(/^#\//, "");
+
+        const foundRoute = this._router.find((testRoute) => this.matchRoute(lookupRoute, testRoute));
+        if (foundRoute) {
+            const module = foundRoute.module();
+            while (root.hasChildNodes()) {
+                root.removeChild(root.lastChild);
+            }
+            module.render(root);
+        }
+    }
+
+    /**
+     * Does the given route match
+     * @param lookupRoute {string}
+     * @param testRoute { route: string | string[]; module(): any }
+     * @returns {void}
+     */
+    private matchRoute(lookupRoute: string, testRoute: { route: string | string[]; module(): any }): boolean {
+        return Array.isArray(testRoute.route)
+            ? testRoute.route.indexOf(lookupRoute) >= 0 : testRoute.route === lookupRoute;
     }
 }
 

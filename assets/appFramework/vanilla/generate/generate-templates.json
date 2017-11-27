@@ -2,6 +2,11 @@
     "class": {
         "isShared": true
     },
+    "component": {
+        "defaultFolder": "gen-name-snake",
+        "sourceFiles": ["gen-name-snake"],
+        "unitTestFiles": ["gen-name-snake.spec"]
+    },
     "enum": {
         "isShared": true
     },

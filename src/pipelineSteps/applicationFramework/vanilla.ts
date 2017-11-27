@@ -5,6 +5,7 @@ import { ArrayHelper } from "unitejs-framework/dist/helpers/arrayHelper";
 import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
+import { BabelConfiguration } from "../../configuration/models/babel/babelConfiguration";
 import { EsLintConfiguration } from "../../configuration/models/eslint/esLintConfiguration";
 import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
 import { TsLintConfiguration } from "../../configuration/models/tslint/tsLintConfiguration";
@@ -29,9 +30,21 @@ export class Vanilla extends SharedAppFramework {
 
         engineVariables.toggleDevDependency(["unitejs-webdriver-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
 
+        engineVariables.toggleDevDependency(["babel-plugin-transform-decorators-legacy", "babel-plugin-transform-class-properties"],
+                                            mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
+
+        engineVariables.toggleDevDependency(["babel-eslint"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
+
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
+            ObjectHelper.addRemove(esLintConfiguration, "parser", "babel-eslint", mainCondition);
             ObjectHelper.addRemove(esLintConfiguration.rules, "no-unused-vars", 1, mainCondition);
+        }
+
+        const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
+        if (babelConfiguration) {
+            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-class-properties", mainCondition);
+            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", mainCondition);
         }
 
         const tsLintConfiguration = engineVariables.getConfiguration<TsLintConfiguration>("TSLint");
@@ -61,7 +74,8 @@ export class Vanilla extends SharedAppFramework {
 
             let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [
                                                         `app${sourceExtension}`,
-                                                        `bootstrapper${sourceExtension}`
+                                                        `bootstrapper${sourceExtension}`,
+                                                        `child/child${sourceExtension}`
                                                     ],
                                                    false);
 

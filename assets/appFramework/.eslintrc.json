@@ -60,6 +60,7 @@
         "arrow-return-shorthand": "off",
         "no-process-exit": "off",
         "no-plusplus": "off",
+        "array-element-newline": "off",
         "promise/always-return": "off",
         "babel/new-cap": 1,
         "babel/object-curly-spacing": 1,
