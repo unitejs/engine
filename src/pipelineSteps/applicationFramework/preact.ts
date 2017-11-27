@@ -42,7 +42,7 @@ export class Preact extends SharedAppFramework {
                                             "babel-plugin-transform-decorators-legacy",
                                             "babel-plugin-transform-class-properties"],
                                             mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
-        engineVariables.toggleDevDependency(["eslint-plugin-react"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
+        engineVariables.toggleDevDependency(["eslint-plugin-react", "babel-eslint"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
 
         engineVariables.toggleDevDependency(["unitejs-protractor-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
         engineVariables.toggleDevDependency(["unitejs-webdriver-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
@@ -107,6 +107,7 @@ export class Preact extends SharedAppFramework {
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
+            ObjectHelper.addRemove(esLintConfiguration, "parser", "babel-eslint", mainCondition);
             ObjectHelper.addRemove(esLintConfiguration.parserOptions.ecmaFeatures, "jsx", true, mainCondition);
             ArrayHelper.addRemove(esLintConfiguration.extends, "plugin:react/recommended", mainCondition);
             ArrayHelper.addRemove(esLintConfiguration.plugins, "react", mainCondition);

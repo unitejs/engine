@@ -40,7 +40,7 @@ export class React extends SharedAppFramework {
                                             "babel-plugin-transform-decorators-legacy",
                                             "babel-plugin-transform-class-properties"],
                                             mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
-        engineVariables.toggleDevDependency(["eslint-plugin-react"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
+        engineVariables.toggleDevDependency(["eslint-plugin-react", "babel-eslint"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
 
         engineVariables.toggleDevDependency(["@types/react", "@types/react-dom", "@types/react-router-dom"],
                                             mainCondition && super.condition(uniteConfiguration.sourceLanguage, "TypeScript"));
@@ -98,6 +98,7 @@ export class React extends SharedAppFramework {
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
+            ObjectHelper.addRemove(esLintConfiguration, "parser", "babel-eslint", mainCondition);
             ObjectHelper.addRemove(esLintConfiguration.parserOptions.ecmaFeatures, "jsx", true, mainCondition);
             ArrayHelper.addRemove(esLintConfiguration.extends, "plugin:react/recommended", mainCondition);
             ArrayHelper.addRemove(esLintConfiguration.plugins, "react", mainCondition);
