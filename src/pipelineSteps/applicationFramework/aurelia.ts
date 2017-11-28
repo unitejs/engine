@@ -11,11 +11,14 @@ import { ProtractorConfiguration } from "../../configuration/models/protractor/p
 import { TsLintConfiguration } from "../../configuration/models/tslint/tsLintConfiguration";
 import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
+import { UnitePackageRouteConfiguration } from "../../configuration/models/unitePackages/unitePackageRouteConfiguration";
 import { JavaScriptConfiguration } from "../../configuration/models/vscode/javaScriptConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
+import { TemplateHelper } from "../../helpers/templateHelper";
+import { IApplicationFramework } from "../../interfaces/IApplicationFramework";
 import { SharedAppFramework } from "../sharedAppFramework";
 
-export class Aurelia extends SharedAppFramework {
+export class Aurelia extends SharedAppFramework implements IApplicationFramework {
     public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined {
         return super.condition(uniteConfiguration.applicationFramework, "Aurelia");
     }
@@ -51,7 +54,7 @@ export class Aurelia extends SharedAppFramework {
         const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
         if (protractorConfiguration) {
             const plugin = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
-                                                                            fileSystem.pathCombine(engineVariables.www.packageFolder, "unitejs-protractor-plugin")));
+                                                                            fileSystem.pathCombine(engineVariables.www.package, "unitejs-protractor-plugin")));
             ArrayHelper.addRemove(protractorConfiguration.plugins, { path: plugin }, mainCondition, (object, item) => object.path === item.path);
         }
         const webdriverIoPlugins = engineVariables.getConfiguration<string[]>("WebdriverIO.Plugins");
@@ -131,6 +134,30 @@ export class Aurelia extends SharedAppFramework {
         } else {
             return 0;
         }
+    }
+
+    public async insertRoutes(logger: ILogger,
+                              fileSystem: IFileSystem,
+                              uniteConfiguration: UniteConfiguration,
+                              engineVariables: EngineVariables,
+                              routes: { [id: string]: UnitePackageRouteConfiguration }): Promise<number> {
+        const sourceExtension = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? ".ts" : ".js";
+
+        const routerRegEx = /([ |\t]*)(config.map\(\[)([\s]*)([\s\S]*?)(\]\);)/;
+
+        const routerItems = [];
+        const importTexts: string[] = [];
+        const keys = Object.keys(routes);
+        for (let i = 0; i < keys.length; i++) {
+            const route = routes[keys[i]];
+
+            const words = TemplateHelper.generateWords(route.moduleType);
+            const camel = TemplateHelper.createCamel(words);
+
+            routerItems.push(`{\n    route: "${keys[i]}", name: "${camel}", moduleId: "${route.modulePath}"\n}`);
+        }
+
+        return super.insertRoutes(logger, fileSystem, uniteConfiguration, engineVariables, routes, `app${sourceExtension}`, routerRegEx, importTexts, routerItems);
     }
 
     private toggleAllPackages(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): void {

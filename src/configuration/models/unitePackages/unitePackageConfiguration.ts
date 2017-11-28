@@ -1,12 +1,12 @@
 /**
- * Model of Unite Package Configuration (unite-theme.json) file.
+ * Model of Unite Package Configuration (unite-package.json) file.
  */
-import { UniteClientPackage } from "../unite/uniteClientPackage";
+import { UnitePackageClientConfiguration } from "./unitePackageClientConfiguration";
 import { UnitePackageRouteConfiguration } from "./unitePackageRouteConfiguration";
 
 export class UnitePackageConfiguration {
     public name: string;
     public version: string;
-    public clientPackages: UniteClientPackage[];
-    public routes: UnitePackageRouteConfiguration[];
+    public clientPackages: { [id: string]: UnitePackageClientConfiguration };
+    public routes: { [id: string]: UnitePackageRouteConfiguration };
 }

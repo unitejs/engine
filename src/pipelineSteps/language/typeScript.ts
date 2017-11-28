@@ -74,9 +74,9 @@ export class TypeScript extends PipelineStepBase {
 
         defaultConfiguration.compilerOptions.lib = ["dom", "es2015"];
         defaultConfiguration.include = [
-            `${fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.srcFolder))}**/*`,
-            `${fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.unitTestSrcFolder))}**/*`,
-            `${fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.e2eTestSrcFolder))}**/*`
+            `${fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.src))}**/*`,
+            `${fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.unit))}**/*`,
+            `${fileSystem.pathToWeb(fileSystem.pathDirectoryRelative(engineVariables.wwwRootFolder, engineVariables.www.e2e))}**/*`
         ];
         defaultConfiguration.exclude = [];
 

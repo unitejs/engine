@@ -9,7 +9,7 @@ import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class BuildConfiguration extends PipelineStepBase {
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
-        const ret = await super.folderCreate(logger, fileSystem, engineVariables.www.configurationFolder);
+        const ret = await super.folderCreate(logger, fileSystem, engineVariables.www.configuration);
 
         if (ret === 0) {
             let names = ["common"];
@@ -21,9 +21,9 @@ export class BuildConfiguration extends PipelineStepBase {
             for (let i = 0; i < names.length; i++) {
                 const filename = `${names[i]}.json`;
                 try {
-                    const exists = await fileSystem.fileExists(engineVariables.www.configurationFolder, filename);
+                    const exists = await fileSystem.fileExists(engineVariables.www.configuration, filename);
                     if (!exists) {
-                        await fileSystem.fileWriteJson(engineVariables.www.configurationFolder, filename, {
+                        await fileSystem.fileWriteJson(engineVariables.www.configuration, filename, {
                             name: names[i]
                         });
                     }

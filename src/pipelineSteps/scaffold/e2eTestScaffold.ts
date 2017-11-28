@@ -13,6 +13,6 @@ export class E2eTestScaffold extends PipelineStepBase {
     }
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
-        return super.folderToggle(logger, fileSystem, engineVariables.www.e2eTestFolder, engineVariables.force, mainCondition);
+        return super.folderToggle(logger, fileSystem, engineVariables.www.e2eRoot, engineVariables.force, mainCondition);
     }
 }

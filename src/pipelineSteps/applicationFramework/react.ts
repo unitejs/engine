@@ -12,11 +12,13 @@ import { TsLintConfiguration } from "../../configuration/models/tslint/tsLintCon
 import { TypeDocConfiguration } from "../../configuration/models/typeDoc/typeDocConfiguration";
 import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
+import { UnitePackageRouteConfiguration } from "../../configuration/models/unitePackages/unitePackageRouteConfiguration";
 import { JavaScriptConfiguration } from "../../configuration/models/vscode/javaScriptConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
+import { IApplicationFramework } from "../../interfaces/IApplicationFramework";
 import { SharedAppFramework } from "../sharedAppFramework";
 
-export class React extends SharedAppFramework {
+export class React extends SharedAppFramework implements IApplicationFramework {
     public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined {
         return super.condition(uniteConfiguration.applicationFramework, "React");
     }
@@ -122,7 +124,7 @@ export class React extends SharedAppFramework {
         const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
         if (protractorConfiguration) {
             const plugin = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
-                                                                            fileSystem.pathCombine(engineVariables.www.packageFolder, "unitejs-protractor-plugin")));
+                                                                            fileSystem.pathCombine(engineVariables.www.package, "unitejs-protractor-plugin")));
             ArrayHelper.addRemove(protractorConfiguration.plugins, { path: plugin }, mainCondition, (object, item) => object.path === item.path);
         }
         const webdriverIoPlugins = engineVariables.getConfiguration<string[]>("WebdriverIO.Plugins");
@@ -184,5 +186,13 @@ export class React extends SharedAppFramework {
         } else {
             return 0;
         }
+    }
+
+    public async insertRoutes(logger: ILogger,
+                              fileSystem: IFileSystem,
+                              uniteConfiguration: UniteConfiguration,
+                              engineVariables: EngineVariables,
+                              routes: { [id: string]: UnitePackageRouteConfiguration }): Promise<number> {
+        return 0;
     }
 }

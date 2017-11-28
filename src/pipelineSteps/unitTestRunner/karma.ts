@@ -86,7 +86,7 @@ export class Karma extends PipelineStepBase {
     private configDefaults(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void {
         const defaultConfiguration = new KarmaConfiguration();
 
-        const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.reportsFolder));
+        const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.reports));
 
         defaultConfiguration.basePath = "__dirname";
         defaultConfiguration.singleRun = true;
@@ -94,7 +94,7 @@ export class Karma extends PipelineStepBase {
         defaultConfiguration.reporters = ["story", "coverage-allsources", "coverage", "html", "karma-remap-istanbul"];
         defaultConfiguration.browsers = [];
         defaultConfiguration.coverageReporter = {
-            include: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.distFolder, "**/!(app-module-config|entryPoint).js"))),
+            include: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.dist, "**/!(app-module-config|entryPoint).js"))),
             exclude: "",
             reporters: [
                 {
@@ -120,10 +120,10 @@ export class Karma extends PipelineStepBase {
         };
 
         const srcPreProcess = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
-                                                                               fileSystem.pathCombine(engineVariables.www.distFolder, "**/!(*-bundle|app-module-config|entryPoint).js")));
+                                                                               fileSystem.pathCombine(engineVariables.www.dist, "**/!(*-bundle|app-module-config|entryPoint).js")));
 
         const srcInclude = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
-                                                                            fileSystem.pathCombine(engineVariables.www.distFolder, "**/*")));
+                                                                            fileSystem.pathCombine(engineVariables.www.dist, "**/*")));
 
         defaultConfiguration.preprocessors = {};
         defaultConfiguration.preprocessors[srcPreProcess] = ["sourcemap", "coverage"];
@@ -165,7 +165,7 @@ export class Karma extends PipelineStepBase {
         ArrayHelper.addRemove(this._configuration.files,
                               {
                                     pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
-                                                                                              fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "../unit-module-config.js"))),
+                                                                                              fileSystem.pathCombine(engineVariables.www.unitDist, "../unit-module-config.js"))),
                                     included: true,
                                     watched: true,
                                     includeType: "fixed"
@@ -176,7 +176,7 @@ export class Karma extends PipelineStepBase {
         ArrayHelper.addRemove(this._configuration.files,
                               {
                                     pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
-                                                                                              fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "../unit-bootstrap.js"))),
+                                                                                              fileSystem.pathCombine(engineVariables.www.unitDist, "../unit-bootstrap.js"))),
                                     included: true,
                                     watched: true,
                                     includeType: "fixed"
@@ -187,7 +187,7 @@ export class Karma extends PipelineStepBase {
         ArrayHelper.addRemove(this._configuration.files,
                               {
                                     pattern: fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
-                                                                                              fileSystem.pathCombine(engineVariables.www.unitTestDistFolder, "**/*.spec.js"))),
+                                                                                              fileSystem.pathCombine(engineVariables.www.unitDist, "**/*.spec.js"))),
                                     included: false,
                                     watched: true,
                                     includeType: "fixed"

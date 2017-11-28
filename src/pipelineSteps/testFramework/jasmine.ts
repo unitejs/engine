@@ -62,7 +62,7 @@ export class Jasmine extends PipelineStepBase {
 
             const protractorScriptEnd = engineVariables.getConfiguration<string[]>("Protractor.ScriptEnd");
             if (protractorScriptEnd) {
-                const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.reportsFolder));
+                const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.reports));
 
                 protractorScriptEnd.push("exports.config.jasmineNodeOpts.print = function() {};");
                 protractorScriptEnd.push("exports.config.onPrepare = () => {");

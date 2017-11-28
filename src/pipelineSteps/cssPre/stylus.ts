@@ -25,7 +25,7 @@ export class Stylus extends PipelineStepBase {
 
         if (mainCondition) {
             uniteConfiguration.styleExtension = "styl";
-            engineVariables.www.cssSrcFolder = this._cssSrcFolder;
+            engineVariables.www.css = this._cssSrcFolder;
         }
         return 0;
     }

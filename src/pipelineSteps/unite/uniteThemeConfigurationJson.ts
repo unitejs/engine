@@ -18,7 +18,7 @@ export class UniteThemeConfigurationJson extends PipelineStepBase {
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         return super.fileReadJson<UniteThemeConfiguration>(logger,
                                                            fileSystem,
-                                                           fileSystem.pathCombine(engineVariables.www.assetsSrcFolder, "theme/"),
+                                                           fileSystem.pathCombine(engineVariables.www.assetsSrc, "theme/"),
                                                            UniteThemeConfigurationJson.FILENAME,
                                                            engineVariables.force,
                                                            async (obj) => {
@@ -65,7 +65,7 @@ export class UniteThemeConfigurationJson extends PipelineStepBase {
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         return super.fileToggleJson(logger,
                                     fileSystem,
-                                    fileSystem.pathCombine(engineVariables.www.assetsSrcFolder, "theme/"),
+                                    fileSystem.pathCombine(engineVariables.www.assetsSrc, "theme/"),
                                     UniteThemeConfigurationJson.FILENAME,
                                     engineVariables.force,
                                     mainCondition,

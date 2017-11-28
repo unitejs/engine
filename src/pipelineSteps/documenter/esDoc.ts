@@ -75,7 +75,7 @@ export class EsDoc extends PipelineStepBase {
     private configDefaults(fileSystem: IFileSystem, engineVariables: EngineVariables): void {
         const defaultConfiguration = new EsDocConfiguration();
 
-        defaultConfiguration.source = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.srcFolder));
+        defaultConfiguration.source = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.src));
         defaultConfiguration.destination = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.docsRootFolder))
                     .replace(/^\.\//, "");
 

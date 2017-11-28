@@ -25,7 +25,7 @@ export class Less extends PipelineStepBase {
 
         if (mainCondition) {
             uniteConfiguration.styleExtension = "less";
-            engineVariables.www.cssSrcFolder = fileSystem.pathCombine(engineVariables.wwwRootFolder, Less.FOLDER);
+            engineVariables.www.css = fileSystem.pathCombine(engineVariables.wwwRootFolder, Less.FOLDER);
         }
         return 0;
     }

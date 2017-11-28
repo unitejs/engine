@@ -10,10 +10,12 @@ import { EsLintConfiguration } from "../../configuration/models/eslint/esLintCon
 import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
 import { TsLintConfiguration } from "../../configuration/models/tslint/tsLintConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
+import { UnitePackageRouteConfiguration } from "../../configuration/models/unitePackages/unitePackageRouteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
+import { IApplicationFramework } from "../../interfaces/IApplicationFramework";
 import { SharedAppFramework } from "../sharedAppFramework";
 
-export class Vanilla extends SharedAppFramework {
+export class Vanilla extends SharedAppFramework implements IApplicationFramework {
     public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
         return super.condition(uniteConfiguration.applicationFramework, "Vanilla");
     }
@@ -57,7 +59,7 @@ export class Vanilla extends SharedAppFramework {
         const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
         if (protractorConfiguration) {
             const plugin = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder,
-                                                                            fileSystem.pathCombine(engineVariables.www.packageFolder, "unitejs-protractor-plugin")));
+                                                                            fileSystem.pathCombine(engineVariables.www.package, "unitejs-protractor-plugin")));
             ArrayHelper.addRemove(protractorConfiguration.plugins, { path: plugin }, mainCondition, (object, item) => object.path === item.path);
         }
         const webdriverIoPlugins = engineVariables.getConfiguration<string[]>("WebdriverIO.Plugins");
@@ -99,5 +101,27 @@ export class Vanilla extends SharedAppFramework {
         } else {
             return 0;
         }
+    }
+
+    public async insertRoutes(logger: ILogger,
+                              fileSystem: IFileSystem,
+                              uniteConfiguration: UniteConfiguration,
+                              engineVariables: EngineVariables,
+                              routes: { [id: string]: UnitePackageRouteConfiguration }): Promise<number> {
+        const sourceExtension = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? ".ts" : ".js";
+        const bracketSpacing = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? " " : "";
+
+        const routerRegEx = /([ |\t]*)(this._router = \[)([\s]*)([\s\S]*?)(\];)/;
+
+        const routerItems = [];
+        const importItems = [];
+        const keys = Object.keys(routes);
+        for (let i = 0; i < keys.length; i++) {
+            const route = routes[keys[i]];
+            routerItems.push(`{${bracketSpacing}route: "${keys[i]}", module: () => new ${route.moduleType}()${bracketSpacing}}`);
+            importItems.push(`import {${bracketSpacing}${route.moduleType}${bracketSpacing}} from "${keys[i]}";`);
+        }
+
+        return super.insertRoutes(logger, fileSystem, uniteConfiguration, engineVariables, routes, `app${sourceExtension}`, routerRegEx, importItems, routerItems);
     }
 }

@@ -14,7 +14,7 @@ export class App {
     configureRouter (config, router) {
         config.map([
             {
-                "route": "", "name": "child", "moduleId": "./child/child"
+                route: "", name: "child", moduleId: "./child/child"
             }
         ]);
 

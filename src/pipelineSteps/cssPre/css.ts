@@ -25,7 +25,7 @@ export class Css extends PipelineStepBase {
 
         if (mainCondition) {
             uniteConfiguration.styleExtension = "css";
-            engineVariables.www.cssSrcFolder = this._cssSrcFolder;
+            engineVariables.www.css = this._cssSrcFolder;
         }
         return 0;
     }

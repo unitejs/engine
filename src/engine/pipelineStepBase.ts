@@ -4,6 +4,7 @@
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
+import { TemplateHelper } from "../helpers/templateHelper";
 import { IPipelineStep } from "../interfaces/IPipelineStep";
 import { EngineVariables } from "./engineVariables";
 import { MarkerState } from "./markerState";
@@ -69,11 +70,7 @@ export abstract class PipelineStepBase implements IPipelineStep {
                     }
 
                     let txt = await fileSystem.fileReadText(sourceFolder, sourceFilename);
-                    if (replacements) {
-                        Object.keys(replacements).forEach(replacementKey => {
-                            txt = txt.replace(new RegExp(replacementKey, "gm"), replacements[replacementKey].join("\r\n"));
-                        });
-                    }
+                    txt = TemplateHelper.replaceSubstitutions(replacements, txt);
                     await fileSystem.fileWriteText(destFolder, destFilename, txt);
                 } catch (err) {
                     logger.error(`Copying ${sourceFilename} failed`, err, { from: sourceFolder, to: destFolder });

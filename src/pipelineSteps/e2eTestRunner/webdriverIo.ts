@@ -66,11 +66,11 @@ export class WebdriverIo extends PipelineStepBase {
     private configDefaults(fileSystem: IFileSystem, engineVariables: EngineVariables): void {
         const defaultConfiguration = new WebdriverIoConfiguration();
 
-        const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.reportsFolder));
+        const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.reports));
 
         defaultConfiguration.baseUrl = "http://localhost:9000";
         defaultConfiguration.specs = [
-            fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.e2eTestDistFolder, "**/*.spec.js")))
+            fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.e2eDist, "**/*.spec.js")))
         ];
         defaultConfiguration.capabilities = [
             {
@@ -102,7 +102,7 @@ export class WebdriverIo extends PipelineStepBase {
         lines.push("exports.config.before = () => {");
         this._plugins.forEach(plugin => {
             const pluginPath = fileSystem.pathToWeb(fileSystem.pathFileRelative
-                (engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.packageFolder, `${plugin}/index.js`)));
+                (engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.package, `${plugin}/index.js`)));
 
             lines.push(`    require('${pluginPath}')();`);
         });

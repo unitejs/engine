@@ -19,7 +19,7 @@ export class Docker extends PipelineStepBase {
         let ret = await super.folderCreate(logger, fileSystem, engineVariables.platformRootFolder);
 
         if (ret === 0) {
-            const buildTasks = fileSystem.pathCombine(engineVariables.www.buildFolder, "/tasks/");
+            const buildTasks = fileSystem.pathCombine(engineVariables.www.build, "/tasks/");
 
             if (mainCondition && super.condition(uniteConfiguration.taskManager, "Gulp")) {
                 const assetTasksPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/dist/tasks/platform/");

@@ -2,6 +2,8 @@
  * Client Package Command
  */
 import { ParameterValidation } from "unitejs-framework/dist/helpers/parameterValidation";
+import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
+import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { IncludeMode } from "../configuration/models/unite/includeMode";
 import { ScriptIncludeMode } from "../configuration/models/unite/scriptIncludeMode";
 import { UniteClientPackage } from "../configuration/models/unite/uniteClientPackage";
@@ -15,6 +17,37 @@ import { IClientPackageCommandParams } from "../interfaces/IClientPackageCommand
 import { IEngineCommand } from "../interfaces/IEngineCommand";
 
 export class ClientPackageCommand extends EngineCommandBase implements IEngineCommand<IClientPackageCommandParams> {
+    public static async retrievePackageDetails(logger: ILogger, fileSystem: IFileSystem, engineVariables: EngineVariables, clientPackage: UniteClientPackage): Promise<number> {
+        const missingVersion = clientPackage.version === null || clientPackage.version === undefined || clientPackage.version.length === 0;
+        const missingMain = (clientPackage.main === null || clientPackage.main === undefined || clientPackage.main.length === 0) && !clientPackage.noScript;
+        if (missingVersion || missingMain) {
+            try {
+                const packageInfo = await engineVariables.packageManager.info(logger, fileSystem, clientPackage.name, clientPackage.version);
+
+                clientPackage.version = clientPackage.version || `^${packageInfo.version || "0.0.1"}`;
+                if (!clientPackage.noScript) {
+                    clientPackage.main = clientPackage.main || packageInfo.main;
+                }
+            } catch (err) {
+                logger.error("Reading Package Information failed", err);
+                return 1;
+            }
+        }
+
+        if (!clientPackage.noScript) {
+            if (clientPackage.main) {
+                clientPackage.main = clientPackage.main.replace(/\\/g, "/");
+                clientPackage.main = clientPackage.main.replace(/^\.\//, "/");
+            }
+            if (clientPackage.mainMinified) {
+                clientPackage.mainMinified = clientPackage.mainMinified.replace(/\\/g, "/");
+                clientPackage.mainMinified = clientPackage.mainMinified.replace(/^\.\//, "/");
+            }
+        }
+
+        return 0;
+    }
+
     public async run(args: IClientPackageCommandParams): Promise<number> {
         const uniteConfiguration = await this.loadConfiguration(args.outputDirectory, undefined, undefined, false);
 
@@ -187,45 +220,22 @@ export class ClientPackageCommand extends EngineCommandBase implements IEngineCo
         const engineVariables = new EngineVariables();
         this.createEngineVariables(args.outputDirectory, uniteConfiguration, engineVariables);
 
-        const missingVersion = clientPackage.version === null || clientPackage.version === undefined || clientPackage.version.length === 0;
-        const missingMain = (clientPackage.main === null || clientPackage.main === undefined || clientPackage.main.length === 0) && !clientPackage.noScript;
-        if (missingVersion || missingMain) {
-            try {
-                const packageInfo = await engineVariables.packageManager.info(this._logger, this._fileSystem, clientPackage.name, clientPackage.version);
+        let ret = await ClientPackageCommand.retrievePackageDetails(this._logger, this._fileSystem, engineVariables, clientPackage);
 
-                clientPackage.version = clientPackage.version || `^${packageInfo.version || "0.0.1"}`;
-                if (!clientPackage.noScript) {
-                    clientPackage.main = clientPackage.main || packageInfo.main;
-                }
+        if (ret === 0) {
+            uniteConfiguration.clientPackages[clientPackage.name] = clientPackage;
+
+            try {
+                await engineVariables.packageManager.add(this._logger, this._fileSystem, engineVariables.wwwRootFolder, clientPackage.name, clientPackage.version, false);
             } catch (err) {
-                this._logger.error("Reading Package Information failed", err);
+                this._logger.error("Adding Package failed", err);
                 return 1;
             }
+
+            this._pipeline.add("unite", "uniteConfigurationJson");
+
+            ret = await this._pipeline.run(uniteConfiguration, engineVariables);
         }
-
-        if (!clientPackage.noScript) {
-            if (clientPackage.main) {
-                clientPackage.main = clientPackage.main.replace(/\\/g, "/");
-                clientPackage.main = clientPackage.main.replace(/^\.\//, "/");
-            }
-            if (clientPackage.mainMinified) {
-                clientPackage.mainMinified = clientPackage.mainMinified.replace(/\\/g, "/");
-                clientPackage.mainMinified = clientPackage.mainMinified.replace(/^\.\//, "/");
-            }
-        }
-
-        uniteConfiguration.clientPackages[clientPackage.name] = clientPackage;
-
-        try {
-            await engineVariables.packageManager.add(this._logger, this._fileSystem, engineVariables.wwwRootFolder, clientPackage.name, clientPackage.version, false);
-        } catch (err) {
-            this._logger.error("Adding Package failed", err);
-            return 1;
-        }
-
-        this._pipeline.add("unite", "uniteConfigurationJson");
-
-        const ret = await this._pipeline.run(uniteConfiguration, engineVariables);
 
         if (ret === 0) {
             this.displayCompletionMessage(engineVariables, false);

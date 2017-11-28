@@ -53,7 +53,7 @@ export class MochaChai extends PipelineStepBase {
         if (protractorConfiguration) {
             ObjectHelper.addRemove(protractorConfiguration, "framework", "mocha", mainCondition && isE2E);
 
-            const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.reportsFolder));
+            const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.reports));
 
             ObjectHelper.addRemove(protractorConfiguration, "mochaOpts", {
                                         reporter: "mochawesome-screenshots",

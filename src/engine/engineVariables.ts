@@ -24,23 +24,24 @@ export class EngineVariables {
     public docsRootFolder: string;
 
     public www: {
-        srcFolder: string;
-        distFolder: string;
-        unitTestFolder: string;
-        unitTestSrcFolder: string;
-        unitTestDistFolder: string;
-        cssSrcFolder: string;
-        cssDistFolder: string;
-        e2eTestFolder: string;
-        e2eTestSrcFolder: string;
-        e2eTestDistFolder: string;
-        reportsFolder: string;
-        packageFolder: string;
-        buildFolder: string;
-        configurationFolder: string;
+        [id: string]: string;
+        src: string;
+        dist: string;
+        unitRoot: string;
+        unit: string;
+        unitDist: string;
+        css: string;
+        cssDist: string;
+        e2eRoot: string;
+        e2e: string;
+        e2eDist: string;
+        reports: string;
+        package: string;
+        build: string;
+        configuration: string;
 
-        assetsFolder: string;
-        assetsSrcFolder: string;
+        assets: string;
+        assetsSrc: string;
     };
 
     public buildTranspileInclude: string[];
@@ -95,22 +96,22 @@ export class EngineVariables {
         this.platformRootFolder = fileSystem.pathCombine(this.rootFolder, "platform");
         this.docsRootFolder = fileSystem.pathCombine(this.rootFolder, "docs");
         this.www = {
-            srcFolder: fileSystem.pathCombine(this.wwwRootFolder, "src"),
-            distFolder: fileSystem.pathCombine(this.wwwRootFolder, "dist"),
-            cssSrcFolder: fileSystem.pathCombine(this.wwwRootFolder, "cssSrc"),
-            cssDistFolder: fileSystem.pathCombine(this.wwwRootFolder, "css"),
-            e2eTestFolder: fileSystem.pathCombine(this.wwwRootFolder, "test/e2e"),
-            e2eTestSrcFolder: fileSystem.pathCombine(this.wwwRootFolder, "test/e2e/src"),
-            e2eTestDistFolder: fileSystem.pathCombine(this.wwwRootFolder, "test/e2e/dist"),
-            unitTestFolder: fileSystem.pathCombine(this.wwwRootFolder, "test/unit"),
-            unitTestSrcFolder: fileSystem.pathCombine(this.wwwRootFolder, "test/unit/src"),
-            unitTestDistFolder: fileSystem.pathCombine(this.wwwRootFolder, "test/unit/dist"),
-            reportsFolder: fileSystem.pathCombine(this.wwwRootFolder, "test/reports"),
-            assetsFolder: fileSystem.pathCombine(this.wwwRootFolder, "assets"),
-            assetsSrcFolder: fileSystem.pathCombine(this.wwwRootFolder, "assetsSrc"),
-            buildFolder: fileSystem.pathCombine(this.wwwRootFolder, "build"),
-            packageFolder: fileSystem.pathCombine(this.wwwRootFolder, "node_modules"),
-            configurationFolder: fileSystem.pathCombine(this.wwwRootFolder, "configuration")
+            src: fileSystem.pathCombine(this.wwwRootFolder, "src"),
+            dist: fileSystem.pathCombine(this.wwwRootFolder, "dist"),
+            css: fileSystem.pathCombine(this.wwwRootFolder, "cssSrc"),
+            cssDist: fileSystem.pathCombine(this.wwwRootFolder, "css"),
+            e2eRoot: fileSystem.pathCombine(this.wwwRootFolder, "test/e2e"),
+            e2e: fileSystem.pathCombine(this.wwwRootFolder, "test/e2e/src"),
+            e2eDist: fileSystem.pathCombine(this.wwwRootFolder, "test/e2e/dist"),
+            unitRoot: fileSystem.pathCombine(this.wwwRootFolder, "test/unit"),
+            unit: fileSystem.pathCombine(this.wwwRootFolder, "test/unit/src"),
+            unitDist: fileSystem.pathCombine(this.wwwRootFolder, "test/unit/dist"),
+            reports: fileSystem.pathCombine(this.wwwRootFolder, "test/reports"),
+            assets: fileSystem.pathCombine(this.wwwRootFolder, "assets"),
+            assetsSrc: fileSystem.pathCombine(this.wwwRootFolder, "assetsSrc"),
+            build: fileSystem.pathCombine(this.wwwRootFolder, "build"),
+            package: fileSystem.pathCombine(this.wwwRootFolder, "node_modules"),
+            configuration: fileSystem.pathCombine(this.wwwRootFolder, "configuration")
         };
     }
 

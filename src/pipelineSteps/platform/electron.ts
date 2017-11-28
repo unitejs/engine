@@ -30,8 +30,8 @@ export class Electron extends PipelineStepBase {
         let ret = await super.folderCreate(logger, fileSystem, engineVariables.platformRootFolder);
 
         if (ret === 0) {
-            const buildTasks = fileSystem.pathCombine(engineVariables.www.buildFolder, "/tasks/");
-            const buildAssetPlatform = fileSystem.pathCombine(engineVariables.www.buildFolder, "/assets/platform/electron/");
+            const buildTasks = fileSystem.pathCombine(engineVariables.www.build, "/tasks/");
+            const buildAssetPlatform = fileSystem.pathCombine(engineVariables.www.build, "/assets/platform/electron/");
 
             if (mainCondition && super.condition(uniteConfiguration.taskManager, "Gulp")) {
                 const assetTasksPlatform = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "gulp/dist/tasks/platform/");

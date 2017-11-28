@@ -71,7 +71,7 @@ export class Jest extends PipelineStepBase {
         if (ret === 0) {
             ret = await super.fileToggleText(logger,
                                              fileSystem,
-                                             engineVariables.www.unitTestFolder,
+                                             engineVariables.www.unitRoot,
                                              Jest.FILENAME_MOCK_DUMMY,
                                              engineVariables.force,
                                              mainCondition,
@@ -84,10 +84,10 @@ export class Jest extends PipelineStepBase {
     private configDefaults(fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): void {
         const defaultConfiguration = new JestConfiguration();
 
-        const distFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.distFolder));
-        const unitRootFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.unitTestFolder));
-        const unitDistFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.unitTestDistFolder));
-        const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.reportsFolder));
+        const distFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.dist));
+        const unitRootFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.unitRoot));
+        const unitDistFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.unitDist));
+        const reportsFolder = fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.reports));
 
         defaultConfiguration.testMatch = [
             `${unitDistFolder.replace(/\.\//, "<rootDir>/")}/**/*.spec.js`

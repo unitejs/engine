@@ -7,12 +7,25 @@ export class TemplateHelper {
     public static generateSubstitutions(name: string): { [id: string]: string } {
         const substitutions: { [id: string]: string } = {};
 
+        const words: string[] = TemplateHelper.generateWords(name);
+
+        if (words.length > 0) {
+            substitutions[`gen-name-snake`] = TemplateHelper.createSnake(words);
+            substitutions[`genNameCamel`] = TemplateHelper.createCamel(words);
+            substitutions[`GenNamePascal`] = TemplateHelper.createPascal(words);
+            substitutions[`Gen Name Human`] = TemplateHelper.createHuman(words);
+        }
+
+        return substitutions;
+    }
+
+    public static generateWords(name: string): string[] {
+        const words: string[] = [];
+
         if (name !== undefined && name !== null) {
             const justAlphaNum = name.replace(/[^a-zA-Z0-9 ]/g, " ").trim();
 
             if (justAlphaNum.length > 0) {
-                const words: string[] = [];
-
                 for (let i = 0; i < justAlphaNum.length; i++) {
                     // Is this lower or number
                     if (/[a-z0-9]/.test(justAlphaNum[i])) {
@@ -60,30 +73,47 @@ export class TemplateHelper {
                         }
                     }
                 }
-
-                substitutions[`gen-name-snake`] = words.join("-").toLowerCase();
-                substitutions[`genNameCamel`] = words[0][0].toLowerCase() + words[0].substring(1) + words.slice(1).join("");
-                substitutions[`GenNamePascal`] = words.join("");
-                substitutions[`Gen Name Human`] = words.join(" ");
             }
         }
 
-        return substitutions;
+        return words;
     }
 
-    public static replaceSubstitutions(substitutions: { [id: string]: string }, input: string): string {
+    public static createSnake(words: string[]): string {
+        return words.join("-").toLowerCase();
+    }
+
+    public static createPascal(words: string[]): string {
+        return words.join("");
+    }
+
+    public static createHuman(words: string[]): string {
+        return words.join(" ");
+    }
+
+    public static createCamel(words: string[]): string {
+        return words[0][0].toLowerCase() + words[0].substring(1) + words.slice(1).join("");
+    }
+
+    public static replaceSubstitutions(substitutions: { [id: string]: string | string[] }, input: string): string {
         let output = input;
 
         if (input !== null && input !== undefined && substitutions !== undefined && substitutions !== null) {
             Object.keys(substitutions).forEach(key => {
-                output = output.replace(new RegExp(`${key}`, "g"), substitutions[key]);
+                let rep: string[];
+                if (Array.isArray(substitutions[key])) {
+                    rep = <string[]>substitutions[key];
+                } else {
+                    rep = [<string>substitutions[key]];
+                }
+                output = output.replace(new RegExp(`${key}`, "gm"), rep.join("\r\n"));
             });
         }
 
         return output;
     }
 
-    public static createCodeSubstitutions(engineVariables: EngineVariables): { [id: string]: string[]} {
+    public static createCodeSubstitutions(engineVariables: EngineVariables): { [id: string]: string[] } {
         return {
             "/\\* Synthetic Import \\*/ ": [engineVariables.syntheticImport],
             "\"genModuleId\"": [engineVariables.moduleId]

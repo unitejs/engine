@@ -25,7 +25,7 @@ export class Sass extends PipelineStepBase {
 
         if (mainCondition) {
             uniteConfiguration.styleExtension = "scss";
-            engineVariables.www.cssSrcFolder = this._cssSrcFolder;
+            engineVariables.www.css = this._cssSrcFolder;
         }
         return 0;
     }

@@ -56,7 +56,7 @@ export class Protractor extends PipelineStepBase {
 
         defaultConfiguration.baseUrl = "http://localhost:9000";
         defaultConfiguration.specs = [
-            fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.e2eTestDistFolder, "**/*.spec.js")))
+            fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, fileSystem.pathCombine(engineVariables.www.e2eDist, "**/*.spec.js")))
         ];
         defaultConfiguration.capabilities = {
             browserName: "chrome",

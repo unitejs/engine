@@ -64,7 +64,7 @@ export class PackageJson extends PipelineStepBase {
 
                 if (pkg.transpile && pkg.transpile.alias) {
                     const parts = pkg.transpile.alias.split("/");
-                    const transpileFolder = fileSystem.pathCombine(engineVariables.www.packageFolder, parts[0]);
+                    const transpileFolder = fileSystem.pathCombine(engineVariables.www.package, parts[0]);
                     try {
                         const exists = await fileSystem.directoryExists(transpileFolder);
 

@@ -99,7 +99,7 @@ export class JsDoc extends PipelineStepBase {
         defaultConfiguration.source = {
             include: [
                 "./README.md",
-                fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.srcFolder))
+                fileSystem.pathToWeb(fileSystem.pathFileRelative(engineVariables.wwwRootFolder, engineVariables.www.src))
             ],
             includePattern: ".+\\.js(x)?$"
         };

@@ -19,14 +19,14 @@ export class Assets extends PipelineStepBase {
     }
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
-        let ret = await super.folderToggle(logger, fileSystem, engineVariables.www.assetsSrcFolder, engineVariables.force, mainCondition);
+        let ret = await super.folderToggle(logger, fileSystem, engineVariables.www.assetsSrc, engineVariables.force, mainCondition);
 
         if (ret === 0) {
-            ret = await super.folderToggle(logger, fileSystem, engineVariables.www.assetsFolder, engineVariables.force, mainCondition);
+            ret = await super.folderToggle(logger, fileSystem, engineVariables.www.assets, engineVariables.force, mainCondition);
 
             if (ret === 0) {
                 const sourceThemeFolder = fileSystem.pathCombine(engineVariables.engineAssetsFolder, "assetsSrc/theme/");
-                const destThemeFolder = fileSystem.pathCombine(engineVariables.www.assetsSrcFolder, "theme/");
+                const destThemeFolder = fileSystem.pathCombine(engineVariables.www.assetsSrc, "theme/");
 
                 ret = await super.copyFile(logger, fileSystem, sourceThemeFolder, Assets.FILENAME_TILE,
                                            destThemeFolder, Assets.FILENAME_TILE, engineVariables.force, false);
