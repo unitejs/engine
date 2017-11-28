@@ -7,7 +7,7 @@ install:
   - cd framework
   - npm link
   - cd ..
-  - git clone --branch=$TRAVIS_BRANCH https://github.com/unitejs/packages.git framework
+  - git clone --branch=$TRAVIS_BRANCH https://github.com/unitejs/packages.git packages
   - cd packages
   - npm link
   - cd ../engine
