@@ -4,7 +4,6 @@
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
-import { UnitePackageRouteConfiguration } from "../configuration/models/unitePackages/unitePackageRouteConfiguration";
 import { EngineVariables } from "../engine/engineVariables";
 import { PipelineStepBase } from "../engine/pipelineStepBase";
 import { TemplateHelper } from "../helpers/templateHelper";
@@ -207,82 +206,85 @@ export abstract class SharedAppFramework extends PipelineStepBase {
         engineVariables.buildTranspilePreBuild.push(`        .pipe(replace(/import(.*?)("|'|\`)(.*?).${extension}\\2/g, \`import$1$2${typeMapLoader}!$3.${extension}$2\`))`);
     }
 
-    protected async insertRoutes(logger: ILogger,
-                                 fileSystem: IFileSystem,
-                                 uniteConfiguration: UniteConfiguration,
-                                 engineVariables: EngineVariables,
-                                 routes: { [id: string]: UnitePackageRouteConfiguration },
-                                 routerFile: string,
-                                 routerRegEx: RegExp,
-                                 sourceImports: string[],
-                                 sourceRouterItems: string[]): Promise<number> {
-        let importTexts = sourceImports;
-        let routerItems = sourceRouterItems;
+    protected async insertContent(logger: ILogger,
+                                  fileSystem: IFileSystem,
+                                  uniteConfiguration: UniteConfiguration,
+                                  engineVariables: EngineVariables,
+                                  file: string,
+                                  inserter: (content: string) => string): Promise<number> {
+        let ret = 0;
 
-        const keys = Object.keys(routes);
+        try {
+            const fileExists = await fileSystem.fileExists(engineVariables.www.src, file);
+            if (fileExists) {
+                let content = await fileSystem.fileReadText(engineVariables.www.src, file);
 
-        let doneImportInsert = false;
-        let doneRouterInsert = false;
-        const routerFileExists = await fileSystem.fileExists(engineVariables.www.src, routerFile);
-        if (routerFileExists) {
-            const importRegEx = /(import.*;)/g;
+                content = inserter(content);
 
-            let routerContent = await fileSystem.fileReadText(engineVariables.www.src, routerFile);
-
-            importTexts = importTexts.filter(imp => routerContent.indexOf(imp) < 0);
-            routerItems = routerItems.filter(ritem => routerContent.indexOf(ritem) < 0);
-
-            if (importTexts.length === 0) {
-                doneImportInsert = true;
-            } else {
-                const importResults = importRegEx.exec(routerContent);
-                if (importResults && importResults.length > 0) {
-                    routerContent = routerContent.replace(importResults[importResults.length - 1], `${importResults[importResults.length - 1]}\n${importTexts.join("\n")}`);
-                    doneImportInsert = true;
-                }
+                await fileSystem.fileWriteText(engineVariables.www.src, file, content);
             }
-
-            if (routerItems.length === 0) {
-                doneRouterInsert = true;
-            } else {
-                const routerResults = routerRegEx.exec(routerContent);
-                if (routerResults && routerResults.length > 4) {
-                    const routerIndent = routerResults[1];
-                    const routerVar = routerResults[2];
-                    const routerNewline = routerResults[3];
-                    const currentRouters = routerResults[4].trim();
-                    const routerEnd = routerResults[5];
-                    let replaceRouters = `${routerNewline}${currentRouters},${routerNewline}`;
-                    replaceRouters += `${routerItems.map(ri => ri.replace(/\n/g, routerNewline)).join(`,${routerNewline}`)}\n`;
-                    routerContent = routerContent.replace(routerResults[0], `${routerIndent}${routerVar}${replaceRouters}${routerIndent}${routerEnd}`);
-                    doneRouterInsert = true;
-                }
-            }
-
-            await fileSystem.fileWriteText(engineVariables.www.src, routerFile, routerContent);
+        } catch (err) {
+            ret = 1;
+            logger.error(`Unable to replace content in file ${file}`, err);
         }
 
-        if (!doneImportInsert || !doneRouterInsert) {
+        return ret;
+    }
+
+    protected insertReplaceImports(srcContent: string, sourceItems: string[]): { content: string; remaining: string[] } {
+        let items = sourceItems;
+        let content = srcContent;
+        let remaining: string[] = [];
+        if (items && items.length > 0) {
+            const regEx = /(import.*;)/g;
+
+            const results = content.match(regEx);
+            if (results && results.length > 0) {
+                items = items.filter(it => results.indexOf(it) < 0);
+
+                if (items.length > 0) {
+                    content = content.replace(results[results.length - 1], `${results[results.length - 1]}\n${items.join("\n")}`);
+                }
+            } else {
+                remaining = items;
+            }
+        }
+
+        return { content, remaining };
+    }
+
+    protected insertCompletion(logger: ILogger,
+                               remainingInserts: { [id: string]: string[]},
+                               routes: string[]): void {
+
+        const keys = Object.keys(remainingInserts);
+        let totalRemaining = 0;
+        keys.forEach(key => {
+            totalRemaining += remainingInserts[key].length;
+        });
+
+        if (totalRemaining > 0) {
             logger.banner("");
-            logger.banner("==========================================");
-            logger.warning("We couldn't find a location to insert the imports or routes into your router, please insert the following manually:");
-            if (!doneImportInsert) {
-                logger.banner("");
-                importTexts.forEach(imp => logger.banner(`   ${imp}`));
-            }
-            if (!doneRouterInsert) {
-                logger.banner("");
-                routerItems.forEach(ri => logger.banner(`   ${ri}`));
-            }
-            logger.banner("==========================================");
+            logger.banner("------------------------------------------------------------------------");
+            logger.warning("We couldn't find a location to insert some of the router data, please insert the following manually:");
+            logger.warning("");
+            keys.forEach(key => {
+                if (remainingInserts[key].length > 0) {
+                    logger.banner(key);
+                    logger.banner("");
+                    remainingInserts[key].forEach(item => logger.banner(`   ${item.replace(/\n/g, "\n   ")}`));
+                    logger.banner("");
+                }
+            });
+            logger.banner("------------------------------------------------------------------------");
             logger.banner("");
         }
 
-        logger.banner("Once you have built the application you should be able access the new pages at the following routes:");
-        logger.banner("");
-        keys.forEach(key => logger.banner(`   /#/${key}`));
-        logger.banner("");
-
-        return 0;
+        if (routes.length > 0) {
+            logger.banner("Once you have built the application you should be able access the new pages at the following routes:");
+            logger.banner("");
+            routes.forEach(route => logger.banner(`   ${route}`));
+            logger.banner("");
+        }
     }
 }

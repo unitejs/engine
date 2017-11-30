@@ -14,6 +14,7 @@ import { UniteConfiguration } from "../../configuration/models/unite/uniteConfig
 import { UnitePackageRouteConfiguration } from "../../configuration/models/unitePackages/unitePackageRouteConfiguration";
 import { JavaScriptConfiguration } from "../../configuration/models/vscode/javaScriptConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
+import { TemplateHelper } from "../../helpers/templateHelper";
 import { IApplicationFramework } from "../../interfaces/IApplicationFramework";
 import { SharedAppFramework } from "../sharedAppFramework";
 
@@ -104,6 +105,7 @@ export class Angular extends SharedAppFramework implements IApplicationFramework
             ObjectHelper.addRemove(tsLintConfiguration.rules, "no-empty", { severity: "warning" }, mainCondition);
             ObjectHelper.addRemove(tsLintConfiguration.rules, "no-empty-interface", { severity: "warning" }, mainCondition);
             ObjectHelper.addRemove(tsLintConfiguration.rules, "interface-name", false, mainCondition);
+            ObjectHelper.addRemove(tsLintConfiguration.rules, "variable-name", [true, "allow-leading-underscore"], mainCondition);
         }
 
         return 0;
@@ -114,11 +116,11 @@ export class Angular extends SharedAppFramework implements IApplicationFramework
             const sourceExtension = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? ".ts" : ".js";
 
             let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [
-                                                        `app.component${sourceExtension}`,
-                                                        `app.module${sourceExtension}`,
-                                                        `child/child.component${sourceExtension}`,
-                                                        `bootstrapper${sourceExtension}`
-                                                    ],
+                `app.component${sourceExtension}`,
+                `app.module${sourceExtension}`,
+                `child/child.component${sourceExtension}`,
+                `bootstrapper${sourceExtension}`
+            ],
                                                    false);
 
             if (ret === 0) {
@@ -165,62 +167,62 @@ export class Angular extends SharedAppFramework implements IApplicationFramework
             }
 
             engineVariables.toggleClientPackage(`@angular/${pkg}`, {
-                                                    name: `@angular/${pkg}`,
-                                                    main: `bundles/${pkg}.umd.js`,
-                                                    mainMinified: `bundles/${pkg}.umd.min.js`,
-                                                    testingAdditions: testAdditions,
-                                                    includeMode: "both"
-                                                },
+                name: `@angular/${pkg}`,
+                main: `bundles/${pkg}.umd.js`,
+                mainMinified: `bundles/${pkg}.umd.min.js`,
+                testingAdditions: testAdditions,
+                includeMode: "both"
+            },
                                                 mainCondition);
         });
 
         engineVariables.toggleClientPackage("rxjs", {
-                                                name: "rxjs",
-                                                main: "*",
-                                                mainLib: ["*.js",
-                                                    "add/**/*.js",
-                                                    "observable/**/*.js",
-                                                    "operator/**/*.js",
-                                                    "operators/**/*.js",
-                                                    "scheduler/**/*.js",
-                                                    "symbol/**/*.js",
-                                                    "testing/**/*.js",
-                                                    "util/**/*.js"
-                                                ],
-                                                includeMode: "both"
-                                            },
+            name: "rxjs",
+            main: "*",
+            mainLib: ["*.js",
+                "add/**/*.js",
+                "observable/**/*.js",
+                "operator/**/*.js",
+                "operators/**/*.js",
+                "scheduler/**/*.js",
+                "symbol/**/*.js",
+                "testing/**/*.js",
+                "util/**/*.js"
+            ],
+            includeMode: "both"
+        },
                                             mainCondition);
 
         engineVariables.toggleClientPackage("core-js", {
-                                                name: "core-js",
-                                                main: "client/shim.js",
-                                                mainMinified: "client/shim.min.js",
-                                                includeMode: "both",
-                                                scriptIncludeMode: "both"
-                                            },
+            name: "core-js",
+            main: "client/shim.js",
+            mainMinified: "client/shim.min.js",
+            includeMode: "both",
+            scriptIncludeMode: "both"
+        },
                                             mainCondition);
 
         engineVariables.toggleClientPackage("zone.js", {
-                                                name: "zone.js",
-                                                main: "dist/zone.js",
-                                                mainMinified: "dist/zone.min.js",
-                                                testingAdditions: {
-                                                    "long-stack-trace-zone": "dist/long-stack-trace-zone.js",
-                                                    proxy: "dist/proxy.js",
-                                                    "sync-test": "dist/sync-test.js",
-                                                    "runner-patch": super.condition(uniteConfiguration.unitTestFramework, "Jasmine") ? "dist/jasmine-patch.js" : "dist/mocha-patch.js",
-                                                    "async-test": "dist/async-test.js",
-                                                    "fake-async-test": "dist/fake-async-test.js"
-                                                },
-                                                includeMode: "both",
-                                                scriptIncludeMode: "both"
-                                            },
+            name: "zone.js",
+            main: "dist/zone.js",
+            mainMinified: "dist/zone.min.js",
+            testingAdditions: {
+                "long-stack-trace-zone": "dist/long-stack-trace-zone.js",
+                proxy: "dist/proxy.js",
+                "sync-test": "dist/sync-test.js",
+                "runner-patch": super.condition(uniteConfiguration.unitTestFramework, "Jasmine") ? "dist/jasmine-patch.js" : "dist/mocha-patch.js",
+                "async-test": "dist/async-test.js",
+                "fake-async-test": "dist/fake-async-test.js"
+            },
+            includeMode: "both",
+            scriptIncludeMode: "both"
+        },
                                             mainCondition);
 
         // main condition false to always remove, since ng5 no longer requires
         engineVariables.toggleClientPackage("reflect-metadata", {
-                                                name: "reflect-metadata"
-                                            },
+            name: "reflect-metadata"
+        },
                                             false);
     }
 
@@ -229,6 +231,131 @@ export class Angular extends SharedAppFramework implements IApplicationFramework
                               uniteConfiguration: UniteConfiguration,
                               engineVariables: EngineVariables,
                               routes: { [id: string]: UnitePackageRouteConfiguration }): Promise<number> {
-        return 0;
+        const sourceExtension = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? ".ts" : ".js";
+        const bracketSpacing = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? " " : "";
+
+        let routerItems: string[] = [];
+        const importItems: string[] = [];
+        let declarationItems: string[] = [];
+        const routeItems: string[] = [];
+        let navigationLinks: string[] = [];
+
+        const keys = Object.keys(routes);
+        for (let i = 0; i < keys.length; i++) {
+            const route = routes[keys[i]];
+
+            const words = TemplateHelper.generateWords(route.moduleType);
+            const human = TemplateHelper.createHuman(words);
+
+            importItems.push(`import {${bracketSpacing}${route.moduleType}${bracketSpacing}} from "${route.modulePath}";`);
+            routerItems.push(`{${bracketSpacing}path: "${keys[i]}", component: ${route.moduleType}${bracketSpacing}}`);
+            declarationItems.push(route.moduleType);
+            routeItems.push(`/${keys[i]}`);
+            navigationLinks.push(`<a routerLink="/${keys[i]}">${human}</a>`);
+        }
+
+        const remainingInserts: { [id: string]: string[] } = {};
+
+        let ret = await super.insertContent(logger,
+                                            fileSystem,
+                                            uniteConfiguration,
+                                            engineVariables,
+                                            `app.module${sourceExtension}`,
+                                            (srcContent) => {
+                let content = srcContent;
+
+                if (importItems.length > 0) {
+                    const importsRemaining = super.insertReplaceImports(content, importItems);
+                    content = importsRemaining.content;
+                    remainingInserts.imports = importsRemaining.remaining;
+                }
+
+                if (routerItems.length > 0) {
+                    const routerRegEx = /(const appRoutes = \[)([\s]*)([\s\S]*?)(\];)/;
+                    const routerResults = routerRegEx.exec(content);
+                    if (routerResults && routerResults.length > 3) {
+                        const currentRouters = routerResults[3].trim();
+
+                        routerItems = routerItems.filter(ri => currentRouters.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
+
+                        if (routerItems.length > 0) {
+                            const routerVar = routerResults[1];
+                            const routerNewline = routerResults[2];
+                            const routerEnd = routerResults[4];
+
+                            let replaceRouters = `${routerNewline}${currentRouters},${routerNewline}`;
+                            replaceRouters += `${routerItems.map(ri => ri.replace(/\n/g, routerNewline)).join(`,${routerNewline}`)}\n`;
+                            content = content.replace(routerResults[0], `${routerVar}${replaceRouters}${routerEnd}`);
+                        }
+                    } else {
+                        remainingInserts.router = routerItems;
+                    }
+                }
+
+                if (declarationItems.length > 0) {
+                    const declarationRegEx = /(declarations: \[)(\s*)([\s\S]*?)(\s*\])/;
+
+                    const declarationResults = declarationRegEx.exec(content);
+                    if (declarationResults && declarationResults.length > 3) {
+                        const currentDeclarations = declarationResults[3];
+
+                        declarationItems = declarationItems.filter(di => currentDeclarations.indexOf(di) < 0);
+
+                        if (declarationItems.length > 0) {
+                            const declarationStart = declarationResults[1];
+                            const declarationNewline = declarationResults[2];
+                            const declarationEnd = declarationResults[4];
+                            let replaceDeclarations = `${declarationNewline}${currentDeclarations},${declarationNewline}`;
+                            replaceDeclarations += `${declarationItems.join(`,${declarationNewline}`)}`;
+                            content = content.replace(declarationResults[0], `${declarationStart}${replaceDeclarations}${declarationEnd}`);
+                        }
+                    } else {
+                        remainingInserts.declarations = declarationItems;
+                    }
+                }
+
+                return content;
+            });
+
+        if (ret === 0) {
+            ret = await super.insertContent(logger,
+                                            fileSystem,
+                                            uniteConfiguration,
+                                            engineVariables,
+                                            `app.component.html`,
+                                            (srcContent) => {
+                    let content = srcContent;
+
+                    if (navigationLinks.length > 0) {
+                        const navigationRegEx = /(<nav.*>)(\s*)([\s|\S]*?)((\s*)<\/nav>)/;
+                        const navigationResults = navigationRegEx.exec(content);
+                        if (navigationResults && navigationResults.length > 4) {
+                            const currentLinks = navigationResults[3].trim();
+
+                            navigationLinks = navigationLinks.filter(ri => currentLinks.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
+
+                            if (navigationLinks.length > 0) {
+                                const navigationStart = navigationResults[1];
+                                const navigationNewline = navigationResults[2];
+                                const nvaigationEnd = navigationResults[4];
+
+                                let replaceRouters = `${navigationNewline}${currentLinks}${navigationNewline}`;
+                                replaceRouters += `${navigationLinks.map(ri => ri.replace(/\n/g, navigationNewline)).join(`${navigationNewline}`)}`;
+                                content = content.replace(navigationResults[0], `${navigationStart}${replaceRouters}${nvaigationEnd}`);
+                            }
+                        } else {
+                            remainingInserts.navigationLinks = navigationLinks;
+                        }
+                    }
+
+                    return content;
+                });
+        }
+
+        if (ret === 0) {
+            super.insertCompletion(logger, remainingInserts, routeItems);
+        }
+
+        return ret;
     }
 }

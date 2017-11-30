@@ -17,6 +17,7 @@ import { UniteConfiguration } from "../../configuration/models/unite/uniteConfig
 import { UnitePackageRouteConfiguration } from "../../configuration/models/unitePackages/unitePackageRouteConfiguration";
 import { JavaScriptConfiguration } from "../../configuration/models/vscode/javaScriptConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
+import { TemplateHelper } from "../../helpers/templateHelper";
 import { IApplicationFramework } from "../../interfaces/IApplicationFramework";
 import { SharedAppFramework } from "../sharedAppFramework";
 
@@ -41,8 +42,8 @@ export class Preact extends SharedAppFramework implements IApplicationFramework 
 
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         engineVariables.toggleDevDependency(["babel-plugin-transform-react-jsx",
-                                            "babel-plugin-transform-decorators-legacy",
-                                            "babel-plugin-transform-class-properties"],
+            "babel-plugin-transform-decorators-legacy",
+            "babel-plugin-transform-class-properties"],
                                             mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
         engineVariables.toggleDevDependency(["eslint-plugin-react", "babel-eslint"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
 
@@ -51,18 +52,18 @@ export class Preact extends SharedAppFramework implements IApplicationFramework 
 
         const isTranspiled = super.condition(uniteConfiguration.moduleType, "AMD") || super.condition(uniteConfiguration.moduleType, "SystemJS");
         const preactPackage: UniteClientPackage = {
-                                name: "preact",
-                                main: "dist/preact.dev.js",
-                                mainMinified: "dist/preact.min.js",
-                                includeMode: "both"
-                            };
+            name: "preact",
+            main: "dist/preact.dev.js",
+            mainMinified: "dist/preact.min.js",
+            includeMode: "both"
+        };
 
         const preactRouterPackage: UniteClientPackage = {
-                                name: "preact-router",
-                                main: "dist/preact-router.js",
-                                mainMinified: "dist/preact-router.js",
-                                includeMode: "both"
-                            };
+            name: "preact-router",
+            main: "dist/preact-router.js",
+            mainMinified: "dist/preact-router.js",
+            includeMode: "both"
+        };
 
         if (isTranspiled) {
             preactPackage.main = "dist/preact.esm.js";
@@ -70,34 +71,34 @@ export class Preact extends SharedAppFramework implements IApplicationFramework 
             preactPackage.transpile = new UniteClientPackageTranspile();
             preactPackage.transpile.alias = "preact-transpiled";
             preactPackage.transpile.language = "JavaScript";
-            preactPackage.transpile.sources = [ "dist/preact.esm.js" ];
+            preactPackage.transpile.sources = ["dist/preact.esm.js"];
 
             preactRouterPackage.main = "dist/preact-router.es.js";
             preactRouterPackage.mainMinified = undefined;
             preactRouterPackage.transpile = new UniteClientPackageTranspile();
             preactRouterPackage.transpile.alias = "preact-router-transpiled";
             preactRouterPackage.transpile.language = "JavaScript";
-            preactRouterPackage.transpile.sources = [ "dist/preact-router.es.js" ];
+            preactRouterPackage.transpile.sources = ["dist/preact-router.es.js"];
         }
 
         engineVariables.toggleClientPackage("preact", preactPackage, mainCondition);
         engineVariables.toggleClientPackage("preact-router", preactRouterPackage, mainCondition);
 
         engineVariables.toggleClientPackage("require-css", {
-                                                name: "require-css",
-                                                main: "css.js",
-                                                includeMode: "both",
-                                                map: { css: "require-css" }
-                                            },
+            name: "require-css",
+            main: "css.js",
+            includeMode: "both",
+            map: { css: "require-css" }
+        },
                                             mainCondition && super.condition(uniteConfiguration.bundler, "RequireJS"));
 
         engineVariables.toggleClientPackage("systemjs-plugin-css", {
-                                                name: "systemjs-plugin-css",
-                                                main: "css.js",
-                                                includeMode: "both",
-                                                map: { css: "systemjs-plugin-css" },
-                                                loaders: { "*.css" : "css" }
-                                            },
+            name: "systemjs-plugin-css",
+            main: "css.js",
+            includeMode: "both",
+            map: { css: "systemjs-plugin-css" },
+            loaders: { "*.css": "css" }
+        },
                                             mainCondition &&
             (super.condition(uniteConfiguration.bundler, "Browserify") ||
                 super.condition(uniteConfiguration.bundler, "SystemJSBuilder") ||
@@ -128,7 +129,7 @@ export class Preact extends SharedAppFramework implements IApplicationFramework 
         if (babelConfiguration) {
             ArrayHelper.addRemove(babelConfiguration.plugins, "transform-class-properties", mainCondition);
             ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", mainCondition);
-            ArrayHelper.addRemove(babelConfiguration.plugins, [ "transform-react-jsx", { pragma: "h"} ], mainCondition,
+            ArrayHelper.addRemove(babelConfiguration.plugins, ["transform-react-jsx", { pragma: "h" }], mainCondition,
                                   (obj, item) => Array.isArray(item) && item.length > 0 && item[0] === obj[0]);
         }
 
@@ -168,10 +169,10 @@ export class Preact extends SharedAppFramework implements IApplicationFramework 
             const sourceExtension = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? ".ts" : ".js";
 
             let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, [
-                                                    `app${sourceExtension}x`,
-                                                    `child/child${sourceExtension}x`,
-                                                    `bootstrapper${sourceExtension}`
-                                                    ],
+                `app${sourceExtension}x`,
+                `child/child${sourceExtension}x`,
+                `bootstrapper${sourceExtension}`
+            ],
                                                    false);
 
             if (ret === 0) {
@@ -205,6 +206,94 @@ export class Preact extends SharedAppFramework implements IApplicationFramework 
                               uniteConfiguration: UniteConfiguration,
                               engineVariables: EngineVariables,
                               routes: { [id: string]: UnitePackageRouteConfiguration }): Promise<number> {
-        return 0;
+        const sourceExtension = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? ".tsx" : ".jsx";
+        const bracketSpacing = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? " " : "";
+
+        let routerItems: string[] = [];
+        const importItems: string[] = [];
+        const routeItems: string[] = [];
+        let navigationLinks: string[] = [];
+
+        const keys = Object.keys(routes);
+        for (let i = 0; i < keys.length; i++) {
+            const route = routes[keys[i]];
+
+            const words = TemplateHelper.generateWords(route.moduleType);
+            const human = TemplateHelper.createHuman(words);
+
+            importItems.push(`import {${bracketSpacing}${route.moduleType}${bracketSpacing}} from "${route.modulePath}";`);
+            routerItems.push(`<${route.moduleType} path={basePath + "${keys[i]}"} />`);
+            routeItems.push(`/${keys[i]}`);
+            navigationLinks.push(`&nbsp;<Link href={basePath + "${keys[i]}"}>${human}</Link>`);
+        }
+
+        const remainingInserts: { [id: string]: string[] } = {};
+
+        const ret = await super.insertContent(logger,
+                                              fileSystem,
+                                              uniteConfiguration,
+                                              engineVariables,
+                                              `app${sourceExtension}`,
+                                              (srcContent) => {
+                let content = srcContent;
+
+                if (importItems.length > 0) {
+                    const importsRemaining = super.insertReplaceImports(content, importItems);
+                    content = importsRemaining.content;
+                    remainingInserts.imports = importsRemaining.remaining;
+                }
+
+                if (routerItems.length > 0) {
+                    const routerRegEx = /(<Router.*>)(\s*)([\s|\S]*?)((\s*)<\/Router>)/;
+                    const routerResults = routerRegEx.exec(content);
+                    if (routerResults && routerResults.length > 4) {
+                        const currentRouters = routerResults[3].trim();
+
+                        routerItems = routerItems.filter(ri => currentRouters.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
+
+                        if (routerItems.length > 0) {
+                            const routerStart = routerResults[1];
+                            const routerNewline = routerResults[2];
+                            const routerEnd = routerResults[4];
+
+                            let replaceRouters = `${routerNewline}${currentRouters}${routerNewline}`;
+                            replaceRouters += `${routerItems.map(ri => ri.replace(/\n/g, routerNewline)).join(`${routerNewline}`)}`;
+                            content = content.replace(routerResults[0], `${routerStart}${replaceRouters}${routerEnd}`);
+                        }
+                    } else {
+                        remainingInserts.router = routerItems;
+                    }
+                }
+
+                if (navigationLinks.length > 0) {
+                    const navigationRegEx = /(<nav.*>)(\s*)([\s|\S]*?)((\s*)<\/nav>)/;
+                    const navigationResults = navigationRegEx.exec(content);
+                    if (navigationResults && navigationResults.length > 4) {
+                        const currentLinks = navigationResults[3].trim();
+
+                        navigationLinks = navigationLinks.filter(ri => currentLinks.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
+
+                        if (navigationLinks.length > 0) {
+                            const navigationStart = navigationResults[1];
+                            const navigationNewline = navigationResults[2];
+                            const navigationEnd = navigationResults[4];
+
+                            let replaceRouters = `${navigationNewline}${currentLinks}${navigationNewline}`;
+                            replaceRouters += `${navigationLinks.map(ri => ri.replace(/\n/g, navigationNewline)).join(`${navigationNewline}`)}`;
+                            content = content.replace(navigationResults[0], `${navigationStart}${replaceRouters}${navigationEnd}`);
+                        }
+                    } else {
+                        remainingInserts.navigationLinks = navigationLinks;
+                    }
+                }
+
+                return content;
+            });
+
+        if (ret === 0) {
+            super.insertCompletion(logger, remainingInserts, routeItems);
+        }
+
+        return ret;
     }
 }

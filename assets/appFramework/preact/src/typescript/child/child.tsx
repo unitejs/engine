@@ -7,19 +7,13 @@
 import { Component, h } from "preact";
 import "./child.css";
 
-export class Child extends Component<any, any> {
-    /**
-     * Message displayed in the view.
-     * @type {string}
-     */
-    public message: string;
-
+export class Child extends Component<any, { message: string }> {
     /**
      * Creates an instance of Child.
      */
-    constructor() {
-        super();
-        this.message = "Hello UniteJS World!";
+    constructor(props?: any, context?: any) {
+        super(props, context);
+        this.state = {message: "Hello UniteJS World!"};
     }
 
     /**
@@ -27,7 +21,7 @@ export class Child extends Component<any, any> {
      * @returns {JSX.Element}
      */
     public render(): JSX.Element {
-        return <span className="child">{this.message}</span>;
+        return <span className="child">{this.state.message}</span>;
     }
 }
 

@@ -7,6 +7,7 @@
 import "@polymer/app-route/app-location";
 import "@polymer/app-route/app-route";
 import {customElement} from "@polymer/decorators/src/decorators";
+import "@polymer/iron-pages/iron-pages";
 import {Element as PolymerElement} from "@polymer/polymer/polymer-element";
 import /* Synthetic Import */ template from "./app.html";
 import "./child/child";

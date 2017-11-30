@@ -6,20 +6,30 @@
  */
 import /* Synthetic Import */ React from "react";
 import /* Synthetic Import */ ReactDOM from "react-dom";
-import { BrowserRouter, Route } from "react-router-dom";
+import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
 import { Child } from "./child/child";
 
 export class App {
     /**
      * Run the application.
      * @param {Element} rootElement
+     * @param {string} basePath
      * @returns {void}
      */
-    public run(rootElement: Element): void {
-        ReactDOM.render(<BrowserRouter>
-            <Route path="/" component={Child} />
-        </BrowserRouter>,
-                        rootElement
+    public run(rootElement: Element, basePath: string): void {
+        ReactDOM.render(
+            <BrowserRouter basename={basePath}>
+                <div>
+                    <Switch>
+                        <Route path="/" exact component={Child} />
+                    </Switch>
+                    <hr />
+                    <nav>
+                        <Link to="/">Child</Link>
+                    </nav>
+                </div>
+            </BrowserRouter>,
+            rootElement
         );
     }
 }

@@ -7,19 +7,13 @@
 import { Component, h } from "preact";
 import "./gen-name-snake.css";
 
-export class GenNamePascal extends Component<any, any> {
-    /**
-     * Message displayed in the view.
-     * @type {string}
-     */
-    public message: string;
-
+export class GenNamePascal extends Component<any, { message: string }> {
     /**
      * Creates an instance of GenNamePascal.
      */
-    constructor() {
-        super();
-        this.message = "Hello Gen Name Human";
+    constructor(props?: any, context?: any) {
+        super(props, context);
+        this.state = {message: "Hello Gen Name Human"};
     }
 
     /**
@@ -27,6 +21,6 @@ export class GenNamePascal extends Component<any, any> {
      * @returns {JSX.Element}
      */
     public render(): JSX.Element {
-        return <span className="gen-name-snake">{this.message}</span>;
+        return <span className="gen-name-snake">{this.state.message}</span>;
     }
 }

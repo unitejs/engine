@@ -7,19 +7,13 @@
 import /* Synthetic Import */ React from "react";
 import "./gen-name-snake.css";
 
-export class GenNamePascal extends React.Component {
-    /**
-     * Message displayed in the view.
-     * @type {string}
-     */
-    public message: string;
-
+export class GenNamePascal extends React.Component<any, { message: string }> {
     /**
      * Creates an instance of GenNamePascal.
      */
-    constructor() {
-        super(undefined, undefined);
-        this.message = "Hello Gen Name Human";
+    constructor(props?: any, context?: any) {
+        super(props, context);
+        this.state = { message: "Hello Gen Name Human" };
     }
 
     /**
@@ -27,6 +21,6 @@ export class GenNamePascal extends React.Component {
      * @returns {JSX.Element}
      */
     public render(): JSX.Element {
-        return <span className="gen-name-snake">{this.message}</span>;
+        return <span className="gen-name-snake">{this.state.message}</span>;
     }
 }

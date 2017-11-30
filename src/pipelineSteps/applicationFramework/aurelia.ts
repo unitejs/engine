@@ -88,7 +88,7 @@ export class Aurelia extends SharedAppFramework implements IApplicationFramework
         if (tsLintConfiguration) {
             ObjectHelper.addRemove(tsLintConfiguration.rules, "no-empty", { severity: "warning" }, mainCondition);
             ObjectHelper.addRemove(tsLintConfiguration.rules, "no-empty-interface", { severity: "warning" }, mainCondition);
-            ObjectHelper.addRemove(tsLintConfiguration.rules, "variable-name", [ true, "allow-leading-underscore" ], mainCondition);
+            ObjectHelper.addRemove(tsLintConfiguration.rules, "variable-name", [true, "allow-leading-underscore"], mainCondition);
         }
 
         return 0;
@@ -100,10 +100,10 @@ export class Aurelia extends SharedAppFramework implements IApplicationFramework
 
             let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables,
                                                    [
-                                                    `app${sourceExtension}`,
-                                                    `bootstrapper${sourceExtension}`,
-                                                    `child/child${sourceExtension}`
-                                                    ],
+                    `app${sourceExtension}`,
+                    `bootstrapper${sourceExtension}`,
+                    `child/child${sourceExtension}`
+                ],
                                                    false);
 
             if (ret === 0) {
@@ -143,21 +143,98 @@ export class Aurelia extends SharedAppFramework implements IApplicationFramework
                               routes: { [id: string]: UnitePackageRouteConfiguration }): Promise<number> {
         const sourceExtension = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? ".ts" : ".js";
 
-        const routerRegEx = /([ |\t]*)(config.map\(\[)([\s]*)([\s\S]*?)(\]\);)/;
+        let routerItems: string[] = [];
+        const routeItems: string[] = [];
+        let navigationLinks: string[] = [];
 
-        const routerItems = [];
-        const importTexts: string[] = [];
         const keys = Object.keys(routes);
         for (let i = 0; i < keys.length; i++) {
             const route = routes[keys[i]];
 
             const words = TemplateHelper.generateWords(route.moduleType);
             const camel = TemplateHelper.createCamel(words);
+            const human = TemplateHelper.createHuman(words);
 
-            routerItems.push(`{\n    route: "${keys[i]}", name: "${camel}", moduleId: "${route.modulePath}"\n}`);
+            routerItems.push(`{\n    route: "/${keys[i]}", name: "${camel}", moduleId: "${route.modulePath}"\n}`);
+            routeItems.push(`/#/${keys[i]}`);
+            navigationLinks.push(`<a route-href="route: ${camel}">${human}</a>`);
         }
 
-        return super.insertRoutes(logger, fileSystem, uniteConfiguration, engineVariables, routes, `app${sourceExtension}`, routerRegEx, importTexts, routerItems);
+        const remainingInserts: { [id: string]: string[] } = {};
+
+        let ret = await super.insertContent(logger,
+                                            fileSystem,
+                                            uniteConfiguration,
+                                            engineVariables,
+                                            `app${sourceExtension}`,
+                                            (srcContent) => {
+                let content = srcContent;
+
+                if (routerItems.length > 0) {
+                    const routerRegEx = /([ |\t]*)(config.map\(\[)([\s]*)([\s\S]*?)(\]\);)/;
+                    const routerResults = routerRegEx.exec(content);
+                    if (routerResults && routerResults.length > 4) {
+                        const currentRouters = routerResults[4].trim();
+
+                        routerItems = routerItems.filter(ri => currentRouters.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
+
+                        if (routerItems.length > 0) {
+                            const routerIndent = routerResults[1];
+                            const routerVar = routerResults[2];
+                            const routerNewline = routerResults[3];
+                            const routerEnd = routerResults[5];
+
+                            let replaceRouters = `${routerNewline}${currentRouters},${routerNewline}`;
+                            replaceRouters += `${routerItems.map(ri => ri.replace(/\n/g, routerNewline)).join(`,${routerNewline}`)}\n`;
+                            content = content.replace(routerResults[0], `${routerIndent}${routerVar}${replaceRouters}${routerIndent}${routerEnd}`);
+                        }
+                    } else {
+                        remainingInserts.router = routerItems;
+                    }
+                }
+                return content;
+            });
+
+        if (ret === 0) {
+            ret = await super.insertContent(logger,
+                                            fileSystem,
+                                            uniteConfiguration,
+                                            engineVariables,
+                                            `app.html`,
+                                            (srcContent) => {
+                    let content = srcContent;
+
+                    if (navigationLinks.length > 0) {
+                        const navigationRegEx = /(<nav.*>)(\s*)([\s|\S]*?)((\s*)<\/nav>)/;
+                        const navigationResults = navigationRegEx.exec(content);
+                        if (navigationResults && navigationResults.length > 4) {
+                            const currentLinks = navigationResults[3].trim();
+
+                            navigationLinks = navigationLinks.filter(ri => currentLinks.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
+
+                            if (navigationLinks.length > 0) {
+                                const navigationStart = navigationResults[1];
+                                const navigationNewline = navigationResults[2];
+                                const navigationEnd = navigationResults[4];
+
+                                let replaceRouters = `${navigationNewline}${currentLinks}${navigationNewline}`;
+                                replaceRouters += `${navigationLinks.map(ri => ri.replace(/\n/g, navigationNewline)).join(`${navigationNewline}`)}`;
+                                content = content.replace(navigationResults[0], `${navigationStart}${replaceRouters}${navigationEnd}`);
+                            }
+                        } else {
+                            remainingInserts.navigationLinks = navigationLinks;
+                        }
+                    }
+
+                    return content;
+                });
+        }
+
+        if (ret === 0) {
+            super.insertCompletion(logger, remainingInserts, routeItems);
+        }
+
+        return ret;
     }
 
     private toggleAllPackages(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): void {
@@ -204,35 +281,35 @@ export class Aurelia extends SharedAppFramework implements IApplicationFramework
 
         clientPackages.forEach(clientPackage => {
             engineVariables.toggleClientPackage(clientPackage.name, {
-                                                    name: clientPackage.name,
-                                                    main: `${location}${clientPackage.name}.js`,
-                                                    includeMode: "both",
-                                                    isPackage: clientPackage.isPackage ? true : false
-                                                },
+                name: clientPackage.name,
+                main: `${location}${clientPackage.name}.js`,
+                includeMode: "both",
+                isPackage: clientPackage.isPackage ? true : false
+            },
                                                 mainCondition);
         });
 
         engineVariables.toggleClientPackage("whatwg-fetch", {
-                                                name: "whatwg-fetch",
-                                                main: "fetch.js",
-                                                includeMode: "both"
-                                            },
+            name: "whatwg-fetch",
+            main: "fetch.js",
+            includeMode: "both"
+        },
                                             mainCondition);
 
         engineVariables.toggleClientPackage("requirejs-text", {
-                                                name: "requirejs-text",
-                                                main: "text.js",
-                                                includeMode: "both",
-                                                map: { text: "requirejs-text" }
-                                            },
+            name: "requirejs-text",
+            main: "text.js",
+            includeMode: "both",
+            map: { text: "requirejs-text" }
+        },
                                             mainCondition && super.condition(uniteConfiguration.moduleType, "AMD"));
 
         engineVariables.toggleClientPackage("systemjs-plugin-text", {
-                                                name: "systemjs-plugin-text",
-                                                main: "text.js",
-                                                includeMode: "both",
-                                                map: { text: "systemjs-plugin-text" }
-                                            },
+            name: "systemjs-plugin-text",
+            main: "text.js",
+            includeMode: "both",
+            map: { text: "systemjs-plugin-text" }
+        },
                                             mainCondition && super.condition(uniteConfiguration.moduleType, "SystemJS"));
     }
 }

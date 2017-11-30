@@ -14,6 +14,7 @@ import { UniteConfiguration } from "../../configuration/models/unite/uniteConfig
 import { UnitePackageRouteConfiguration } from "../../configuration/models/unitePackages/unitePackageRouteConfiguration";
 import { JavaScriptConfiguration } from "../../configuration/models/vscode/javaScriptConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
+import { TemplateHelper } from "../../helpers/templateHelper";
 import { IApplicationFramework } from "../../interfaces/IApplicationFramework";
 import { SharedAppFramework } from "../sharedAppFramework";
 
@@ -93,30 +94,6 @@ export class Polymer extends SharedAppFramework implements IApplicationFramework
                                             },
                                             mainCondition);
 
-        engineVariables.toggleClientPackage("@polymer/app-route", {
-                                                name: "@polymer/app-route",
-                                                transpile: {
-                                                    alias: "@polymer-transpiled/app-route",
-                                                    language: "JavaScript",
-                                                    sources: ["*.js"]
-                                                },
-                                                main: "*",
-                                                includeMode: "both"
-                                            },
-                                            mainCondition);
-
-        engineVariables.toggleClientPackage("@polymer/iron-location", {
-                                                name: "@polymer/iron-location",
-                                                transpile: {
-                                                    alias: "@polymer-transpiled/iron-location",
-                                                    language: "JavaScript",
-                                                    sources: ["*.js"]
-                                                },
-                                                main: "*",
-                                                includeMode: "both"
-                                            },
-                                            mainCondition);
-
         engineVariables.toggleClientPackage("@polymer/decorators", {
                                                 name: "@polymer/decorators",
                                                 transpile: {
@@ -128,6 +105,22 @@ export class Polymer extends SharedAppFramework implements IApplicationFramework
                                                 includeMode: "both"
                                             },
                                             mainCondition);
+
+        const components = ["app-route", "iron-location", "iron-pages", "iron-selector", "iron-resizable-behavior"];
+
+        components.forEach(component => {
+            engineVariables.toggleClientPackage(`@polymer/${component}`, {
+                                                    name: `@polymer/${component}`,
+                                                    transpile: {
+                                                        alias: `@polymer-transpiled/${component}`,
+                                                        language: "JavaScript",
+                                                        sources: ["*.js"]
+                                                    },
+                                                    main: "*",
+                                                    includeMode: "both"
+                                                },
+                                                mainCondition);
+        });
 
         engineVariables.toggleClientPackage("requirejs-text", {
                                                 name: "requirejs-text",
@@ -255,6 +248,108 @@ export class Polymer extends SharedAppFramework implements IApplicationFramework
                               uniteConfiguration: UniteConfiguration,
                               engineVariables: EngineVariables,
                               routes: { [id: string]: UnitePackageRouteConfiguration }): Promise<number> {
-        return 0;
+
+        const sourceExtension = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? ".ts" : ".js";
+
+        let routerItems: string[] = [];
+        const importItems: string[] = [];
+        const routeItems: string[] = [];
+        const keys = Object.keys(routes);
+        let navigationLinks: string[] = [];
+
+        for (let i = 0; i < keys.length; i++) {
+            const route = routes[keys[i]];
+
+            const words = TemplateHelper.generateWords(route.moduleType);
+            const snake = TemplateHelper.createSnake(words);
+            const human = TemplateHelper.createHuman(words);
+
+            routerItems.push(`<co-${snake} data-route="/${keys[i]}">\n</co-${snake}>`);
+            importItems.push(`import "${route.modulePath}";`);
+            routeItems.push(`/#/${keys[i]}`);
+            navigationLinks.push(`<a href="#/${keys[i]}">${human}</a>`);
+        }
+
+        const remainingInserts: { [id: string]: string[] } = {};
+
+        let ret = await super.insertContent(logger,
+                                            fileSystem,
+                                            uniteConfiguration,
+                                            engineVariables,
+                                            `app${sourceExtension}`,
+                                            (srcContent) => {
+                let content = srcContent;
+
+                if (importItems.length > 0) {
+                    const importsRemaining = super.insertReplaceImports(content, importItems);
+                    content = importsRemaining.content;
+                    remainingInserts.imports = importsRemaining.remaining;
+                }
+
+                return content;
+            });
+
+        if (ret === 0) {
+            ret = await super.insertContent(logger,
+                                            fileSystem,
+                                            uniteConfiguration,
+                                            engineVariables,
+                                            `app.html`,
+                                            (srcContent) => {
+                    let content = srcContent;
+
+                    if (routerItems.length > 0) {
+                        const routerRegEx = /(<iron-pages.*>)(\s*)([\s|\S]*?)((\s*)<\/iron-pages>)/;
+                        const routerResults = routerRegEx.exec(content);
+                        if (routerResults && routerResults.length > 4) {
+                            const currentRouters = routerResults[3].trim();
+
+                            routerItems = routerItems.filter(ri => currentRouters.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
+
+                            if (routerItems.length > 0) {
+                                const routerVar = routerResults[1];
+                                const routerNewline = routerResults[2];
+                                const routerEnd = routerResults[4];
+
+                                let replaceRouters = `${routerNewline}${currentRouters}${routerNewline}`;
+                                replaceRouters += `${routerItems.map(ri => ri.replace(/\n/g, routerNewline)).join(`${routerNewline}`)}`;
+                                content = content.replace(routerResults[0], `${routerVar}${replaceRouters}${routerEnd}`);
+                            }
+                        } else {
+                            remainingInserts.router = routerItems;
+                        }
+                    }
+
+                    if (navigationLinks.length > 0) {
+                        const navigationRegEx = /(<nav.*>)(\s*)([\s|\S]*?)((\s*)<\/nav>)/;
+                        const navigationResults = navigationRegEx.exec(content);
+                        if (navigationResults && navigationResults.length > 4) {
+                            const currentLinks = navigationResults[3].trim();
+
+                            navigationLinks = navigationLinks.filter(ri => currentLinks.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
+
+                            if (navigationLinks.length > 0) {
+                                const navigationStart = navigationResults[1];
+                                const navigationNewline = navigationResults[2];
+                                const navigationEnd = navigationResults[4];
+
+                                let replaceRouters = `${navigationNewline}${currentLinks}${navigationNewline}`;
+                                replaceRouters += `${navigationLinks.map(ri => ri.replace(/\n/g, navigationNewline)).join(`${navigationNewline}`)}`;
+                                content = content.replace(navigationResults[0], `${navigationStart}${replaceRouters}${navigationEnd}`);
+                            }
+                        } else {
+                            remainingInserts.navigationLinks = navigationLinks;
+                        }
+                    }
+
+                    return content;
+                });
+        }
+
+        if (ret === 0) {
+            super.insertCompletion(logger, remainingInserts, routeItems);
+        }
+
+        return ret;
     }
 }

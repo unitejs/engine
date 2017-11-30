@@ -7,16 +7,36 @@
 import { Child } from "./child/child";
 
 export class App {
-    private _router: { route: string | string[]; module(): any }[];
+    private _root: Element;
+    private _routerContent: Element;
+    private _navContent: Element;
+    private _router: { route: string; title: string; module: () => any }[];
+    private _currentModule: any;
 
     /**
      * Run the application
      * @returns {void}
      */
     public run(): void {
+        this._root = document.getElementById("root");
+        this._routerContent = document.createElement("div");
+        this._navContent = document.createElement("div");
+
+        this._root.appendChild(this._routerContent);
+        this._root.appendChild(document.createElement("hr"));
+        this._root.appendChild(this._navContent);
+
         this._router = [
-            { route: ["", "child"], module: () => new Child() }
+            { route: "", title: "Child", module: () => new Child() }
         ];
+
+        this._router.forEach((route) => {
+            const link = document.createElement("a");
+            link.href = `#/${route.route}`;
+            link.text = route.title;
+            this._navContent.appendChild(link);
+            this._navContent.appendChild(document.createTextNode(" "));
+        });
 
         this.locationChanged();
         window.addEventListener("popstate", () => this.locationChanged());
@@ -27,29 +47,27 @@ export class App {
      * @returns {void}
      */
     private locationChanged(): void {
-        const root = document.getElementById("root");
-
         const lookupRoute = (window.location.hash || "").replace(/^#\//, "");
 
-        const foundRoute = this._router.find((testRoute) => this.matchRoute(lookupRoute, testRoute));
-        if (foundRoute) {
-            const module = foundRoute.module();
-            while (root.hasChildNodes()) {
-                root.removeChild(root.lastChild);
-            }
-            module.render(root);
+        let foundRoute = this._router.find((testRoute) => lookupRoute === testRoute.route);
+        if (!foundRoute && this._router.length > 0) {
+            foundRoute = this._router.find((testRoute) => testRoute.route === "");
         }
-    }
-
-    /**
-     * Does the given route match
-     * @param lookupRoute {string}
-     * @param testRoute { route: string | string[]; module(): any }
-     * @returns {void}
-     */
-    private matchRoute(lookupRoute: string, testRoute: { route: string | string[]; module(): any }): boolean {
-        return Array.isArray(testRoute.route)
-            ? testRoute.route.indexOf(lookupRoute) >= 0 : testRoute.route === lookupRoute;
+        if (foundRoute) {
+            if (this._currentModule && this._currentModule.detached) {
+                this._currentModule.detached();
+            }
+            while (this._routerContent.hasChildNodes()) {
+                this._routerContent.removeChild(this._routerContent.lastChild);
+            }
+            this._currentModule = foundRoute.module();
+            if (this._currentModule.render) {
+                this._currentModule.render(this._routerContent);
+            }
+            if (this._currentModule.attached) {
+                this._currentModule.attached();
+            }
+        }
     }
 }
 

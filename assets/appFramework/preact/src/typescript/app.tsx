@@ -5,7 +5,7 @@
  * @class App
  */
 import { h, render } from "preact";
-import { Router } from "preact-router";
+import { Link, Router } from "preact-router";
 import { Child } from "./child/child";
 
 export class App {
@@ -16,9 +16,15 @@ export class App {
      * @returns {void}
      */
     public run(rootElement: Element, basePath: string): void {
-        render(<Router>
-            <Child path={basePath} />
-        </Router>,
+        render(<div>
+            <Router>
+                <Child path={basePath} />
+            </Router>
+            <hr/>
+            <nav>
+                <Link href={basePath}>Child</Link>
+            </nav>
+        </div>,
                rootElement
         );
     }

@@ -4,21 +4,30 @@
  * @export
  * @class App
  */
-import {BrowserRouter, Route} from "react-router-dom";
-import {Child} from "./child/child";
 import /* Synthetic Import */ React from "react";
 import /* Synthetic Import */ ReactDOM from "react-dom";
+import {BrowserRouter, Link, Route, Switch} from "react-router-dom";
+import {Child} from "./child/child";
 
 export class App {
     /**
      * Run the application.
      * @param {Element} rootElement
+     * @param {string} basePath
      * @returns {void}
      */
-    run(rootElement) {
+    run(rootElement, basePath) {
         ReactDOM.render(
-            <BrowserRouter>
-                <Route path="/" component={Child} />
+            <BrowserRouter basename={basePath}>
+                <div>
+                    <Switch>
+                        <Route path="/" exact component={Child} />
+                    </Switch>
+                    <hr />
+                    <nav>
+                        <Link to="/">Child</Link>
+                    </nav>
+                </div>
             </BrowserRouter>,
             rootElement
         );

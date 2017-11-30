@@ -9,17 +9,11 @@ import "./gen-name-snake.css";
 
 export class GenNamePascal extends React.Component {
     /**
-     * Message displayed in the view.
-     * @type {string}
-     */
-    message;
-
-    /**
      * Creates an instance of GenNamePascal.
      */
-    constructor() {
-        super(undefined, undefined);
-        this.message = "Hello Gen Name Human";
+    constructor(props, context) {
+        super(props, context);
+        this.state = {message: "Hello Gen Name Human"};
     }
 
     /**
@@ -27,6 +21,6 @@ export class GenNamePascal extends React.Component {
      * @returns {JSX.Element}
      */
     render() {
-        return <span className="gen-name-snake">{this.message}</span>;
+        return <span className="gen-name-snake">{this.state.message}</span>;
     }
 }

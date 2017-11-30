@@ -7,6 +7,7 @@
 * Added Vanilla generate component
 * Updated react and preact generate and child code with substituted message in template
 * Updated angular child template to be span not div
+* Fixed missing iron-pages and iron-selector from polymer project
 
 ## 1.7.4
 
