@@ -116,12 +116,15 @@ gulp.task("unit-run-test", async () => {
         process.exit(1);
     }
 
-    const karmaConf: karma.ConfigOptions & karma.ConfigFile & { coverageReporter?: { include: string } } = {
-            configFile: "../../../karma.conf.js",
-            coverageReporter: {
-                include: `${uniteConfig.dirs.www.dist}**/${options.grep}.js`
-            }
-        };
+    const karmaConf: karma.ConfigOptions & karma.ConfigFile &
+        { coverageReporter?: { include: string } } &
+        { customLaunchers: { [id: string]: any } } = {
+        configFile: "../../../karma.conf.js",
+        coverageReporter: {
+            include: `${uniteConfig.dirs.www.dist}**/${options.grep}.js`
+        },
+        customLaunchers: {}
+    };
 
     if (options.browser) {
         karmaConf.singleRun = false;
@@ -133,10 +136,17 @@ gulp.task("unit-run-test", async () => {
             const bLower = browser.toLowerCase();
             const found = allOptions.find(option => option.toLowerCase() === bLower);
             if (found) {
-                karmaConf.browsers.push(found);
+                karmaConf.browsers.push(found === "ChromeHeadless" ? "ChromeHeadlessNoSandbox" : found);
             }
         });
     }
+
+    karmaConf.customLaunchers = {
+        ChromeHeadlessNoSandbox: {
+            base: "ChromeHeadless",
+            flags: ["--no-sandbox"]
+        }
+    };
 
     if (options.watch) {
         karmaConf.singleRun = false;
