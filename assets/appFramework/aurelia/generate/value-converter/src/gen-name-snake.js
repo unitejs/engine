@@ -14,7 +14,6 @@ export class GenNamePascalValueConverter {
         return value ? value.toString() : "";
     }
 
-
     /**
      * Convert the value from a view.
      * @param {string} view

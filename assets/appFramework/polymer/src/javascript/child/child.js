@@ -15,8 +15,18 @@ export class Child extends PolymerElement {
      * Message to be displayed in the view.
      * @type {string}
      */
-    @property({type: String})
-    message;
+    message = "";
+
+    /**
+     * Get the properties
+     */
+    static get properties() {
+        return {
+            message: {
+                type: String
+            }
+        };
+    }
 
     /**
      * Creates an instance of Child.
