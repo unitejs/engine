@@ -66,18 +66,12 @@ export class PackageCommand extends EngineCommandBase implements IEngineCommand<
 
                     const moduleType = this._pipeline.getStep<IPipelineStep>(new PipelineKey("moduleType", uniteConfiguration.moduleType));
 
-                    if (moduleType) {
-                        ret = await moduleType.initialise(this._logger, this._fileSystem, uniteConfiguration, engineVariables, true);
+                    await moduleType.initialise(this._logger, this._fileSystem, uniteConfiguration, engineVariables, true);
 
-                        if (ret === 0) {
-                         ret = await this.processPackage(uniteConfiguration, engineVariables, packageFolder, unitePackageConfiguration);
-                        }
-                    } else {
-                        this._logger.error(`Unable to load module type ${uniteConfiguration.moduleType}`);
-                        ret = 1;
-                    }
+                    ret = await this.processPackage(uniteConfiguration, engineVariables, packageFolder, unitePackageConfiguration);
                 } else {
-                    this._logger.error(`Package folder '${packageFolder}' does not exist`);
+                    ret = 1;
+                    this._logger.error(`Package file '${packageFolder}/unite-package.json' does not exist`);
                 }
             } else {
                 ret = 1;
@@ -114,12 +108,15 @@ export class PackageCommand extends EngineCommandBase implements IEngineCommand<
                     this._logger.info("Copying folder", { sourceFolder: actualSource, destFolder: actualWwwFolder });
 
                     ret = await this.copyFolder(uniteConfiguration, actualSource, actualWwwFolder, codeSubstitutions);
+                } else {
+                    ret = 1;
+                    this._logger.error(`There is no destination folder '${subFolders[i]}' to copy content to.`);
                 }
             }
+        }
 
-            if (ret === 0) {
-                ret = await this.addPackages(uniteConfiguration, engineVariables, unitePackageConfiguration);
-            }
+        if (ret === 0) {
+            ret = await this.addPackages(uniteConfiguration, engineVariables, unitePackageConfiguration);
         }
 
         if (ret === 0) {
@@ -152,15 +149,15 @@ export class PackageCommand extends EngineCommandBase implements IEngineCommand<
                 await this._fileSystem.directoryCreate(destFolder);
             }
         } catch (err) {
-            this._logger.error(`There was an creating folder ${destFolder}`, err);
+            this._logger.error(`There was an creating folder '${destFolder}'`, err);
             ret = 1;
         }
 
-        const usableExtensions = uniteConfiguration.sourceExtensions
-                                    .concat(uniteConfiguration.viewExtensions)
-                                    .concat(uniteConfiguration.styleExtension);
-
         if (ret === 0) {
+            const usableExtensions = uniteConfiguration.sourceExtensions
+                                        .concat(uniteConfiguration.viewExtensions)
+                                        .concat(uniteConfiguration.styleExtension);
+
             const files = await this._fileSystem.directoryGetFiles(sourceFolder);
             for (let i = 0; i < files.length && ret === 0; i++) {
                 try {
@@ -175,7 +172,7 @@ export class PackageCommand extends EngineCommandBase implements IEngineCommand<
                         await this._fileSystem.fileWriteText(destFolder, files[i], data);
                     }
                 } catch (err) {
-                    this._logger.error(`There was an error copying file ${files[i]}`, err);
+                    this._logger.error(`There was an error copying file '${files[i]}'`, err);
                     ret = 1;
                 }
             }
