@@ -19,7 +19,8 @@ describe("App", () => {
     it("the root text is set", (done) => {
         browser.uniteLoadAndWaitForPage("/")
             .then(() => {
-                $("#root").getText()
+                element(by.customShadowRoot("#root unite-app::sr iron-pages unite-child::sr span"))
+                    .getText()
                     .then((rootContent) => {
                         expect(rootContent).to.equal("Hello UniteJS World!");
                         done();
