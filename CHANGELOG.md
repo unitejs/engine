@@ -8,6 +8,7 @@
 * Updated react and preact generate and child code with substituted message in template
 * Updated angular child template to be span not div
 * Fixed missing iron-pages and iron-selector from polymer project
+* Fixed vue template errors not being displayed during build process
 
 ## 1.7.4
 

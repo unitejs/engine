@@ -15,6 +15,7 @@ import { UniteConfiguration } from "../../configuration/models/unite/uniteConfig
 import { UnitePackageRouteConfiguration } from "../../configuration/models/unitePackages/unitePackageRouteConfiguration";
 import { JavaScriptConfiguration } from "../../configuration/models/vscode/javaScriptConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
+import { TemplateHelper } from "../../helpers/templateHelper";
 import { IApplicationFramework } from "../../interfaces/IApplicationFramework";
 import { SharedAppFramework } from "../sharedAppFramework";
 
@@ -93,6 +94,9 @@ export class Vue extends SharedAppFramework implements IApplicationFramework {
                 super.createLoaderTypeMapReplacement(engineVariables, "css", "css");
             }
             engineVariables.buildTranspilePostBuild.push(`        .pipe(inlineVue())`);
+            engineVariables.buildTranspilePostBuild.push(`        .on("error", (err) => {`);
+            engineVariables.buildTranspilePostBuild.push(`            display.error(err.toString());`);
+            engineVariables.buildTranspilePostBuild.push(`        })`);
         }
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
@@ -197,6 +201,109 @@ export class Vue extends SharedAppFramework implements IApplicationFramework {
                               uniteConfiguration: UniteConfiguration,
                               engineVariables: EngineVariables,
                               routes: { [id: string]: UnitePackageRouteConfiguration }): Promise<number> {
-        return 0;
+        const sourceExtension = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? ".ts" : ".js";
+        const bracketSpacing = super.condition(uniteConfiguration.sourceLanguage, "TypeScript") ? " " : "";
+
+        let routerItems: string[] = [];
+        const importItems: string[] = [];
+        const routeItems: string[] = [];
+        let navigationLinks: string[] = [];
+
+        const keys = Object.keys(routes);
+        for (let i = 0; i < keys.length; i++) {
+            const route = routes[keys[i]];
+
+            const words = TemplateHelper.generateWords(route.moduleType);
+            const camel = TemplateHelper.createCamel(words);
+            const human = TemplateHelper.createHuman(words);
+
+            importItems.push(`import {${bracketSpacing}${route.moduleType}${bracketSpacing}} from "${route.modulePath}";`);
+            routerItems.push(`{${bracketSpacing}path: "/${keys[i]}", name: "${camel}", component: ${route.moduleType}${bracketSpacing}}`);
+            routeItems.push(`/#/${keys[i]}`);
+            navigationLinks.push(`<router-link to="/${keys[i]}">${human}</router-link>`);
+        }
+
+        const remainingInserts: { [id: string]: string[] } = {};
+
+        let ret = await super.insertContent(logger,
+                                            fileSystem,
+                                            uniteConfiguration,
+                                            engineVariables,
+                                            `router${sourceExtension}`,
+                                            (srcContent) => {
+                let content = srcContent;
+
+                if (importItems.length > 0) {
+                    const importsRemaining = super.insertReplaceImports(content, importItems);
+                    content = importsRemaining.content;
+                    remainingInserts.imports = importsRemaining.remaining;
+                }
+
+                if (routerItems.length > 0) {
+                    const routerRegEx = /([ |\t]*)(routes: \[)([\s]*)([\s\S]*?)(\s*\])/;
+                    const routerResults = routerRegEx.exec(content);
+                    if (routerResults && routerResults.length > 5) {
+                        const currentRouters = routerResults[4].trim();
+
+                        routerItems = routerItems.filter(ri => currentRouters.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
+
+                        if (routerItems.length > 0) {
+                            const routerIndent = routerResults[1];
+                            const routerVar = routerResults[2];
+                            const routerNewline = routerResults[3];
+                            const routerEnd = routerResults[5];
+
+                            let replaceRouters = `${routerNewline}${currentRouters},${routerNewline}`;
+                            replaceRouters += `${routerItems.map(ri => ri.replace(/\n/g, routerNewline)).join(`,${routerNewline}`)}`;
+                            content = content.replace(routerResults[0], `${routerIndent}${routerVar}${replaceRouters}${routerEnd}`);
+                        }
+                    } else {
+                        remainingInserts.router = routerItems;
+                    }
+                }
+
+                return content;
+            });
+
+        if (ret === 0) {
+            ret = await super.insertContent(logger,
+                                            fileSystem,
+                                            uniteConfiguration,
+                                            engineVariables,
+                                            `app.vue`,
+                                            (srcContent) => {
+                    let content = srcContent;
+
+                    if (navigationLinks.length > 0) {
+                        const navigationRegEx = /(<nav.*>)(\s*)([\s|\S]*?)((\s*)<\/nav>)/;
+                        const navigationResults = navigationRegEx.exec(content);
+                        if (navigationResults && navigationResults.length > 4) {
+                            const currentLinks = navigationResults[3].trim();
+
+                            navigationLinks = navigationLinks.filter(ri => currentLinks.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
+
+                            if (navigationLinks.length > 0) {
+                                const navigationStart = navigationResults[1];
+                                const navigationNewline = navigationResults[2];
+                                const nvaigationEnd = navigationResults[4];
+
+                                let replaceRouters = `${navigationNewline}${currentLinks}${navigationNewline}`;
+                                replaceRouters += `${navigationLinks.map(ri => ri.replace(/\n/g, navigationNewline)).join(`${navigationNewline}`)}`;
+                                content = content.replace(navigationResults[0], `${navigationStart}${replaceRouters}${nvaigationEnd}`);
+                            }
+                        } else {
+                            remainingInserts.navigationLinks = navigationLinks;
+                        }
+                    }
+
+                    return content;
+                });
+        }
+
+        if (ret === 0) {
+            super.insertCompletion(logger, remainingInserts, routeItems);
+        }
+
+        return ret;
     }
 }
