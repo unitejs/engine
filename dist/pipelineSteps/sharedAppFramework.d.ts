@@ -15,7 +15,7 @@ export declare abstract class SharedAppFramework extends PipelineStepBase {
     protected generateCss(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): Promise<number>;
     protected createLoaderReplacement(engineVariables: EngineVariables, extension: string, loader: string, includeRequires: boolean): void;
     protected createLoaderTypeMapReplacement(engineVariables: EngineVariables, extension: string, loader: string): void;
-    protected insertContent(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, file: string, inserter: (content: string) => string): Promise<number>;
+    protected insertContent(logger: ILogger, fileSystem: IFileSystem, engineVariables: EngineVariables, file: string, inserter: (content: string) => string): Promise<number>;
     protected insertReplaceImports(srcContent: string, sourceItems: string[]): {
         content: string;
         remaining: string[];

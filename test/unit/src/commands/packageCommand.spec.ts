@@ -7,11 +7,12 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { PackageCommand } from "../../../../src/commands/packageCommand";
 import { UniteConfiguration } from "../../../../src/configuration/models/unite/uniteConfiguration";
+import { UnitePackageClientConfiguration } from "../../../../src/configuration/models/unitePackages/unitePackageClientConfiguration";
 import { UnitePackageConfiguration } from "../../../../src/configuration/models/unitePackages/unitePackageConfiguration";
+import { PackageUtils } from "../../../../src/pipelineSteps/packageUtils";
 import { FileSystemMock } from "../fileSystem.mock";
 import { ReadOnlyFileSystemMock } from "../readOnlyFileSystem.mock";
 
-/* tslint:disable */
 describe("PackageCommand", () => {
     let sandbox: Sinon.SinonSandbox;
     let loggerStub: ILogger;
@@ -38,7 +39,7 @@ describe("PackageCommand", () => {
         loggerBannerSpy = sandbox.spy(loggerStub, "banner");
 
         appFrameworkDirExists = true;
-        examplesDirExists = false;
+        examplesDirExists = true;
 
         const originalFileExists = fileSystemStub.fileExists;
         const stubExists = sandbox.stub(fileSystemStub, "fileExists");
@@ -298,13 +299,134 @@ describe("PackageCommand", () => {
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("creating folder");
         });
 
-        it("can complete when directory already exists", async () => {
+        it("can fail if file copy fails", async () => {
             const obj = new PackageCommand();
 
-            examplesDirExists = true;
+            sandbox.stub(fileSystemStub, "fileWriteText").rejects(new Error("err"));
 
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
 
+            const res = await obj.run({
+                packageName: "moment",
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("copying file");
+        });
+
+        it("can complete when directory does not exist already exists", async () => {
+            const obj = new PackageCommand();
+
+            examplesDirExists = false;
+
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+
+            const res = await obj.run({
+                packageName: "moment",
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
+        });
+
+        it("can complete with no routes", async () => {
+            const obj = new PackageCommand();
+            unitePackageJson.routes = {};
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "moment",
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
+        });
+
+        it("can complete with routes", async () => {
+            const obj = new PackageCommand();
+            unitePackageJson.routes = {
+                "my/route": {
+                    modulePath: "./examples/my-route",
+                    moduleType: "MyRoute"
+                },
+               "their/root": {
+                    modulePath: "./their/root",
+                    moduleType: "TheirRoot"
+                }
+            };
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "moment",
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(loggerBannerSpy.args.join()).to.contain("Success");
+        });
+
+        it("can complete with no client packages", async () => {
+            const obj = new PackageCommand();
+            unitePackageJson.clientPackages = undefined;
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "moment",
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
+        });
+
+        it("can complete with client packages using profiles", async () => {
+            sandbox.stub(PackageUtils, "exec").resolves("{}");
+
+            const obj = new PackageCommand();
+            unitePackageJson.clientPackages.moment = new UnitePackageClientConfiguration();
+            unitePackageJson.clientPackages.moment.profile = "moment";
+
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "moment",
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
+        });
+
+        it("can fail with client packages using unknown profiles", async () => {
+            const obj = new PackageCommand();
+            unitePackageJson.clientPackages.moment = new UnitePackageClientConfiguration();
+            unitePackageJson.clientPackages.moment.profile = "dfgkjhdfgkjhdfkgjdf";
+
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "moment",
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("exist");
+        });
+
+        it("can fail with client packages can not lookup package info", async () => {
+            const obj = new PackageCommand();
+            unitePackageJson.clientPackages.moment = new UnitePackageClientConfiguration();
+            unitePackageJson.clientPackages.moment.profile = "moment";
+            sandbox.stub(PackageUtils, "exec").throws(new Error("err"));
+
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "moment",
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("failed");
+        });
+
+        it("can complete with client packages without profiles", async () => {
+            sandbox.stub(PackageUtils, "exec").resolves("{}");
+
+            const obj = new PackageCommand();
+            unitePackageJson.clientPackages.moment = new UnitePackageClientConfiguration();
+            unitePackageJson.clientPackages.moment.name = "moment";
+
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
                 packageName: "moment",
                 outputDirectory: undefined

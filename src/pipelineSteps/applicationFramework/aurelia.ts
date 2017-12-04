@@ -147,7 +147,7 @@ export class Aurelia extends SharedAppFramework implements IApplicationFramework
         const routeItems: string[] = [];
         let navigationLinks: string[] = [];
 
-        const keys = Object.keys(routes);
+        const keys = Object.keys(routes || {});
         for (let i = 0; i < keys.length; i++) {
             const route = routes[keys[i]];
 
@@ -164,66 +164,61 @@ export class Aurelia extends SharedAppFramework implements IApplicationFramework
 
         let ret = await super.insertContent(logger,
                                             fileSystem,
-                                            uniteConfiguration,
                                             engineVariables,
                                             `app${sourceExtension}`,
                                             (srcContent) => {
                 let content = srcContent;
 
-                if (routerItems.length > 0) {
-                    const routerRegEx = /([ |\t]*)(config.map\(\[)([\s]*)([\s\S]*?)(\]\);)/;
-                    const routerResults = routerRegEx.exec(content);
-                    if (routerResults && routerResults.length > 4) {
-                        const currentRouters = routerResults[4].trim();
+                const routerRegEx = /([ |\t]*)(config.map\(\[)([\s]*)([\s\S]*?)(\]\);)/;
+                const routerResults = routerRegEx.exec(content);
+                if (routerResults && routerResults.length > 4) {
+                    const currentRouters = routerResults[4].trim();
 
-                        routerItems = routerItems.filter(ri => currentRouters.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
+                    routerItems = routerItems.filter(ri => currentRouters.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
 
-                        if (routerItems.length > 0) {
-                            const routerIndent = routerResults[1];
-                            const routerVar = routerResults[2];
-                            const routerNewline = routerResults[3];
-                            const routerEnd = routerResults[5];
+                    if (routerItems.length > 0) {
+                        const routerIndent = routerResults[1];
+                        const routerVar = routerResults[2];
+                        const routerNewline = routerResults[3];
+                        const routerEnd = routerResults[5];
 
-                            let replaceRouters = `${routerNewline}${currentRouters},${routerNewline}`;
-                            replaceRouters += `${routerItems.map(ri => ri.replace(/\n/g, routerNewline)).join(`,${routerNewline}`)}\n`;
-                            content = content.replace(routerResults[0], `${routerIndent}${routerVar}${replaceRouters}${routerIndent}${routerEnd}`);
-                        }
-                    } else {
-                        remainingInserts.router = routerItems;
+                        let replaceRouters = `${routerNewline}${currentRouters},${routerNewline}`;
+                        replaceRouters += `${routerItems.map(ri => ri.replace(/\n/g, routerNewline)).join(`,${routerNewline}`)}\n`;
+                        content = content.replace(routerResults[0], `${routerIndent}${routerVar}${replaceRouters}${routerIndent}${routerEnd}`);
                     }
+                } else {
+                    remainingInserts.router = routerItems;
                 }
+
                 return content;
             });
 
         if (ret === 0) {
             ret = await super.insertContent(logger,
                                             fileSystem,
-                                            uniteConfiguration,
                                             engineVariables,
                                             `app.html`,
                                             (srcContent) => {
                     let content = srcContent;
 
-                    if (navigationLinks.length > 0) {
-                        const navigationRegEx = /(<nav.*>)(\s*)([\s|\S]*?)((\s*)<\/nav>)/;
-                        const navigationResults = navigationRegEx.exec(content);
-                        if (navigationResults && navigationResults.length > 4) {
-                            const currentLinks = navigationResults[3].trim();
+                    const navigationRegEx = /(<nav.*>)(\s*)([\s|\S]*?)((\s*)<\/nav>)/;
+                    const navigationResults = navigationRegEx.exec(content);
+                    if (navigationResults && navigationResults.length > 4) {
+                        const currentLinks = navigationResults[3].trim();
 
-                            navigationLinks = navigationLinks.filter(ri => currentLinks.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
+                        navigationLinks = navigationLinks.filter(ri => currentLinks.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
 
-                            if (navigationLinks.length > 0) {
-                                const navigationStart = navigationResults[1];
-                                const navigationNewline = navigationResults[2];
-                                const navigationEnd = navigationResults[4];
+                        if (navigationLinks.length > 0) {
+                            const navigationStart = navigationResults[1];
+                            const navigationNewline = navigationResults[2];
+                            const navigationEnd = navigationResults[4];
 
-                                let replaceRouters = `${navigationNewline}${currentLinks}${navigationNewline}`;
-                                replaceRouters += `${navigationLinks.map(ri => ri.replace(/\n/g, navigationNewline)).join(`${navigationNewline}`)}`;
-                                content = content.replace(navigationResults[0], `${navigationStart}${replaceRouters}${navigationEnd}`);
-                            }
-                        } else {
-                            remainingInserts.navigationLinks = navigationLinks;
+                            let replaceRouters = `${navigationNewline}${currentLinks}${navigationNewline}`;
+                            replaceRouters += `${navigationLinks.map(ri => ri.replace(/\n/g, navigationNewline)).join(`${navigationNewline}`)}`;
+                            content = content.replace(navigationResults[0], `${navigationStart}${replaceRouters}${navigationEnd}`);
                         }
+                    } else {
+                        remainingInserts.navigationLinks = navigationLinks;
                     }
 
                     return content;

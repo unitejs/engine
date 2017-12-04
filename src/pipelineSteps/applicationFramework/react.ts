@@ -202,7 +202,7 @@ export class React extends SharedAppFramework implements IApplicationFramework {
         const routeItems: string[] = [];
         let navigationLinks: string[] = [];
 
-        const keys = Object.keys(routes);
+        const keys = Object.keys(routes || {});
         for (let i = 0; i < keys.length; i++) {
             const route = routes[keys[i]];
 
@@ -219,60 +219,53 @@ export class React extends SharedAppFramework implements IApplicationFramework {
 
         const ret = await super.insertContent(logger,
                                               fileSystem,
-                                              uniteConfiguration,
                                               engineVariables,
                                               `app${sourceExtension}`,
                                               (srcContent) => {
                 let content = srcContent;
 
-                if (importItems.length > 0) {
-                    const importsRemaining = super.insertReplaceImports(content, importItems);
-                    content = importsRemaining.content;
-                    remainingInserts.imports = importsRemaining.remaining;
+                const importsRemaining = super.insertReplaceImports(content, importItems);
+                content = importsRemaining.content;
+                remainingInserts.imports = importsRemaining.remaining;
+
+                const routerRegEx = /(<Switch.*>)(\s*)([\s|\S]*?)((\s*)<\/Switch>)/;
+                const routerResults = routerRegEx.exec(content);
+                if (routerResults && routerResults.length > 4) {
+                    const currentRouters = routerResults[3].trim();
+
+                    routerItems = routerItems.filter(ri => currentRouters.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
+
+                    if (routerItems.length > 0) {
+                        const routerStart = routerResults[1];
+                        const routerNewline = routerResults[2];
+                        const routerEnd = routerResults[4];
+
+                        let replaceRouters = `${routerNewline}${currentRouters}${routerNewline}`;
+                        replaceRouters += `${routerItems.map(ri => ri.replace(/\n/g, routerNewline)).join(`${routerNewline}`)}`;
+                        content = content.replace(routerResults[0], `${routerStart}${replaceRouters}${routerEnd}`);
+                    }
+                } else {
+                    remainingInserts.router = routerItems;
                 }
 
-                if (routerItems.length > 0) {
-                    const routerRegEx = /(<Switch.*>)(\s*)([\s|\S]*?)((\s*)<\/Switch>)/;
-                    const routerResults = routerRegEx.exec(content);
-                    if (routerResults && routerResults.length > 4) {
-                        const currentRouters = routerResults[3].trim();
+                const navigationRegEx = /(<nav.*>)(\s*)([\s|\S]*?)((\s*)<\/nav>)/;
+                const navigationResults = navigationRegEx.exec(content);
+                if (navigationResults && navigationResults.length > 4) {
+                    const currentLinks = navigationResults[3].trim();
 
-                        routerItems = routerItems.filter(ri => currentRouters.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
+                    navigationLinks = navigationLinks.filter(ri => currentLinks.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
 
-                        if (routerItems.length > 0) {
-                            const routerStart = routerResults[1];
-                            const routerNewline = routerResults[2];
-                            const routerEnd = routerResults[4];
+                    if (navigationLinks.length > 0) {
+                        const navigationStart = navigationResults[1];
+                        const navigationNewline = navigationResults[2];
+                        const navigationEnd = navigationResults[4];
 
-                            let replaceRouters = `${routerNewline}${currentRouters}${routerNewline}`;
-                            replaceRouters += `${routerItems.map(ri => ri.replace(/\n/g, routerNewline)).join(`${routerNewline}`)}`;
-                            content = content.replace(routerResults[0], `${routerStart}${replaceRouters}${routerEnd}`);
-                        }
-                    } else {
-                        remainingInserts.router = routerItems;
+                        let replaceRouters = `${navigationNewline}${currentLinks}&nbsp;${navigationNewline}`;
+                        replaceRouters += `${navigationLinks.map(ri => ri.replace(/\n/g, navigationNewline)).join(`&nbsp;${navigationNewline}`)}`;
+                        content = content.replace(navigationResults[0], `${navigationStart}${replaceRouters}${navigationEnd}`);
                     }
-                }
-
-                if (navigationLinks.length > 0) {
-                    const navigationRegEx = /(<nav.*>)(\s*)([\s|\S]*?)((\s*)<\/nav>)/;
-                    const navigationResults = navigationRegEx.exec(content);
-                    if (navigationResults && navigationResults.length > 4) {
-                        const currentLinks = navigationResults[3].trim();
-
-                        navigationLinks = navigationLinks.filter(ri => currentLinks.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
-
-                        if (navigationLinks.length > 0) {
-                            const navigationStart = navigationResults[1];
-                            const navigationNewline = navigationResults[2];
-                            const navigationEnd = navigationResults[4];
-
-                            let replaceRouters = `${navigationNewline}${currentLinks}&nbsp;${navigationNewline}`;
-                            replaceRouters += `${navigationLinks.map(ri => ri.replace(/\n/g, navigationNewline)).join(`&nbsp;${navigationNewline}`)}`;
-                            content = content.replace(navigationResults[0], `${navigationStart}${replaceRouters}${navigationEnd}`);
-                        }
-                    } else {
-                        remainingInserts.navigationLinks = navigationLinks;
-                    }
+                } else {
+                    remainingInserts.navigationLinks = navigationLinks;
                 }
 
                 return content;

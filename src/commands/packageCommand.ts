@@ -159,6 +159,7 @@ export class PackageCommand extends EngineCommandBase implements IEngineCommand<
                                         .concat(uniteConfiguration.styleExtension);
 
             const files = await this._fileSystem.directoryGetFiles(sourceFolder);
+
             for (let i = 0; i < files.length && ret === 0; i++) {
                 try {
                     const ext = /\.(.*)$/.exec(files[i]);
@@ -197,15 +198,10 @@ export class PackageCommand extends EngineCommandBase implements IEngineCommand<
 
         let ret = 0;
 
-        if (unitePackageConfiguration.routes) {
+        if (unitePackageConfiguration.routes && Object.keys(unitePackageConfiguration.routes).length > 0) {
             const appFramework = this._pipeline.getStep<IApplicationFramework>(new PipelineKey("applicationFramework", uniteConfiguration.applicationFramework));
 
-            if (appFramework) {
-                ret = await appFramework.insertRoutes(this._logger, this._fileSystem, uniteConfiguration, engineVariables, unitePackageConfiguration.routes);
-            } else {
-                this._logger.error(`Unable to load application framework ${uniteConfiguration.applicationFramework}`);
-                ret = 1;
-            }
+            ret = await appFramework.insertRoutes(this._logger, this._fileSystem, uniteConfiguration, engineVariables, unitePackageConfiguration.routes);
         }
 
         return ret;

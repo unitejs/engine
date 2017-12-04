@@ -208,7 +208,6 @@ export abstract class SharedAppFramework extends PipelineStepBase {
 
     protected async insertContent(logger: ILogger,
                                   fileSystem: IFileSystem,
-                                  uniteConfiguration: UniteConfiguration,
                                   engineVariables: EngineVariables,
                                   file: string,
                                   inserter: (content: string) => string): Promise<number> {
@@ -225,7 +224,7 @@ export abstract class SharedAppFramework extends PipelineStepBase {
             }
         } catch (err) {
             ret = 1;
-            logger.error(`Unable to replace content in file ${file}`, err);
+            logger.error(`Unable to replace content in file '${file}'`, err);
         }
 
         return ret;
@@ -257,7 +256,7 @@ export abstract class SharedAppFramework extends PipelineStepBase {
                                remainingInserts: { [id: string]: string[]},
                                routes: string[]): void {
 
-        const keys = Object.keys(remainingInserts);
+        const keys = Object.keys(remainingInserts || {});
         let totalRemaining = 0;
         keys.forEach(key => {
             totalRemaining += remainingInserts[key].length;
@@ -280,7 +279,7 @@ export abstract class SharedAppFramework extends PipelineStepBase {
             logger.banner("");
         }
 
-        if (routes.length > 0) {
+        if (routes && routes.length > 0) {
             logger.banner("Once you have built the application you should be able access the new pages at the following routes:");
             logger.banner("");
             routes.forEach(route => logger.banner(`   ${route}`));

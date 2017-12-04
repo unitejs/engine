@@ -69,7 +69,7 @@ export class GenerateCommand extends EngineCommandBase implements IEngineCommand
                         }
                     }
 
-                    // need this for syntehtic import flags
+                    // need this for synthetic import flags
                     this._pipeline.add("moduleType", "CommonJS");
                     this._pipeline.add("moduleType", "SystemJS");
                     this._pipeline.add("moduleType", "AMD");

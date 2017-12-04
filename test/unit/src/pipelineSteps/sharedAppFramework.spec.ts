@@ -44,6 +44,10 @@ class TestSharedAppFramework extends SharedAppFramework {
         }
 
         if (ret === 0) {
+            ret = await super.generateE2eTest(logger, fileSystem, uniteConfiguration, engineVariables, [], false);
+        }
+
+        if (ret === 0) {
             ret = await this.generateUnitTest(logger, fileSystem, uniteConfiguration, engineVariables, [`${this.appModuleName}.spec.js`], !this.customUnitTests);
         }
 
@@ -53,20 +57,55 @@ class TestSharedAppFramework extends SharedAppFramework {
 
         return ret;
     }
+
+    public testCreateLoaderReplacement(engineVariables: EngineVariables, extension: string, loader: string, includeRequires: boolean) : void {
+        return super.createLoaderReplacement(engineVariables, extension, loader, includeRequires);
+    }
+
+    public testCreateLoaderTypeMapReplacement(engineVariables: EngineVariables, extension: string, loader: string) : void {
+        return super.createLoaderTypeMapReplacement(engineVariables, extension, loader);
+    }
+
+    public async testInsertContent(logger: ILogger,
+                                   fileSystem: IFileSystem,
+                                   engineVariables: EngineVariables,
+                                   file: string,
+                                   inserter: (content: string) => string): Promise<number> {
+        return super.insertContent(logger, fileSystem, engineVariables, file, inserter);
+    }
+
+    public testInsertReplaceImports(srcContent: string, sourceItems: string[]): { content: string; remaining: string[] } {
+        return super.insertReplaceImports(srcContent, sourceItems);
+    }
+
+    public testInsertCompletion(logger: ILogger,
+                                remainingInserts: { [id: string]: string[]},
+                                routes: string[]): void {
+        return super.insertCompletion(logger, remainingInserts, routes);
+    }
 }
 
 describe("SharedAppFramework", () => {
     let sandbox: Sinon.SinonSandbox;
     let loggerStub: ILogger;
-    let fileSystemMock: IFileSystem;
     let uniteConfigurationStub: UniteConfiguration;
     let engineVariablesStub: EngineVariables;
+    let fileSystemMock: IFileSystem;
+    let loggerErrorSpy: Sinon.SinonSpy;
+    let loggerBannerSpy: Sinon.SinonSpy;
+    let loggerWarningSpy: Sinon.SinonSpy;
 
     beforeEach(() => {
         sandbox = Sinon.sandbox.create();
         loggerStub = <ILogger>{};
         loggerStub.info = () => { };
         loggerStub.error = () => { };
+        loggerStub.banner = () => { };
+        loggerStub.warning = () => { };
+
+        loggerErrorSpy = sandbox.spy(loggerStub, "error");
+        loggerBannerSpy = sandbox.spy(loggerStub, "banner");
+        loggerWarningSpy = sandbox.spy(loggerStub, "warning");
 
         fileSystemMock = new FileSystemMock();
         uniteConfigurationStub = new UniteConfiguration();
@@ -253,6 +292,181 @@ describe("SharedAppFramework", () => {
             Chai.expect(res).to.be.equal(0);
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/cssSrc/", "reset.css");
             Chai.expect(exists).to.be.equal(true);
+        });
+    });
+
+    describe("createLoaderReplacement", () => {
+        it("can be called without include requires", async() => {
+            const obj = new TestSharedAppFramework();
+
+            obj.testCreateLoaderReplacement(engineVariablesStub, "EXTENSION", "LOADER", false);
+
+            Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(0);
+            Chai.expect(engineVariablesStub.buildTranspilePreBuild[0]).to.be.equal(`        .pipe(replace(/import(.*?)("|'|\`)(.*?).EXTENSION\\2/g, "import$1$2LOADER!$3.EXTENSION$2"))`);
+        });
+
+        it("can be called with include requires", async() => {
+            const obj = new TestSharedAppFramework();
+
+            obj.testCreateLoaderReplacement(engineVariablesStub, "EXTENSION", "LOADER", true);
+
+            Chai.expect(engineVariablesStub.buildTranspileInclude[0]).to.be.equal("const replace = require(\"gulp-replace\");");
+            Chai.expect(engineVariablesStub.buildTranspilePreBuild[0]).to.be.equal(`        .pipe(replace(/import(.*?)("|'|\`)(.*?).EXTENSION\\2/g, "import$1$2LOADER!$3.EXTENSION$2"))`);
+        });
+    });
+
+    describe("createLoaderTypeMapReplacement", () => {
+        it("can be called", async() => {
+            const obj = new TestSharedAppFramework();
+
+            obj.testCreateLoaderTypeMapReplacement(engineVariablesStub, "EXTENSION", "LOADER");
+
+            Chai.expect(engineVariablesStub.buildTranspileInclude[0]).to.be.equal("const replace = require(\"gulp-replace\");");
+            Chai.expect(engineVariablesStub.buildTranspileInclude[1]).to.be.equal("const clientPackages = require(\"./util/client-packages\");");
+            Chai.expect(engineVariablesStub.buildTranspilePreBuild[0]).to.be.equal
+                (`        .pipe(replace(/import(.*?)("|'|\`)(.*?).EXTENSION\\2/g, \`import$1$2\${clientPackages.getTypeMap(uniteConfig, "LOADER", buildConfiguration.minify)}!$3.EXTENSION$2\`))`);
+        });
+    });
+
+    describe("insertContent", () => {
+        it("can be called when files does not exist", async() => {
+            const obj = new TestSharedAppFramework();
+
+            const res = await obj.testInsertContent(loggerStub, fileSystemMock, engineVariablesStub, "myfile.txt", (content) => content);
+
+            Chai.expect(res).to.be.equal(0);
+        });
+
+        it("can be called when replacement throws an error", async() => {
+            const obj = new TestSharedAppFramework();
+
+            sandbox.stub(fileSystemMock, "fileExists").resolves(true);
+
+            const res = await obj.testInsertContent(loggerStub, fileSystemMock, engineVariablesStub, "myfile.txt", (content) => {
+                throw new Error("err");
+            });
+
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("Unable to replace");
+        });
+
+        it("can be called and replace content", async() => {
+            const obj = new TestSharedAppFramework();
+
+            let written = "";
+            sandbox.stub(fileSystemMock, "fileExists").resolves(true);
+            sandbox.stub(fileSystemMock, "fileReadText").resolves("content");
+            sandbox.stub(fileSystemMock, "fileWriteText").callsFake((folder, file, content) => {
+                written = content;
+            });
+
+            const res = await obj.testInsertContent(loggerStub, fileSystemMock, engineVariablesStub, "myfile.txt", (content) => "blah");
+
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(written).to.contain("blah");
+        });
+    });
+
+    describe("insertReplaceImports", () => {
+        it("can be called with no items", async() => {
+            const obj = new TestSharedAppFramework();
+
+            const {content, remaining} = obj.testInsertReplaceImports("content", []);
+
+            Chai.expect(content).to.be.equal("content");
+            Chai.expect(remaining).to.be.deep.equal([]);
+        });
+
+        it("can be called with items but no insert point", async() => {
+            const obj = new TestSharedAppFramework();
+
+            const {content, remaining} = obj.testInsertReplaceImports("content", ["import blah;"]);
+
+            Chai.expect(content).to.be.equal("content");
+            Chai.expect(remaining).to.be.deep.equal(["import blah;"]);
+        });
+
+        it("can be called with items and an insert point", async() => {
+            const obj = new TestSharedAppFramework();
+
+            const {content, remaining} = obj.testInsertReplaceImports("import 1;", ["import blah;"]);
+
+            Chai.expect(content).to.be.equal("import 1;\nimport blah;");
+            Chai.expect(remaining).to.be.deep.equal([]);
+        });
+
+        it("can be called with multiple items and an insert point", async() => {
+            const obj = new TestSharedAppFramework();
+
+            const {content, remaining} = obj.testInsertReplaceImports("import 1;\nimport 2;", ["import blah;", "import foo;"]);
+
+            Chai.expect(content).to.be.equal("import 1;\nimport 2;\nimport blah;\nimport foo;");
+            Chai.expect(remaining).to.be.deep.equal([]);
+        });
+
+        it("can be called with multiple items and an insert point, but some existing", async() => {
+            const obj = new TestSharedAppFramework();
+
+            const {content, remaining} = obj.testInsertReplaceImports("import 1;\nimport 2;\nimport foo;", ["import blah;", "import foo;"]);
+
+            Chai.expect(content).to.be.equal("import 1;\nimport 2;\nimport foo;\nimport blah;");
+            Chai.expect(remaining).to.be.deep.equal([]);
+        });
+
+        it("can be called with multiple items and an insert point, but all existing", async() => {
+            const obj = new TestSharedAppFramework();
+
+            const {content, remaining} = obj.testInsertReplaceImports("import 1;\nimport 2;\nimport foo;\nimport blah;", ["import blah;", "import foo;"]);
+
+            Chai.expect(content).to.be.equal("import 1;\nimport 2;\nimport foo;\nimport blah;");
+            Chai.expect(remaining).to.be.deep.equal([]);
+        });
+    });
+
+    describe("insertCompletion", () => {
+        it("can be called with no items", async() => {
+            const obj = new TestSharedAppFramework();
+
+            obj.testInsertCompletion(loggerStub, undefined, undefined);
+
+            Chai.expect(loggerWarningSpy.args.length).to.be.equal(0);
+            Chai.expect(loggerBannerSpy.args.length).to.be.equal(0);
+        });
+
+        it("can be called with remaining items", async() => {
+            const obj = new TestSharedAppFramework();
+
+            obj.testInsertCompletion(loggerStub, {
+                                            remain1: ["foo", "bar"],
+                                            remain2: ["bob", "bill"]
+                                        },
+                                     undefined);
+
+            Chai.expect(loggerWarningSpy.args.length).to.be.equal(2);
+            Chai.expect(loggerBannerSpy.args.length).to.be.equal(14);
+        });
+
+        it("can be called with remaining items keys but no entries", async() => {
+            const obj = new TestSharedAppFramework();
+
+            obj.testInsertCompletion(loggerStub, {
+                                            remain1: ["foo", "bar"],
+                                            remain2: []
+                                        },
+                                     undefined);
+
+            Chai.expect(loggerWarningSpy.args.length).to.be.equal(2);
+            Chai.expect(loggerBannerSpy.args.length).to.be.equal(9);
+        });
+
+        it("can be called with routes", async() => {
+            const obj = new TestSharedAppFramework();
+
+            obj.testInsertCompletion(loggerStub, undefined,
+                                     ["foo", "bar"]);
+
+            Chai.expect(loggerWarningSpy.args.length).to.be.equal(0);
+            Chai.expect(loggerBannerSpy.args.length).to.be.equal(5);
         });
     });
 });

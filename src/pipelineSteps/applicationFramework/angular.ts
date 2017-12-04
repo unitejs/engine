@@ -240,7 +240,7 @@ export class Angular extends SharedAppFramework implements IApplicationFramework
         const routeItems: string[] = [];
         let navigationLinks: string[] = [];
 
-        const keys = Object.keys(routes);
+        const keys = Object.keys(routes || {});
         for (let i = 0; i < keys.length; i++) {
             const route = routes[keys[i]];
 
@@ -258,60 +258,53 @@ export class Angular extends SharedAppFramework implements IApplicationFramework
 
         let ret = await super.insertContent(logger,
                                             fileSystem,
-                                            uniteConfiguration,
                                             engineVariables,
                                             `app.module${sourceExtension}`,
                                             (srcContent) => {
                 let content = srcContent;
 
-                if (importItems.length > 0) {
-                    const importsRemaining = super.insertReplaceImports(content, importItems);
-                    content = importsRemaining.content;
-                    remainingInserts.imports = importsRemaining.remaining;
+                const importsRemaining = super.insertReplaceImports(content, importItems);
+                content = importsRemaining.content;
+                remainingInserts.imports = importsRemaining.remaining;
+
+                const routerRegEx = /(const appRoutes = \[)([\s]*)([\s\S]*?)(\];)/;
+                const routerResults = routerRegEx.exec(content);
+                if (routerResults && routerResults.length > 3) {
+                    const currentRouters = routerResults[3].trim();
+
+                    routerItems = routerItems.filter(ri => currentRouters.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
+
+                    if (routerItems.length > 0) {
+                        const routerVar = routerResults[1];
+                        const routerNewline = routerResults[2];
+                        const routerEnd = routerResults[4];
+
+                        let replaceRouters = `${routerNewline}${currentRouters},${routerNewline}`;
+                        replaceRouters += `${routerItems.map(ri => ri.replace(/\n/g, routerNewline)).join(`,${routerNewline}`)}\n`;
+                        content = content.replace(routerResults[0], `${routerVar}${replaceRouters}${routerEnd}`);
+                    }
+                } else {
+                    remainingInserts.router = routerItems;
                 }
 
-                if (routerItems.length > 0) {
-                    const routerRegEx = /(const appRoutes = \[)([\s]*)([\s\S]*?)(\];)/;
-                    const routerResults = routerRegEx.exec(content);
-                    if (routerResults && routerResults.length > 3) {
-                        const currentRouters = routerResults[3].trim();
+                const declarationRegEx = /(declarations: \[)(\s*)([\s\S]*?)(\s*\])/;
 
-                        routerItems = routerItems.filter(ri => currentRouters.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
+                const declarationResults = declarationRegEx.exec(content);
+                if (declarationResults && declarationResults.length > 3) {
+                    const currentDeclarations = declarationResults[3];
 
-                        if (routerItems.length > 0) {
-                            const routerVar = routerResults[1];
-                            const routerNewline = routerResults[2];
-                            const routerEnd = routerResults[4];
+                    declarationItems = declarationItems.filter(di => currentDeclarations.indexOf(di) < 0);
 
-                            let replaceRouters = `${routerNewline}${currentRouters},${routerNewline}`;
-                            replaceRouters += `${routerItems.map(ri => ri.replace(/\n/g, routerNewline)).join(`,${routerNewline}`)}\n`;
-                            content = content.replace(routerResults[0], `${routerVar}${replaceRouters}${routerEnd}`);
-                        }
-                    } else {
-                        remainingInserts.router = routerItems;
+                    if (declarationItems.length > 0) {
+                        const declarationStart = declarationResults[1];
+                        const declarationNewline = declarationResults[2];
+                        const declarationEnd = declarationResults[4];
+                        let replaceDeclarations = `${declarationNewline}${currentDeclarations},${declarationNewline}`;
+                        replaceDeclarations += `${declarationItems.join(`,${declarationNewline}`)}`;
+                        content = content.replace(declarationResults[0], `${declarationStart}${replaceDeclarations}${declarationEnd}`);
                     }
-                }
-
-                if (declarationItems.length > 0) {
-                    const declarationRegEx = /(declarations: \[)(\s*)([\s\S]*?)(\s*\])/;
-
-                    const declarationResults = declarationRegEx.exec(content);
-                    if (declarationResults && declarationResults.length > 3) {
-                        const currentDeclarations = declarationResults[3];
-
-                        declarationItems = declarationItems.filter(di => currentDeclarations.indexOf(di) < 0);
-
-                        if (declarationItems.length > 0) {
-                            const declarationStart = declarationResults[1];
-                            const declarationNewline = declarationResults[2];
-                            const declarationEnd = declarationResults[4];
-                            let replaceDeclarations = `${declarationNewline}${currentDeclarations},${declarationNewline}`;
-                            replaceDeclarations += `${declarationItems.join(`,${declarationNewline}`)}`;
-                            content = content.replace(declarationResults[0], `${declarationStart}${replaceDeclarations}${declarationEnd}`);
-                        }
-                    } else {
-                        remainingInserts.declarations = declarationItems;
-                    }
+                } else {
+                    remainingInserts.declarations = declarationItems;
                 }
 
                 return content;
@@ -320,32 +313,29 @@ export class Angular extends SharedAppFramework implements IApplicationFramework
         if (ret === 0) {
             ret = await super.insertContent(logger,
                                             fileSystem,
-                                            uniteConfiguration,
                                             engineVariables,
                                             `app.component.html`,
                                             (srcContent) => {
                     let content = srcContent;
 
-                    if (navigationLinks.length > 0) {
-                        const navigationRegEx = /(<nav.*>)(\s*)([\s|\S]*?)((\s*)<\/nav>)/;
-                        const navigationResults = navigationRegEx.exec(content);
-                        if (navigationResults && navigationResults.length > 4) {
-                            const currentLinks = navigationResults[3].trim();
+                    const navigationRegEx = /(<nav.*>)(\s*)([\s|\S]*?)((\s*)<\/nav>)/;
+                    const navigationResults = navigationRegEx.exec(content);
+                    if (navigationResults && navigationResults.length > 4) {
+                        const currentLinks = navigationResults[3].trim();
 
-                            navigationLinks = navigationLinks.filter(ri => currentLinks.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
+                        navigationLinks = navigationLinks.filter(ri => currentLinks.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
 
-                            if (navigationLinks.length > 0) {
-                                const navigationStart = navigationResults[1];
-                                const navigationNewline = navigationResults[2];
-                                const nvaigationEnd = navigationResults[4];
+                        if (navigationLinks.length > 0) {
+                            const navigationStart = navigationResults[1];
+                            const navigationNewline = navigationResults[2];
+                            const nvaigationEnd = navigationResults[4];
 
-                                let replaceRouters = `${navigationNewline}${currentLinks}${navigationNewline}`;
-                                replaceRouters += `${navigationLinks.map(ri => ri.replace(/\n/g, navigationNewline)).join(`${navigationNewline}`)}`;
-                                content = content.replace(navigationResults[0], `${navigationStart}${replaceRouters}${nvaigationEnd}`);
-                            }
-                        } else {
-                            remainingInserts.navigationLinks = navigationLinks;
+                            let replaceRouters = `${navigationNewline}${currentLinks}${navigationNewline}`;
+                            replaceRouters += `${navigationLinks.map(ri => ri.replace(/\n/g, navigationNewline)).join(`${navigationNewline}`)}`;
+                            content = content.replace(navigationResults[0], `${navigationStart}${replaceRouters}${nvaigationEnd}`);
                         }
+                    } else {
+                        remainingInserts.navigationLinks = navigationLinks;
                     }
 
                     return content;
