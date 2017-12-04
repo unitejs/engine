@@ -9,6 +9,7 @@
 * Updated angular child template to be span not div
 * Fixed missing iron-pages and iron-selector from polymer project
 * Fixed vue template errors not being displayed during build process
+* Fixed webpack bundling now uses more specific alias for wildcard libraries
 
 ## 1.7.4
 

@@ -126,8 +126,8 @@ export function getRequires(uniteConfig: IUniteConfiguration, includeModes: Incl
 }
 
 export async function getBundleVendorPackages(uniteConfig: IUniteConfiguration):
-    Promise<{ [id: string]: { file: string; isMinified: boolean } }> {
-    const vendorPackages: { [id: string]: { file: string; isMinified: boolean } } = {};
+    Promise<{ [id: string]: { file: string; isMinified: boolean; useExact: boolean } }> {
+    const vendorPackages: { [id: string]: { file: string; isMinified: boolean; useExact: boolean } } = {};
 
     const globAsync = util.promisify<string, string[]>(glob);
 
@@ -160,12 +160,17 @@ export async function getBundleVendorPackages(uniteConfig: IUniteConfiguration):
 
                     files.forEach(file => {
                         const itemKey = file.replace(new RegExp(`(?:.*)${pkgLocation}(.*).js`), `${pkg.name}$1`);
-                        vendorPackages[itemKey] = { file, isMinified: Boolean(pkg.mainMinified) };
+                        vendorPackages[itemKey] = {
+                            file,
+                            isMinified: Boolean(pkg.mainMinified),
+                            useExact: true
+                        };
                     });
                 } else {
                     vendorPackages[pkg.name] = {
                         file: path.join(uniteConfig.dirs.www.package, `${pkg.name}/${pkgMain}`),
-                        isMinified: Boolean(pkg.mainMinified)
+                        isMinified: Boolean(pkg.mainMinified),
+                        useExact: false
                     };
                 }
             }

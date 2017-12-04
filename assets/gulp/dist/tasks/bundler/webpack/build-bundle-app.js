@@ -26,7 +26,8 @@ gulp.task("build-bundle-app", async () => {
             if (idx < 0) {
                 display.info("Adding", `${vendorPackages[key].file}`);
                 vendorKeys.push(key);
-                vendorAliases[key] = path.resolve(`${vendorPackages[key].file}`);
+                vendorAliases[`${key}${vendorPackages[key].useExact ? "$" : ""}`] =
+                    path.resolve(`${vendorPackages[key].file}`);
             } else {
                 hasStyleLoader = key === "systemjs-plugin-css";
             }
