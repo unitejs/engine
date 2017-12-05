@@ -210,7 +210,7 @@ export class React extends SharedAppFramework implements IApplicationFramework {
             const human = TemplateHelper.createHuman(words);
 
             importItems.push(`import {${bracketSpacing}${route.moduleType}${bracketSpacing}} from "${route.modulePath}";`);
-            routerItems.push(`<Route path="/${keys[i]}/" component={${route.moduleType}} />`);
+            routerItems.push(`<Route path="/${keys[i]}" component={${route.moduleType}} />`);
             routeItems.push(`/${keys[i]}`);
             navigationLinks.push(`<Link to="/${keys[i]}">${human}</Link>`);
         }

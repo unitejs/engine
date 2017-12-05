@@ -343,8 +343,8 @@ describe("React", () => {
             Chai.expect(res).to.be.equal(0);
             Chai.expect(writtenApp).to.contain(`import {MyRoute} from "./examples/my-route";`);
             Chai.expect(writtenApp).to.contain(`import {TheirRoot} from "./their/root";`);
-            Chai.expect(writtenApp).to.contain(`<Route path="/my/route/" component={MyRoute} />`);
-            Chai.expect(writtenApp).to.contain(`<Route path="/their/root/" component={TheirRoot} />`);
+            Chai.expect(writtenApp).to.contain(`<Route path="/my/route" component={MyRoute} />`);
+            Chai.expect(writtenApp).to.contain(`<Route path="/their/root" component={TheirRoot} />`);
             Chai.expect(writtenApp).to.contain(`<Link to="/my/route">My Route</Link>`);
             Chai.expect(writtenApp).to.contain(`<Link to="/their/root">Their Root</Link>`);
         });
@@ -375,8 +375,8 @@ describe("React", () => {
             Chai.expect(res).to.be.equal(0);
             Chai.expect(writtenApp).to.contain(`import { MyRoute } from "./examples/my-route";`);
             Chai.expect(writtenApp).to.contain(`import { TheirRoot } from "./their/root";`);
-            Chai.expect(writtenApp).to.contain(`<Route path="/my/route/" component={MyRoute} />`);
-            Chai.expect(writtenApp).to.contain(`<Route path="/their/root/" component={TheirRoot} />`);
+            Chai.expect(writtenApp).to.contain(`<Route path="/my/route" component={MyRoute} />`);
+            Chai.expect(writtenApp).to.contain(`<Route path="/their/root" component={TheirRoot} />`);
             Chai.expect(writtenApp).to.contain(`<Link to="/my/route">My Route</Link>`);
             Chai.expect(writtenApp).to.contain(`<Link to="/their/root">Their Root</Link>`);
         });
@@ -404,8 +404,8 @@ describe("React", () => {
             const appContent = await fileSystemMock.fileReadText("./test/unit/temp/www/src/", "app.jsx");
             Chai.expect(/import {MyRoute} from "\.\/examples\/my-route\";/g.exec(appContent).length).to.be.equal(1);
             Chai.expect(/import {TheirRoot} from "\.\/their\/root\";/g.exec(appContent).length).to.be.equal(1);
-            Chai.expect(/<Route path=\"\/my\/route\/" component={MyRoute} \/>/g.exec(appContent).length).to.be.equal(1);
-            Chai.expect(/<Route path=\"\/their\/root\/" component={TheirRoot} \/>/g.exec(appContent).length).to.be.equal(1);
+            Chai.expect(/<Route path=\"\/my\/route" component={MyRoute} \/>/g.exec(appContent).length).to.be.equal(1);
+            Chai.expect(/<Route path=\"\/their\/root" component={TheirRoot} \/>/g.exec(appContent).length).to.be.equal(1);
             Chai.expect(/<Link to=\"\/my\/route\">My Route<\/Link>/g.exec(appContent).length).to.be.equal(1);
             Chai.expect(/<Link to=\"\/their\/root\">Their Root<\/Link>/g.exec(appContent).length).to.be.equal(1);
         });
@@ -430,8 +430,8 @@ describe("React", () => {
             const banner = loggerBannerSpy.args.join();
             Chai.expect(banner).to.contain(`import {MyRoute} from "./examples/my-route";`);
             Chai.expect(banner).to.contain(`import {TheirRoot} from "./their/root";`);
-            Chai.expect(banner).to.contain(`<Route path="/my/route/" component={MyRoute} />`);
-            Chai.expect(banner).to.contain(`<Route path="/their/root/" component={TheirRoot} />`);
+            Chai.expect(banner).to.contain(`<Route path="/my/route" component={MyRoute} />`);
+            Chai.expect(banner).to.contain(`<Route path="/their/root" component={TheirRoot} />`);
             Chai.expect(banner).to.contain(`<Link to="/my/route">My Route</Link>`);
             Chai.expect(banner).to.contain(`<Link to="/their/root">Their Root</Link>`);
         });
