@@ -8,6 +8,7 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { BabelConfiguration } from "../../../../../src/configuration/models/babel/babelConfiguration";
 import { EsLintConfiguration } from "../../../../../src/configuration/models/eslint/esLintConfiguration";
 import { ProtractorConfiguration } from "../../../../../src/configuration/models/protractor/protractorConfiguration";
+import { TsLintConfiguration } from "../../../../../src/configuration/models/tslint/tsLintConfiguration";
 import { TypeScriptConfiguration } from "../../../../../src/configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../../src/engine/engineVariables";
@@ -149,6 +150,7 @@ describe("Angular", () => {
             Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(7);
             Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel")).to.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint")).to.be.equal(undefined);
+            Chai.expect(engineVariablesStub.getConfiguration<TsLintConfiguration>("TSLint").rules["no-empty"]).to.not.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.experimentalDecorators).to.be.equal(true);
             const packageJsonDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDependencies(uniteConfigurationStub, packageJsonDependencies);
@@ -355,7 +357,8 @@ describe("Angular", () => {
                 "my/route": {
                     modulePath: "./examples/my-route",
                     moduleType: "MyRoute"
-                }            });
+                }
+            });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("Unable");
         });

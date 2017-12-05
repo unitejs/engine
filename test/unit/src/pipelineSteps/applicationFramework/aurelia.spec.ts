@@ -8,8 +8,10 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { BabelConfiguration } from "../../../../../src/configuration/models/babel/babelConfiguration";
 import { EsLintConfiguration } from "../../../../../src/configuration/models/eslint/esLintConfiguration";
 import { ProtractorConfiguration } from "../../../../../src/configuration/models/protractor/protractorConfiguration";
+import { TsLintConfiguration } from "../../../../../src/configuration/models/tslint/tsLintConfiguration";
 import { TypeScriptConfiguration } from "../../../../../src/configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
+import { JavaScriptConfiguration } from "../../../../../src/configuration/models/vscode/javaScriptConfiguration";
 import { EngineVariables } from "../../../../../src/engine/engineVariables";
 import { Aurelia } from "../../../../../src/pipelineSteps/applicationFramework/aurelia";
 import { FileSystemMock } from "../../fileSystem.mock";
@@ -18,6 +20,7 @@ describe("Aurelia", () => {
     let sandbox: Sinon.SinonSandbox;
     let loggerStub: ILogger;
     let loggerErrorSpy: Sinon.SinonSpy;
+    let loggerBannerSpy: Sinon.SinonSpy;
     let fileSystemMock: IFileSystem;
     let uniteConfigurationStub: UniteConfiguration;
     let engineVariablesStub: EngineVariables;
@@ -27,7 +30,10 @@ describe("Aurelia", () => {
         loggerStub = <ILogger>{};
         loggerStub.info = () => { };
         loggerStub.error = () => { };
+        loggerStub.banner = () => {};
+        loggerStub.warning = () => {};
         loggerErrorSpy = sandbox.spy(loggerStub, "error");
+        loggerBannerSpy = sandbox.spy(loggerStub, "banner");
 
         fileSystemMock = new FileSystemMock();
         uniteConfigurationStub = new UniteConfiguration();
@@ -86,6 +92,12 @@ describe("Aurelia", () => {
             Chai.expect(res).to.be.equal(0);
         });
 
+        it("can be called with false main condition", async () => {
+            const obj = new Aurelia();
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
+            Chai.expect(res).to.be.equal(0);
+        });
+
         it("can be called with application framework matching but failing bundler", async () => {
             const obj = new Aurelia();
             uniteConfigurationStub.bundler = "Browserify";
@@ -109,7 +121,9 @@ describe("Aurelia", () => {
             engineVariablesStub.setConfiguration("WebdriverIO.Plugins", []);
             engineVariablesStub.setConfiguration("Babel", { plugins: [] });
             engineVariablesStub.setConfiguration("ESLint", { parser: {} });
+            engineVariablesStub.setConfiguration("TSLint", { rules: {} });
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {} });
+            engineVariablesStub.setConfiguration("JavaScript", { compilerOptions: {} });
             const obj = new Aurelia();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
@@ -118,6 +132,8 @@ describe("Aurelia", () => {
             Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins.length).to.be.equal(2);
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parser).to.be.equal("babel-eslint");
             Chai.expect(engineVariablesStub.getConfiguration<TypeScriptConfiguration>("TypeScript").compilerOptions.experimentalDecorators).to.be.equal(true);
+            Chai.expect(engineVariablesStub.getConfiguration<JavaScriptConfiguration>("JavaScript").compilerOptions.experimentalDecorators).to.be.equal(true);
+            Chai.expect(engineVariablesStub.getConfiguration<TsLintConfiguration>("TSLint").rules["no-empty"]).to.not.be.equal(undefined);
         });
 
         it("can be called with AMD module type", async () => {
@@ -271,6 +287,14 @@ describe("Aurelia", () => {
             Chai.expect(exists).to.be.equal(false);
         });
 
+        it("can complete with false main condition", async () => {
+            const obj = new Aurelia();
+            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
+            Chai.expect(res).to.be.equal(0);
+            const exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/unit/src/", "app.spec.js");
+            Chai.expect(exists).to.be.equal(false);
+        });
+
         it("can complete as javascript", async () => {
             const obj = new Aurelia();
             const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
@@ -286,6 +310,147 @@ describe("Aurelia", () => {
             Chai.expect(res).to.be.equal(0);
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/unit/src/", "app.spec.ts");
             Chai.expect(exists).to.be.equal(true);
+        });
+    });
+
+    describe("insertRoutes", () => {
+        it("can be called with no routes", async () => {
+            const obj = new Aurelia();
+            const res = await obj.insertRoutes(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, undefined);
+            Chai.expect(res).to.be.equal(0);
+        });
+
+        it("can fail if unable to read files", async () => {
+            const obj = new Aurelia();
+            await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+
+            sandbox.stub(fileSystemMock, "fileReadText").throws(new Error("err"));
+
+            const res = await obj.insertRoutes(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, {
+                "my/route": {
+                    modulePath: "./examples/my-route",
+                    moduleType: "MyRoute"
+                }
+            });
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("Unable");
+        });
+
+        it("can be called with routes as javascript", async () => {
+            const obj = new Aurelia();
+            await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+
+            let writtenApp: string;
+            let writtenHtml: string;
+            sandbox.stub(fileSystemMock, "fileWriteText").callsFake((folder, file, content) => {
+                if (!writtenApp) {
+                    writtenApp = content;
+                } else {
+                    writtenHtml = content;
+                }
+            });
+
+            const res = await obj.insertRoutes(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, {
+                "my/route": {
+                    modulePath: "./examples/my-route",
+                    moduleType: "MyRoute"
+                },
+                "their/root": {
+                    modulePath: "./their/root",
+                    moduleType: "TheirRoot"
+                }
+            });
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(writtenApp).to.contain(`route: "/my/route", name: "myRoute", moduleId: "./examples/my-route"`);
+            Chai.expect(writtenApp).to.contain(`route: "/their/root", name: "theirRoot", moduleId: "./their/root"`);
+            Chai.expect(writtenHtml).to.contain(`<a route-href="route: myRoute">My Route</a>`);
+            Chai.expect(writtenHtml).to.contain(`<a route-href="route: theirRoot">Their Root</a>`);
+        });
+
+        it("can be called with routes as typescript", async () => {
+            uniteConfigurationStub.sourceLanguage = "TypeScript";
+
+            const obj = new Aurelia();
+            await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+
+            let writtenApp: string;
+            let writtenHtml: string;
+            sandbox.stub(fileSystemMock, "fileWriteText").callsFake((folder, file, content) => {
+                if (!writtenApp) {
+                    writtenApp = content;
+                } else {
+                    writtenHtml = content;
+                }
+            });
+
+            const res = await obj.insertRoutes(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, {
+                "my/route": {
+                    modulePath: "./examples/my-route",
+                    moduleType: "MyRoute"
+                },
+                "their/root": {
+                    modulePath: "./their/root",
+                    moduleType: "TheirRoot"
+                }
+            });
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(writtenApp).to.contain(`route: "/my/route", name: "myRoute", moduleId: "./examples/my-route"`);
+            Chai.expect(writtenApp).to.contain(`route: "/their/root", name: "theirRoot", moduleId: "./their/root"`);
+            Chai.expect(writtenHtml).to.contain(`<a route-href="route: myRoute">My Route</a>`);
+            Chai.expect(writtenHtml).to.contain(`<a route-href="route: theirRoot">Their Root</a>`);
+        });
+
+        it("can be called with routes already existing", async () => {
+            const obj = new Aurelia();
+            await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+
+            const routes = {
+                "my/route": {
+                    modulePath: "./examples/my-route",
+                    moduleType: "MyRoute"
+                },
+                "their/root": {
+                    modulePath: "./their/root",
+                    moduleType: "TheirRoot"
+                }
+            };
+            let res = await obj.insertRoutes(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, routes);
+            Chai.expect(res).to.be.equal(0);
+
+            res = await obj.insertRoutes(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, routes);
+            Chai.expect(res).to.be.equal(0);
+
+            const appContent = await fileSystemMock.fileReadText("./test/unit/temp/www/src/", "app.js");
+            Chai.expect(/route: \"\/my\/route", name: \"myRoute\", moduleId: \".\/examples\/my-route\"/g.exec(appContent).length).to.be.equal(1);
+            Chai.expect(/route: \"\/their\/root", name: \"theirRoot\", moduleId: \".\/their\/root\"/g.exec(appContent).length).to.be.equal(1);
+
+            const viewContent = await fileSystemMock.fileReadText("./test/unit/temp/www/src/", "app.html");
+            Chai.expect(/<a route-href="route: myRoute\">My Route<\/a>/g.exec(viewContent).length).to.be.equal(1);
+            Chai.expect(/<a route-href="route: theirRoot\">Their Root<\/a>/g.exec(viewContent).length).to.be.equal(1);
+        });
+
+        it("can be called when unable to find insertion points", async () => {
+            const obj = new Aurelia();
+            await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+
+            sandbox.stub(fileSystemMock, "fileReadText").resolves("");
+
+            const res = await obj.insertRoutes(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, {
+                "my/route": {
+                    modulePath: "./examples/my-route",
+                    moduleType: "MyRoute"
+                },
+                "their/root": {
+                    modulePath: "./their/root",
+                    moduleType: "TheirRoot"
+                }
+            });
+            Chai.expect(res).to.be.equal(0);
+            const banner = loggerBannerSpy.args.join();
+            Chai.expect(banner).to.contain(`route: "/my/route", name: "myRoute", moduleId: "./examples/my-route"`);
+            Chai.expect(banner).to.contain(`route: "/their/root", name: "theirRoot", moduleId: "./their/root"`);
+            Chai.expect(banner).to.contain(`<a route-href="route: myRoute">My Route</a>`);
+            Chai.expect(banner).to.contain(`<a route-href="route: theirRoot">Their Root</a>`);
         });
     });
 });

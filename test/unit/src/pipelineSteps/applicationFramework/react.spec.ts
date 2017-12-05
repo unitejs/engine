@@ -20,6 +20,8 @@ import { FileSystemMock } from "../../fileSystem.mock";
 describe("React", () => {
     let sandbox: Sinon.SinonSandbox;
     let loggerStub: ILogger;
+    let loggerErrorSpy: Sinon.SinonSpy;
+    let loggerBannerSpy: Sinon.SinonSpy;
     let fileSystemMock: IFileSystem;
     let uniteConfigurationStub: UniteConfiguration;
     let engineVariablesStub: EngineVariables;
@@ -29,6 +31,11 @@ describe("React", () => {
         loggerStub = <ILogger>{};
         loggerStub.info = () => { };
         loggerStub.error = () => { };
+        loggerStub.banner = () => { };
+        loggerStub.warning = () => { };
+
+        loggerErrorSpy = sandbox.spy(loggerStub, "error");
+        loggerBannerSpy = sandbox.spy(loggerStub, "banner");
 
         fileSystemMock = new FileSystemMock();
         uniteConfigurationStub = new UniteConfiguration();
@@ -286,6 +293,147 @@ describe("React", () => {
             Chai.expect(res).to.be.equal(0);
             const exists = await fileSystemMock.fileExists("./test/unit/temp/www/test/unit/src/", "app.spec.ts");
             Chai.expect(exists).to.be.equal(true);
+        });
+    });
+
+    describe("insertRoutes", () => {
+        it("can be called with no routes", async () => {
+            const obj = new React();
+            const res = await obj.insertRoutes(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, undefined);
+            Chai.expect(res).to.be.equal(0);
+        });
+
+        it("can fail if unable to read files", async () => {
+            const obj = new React();
+            await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+
+            sandbox.stub(fileSystemMock, "fileReadText").throws(new Error("err"));
+
+            const res = await obj.insertRoutes(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, {
+                "my/route": {
+                    modulePath: "./examples/my-route",
+                    moduleType: "MyRoute"
+                }
+            });
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("Unable");
+        });
+
+        it("can be called with routes as javascript", async () => {
+            const obj = new React();
+            await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+
+            let writtenApp: string;
+            sandbox.stub(fileSystemMock, "fileWriteText").callsFake((folder, file, content) => {
+                if (!writtenApp) {
+                    writtenApp = content;
+                }
+            });
+
+            const res = await obj.insertRoutes(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, {
+                "my/route": {
+                    modulePath: "./examples/my-route",
+                    moduleType: "MyRoute"
+                },
+                "their/root": {
+                    modulePath: "./their/root",
+                    moduleType: "TheirRoot"
+                }
+            });
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(writtenApp).to.contain(`import {MyRoute} from "./examples/my-route";`);
+            Chai.expect(writtenApp).to.contain(`import {TheirRoot} from "./their/root";`);
+            Chai.expect(writtenApp).to.contain(`<Route path="/my/route/" component={MyRoute} />`);
+            Chai.expect(writtenApp).to.contain(`<Route path="/their/root/" component={TheirRoot} />`);
+            Chai.expect(writtenApp).to.contain(`<Link to="/my/route">My Route</Link>`);
+            Chai.expect(writtenApp).to.contain(`<Link to="/their/root">Their Root</Link>`);
+        });
+
+        it("can be called with routes as typescript", async () => {
+            uniteConfigurationStub.sourceLanguage = "TypeScript";
+
+            const obj = new React();
+            await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+
+            let writtenApp: string;
+            sandbox.stub(fileSystemMock, "fileWriteText").callsFake((folder, file, content) => {
+                if (!writtenApp) {
+                    writtenApp = content;
+                }
+            });
+
+            const res = await obj.insertRoutes(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, {
+                "my/route": {
+                    modulePath: "./examples/my-route",
+                    moduleType: "MyRoute"
+                },
+                "their/root": {
+                    modulePath: "./their/root",
+                    moduleType: "TheirRoot"
+                }
+            });
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(writtenApp).to.contain(`import { MyRoute } from "./examples/my-route";`);
+            Chai.expect(writtenApp).to.contain(`import { TheirRoot } from "./their/root";`);
+            Chai.expect(writtenApp).to.contain(`<Route path="/my/route/" component={MyRoute} />`);
+            Chai.expect(writtenApp).to.contain(`<Route path="/their/root/" component={TheirRoot} />`);
+            Chai.expect(writtenApp).to.contain(`<Link to="/my/route">My Route</Link>`);
+            Chai.expect(writtenApp).to.contain(`<Link to="/their/root">Their Root</Link>`);
+        });
+
+        it("can be called with routes already existing", async () => {
+            const obj = new React();
+            await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+
+            const routes = {
+                "my/route": {
+                    modulePath: "./examples/my-route",
+                    moduleType: "MyRoute"
+                },
+                "their/root": {
+                    modulePath: "./their/root",
+                    moduleType: "TheirRoot"
+                }
+            };
+            let res = await obj.insertRoutes(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, routes);
+            Chai.expect(res).to.be.equal(0);
+
+            res = await obj.insertRoutes(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, routes);
+            Chai.expect(res).to.be.equal(0);
+
+            const appContent = await fileSystemMock.fileReadText("./test/unit/temp/www/src/", "app.jsx");
+            Chai.expect(/import {MyRoute} from "\.\/examples\/my-route\";/g.exec(appContent).length).to.be.equal(1);
+            Chai.expect(/import {TheirRoot} from "\.\/their\/root\";/g.exec(appContent).length).to.be.equal(1);
+            Chai.expect(/<Route path=\"\/my\/route\/" component={MyRoute} \/>/g.exec(appContent).length).to.be.equal(1);
+            Chai.expect(/<Route path=\"\/their\/root\/" component={TheirRoot} \/>/g.exec(appContent).length).to.be.equal(1);
+            Chai.expect(/<Link to=\"\/my\/route\">My Route<\/Link>/g.exec(appContent).length).to.be.equal(1);
+            Chai.expect(/<Link to=\"\/their\/root\">Their Root<\/Link>/g.exec(appContent).length).to.be.equal(1);
+        });
+
+        it("can be called when unable to find insertion points", async () => {
+            const obj = new React();
+            await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+
+            sandbox.stub(fileSystemMock, "fileReadText").resolves("");
+
+            const res = await obj.insertRoutes(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, {
+                "my/route": {
+                    modulePath: "./examples/my-route",
+                    moduleType: "MyRoute"
+                },
+                "their/root": {
+                    modulePath: "./their/root",
+                    moduleType: "TheirRoot"
+                }
+            });
+            Chai.expect(res).to.be.equal(0);
+            const banner = loggerBannerSpy.args.join();
+            Chai.expect(banner).to.contain(`import {MyRoute} from "./examples/my-route";`);
+            Chai.expect(banner).to.contain(`import {TheirRoot} from "./their/root";`);
+            Chai.expect(banner).to.contain(`<Route path="/my/route/" component={MyRoute} />`);
+            Chai.expect(banner).to.contain(`<Route path="/their/root/" component={TheirRoot} />`);
+            Chai.expect(banner).to.contain(`<Link to="/my/route">My Route</Link>`);
+            Chai.expect(banner).to.contain(`<Link to="/their/root">Their Root</Link>`);
         });
     });
 });
