@@ -12,7 +12,6 @@ install:
   - npm link
   - cd ../engine
   - npm install gulp -g
-  - npm install
   - npm link unitejs-framework unitejs-packages
 script: 
   - gulp build || travis_terminate 1
