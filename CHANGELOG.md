@@ -7,6 +7,7 @@
 * Added Vanilla generate component
 * Updated react and preact generate and child code with substituted message in template
 * Updated angular child template to be span not div
+* Change general consistency improvements in all app framework templates
 * Fixed missing iron-pages and iron-selector from polymer project
 * Fixed vue template errors not being displayed during build process
 * Fixed webpack bundling now uses more specific alias for wildcard libraries
