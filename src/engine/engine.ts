@@ -4,6 +4,7 @@
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { PackageConfiguration } from "../configuration/models/packages/packageConfiguration";
+import { PackageHelper } from "../helpers/packageHelper";
 import { IEngine } from "../interfaces/IEngine";
 import { IEngineCommand } from "../interfaces/IEngineCommand";
 import { IEngineCommandParams } from "../interfaces/IEngineCommandParams";
@@ -35,9 +36,14 @@ export class Engine implements IEngine {
             const enginePackageJson = await this._fileSystem.fileReadJson<PackageConfiguration>(this._engineRootFolder, "package.json");
             this._engineVersion = enginePackageJson.version;
 
-            const rootPackageFolder = this._fileSystem.pathCombine(this._engineRootFolder, "node_modules/unitejs-packages/assets/");
+            const rootPackageFolder = await PackageHelper.locate(this._fileSystem, this._logger, this._engineRootFolder, "unitejs-packages");
 
-            this._engineDependencies = await this._fileSystem.fileReadJson<{ [id: string]: string }>(rootPackageFolder, "peerPackages.json");
+            if (rootPackageFolder) {
+                const rootPackageAssets = this._fileSystem.pathCombine(rootPackageFolder, "assets");
+                this._engineDependencies = await this._fileSystem.fileReadJson<{ [id: string]: string }>(rootPackageAssets, "peerPackages.json");
+            } else {
+                return 1;
+            }
 
             return 0;
         } catch (err) {

@@ -6,6 +6,7 @@ import { StringHelper } from "unitejs-framework/dist/helpers/stringHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
+import { PackageHelper } from "../helpers/packageHelper";
 import { IPackageManager } from "../interfaces/IPackageManager";
 import { EngineVariables } from "./engineVariables";
 import { Pipeline } from "./pipeline";
@@ -79,8 +80,17 @@ export abstract class EngineCommandBase {
     protected async loadProfile<T>(module: string, location: string, profileFile: string, profile: string | undefined | null): Promise<T | undefined | null> {
         if (location !== undefined && location !== null && profile !== undefined && profile !== null) {
             try {
-                const moduleRoot = module !== undefined && module.length > 0 ?
-                    this._fileSystem.pathCombine(this._engineRootFolder, `node_modules/${module}`) : this._engineRootFolder;
+                let moduleRoot;
+                if (module !== undefined && module.length > 0) {
+                    moduleRoot = await PackageHelper.locate(this._fileSystem, this._logger, this._engineRootFolder, module);
+
+                    if (!moduleRoot) {
+                        this._logger.error(`Module does not exist '${module}'`);
+                        return null;
+                    }
+                } else {
+                    moduleRoot = this._engineRootFolder;
+                }
 
                 const profileLocation = this._fileSystem.pathCombine(moduleRoot, location);
 

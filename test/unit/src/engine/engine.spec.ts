@@ -7,6 +7,7 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteConfiguration } from "../../../../src/configuration/models/unite/uniteConfiguration";
 import { Engine } from "../../../../src/engine/engine";
+import { PackageHelper } from "../../../../src/helpers/packageHelper";
 import { IBuildConfigurationCommandParams } from "../../../../src/interfaces/IBuildConfigurationCommandParams";
 import { IClientPackageCommandParams } from "../../../../src/interfaces/IClientPackageCommandParams";
 import { IConfigureCommandParams } from "../../../../src/interfaces/IConfigureCommandParams";
@@ -168,6 +169,13 @@ describe("Engine", () => {
             const obj = new Engine(loggerStub, fileSystemStub);
             const res = await obj.initialise();
             Chai.expect(res).to.be.equal(0);
+        });
+
+        it("can fail when unitejs-packages does not exist", async () => {
+            sandbox.stub(PackageHelper, "locate").resolves(null);
+            const obj = new Engine(loggerStub, fileSystemStub);
+            const res = await obj.initialise();
+            Chai.expect(res).to.be.equal(1);
         });
 
         it("can fail when missing package dependencies", async () => {

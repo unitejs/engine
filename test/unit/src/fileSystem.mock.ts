@@ -86,7 +86,7 @@ export class FileSystemMock implements IFileSystem {
         } else {
             try {
                 const stats = await util.promisify(fs.lstat)(this.cleanupSeparators(directoryName));
-                return stats.isDirectory();
+                return stats.isDirectory() || stats.isSymbolicLink();
             } catch (err) {
                 if (err.code === "ENOENT") {
                     return false;

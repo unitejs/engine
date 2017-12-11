@@ -80,7 +80,8 @@ export class ReadOnlyFileSystemMock implements IFileSystem {
 
     public async directoryExists(directoryName: string): Promise<boolean> {
         try {
-            return (await util.promisify(fs.lstat)(directoryName)).isDirectory();
+            const stat = await util.promisify(fs.lstat)(directoryName);
+            return stat.isDirectory() || stat.isSymbolicLink();
         } catch (err) {
             if (err.code === "ENOENT") {
                 return false;

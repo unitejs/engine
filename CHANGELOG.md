@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.7
+
+* Fixed sibling node_modules location
+
 ## 1.7.6
 
 * Moved peerPackages.json to packages repo

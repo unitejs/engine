@@ -9,6 +9,7 @@ import { UnitePackageConfiguration } from "../configuration/models/unitePackages
 import { EngineCommandBase } from "../engine/engineCommandBase";
 import { EngineVariables } from "../engine/engineVariables";
 import { PipelineKey } from "../engine/pipelineKey";
+import { PackageHelper } from "../helpers/packageHelper";
 import { TemplateHelper } from "../helpers/templateHelper";
 import { IApplicationFramework } from "../interfaces/IApplicationFramework";
 import { IEngineCommand } from "../interfaces/IEngineCommand";
@@ -51,31 +52,35 @@ export class PackageCommand extends EngineCommandBase implements IEngineCommand<
         this.createEngineVariables(args.outputDirectory, uniteConfiguration, engineVariables);
 
         try {
-            const rootPackageFolder = this._fileSystem.pathCombine(engineVariables.engineRootFolder, "node_modules/unitejs-packages/assets/");
-
-            const packageFolder = this._fileSystem.pathCombine(rootPackageFolder, args.packageName);
-
-            const packageDirExists = await this._fileSystem.directoryExists(packageFolder);
+            const rootPackageFolder = await PackageHelper.locate(this._fileSystem, this._logger, engineVariables.engineRootFolder, "unitejs-packages");
 
             let ret = 0;
-            if (packageDirExists) {
-                const packageFileExists = await this._fileSystem.fileExists(packageFolder, "unite-package.json");
+            if (rootPackageFolder) {
+                const packageFolder = this._fileSystem.pathCombine(rootPackageFolder, `assets/${args.packageName}`);
 
-                if (packageFileExists) {
-                    const unitePackageConfiguration = await this._fileSystem.fileReadJson<UnitePackageConfiguration>(packageFolder, "unite-package.json");
+                const packageDirExists = await this._fileSystem.directoryExists(packageFolder);
 
-                    const moduleType = this._pipeline.getStep<IPipelineStep>(new PipelineKey("moduleType", uniteConfiguration.moduleType));
+                if (packageDirExists) {
+                    const packageFileExists = await this._fileSystem.fileExists(packageFolder, "unite-package.json");
 
-                    await moduleType.initialise(this._logger, this._fileSystem, uniteConfiguration, engineVariables, true);
+                    if (packageFileExists) {
+                        const unitePackageConfiguration = await this._fileSystem.fileReadJson<UnitePackageConfiguration>(packageFolder, "unite-package.json");
 
-                    ret = await this.processPackage(uniteConfiguration, engineVariables, packageFolder, unitePackageConfiguration);
+                        const moduleType = this._pipeline.getStep<IPipelineStep>(new PipelineKey("moduleType", uniteConfiguration.moduleType));
+
+                        await moduleType.initialise(this._logger, this._fileSystem, uniteConfiguration, engineVariables, true);
+
+                        ret = await this.processPackage(uniteConfiguration, engineVariables, packageFolder, unitePackageConfiguration);
+                    } else {
+                        ret = 1;
+                        this._logger.error(`Package file '${packageFolder}/unite-package.json' does not exist`);
+                    }
                 } else {
                     ret = 1;
-                    this._logger.error(`Package file '${packageFolder}/unite-package.json' does not exist`);
+                    this._logger.error(`Package folder '${packageFolder}' does not exist`);
                 }
             } else {
                 ret = 1;
-                this._logger.error(`Package folder '${packageFolder}' does not exist`);
             }
 
             return ret;

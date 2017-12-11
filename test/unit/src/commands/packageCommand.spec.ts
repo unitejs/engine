@@ -9,6 +9,7 @@ import { PackageCommand } from "../../../../src/commands/packageCommand";
 import { UniteConfiguration } from "../../../../src/configuration/models/unite/uniteConfiguration";
 import { UnitePackageClientConfiguration } from "../../../../src/configuration/models/unitePackages/unitePackageClientConfiguration";
 import { UnitePackageConfiguration } from "../../../../src/configuration/models/unitePackages/unitePackageConfiguration";
+import { PackageHelper } from "../../../../src/helpers/packageHelper";
 import { PackageUtils } from "../../../../src/pipelineSteps/packageUtils";
 import { FileSystemMock } from "../fileSystem.mock";
 import { ReadOnlyFileSystemMock } from "../readOnlyFileSystem.mock";
@@ -219,6 +220,17 @@ describe("PackageCommand", () => {
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("err");
+        });
+
+        it("can fail when unitejs-packages does not exist", async () => {
+            const obj = new PackageCommand();
+            sandbox.stub(PackageHelper, "locate").resolves(null);
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "moment",
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(1);
         });
 
         it("can fail when package folder does not exist", async () => {

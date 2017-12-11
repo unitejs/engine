@@ -195,6 +195,22 @@ describe("EngineCommandBase", () => {
             const res = await obj.testLoadProfile(undefined, "/assets/profiles/", "configure.json", "testProfile");
             Chai.expect(res).to.be.deep.equal({ a: 1 });
         });
+
+        it("can be called with module that does not exist", async () => {
+            const obj = new TestCommand();
+            obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
+            const res = await obj.testLoadProfile("blah", "/assets/", "clientPackage.json", "testProfile");
+            Chai.expect(res).to.be.equal(null);
+        });
+
+        it("can be called with module", async () => {
+            sandbox.stub(fileSystemStub, "fileExists").resolves(true);
+            sandbox.stub(fileSystemStub, "fileReadJson").resolves({ TESTPROFILE: { a: 1 } });
+            const obj = new TestCommand();
+            obj.create(loggerStub, fileSystemStub, undefined, undefined, undefined);
+            const res = await obj.testLoadProfile("unitejs-packages", "/assets/", "clientPackage.json", "testProfile");
+            Chai.expect(res).to.be.deep.equal({ a: 1 });
+        });
     });
 
     describe("createEngineVariables", () => {
