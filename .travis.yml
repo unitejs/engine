@@ -3,12 +3,12 @@ node_js:
   - "node"
 install:
   - cd ..
-  - git clone --branch=$TRAVIS_BRANCH https://github.com/unitejs/framework.git framework
-  - cd framework
+  - git clone --branch=$TRAVIS_BRANCH https://github.com/unitejs/framework.git unitejs-framework
+  - cd unitejs-framework
   - npm link
   - cd ..
-  - git clone --branch=$TRAVIS_BRANCH https://github.com/unitejs/packages.git packages
-  - cd packages
+  - git clone --branch=$TRAVIS_BRANCH https://github.com/unitejs/packages.git unitejs-packages
+  - cd unitejs-packages
   - npm link
   - cd ../engine
   - npm install gulp -g
