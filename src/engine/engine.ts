@@ -35,8 +35,9 @@ export class Engine implements IEngine {
             const enginePackageJson = await this._fileSystem.fileReadJson<PackageConfiguration>(this._engineRootFolder, "package.json");
             this._engineVersion = enginePackageJson.version;
 
-            const assetFolder = this._fileSystem.pathCombine(this._engineRootFolder, "assets");
-            this._engineDependencies = await this._fileSystem.fileReadJson<{ [id: string]: string }>(assetFolder, "peerPackages.json");
+            const rootPackageFolder = this._fileSystem.pathCombine(this._engineRootFolder, "node_modules/unitejs-packages/assets/");
+
+            this._engineDependencies = await this._fileSystem.fileReadJson<{ [id: string]: string }>(rootPackageFolder, "peerPackages.json");
 
             return 0;
         } catch (err) {

@@ -103,6 +103,12 @@ gulp e2e-install --drivers=chrome,firefox
 
 The drivers can be any of the following chrome/edge/firefox/ie.
 
+You can specify a specfic version of a driver using the @ syntax.
+
+``` shell
+gulp e2e-install --drivers=chrome@2.33,firefox
+```
+
 ### e2e
 
 This will run e2e tests for the app and generate reports in the test/reports folder. This task is only available if you specified an e2e test runner and framework during configuration.

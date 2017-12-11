@@ -20,10 +20,14 @@ gulp.task("e2e-install", async () => {
     const drivers = options.drivers.split(",");
     try {
         for (let i = 0; i < drivers.length; i++) {
-            if (drivers[i] === "gecko") {
-                drivers[i] = "firefox";
+            const driverAndVer = drivers[i].split("@");
+            const driverOnly = driverAndVer[0].toLowerCase();
+            const actualDriver = driverOnly === "gecko" ? "firefox" : driverOnly;
+            const args = ["install", `--singleDriverInstall=${actualDriver}`];
+            if (driverAndVer.length === 2) {
+                args.push(`--drivers.${actualDriver}.version=${driverAndVer[1]}`);
             }
-            await exec.npmRun("selenium-standalone", ["install", `--singleDriverInstall=${drivers[i]}`]);
+            await exec.npmRun("selenium-standalone", args);
         }
     } catch (err) {
         display.error("Executing selenium-standalone", err);

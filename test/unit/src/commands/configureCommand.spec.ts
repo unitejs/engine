@@ -119,7 +119,8 @@ describe("ConfigureCommand", () => {
             platforms: undefined
         };
 
-        enginePeerPackages = await fileSystemStub.fileReadJson<{ [id: string ]: string}>(fileSystemStub.pathCombine(__dirname, "../../../../assets/"), "peerPackages.json");
+        enginePeerPackages = await fileSystemStub.fileReadJson<{ [id: string ]: string}>(
+            fileSystemStub.pathCombine(__dirname, "../../../../node_modules/unitejs-packages/assets/"), "peerPackages.json");
     });
 
     afterEach(async () => {

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.6
+
+* Moved peerPackages.json to packages repo
+* Added driver version args to e2e-install
+
 ## 1.7.5
 
 * Added package command to provide access to unitejs-packages
