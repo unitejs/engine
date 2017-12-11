@@ -18,14 +18,13 @@ gulp.task("e2e-install", async () => {
     };
     const options = minimist(process.argv.slice(2), knownOptions);
     const args = ["update"];
-    const selectedDrivers = options.drivers.split(",");
+    const selectedDrivers = options.drivers.split(",").map(selected => selected.split("@"));
     allDrivers.forEach(driver => {
-        const driverAndVer = driver.split("@");
-        const driverOnly = driverAndVer[0].toLowerCase();
-        const actualDriver = driverOnly === "firefox" ? "gecko" : driverOnly;
-        args.push(`--${actualDriver}${selectedDrivers.indexOf(driverOnly) >= 0 ? "=true" : "=false"}`);
-        if (driverAndVer.length === 2) {
-            args.push(`--versions.${actualDriver}=${driverAndVer[1]}`);
+        const foundDriver = selectedDrivers.find(selected => selected[0] === driver);
+        const actualDriver = driver === "firefox" ? "gecko" : driver;
+        args.push(`--${actualDriver}${foundDriver ? "=true" : "=false"}`);
+        if (foundDriver && foundDriver.length === 2) {
+            args.push(`--versions.${actualDriver}=${foundDriver[1]}`);
         }
     });
     display.info("Args", args);

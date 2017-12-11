@@ -3,8 +3,8 @@
  */
 const gulp = require("gulp");
 const minimist = require("minimist");
+const install = require("selenium-standalone/lib/install");
 const display = require("../../util/display");
-const exec = require("../../util/exec");
 gulp.task("e2e-install", async () => {
     display.info("Running", "Selenium Standalone");
     const allDrivers = ["chrome", "firefox", "edge", "ie"];
@@ -17,18 +17,31 @@ gulp.task("e2e-install", async () => {
         ]
     };
     const options = minimist(process.argv.slice(2), knownOptions);
-    const drivers = options.drivers.split(",");
-    try {
-        for (let i = 0; i < drivers.length; i++) {
-            const driverAndVer = drivers[i].split("@");
-            const driverOnly = driverAndVer[0].toLowerCase();
-            const actualDriver = driverOnly === "gecko" ? "firefox" : driverOnly;
-            const args = ["install", `--singleDriverInstall=${actualDriver}`];
-            if (driverAndVer.length === 2) {
-                args.push(`--drivers.${actualDriver}.version=${driverAndVer[1]}`);
+    const opts = {
+        drivers: {}
+    };
+    const selectedDrivers = options.drivers.split(",").map(selected => selected.split("@"));
+    allDrivers.forEach(driver => {
+        const foundDriver = selectedDrivers.find(selected => selected[0] === driver);
+        if (foundDriver) {
+            opts.drivers[driver] = {};
+            if (foundDriver.length === 2) {
+                opts.drivers[driver].version = foundDriver[1];
             }
-            await exec.npmRun("selenium-standalone", args);
         }
+    });
+    try {
+        display.info("Opts", opts);
+        opts.logger = (message) => display.log(message);
+        await new Promise((resolve, reject) => {
+            install(opts, (err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
     } catch (err) {
         display.error("Executing selenium-standalone", err);
         process.exit(1);

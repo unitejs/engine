@@ -3,8 +3,8 @@
  */
 import * as gulp from "gulp";
 import * as minimist from "minimist";
+import * as install from "selenium-standalone/lib/install";
 import * as display from "../../util/display";
-import * as exec from "../../util/exec";
 
 gulp.task("e2e-install", async () => {
     display.info("Running", "Selenium Standalone");
@@ -19,25 +19,36 @@ gulp.task("e2e-install", async () => {
         ]
     };
 
-    const options = minimist(process.argv.slice(2), knownOptions);
+    const options = minimist<{ drivers: string}>(process.argv.slice(2), knownOptions);
 
-    const drivers = options.drivers.split(",");
+    const opts: install.InstallOptions = { drivers: {}};
+    const selectedDrivers = options.drivers.split(",").map(selected => selected.split("@"));
+    allDrivers.forEach(driver => {
+        const foundDriver = selectedDrivers.find(selected => selected[0] === driver);
+
+        if (foundDriver) {
+            opts.drivers[driver] = {};
+
+            if (foundDriver.length === 2) {
+                opts.drivers[driver].version = foundDriver[1];
+            }
+        }
+    });
 
     try {
-        for (let i = 0; i < drivers.length; i++) {
-            const driverAndVer = drivers[i].split("@");
-            const driverOnly = driverAndVer[0].toLowerCase();
+        display.info("Opts", opts);
 
-            const actualDriver = driverOnly === "gecko" ? "firefox" : driverOnly;
+        opts.logger = (message) => display.log(message);
 
-            const args = ["install", `--singleDriverInstall=${actualDriver}`];
-
-            if (driverAndVer.length === 2) {
-                args.push(`--drivers.${actualDriver}.version=${driverAndVer[1]}`);
-            }
-
-            await exec.npmRun("selenium-standalone", args);
-        }
+        await new Promise((resolve, reject) => {
+            install(opts, (err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
     } catch (err) {
         display.error("Executing selenium-standalone", err);
         process.exit(1);

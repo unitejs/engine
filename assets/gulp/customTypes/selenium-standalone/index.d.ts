@@ -15,3 +15,20 @@ declare module 'selenium-standalone' {
 
     export = selenium;
 }
+
+declare module 'selenium-standalone/lib/install' {
+    namespace install {
+        interface InstallOptions {
+            drivers?: {
+                [browserName: string]: {
+                    version?: string
+                };
+            },
+            logger?: (message: string) => void
+        }
+    }
+
+    function install(options: install.InstallOptions, cb: (error?: any) => void): void;
+    
+    export = install;
+}
