@@ -66,6 +66,7 @@ export declare class EngineVariables {
     toggleDevDependency(dependencies: string[], required: boolean): void;
     addDevDependency(dependencies: string[]): void;
     removeDevDependency(dependencies: string[]): void;
+    addVersionedDevDependency(dependency: string, version: string): void;
     buildDependencies(uniteConfiguration: UniteConfiguration, packageJsonDependencies: {
         [id: string]: string;
     }): void;

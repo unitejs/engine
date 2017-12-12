@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.8
+
+* Added conditions to unite package client configurations
+* Added isDevDependency flag to client packages
+
 ## 1.7.7
 
 * Fixed sibling node_modules location

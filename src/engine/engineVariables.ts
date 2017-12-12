@@ -56,8 +56,8 @@ export class EngineVariables {
 
     private _configuration: { [id: string]: any };
 
-    private _requiredDevDependencies: string[];
-    private _removedDevDependencies: string[];
+    private _requiredDevDependencies: { [id: string]: UniteClientPackage };
+    private _removedDevDependencies: { [id: string]: UniteClientPackage };
     private _requiredClientPackages: { [id: string]: UniteClientPackage };
     private _removedClientPackages: { [id: string]: UniteClientPackage };
     private _existingClientPackages: { [id: string]: UniteClientPackage };
@@ -72,8 +72,8 @@ export class EngineVariables {
         this.buildTranspilePreBuild = [];
         this.buildTranspilePostBuild = [];
 
-        this._requiredDevDependencies = [];
-        this._removedDevDependencies = [];
+        this._requiredDevDependencies = {};
+        this._removedDevDependencies = {};
         this._requiredClientPackages = {};
         this._removedClientPackages = {};
         this._existingClientPackages = {};
@@ -148,18 +148,25 @@ export class EngineVariables {
 
     public addDevDependency(dependencies: string[]): void {
         dependencies.forEach(dep => {
-            if (this._requiredDevDependencies.indexOf(dep) < 0) {
-                this._requiredDevDependencies.push(dep);
-            }
+            const clientPackage = new UniteClientPackage();
+            clientPackage.name = dep;
+            this._requiredDevDependencies[dep] = clientPackage;
         });
     }
 
     public removeDevDependency(dependencies: string[]): void {
         dependencies.forEach(dep => {
-            if (this._removedDevDependencies.indexOf(dep) < 0) {
-                this._removedDevDependencies.push(dep);
-            }
+            const clientPackage = new UniteClientPackage();
+            clientPackage.name = dep;
+            this._removedDevDependencies[dep] = clientPackage;
         });
+    }
+
+    public addVersionedDevDependency(dependency: string, version: string): void {
+        const clientPackage = new UniteClientPackage();
+        clientPackage.name = dependency;
+        clientPackage.version = version;
+        this._requiredDevDependencies[dependency] = clientPackage;
     }
 
     public buildDependencies(uniteConfiguration: UniteConfiguration, packageJsonDependencies: { [id: string]: string }): void {
@@ -193,9 +200,8 @@ export class EngineVariables {
             if (pkg.includeMode === "app" || pkg.includeMode === "both") {
                 packageJsonDependencies[pkg.name] = pkg.version;
 
-                const idx = this._requiredDevDependencies.indexOf(pkg.name);
-                if (idx >= 0) {
-                    this._requiredDevDependencies.splice(idx, 1);
+                if (this._requiredDevDependencies[pkg.name]) {
+                    delete this._requiredDevDependencies[pkg.name];
                     removedTestDependencies.push(pkg.name);
                 }
             } else {
@@ -207,14 +213,18 @@ export class EngineVariables {
     }
 
     public buildDevDependencies(packageJsonDevDependencies: { [id: string]: string }): void {
-        this._removedDevDependencies.forEach(dependency => {
+        Object.keys(this._removedDevDependencies).forEach(dependency => {
             if (packageJsonDevDependencies[dependency]) {
                 delete packageJsonDevDependencies[dependency];
             }
         });
 
-        this._requiredDevDependencies.forEach(requiredDependency => {
-            packageJsonDevDependencies[requiredDependency] = this.findDependencyVersion(requiredDependency);
+        Object.keys(this._requiredDevDependencies).forEach(requiredDependency => {
+            if (this._requiredDevDependencies[requiredDependency].version) {
+                packageJsonDevDependencies[requiredDependency] = this._requiredDevDependencies[requiredDependency].version;
+            } else {
+                packageJsonDevDependencies[requiredDependency] = this.findDependencyVersion(requiredDependency);
+            }
         });
     }
 

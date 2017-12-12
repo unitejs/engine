@@ -2,9 +2,11 @@
  * Package Command
  */
 import { ParameterValidation } from "unitejs-framework/dist/helpers/parameterValidation";
+import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { UniteClientPackage } from "../configuration/models/unite/uniteClientPackage";
 import { UniteConfiguration } from "../configuration/models/unite/uniteConfiguration";
 import { UnitePackageClientConfiguration } from "../configuration/models/unitePackages/unitePackageClientConfiguration";
+import { UnitePackageCondition } from "../configuration/models/unitePackages/unitePackageCondition";
 import { UnitePackageConfiguration } from "../configuration/models/unitePackages/unitePackageConfiguration";
 import { EngineCommandBase } from "../engine/engineCommandBase";
 import { EngineVariables } from "../engine/engineVariables";
@@ -73,7 +75,7 @@ export class PackageCommand extends EngineCommandBase implements IEngineCommand<
                         ret = await this.processPackage(uniteConfiguration, engineVariables, packageFolder, unitePackageConfiguration);
                     } else {
                         ret = 1;
-                        this._logger.error(`Package file '${packageFolder}/unite-package.json' does not exist`);
+                        this._logger.error(`Package file '${this._fileSystem.pathCombine(packageFolder, "unite-package.json")}' does not exist`);
                     }
                 } else {
                     ret = 1;
@@ -222,30 +224,85 @@ export class PackageCommand extends EngineCommandBase implements IEngineCommand<
             const keys = Object.keys(unitePackageConfiguration.clientPackages);
             for (let i = 0; i < keys.length && ret === 0; i++) {
                 const clientPackage = unitePackageConfiguration.clientPackages[keys[i]];
-                let finalClientPackage: UnitePackageClientConfiguration = new UnitePackageClientConfiguration();
-                if (clientPackage.profile) {
-                    const profilePackage = await this.loadProfile<UniteClientPackage>("unitejs-packages", "assets", "clientPackage.json", clientPackage.profile);
-                    if (profilePackage === null) {
-                        ret = 1;
-                    } else {
-                        delete clientPackage.profile;
-                        finalClientPackage = {...finalClientPackage, ...profilePackage};
+
+                if (this.matchesConditions(this._logger, uniteConfiguration, clientPackage.conditions)) {
+                    let finalClientPackage: UnitePackageClientConfiguration = new UnitePackageClientConfiguration();
+                    if (clientPackage.profile) {
+                        const profilePackage = await this.loadProfile<UniteClientPackage>("unitejs-packages", "assets", "clientPackage.json", clientPackage.profile);
+                        if (profilePackage === null) {
+                            ret = 1;
+                        } else {
+                            delete clientPackage.profile;
+                            finalClientPackage = {...finalClientPackage, ...profilePackage};
+                        }
                     }
-                }
-
-                if (ret === 0) {
-                    finalClientPackage = {...finalClientPackage, ...clientPackage};
-
-                    ret = await ClientPackageCommand.retrievePackageDetails(this._logger, this._fileSystem, engineVariables, finalClientPackage);
 
                     if (ret === 0) {
-                        uniteConfiguration.clientPackages = uniteConfiguration.clientPackages || {};
-                        uniteConfiguration.clientPackages[finalClientPackage.name] = finalClientPackage;
+                        finalClientPackage = {...finalClientPackage, ...clientPackage};
+
+                        ret = await ClientPackageCommand.retrievePackageDetails(this._logger, this._fileSystem, engineVariables, finalClientPackage);
+
+                        if (ret === 0) {
+                            if (finalClientPackage.isDevDependency) {
+                                engineVariables.addVersionedDevDependency(finalClientPackage.name, finalClientPackage.version);
+                            } else {
+                                uniteConfiguration.clientPackages = uniteConfiguration.clientPackages || {};
+                                uniteConfiguration.clientPackages[finalClientPackage.name] = finalClientPackage;
+                            }
+                        }
                     }
                 }
             }
         }
 
         return ret;
+    }
+
+    private matchesConditions(logger: ILogger, uniteConfiguration: UniteConfiguration, conditions: UnitePackageCondition[]): boolean | null {
+        if (conditions && conditions.length > 0) {
+            for (let i = 0; i < conditions.length; i++) {
+                if (conditions[i].property !== undefined) {
+                    if (conditions[i].value !== undefined) {
+                        let matches = this.propertyMatches(uniteConfiguration, conditions[i].property, conditions[i].value);
+
+                        if (conditions[i].not) {
+                            matches = !matches;
+                        }
+
+                        if (!matches) {
+                            return false;
+                        }
+                    } else {
+                        logger.error(`Can not match condition when value is not set`);
+                        return null;
+                    }
+                } else {
+                    logger.error(`Can not match condition when property is not set`);
+                    return null;
+                }
+            }
+
+            return true;
+        } else {
+            return true;
+        }
+    }
+
+    private propertyMatches(uniteConfigurationObject: any, property: string, value: string): boolean {
+        const propertyLower = property.toLowerCase();
+
+        const actualProperty: string = Object.keys(uniteConfigurationObject).find(key => key.toLowerCase() === propertyLower);
+
+        if (actualProperty) {
+            const configValue = uniteConfigurationObject[actualProperty];
+
+            if (configValue) {
+                return configValue.toLowerCase() === value.toLowerCase();
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 }

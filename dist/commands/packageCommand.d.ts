@@ -8,4 +8,6 @@ export declare class PackageCommand extends EngineCommandBase implements IEngine
     private copyFolder(uniteConfiguration, sourceFolder, destFolder, substitutions);
     private addRoute(uniteConfiguration, engineVariables, unitePackageConfiguration);
     private addPackages(uniteConfiguration, engineVariables, unitePackageConfiguration);
+    private matchesConditions(logger, uniteConfiguration, conditions);
+    private propertyMatches(uniteConfigurationObject, property, value);
 }

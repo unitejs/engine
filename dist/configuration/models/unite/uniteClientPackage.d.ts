@@ -28,4 +28,5 @@ export declare class UniteClientPackage {
     noScript?: boolean;
     transpile?: UniteClientPackageTranspile;
     hasOverrides?: boolean;
+    isDevDependency?: boolean;
 }
