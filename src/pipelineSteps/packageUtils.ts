@@ -6,16 +6,16 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 
 export class PackageUtils {
-    public static async exec(logger: ILogger, fileSystem: IFileSystem, packageName: string, workingDirectory: string, args: string[]): Promise<string> {
-        const isWin = /^win/.test(process.platform);
+    public static isWindows: boolean = /^win/.test(process.platform);
 
+    public static async exec(logger: ILogger, fileSystem: IFileSystem, packageName: string, workingDirectory: string, args: string[]): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             let finalData = "";
             const options: { cwd?: string } = {};
             if (workingDirectory !== null && workingDirectory !== undefined) {
                 options.cwd = fileSystem.pathAbsolute(workingDirectory);
             }
-            const spawnProcess = child.spawn(`${packageName}${isWin ? ".cmd" : ""}`, args, options);
+            const spawnProcess = child.spawn(`${packageName}${PackageUtils.isWindows ? ".cmd" : ""}`, args, options);
 
             spawnProcess.stdout.on("data", (data) => {
                 const infoData = (data ? data.toString() : "").replace(/\n/g, "");
