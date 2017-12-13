@@ -225,7 +225,10 @@ export class PackageCommand extends EngineCommandBase implements IEngineCommand<
             for (let i = 0; i < keys.length && ret === 0; i++) {
                 const clientPackage = unitePackageConfiguration.clientPackages[keys[i]];
 
-                if (this.matchesConditions(this._logger, uniteConfiguration, clientPackage.conditions)) {
+                const matches = this.matchesConditions(this._logger, uniteConfiguration, clientPackage.conditions);
+                if (matches === null) {
+                    ret = 1;
+                } else {
                     let finalClientPackage: UnitePackageClientConfiguration = new UnitePackageClientConfiguration();
                     if (clientPackage.profile) {
                         const profilePackage = await this.loadProfile<UniteClientPackage>("unitejs-packages", "assets", "clientPackage.json", clientPackage.profile);
@@ -296,7 +299,7 @@ export class PackageCommand extends EngineCommandBase implements IEngineCommand<
         if (actualProperty) {
             const configValue = uniteConfigurationObject[actualProperty];
 
-            if (configValue) {
+            if (configValue !== undefined) {
                 return configValue.toLowerCase() === value.toLowerCase();
             } else {
                 return false;

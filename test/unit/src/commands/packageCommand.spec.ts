@@ -403,6 +403,147 @@ describe("PackageCommand", () => {
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
         });
 
+        it("can fail with client packages condition missing property", async () => {
+            sandbox.stub(PackageUtils, "exec").resolves("{}");
+
+            const obj = new PackageCommand();
+            unitePackageJson.clientPackages.moment = new UnitePackageClientConfiguration();
+            unitePackageJson.clientPackages.moment.profile = "moment";
+            unitePackageJson.clientPackages.moment.conditions = [ {
+                property: undefined,
+                value: "TypeScript"
+            }];
+
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "moment",
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("property");
+        });
+
+        it("can fail with client packages condition missing value", async () => {
+            sandbox.stub(PackageUtils, "exec").resolves("{}");
+
+            const obj = new PackageCommand();
+            unitePackageJson.clientPackages.moment = new UnitePackageClientConfiguration();
+            unitePackageJson.clientPackages.moment.profile = "moment";
+            unitePackageJson.clientPackages.moment.conditions = [ {
+                property: "sourceLanguage",
+                value: undefined
+            }];
+
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "moment",
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("value");
+        });
+
+        it("can complete with client packages matching conditions", async () => {
+            sandbox.stub(PackageUtils, "exec").resolves("{}");
+
+            const obj = new PackageCommand();
+            unitePackageJson.clientPackages.moment = new UnitePackageClientConfiguration();
+            unitePackageJson.clientPackages.moment.profile = "moment";
+            unitePackageJson.clientPackages.moment.conditions = [ {
+                property: "sourceLanguage",
+                value: "TypeScript"
+            }];
+
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "moment",
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
+        });
+
+        it("can complete with client packages failing conditions", async () => {
+            sandbox.stub(PackageUtils, "exec").resolves("{}");
+
+            const obj = new PackageCommand();
+            unitePackageJson.clientPackages.moment = new UnitePackageClientConfiguration();
+            unitePackageJson.clientPackages.moment.profile = "moment";
+            unitePackageJson.clientPackages.moment.conditions = [ {
+                property: "sourceLanguage",
+                value: "JavaScript"
+            }];
+
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "moment",
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
+        });
+
+        it("can complete with client packages negated conditions", async () => {
+            sandbox.stub(PackageUtils, "exec").resolves("{}");
+
+            const obj = new PackageCommand();
+            unitePackageJson.clientPackages.moment = new UnitePackageClientConfiguration();
+            unitePackageJson.clientPackages.moment.profile = "moment";
+            unitePackageJson.clientPackages.moment.conditions = [ {
+                property: "sourceLanguage",
+                value: "JavaScript",
+                not: true
+            }];
+
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "moment",
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
+        });
+
+        it("can complete with client packages unknown property", async () => {
+            sandbox.stub(PackageUtils, "exec").resolves("{}");
+
+            const obj = new PackageCommand();
+            unitePackageJson.clientPackages.moment = new UnitePackageClientConfiguration();
+            unitePackageJson.clientPackages.moment.profile = "moment";
+            unitePackageJson.clientPackages.moment.conditions = [ {
+                property: "blah",
+                value: "JavaScript"
+            }];
+
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "moment",
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
+        });
+
+        it("can complete with client packages undefined property value", async () => {
+            sandbox.stub(PackageUtils, "exec").resolves("{}");
+
+            const obj = new PackageCommand();
+            unitePackageJson.clientPackages.moment = new UnitePackageClientConfiguration();
+            unitePackageJson.clientPackages.moment.profile = "moment";
+            unitePackageJson.clientPackages.moment.conditions = [ {
+                property: "bundler",
+                value: "Webpack"
+            }];
+
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "moment",
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
+        });
+
         it("can fail with client packages using unknown profiles", async () => {
             const obj = new PackageCommand();
             unitePackageJson.clientPackages.moment = new UnitePackageClientConfiguration();
@@ -438,6 +579,23 @@ describe("PackageCommand", () => {
             const obj = new PackageCommand();
             unitePackageJson.clientPackages.moment = new UnitePackageClientConfiguration();
             unitePackageJson.clientPackages.moment.name = "moment";
+
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "moment",
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
+        });
+
+        it("can complete with client packages when they are a dev dependency", async () => {
+            sandbox.stub(PackageUtils, "exec").resolves("{}");
+
+            const obj = new PackageCommand();
+            unitePackageJson.clientPackages.moment = new UnitePackageClientConfiguration();
+            unitePackageJson.clientPackages.moment.name = "moment";
+            unitePackageJson.clientPackages.moment.isDevDependency = true;
 
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
             const res = await obj.run({
