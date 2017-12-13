@@ -124,124 +124,124 @@ describe("PackageUtils", () => {
         //     Chai.expect(data).to.be.equal("");
         // });
 
-        it("can be called and exit with code 1", async () => {
-            childSpawnProcess.on = (name: string, cb: any) => {
-                if (name === "close") {
-                    cb(1);
-                }
-            };
+        // it("can be called and exit with code 1", async () => {
+        //     childSpawnProcess.on = (name: string, cb: any) => {
+        //         if (name === "close") {
+        //             cb(1);
+        //         }
+        //     };
 
-            try {
-                await PackageUtils.exec(loggerStub, fileSystemStub, "package", undefined, undefined);
-            } catch (err) {
-                Chai.expect(err).to.be.equal(1);
-            }
-        });
+        //     try {
+        //         await PackageUtils.exec(loggerStub, fileSystemStub, "package", undefined, undefined);
+        //     } catch (err) {
+        //         Chai.expect(err).to.be.equal(1);
+        //     }
+        // });
 
-        it("can be called and return data", async () => {
-            childSpawnProcess.on = (name: string, cb: any) => {
-                if (name === "close") {
-                    cb(0);
-                }
-            };
-            childSpawnProcess.stdout.on = (name: string, cb: any) => {
-                cb("this");
-                cb("is");
-                cb("data");
-            };
+        // it("can be called and return data", async () => {
+        //     childSpawnProcess.on = (name: string, cb: any) => {
+        //         if (name === "close") {
+        //             cb(0);
+        //         }
+        //     };
+        //     childSpawnProcess.stdout.on = (name: string, cb: any) => {
+        //         cb("this");
+        //         cb("is");
+        //         cb("data");
+        //     };
 
-            const data = await PackageUtils.exec(loggerStub, fileSystemStub, "package", undefined, undefined);
-            Chai.expect(data).to.be.equal("thisisdata");
-            Chai.expect(loggerInfoSpy.args[0][0]).to.be.equal("this");
-            Chai.expect(loggerInfoSpy.args[1][0]).to.be.equal("is");
-            Chai.expect(loggerInfoSpy.args[2][0]).to.be.equal("data");
-        });
+        //     const data = await PackageUtils.exec(loggerStub, fileSystemStub, "package", undefined, undefined);
+        //     Chai.expect(data).to.be.equal("thisisdata");
+        //     Chai.expect(loggerInfoSpy.args[0][0]).to.be.equal("this");
+        //     Chai.expect(loggerInfoSpy.args[1][0]).to.be.equal("is");
+        //     Chai.expect(loggerInfoSpy.args[2][0]).to.be.equal("data");
+        // });
 
-        it("can be called with undefined data", async () => {
-            childSpawnProcess.on = (name: string, cb: any) => {
-                if (name === "close") {
-                    cb(0);
-                }
-            };
-            childSpawnProcess.stdout.on = (name: string, cb: any) => {
-                cb(undefined);
-                cb("is");
-                cb("data");
-            };
+        // it("can be called with undefined data", async () => {
+        //     childSpawnProcess.on = (name: string, cb: any) => {
+        //         if (name === "close") {
+        //             cb(0);
+        //         }
+        //     };
+        //     childSpawnProcess.stdout.on = (name: string, cb: any) => {
+        //         cb(undefined);
+        //         cb("is");
+        //         cb("data");
+        //     };
 
-            const data = await PackageUtils.exec(loggerStub, fileSystemStub, "package", undefined, undefined);
-            Chai.expect(data).to.be.equal("isdata");
-            Chai.expect(loggerInfoSpy.args[0][0]).to.be.equal("");
-            Chai.expect(loggerInfoSpy.args[1][0]).to.be.equal("is");
-            Chai.expect(loggerInfoSpy.args[2][0]).to.be.equal("data");
-        });
+        //     const data = await PackageUtils.exec(loggerStub, fileSystemStub, "package", undefined, undefined);
+        //     Chai.expect(data).to.be.equal("isdata");
+        //     Chai.expect(loggerInfoSpy.args[0][0]).to.be.equal("");
+        //     Chai.expect(loggerInfoSpy.args[1][0]).to.be.equal("is");
+        //     Chai.expect(loggerInfoSpy.args[2][0]).to.be.equal("data");
+        // });
 
-        it("can be called and had error and other data", async () => {
-            childSpawnProcess.on = (name: string, cb: any) => {
-                if (name === "close") {
-                    cb(0);
-                }
-            };
-            childSpawnProcess.stderr.on = (name: string, cb: any) => {
-                cb("this");
-                cb("is");
-                cb("error");
-            };
-            childSpawnProcess.stdout.on = (name: string, cb: any) => {
-                cb("this");
-                cb("is");
-                cb("data");
-            };
+        // it("can be called and had error and other data", async () => {
+        //     childSpawnProcess.on = (name: string, cb: any) => {
+        //         if (name === "close") {
+        //             cb(0);
+        //         }
+        //     };
+        //     childSpawnProcess.stderr.on = (name: string, cb: any) => {
+        //         cb("this");
+        //         cb("is");
+        //         cb("error");
+        //     };
+        //     childSpawnProcess.stdout.on = (name: string, cb: any) => {
+        //         cb("this");
+        //         cb("is");
+        //         cb("data");
+        //     };
 
-            const data = await PackageUtils.exec(loggerStub, fileSystemStub, "package", undefined, undefined);
-            Chai.expect(data).to.be.equal("thisisdata");
-            Chai.expect(loggerInfoSpy.args[0][0]).to.be.equal("this");
-            Chai.expect(loggerInfoSpy.args[1][0]).to.be.equal("is");
-            Chai.expect(loggerInfoSpy.args[2][0]).to.be.equal("data");
-            Chai.expect(loggerInfoSpy.args[3][0]).to.be.equal("this");
-            Chai.expect(loggerInfoSpy.args[4][0]).to.be.equal("is");
-            Chai.expect(loggerInfoSpy.args[5][0]).to.be.equal("error");
-        });
+        //     const data = await PackageUtils.exec(loggerStub, fileSystemStub, "package", undefined, undefined);
+        //     Chai.expect(data).to.be.equal("thisisdata");
+        //     Chai.expect(loggerInfoSpy.args[0][0]).to.be.equal("this");
+        //     Chai.expect(loggerInfoSpy.args[1][0]).to.be.equal("is");
+        //     Chai.expect(loggerInfoSpy.args[2][0]).to.be.equal("data");
+        //     Chai.expect(loggerInfoSpy.args[3][0]).to.be.equal("this");
+        //     Chai.expect(loggerInfoSpy.args[4][0]).to.be.equal("is");
+        //     Chai.expect(loggerInfoSpy.args[5][0]).to.be.equal("error");
+        // });
 
-        it("can be called and had undefined error and other data", async () => {
-            childSpawnProcess.on = (name: string, cb: any) => {
-                if (name === "close") {
-                    cb(0);
-                }
-            };
-            childSpawnProcess.stderr.on = (name: string, cb: any) => {
-                cb(undefined);
-                cb("is");
-                cb("error");
-            };
-            childSpawnProcess.stdout.on = (name: string, cb: any) => {
-                cb("this");
-                cb("is");
-                cb("data");
-            };
+        // it("can be called and had undefined error and other data", async () => {
+        //     childSpawnProcess.on = (name: string, cb: any) => {
+        //         if (name === "close") {
+        //             cb(0);
+        //         }
+        //     };
+        //     childSpawnProcess.stderr.on = (name: string, cb: any) => {
+        //         cb(undefined);
+        //         cb("is");
+        //         cb("error");
+        //     };
+        //     childSpawnProcess.stdout.on = (name: string, cb: any) => {
+        //         cb("this");
+        //         cb("is");
+        //         cb("data");
+        //     };
 
-            const data = await PackageUtils.exec(loggerStub, fileSystemStub, "package", undefined, undefined);
-            Chai.expect(data).to.be.equal("thisisdata");
-            Chai.expect(loggerInfoSpy.args[0][0]).to.be.equal("this");
-            Chai.expect(loggerInfoSpy.args[1][0]).to.be.equal("is");
-            Chai.expect(loggerInfoSpy.args[2][0]).to.be.equal("data");
-            Chai.expect(loggerInfoSpy.args[3][0]).to.be.equal("");
-            Chai.expect(loggerInfoSpy.args[4][0]).to.be.equal("is");
-            Chai.expect(loggerInfoSpy.args[5][0]).to.be.equal("error");
-        });
+        //     const data = await PackageUtils.exec(loggerStub, fileSystemStub, "package", undefined, undefined);
+        //     Chai.expect(data).to.be.equal("thisisdata");
+        //     Chai.expect(loggerInfoSpy.args[0][0]).to.be.equal("this");
+        //     Chai.expect(loggerInfoSpy.args[1][0]).to.be.equal("is");
+        //     Chai.expect(loggerInfoSpy.args[2][0]).to.be.equal("data");
+        //     Chai.expect(loggerInfoSpy.args[3][0]).to.be.equal("");
+        //     Chai.expect(loggerInfoSpy.args[4][0]).to.be.equal("is");
+        //     Chai.expect(loggerInfoSpy.args[5][0]).to.be.equal("error");
+        // });
 
-        it("can fail with spawn error", async () => {
-            childSpawnProcess.on = (name: string, cb: any) => {
-                if (name === "error") {
-                    cb("error");
-                }
-            };
+        // it("can fail with spawn error", async () => {
+        //     childSpawnProcess.on = (name: string, cb: any) => {
+        //         if (name === "error") {
+        //             cb("error");
+        //         }
+        //     };
 
-            try {
-                await PackageUtils.exec(loggerStub, fileSystemStub, "package", undefined, undefined);
-            } catch (err) {
-                Chai.expect(err).to.contain("error");
-            }
-        });
+        //     try {
+        //         await PackageUtils.exec(loggerStub, fileSystemStub, "package", undefined, undefined);
+        //     } catch (err) {
+        //         Chai.expect(err).to.contain("error");
+        //     }
+        // });
     });
 });
