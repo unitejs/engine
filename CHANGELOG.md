@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.9
+
+* Change e2e-transpile and unit-transpile tasks to include all files that are not *.spec
+* Change e2e-clean and unit-clean tasks clean all transpiled files not just *.spec
+
 ## 1.7.8
 
 * Added conditions to unite package client configurations

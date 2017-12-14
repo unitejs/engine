@@ -17,7 +17,7 @@ gulp.task("e2e-clean", async () => {
     const uniteConfig = await uc.getUniteConfig();
 
     const toClean = [
-        path.join(uniteConfig.dirs.www.e2eTestDist, "**/*.spec.js"),
+        path.join(uniteConfig.dirs.www.e2eTestDist, "**/*"),
         path.join(uniteConfig.dirs.www.reports, "e2e/")
     ];
     display.info("Cleaning", toClean);

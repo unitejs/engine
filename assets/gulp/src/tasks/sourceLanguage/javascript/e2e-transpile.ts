@@ -29,10 +29,16 @@ gulp.task("e2e-transpile", async () => {
 
     let errorCount = 0;
 
-    return asyncUtil.stream(gulp.src(path.join(
-        uniteConfig.dirs.www.e2eTestSrc,
-        `**/${options.grep}.spec.${uc.extensionMap(uniteConfig.sourceExtensions)}`
-    ))
+    return asyncUtil.stream(gulp.src([
+        path.join(
+            uniteConfig.dirs.www.e2eTestSrc,
+            `**/${options.grep}.spec.${uc.extensionMap(uniteConfig.sourceExtensions)}`
+        ),
+        path.join(
+            uniteConfig.dirs.www.e2eTestSrc,
+            `**/!(*.spec).${uc.extensionMap(uniteConfig.sourceExtensions)}`
+        )
+    ])
         .pipe(sourcemaps.init())
         .pipe(babel({
             babelrc: false,

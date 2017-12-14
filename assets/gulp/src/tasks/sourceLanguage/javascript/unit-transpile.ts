@@ -39,7 +39,7 @@ gulp.task("unit-transpile", async () => {
         ),
         path.join(
             uniteConfig.dirs.www.unitTestSrc,
-            `**/*.mock.${uc.extensionMap(uniteConfig.sourceExtensions)}`
+            `**/!(*.spec).${uc.extensionMap(uniteConfig.sourceExtensions)}`
         )
     ])
         .pipe(sourcemaps.init())

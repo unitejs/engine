@@ -17,7 +17,7 @@ require("./unit-lint");
 gulp.task("unit-clean", async () => {
     const uniteConfig = await uc.getUniteConfig();
     const toClean = [
-        path.join(uniteConfig.dirs.www.unitTestDist, "**/*.spec.js"),
+        path.join(uniteConfig.dirs.www.unitTestDist, "**/*"),
         path.join(uniteConfig.dirs.www.reports, "unit/**/*"),
         path.join(uniteConfig.dirs.www.reports, "coverage/**/*"),
         path.join(uniteConfig.dirs.www.reports, "coverage.json"),

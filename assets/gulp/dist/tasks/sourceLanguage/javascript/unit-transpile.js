@@ -27,7 +27,7 @@ gulp.task("unit-transpile", async () => {
     const regEx = new RegExp(uniteConfig.srcDistReplace, "g");
     return asyncUtil.stream(gulp.src([
             path.join(uniteConfig.dirs.www.unitTestSrc, `**/${options.grep}.spec.${uc.extensionMap(uniteConfig.sourceExtensions)}`),
-            path.join(uniteConfig.dirs.www.unitTestSrc, `**/*.mock.${uc.extensionMap(uniteConfig.sourceExtensions)}`)
+            path.join(uniteConfig.dirs.www.unitTestSrc, `**/!(*.spec).${uc.extensionMap(uniteConfig.sourceExtensions)}`)
         ])
         .pipe(sourcemaps.init())
         .pipe(babel())

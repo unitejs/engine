@@ -30,10 +30,16 @@ gulp.task("e2e-transpile", async () => {
     const tsProject = typescript.createProject("tsconfig.json", {module: "commonjs"});
     let errorCount = 0;
 
-    return asyncUtil.stream(gulp.src(path.join(
-        uniteConfig.dirs.www.e2eTestSrc,
-        `**/${options.grep}.spec.${uc.extensionMap(uniteConfig.sourceExtensions)}`
-    ))
+    return asyncUtil.stream(gulp.src([
+        path.join(
+            uniteConfig.dirs.www.e2eTestSrc,
+            `**/${options.grep}.spec.${uc.extensionMap(uniteConfig.sourceExtensions)}`
+        ),
+        path.join(
+            uniteConfig.dirs.www.e2eTestSrc,
+            `**/!(*.spec).${uc.extensionMap(uniteConfig.sourceExtensions)}`
+        )
+    ])
         .pipe(sourcemaps.init())
         .pipe(tsProject(typescript.reporter.nullReporter()))
         .on("error", (err) => {

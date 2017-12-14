@@ -28,7 +28,7 @@ gulp.task("unit-transpile", async () => {
     let errorCount = 0;
     return asyncUtil.stream(gulp.src([
             path.join(uniteConfig.dirs.www.unitTestSrc, `**/${options.grep}.spec.${uc.extensionMap(uniteConfig.sourceExtensions)}`),
-            path.join(uniteConfig.dirs.www.unitTestSrc, `**/*.mock.${uc.extensionMap(uniteConfig.sourceExtensions)}`),
+            path.join(uniteConfig.dirs.www.unitTestSrc, `**/!(*.spec).${uc.extensionMap(uniteConfig.sourceExtensions)}`),
             path.join(uniteConfig.dirs.www.src, `customTypes/**/*.d.ts`)
         ])
         .pipe(sourcemaps.init())
