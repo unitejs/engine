@@ -6,6 +6,7 @@
 * Change e2e-clean and unit-clean tasks clean all transpiled files not just *.spec
 * Change client package includeMode and scriptInclude mode defaults calculated in tasks
 * Fixed package.json could contain entries in dependency and devDependency
+* Change reversed order of transform-decorators-legacy and transform-class-properties babel plugins
 
 ## 1.7.8
 

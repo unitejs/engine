@@ -492,7 +492,7 @@ describe("PackageCommand", () => {
             unitePackageJson.clientPackages.moment.conditions = [ {
                 property: "sourceLanguage",
                 value: "JavaScript",
-                not: true
+                negate: true
             }];
 
             obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);

@@ -10,4 +10,5 @@ export declare class PackageCommand extends EngineCommandBase implements IEngine
     private addPackages(uniteConfiguration, engineVariables, unitePackageConfiguration);
     private matchesConditions(logger, uniteConfiguration, conditions);
     private propertyMatches(uniteConfigurationObject, property, value);
+    private conditionsToText(conditions);
 }

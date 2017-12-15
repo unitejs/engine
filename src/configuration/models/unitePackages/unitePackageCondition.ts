@@ -4,5 +4,5 @@
 export class UnitePackageCondition {
     public property: string;
     public value: string;
-    public not?: boolean;
+    public negate?: boolean;
 }

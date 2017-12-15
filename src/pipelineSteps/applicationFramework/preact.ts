@@ -123,8 +123,8 @@ export class Preact extends SharedAppFramework implements IApplicationFramework 
 
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
         if (babelConfiguration) {
-            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-class-properties", mainCondition);
             ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", mainCondition);
+            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-class-properties", mainCondition);
             ArrayHelper.addRemove(babelConfiguration.plugins, ["transform-react-jsx", { pragma: "h" }], mainCondition,
                                   (obj, item) => Array.isArray(item) && item.length > 0 && item[0] === obj[0]);
         }

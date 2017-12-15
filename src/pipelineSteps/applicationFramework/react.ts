@@ -112,8 +112,8 @@ export class React extends SharedAppFramework implements IApplicationFramework {
 
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
         if (babelConfiguration) {
-            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-class-properties", mainCondition);
             ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", mainCondition);
+            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-class-properties", mainCondition);
             ArrayHelper.addRemove(babelConfiguration.presets, "react", mainCondition);
         }
 

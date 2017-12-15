@@ -89,8 +89,8 @@ export class JsDoc extends PipelineStepBase {
 
         defaultConfiguration.babel = new BabelConfiguration();
         defaultConfiguration.babel.plugins = [
-            "transform-class-properties",
-            "transform-decorators-legacy"
+            "transform-decorators-legacy",
+            "transform-class-properties"
         ];
 
         defaultConfiguration.babel.babelrc = false;

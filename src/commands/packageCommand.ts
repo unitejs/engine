@@ -98,47 +98,59 @@ export class PackageCommand extends EngineCommandBase implements IEngineCommand<
                                  unitePackageConfiguration: UnitePackageConfiguration): Promise<number> {
         let ret = 0;
 
-        const appFrameworkFolder = this._fileSystem.pathCombine(packageFolder, uniteConfiguration.applicationFramework.toLowerCase());
+        const matches = this.matchesConditions(this._logger, uniteConfiguration, unitePackageConfiguration.conditions);
 
-        const appFrameworkFolderExists = await this._fileSystem.directoryExists(appFrameworkFolder);
+        if (matches === null) {
+            ret = 1;
+        } else {
+            if (matches) {
+                const appFrameworkFolder = this._fileSystem.pathCombine(packageFolder, uniteConfiguration.applicationFramework.toLowerCase());
 
-        if (appFrameworkFolderExists) {
-            const subFolders = await this._fileSystem.directoryGetFolders(appFrameworkFolder);
+                const appFrameworkFolderExists = await this._fileSystem.directoryExists(appFrameworkFolder);
 
-            const codeSubstitutions = TemplateHelper.createCodeSubstitutions(engineVariables);
+                if (appFrameworkFolderExists) {
+                    const subFolders = await this._fileSystem.directoryGetFolders(appFrameworkFolder);
 
-            for (let i = 0; i < subFolders.length && ret === 0; i++) {
-                const actualWwwFolder = engineVariables.www[subFolders[i]];
-                if (actualWwwFolder) {
-                    const actualSource = this._fileSystem.pathCombine(appFrameworkFolder, subFolders[i]);
+                    const codeSubstitutions = TemplateHelper.createCodeSubstitutions(engineVariables);
 
-                    this._logger.info("Copying folder", { sourceFolder: actualSource, destFolder: actualWwwFolder });
+                    for (let i = 0; i < subFolders.length && ret === 0; i++) {
+                        const actualWwwFolder = engineVariables.www[subFolders[i]];
+                        if (actualWwwFolder) {
+                            const actualSource = this._fileSystem.pathCombine(appFrameworkFolder, subFolders[i]);
 
-                    ret = await this.copyFolder(uniteConfiguration, actualSource, actualWwwFolder, codeSubstitutions);
-                } else {
-                    ret = 1;
-                    this._logger.error(`There is no destination folder '${subFolders[i]}' to copy content to.`);
+                            this._logger.info("Copying folder", { sourceFolder: actualSource, destFolder: actualWwwFolder });
+
+                            ret = await this.copyFolder(uniteConfiguration, actualSource, actualWwwFolder, codeSubstitutions);
+                        } else {
+                            ret = 1;
+                            this._logger.error(`There is no destination folder '${subFolders[i]}' to copy content to.`);
+                        }
+                    }
                 }
+
+                if (ret === 0) {
+                    ret = await this.addPackages(uniteConfiguration, engineVariables, unitePackageConfiguration);
+                }
+
+                if (ret === 0) {
+                    this._pipeline.add("content", "packageJson");
+                    this._pipeline.add("unite", "uniteConfigurationJson");
+
+                    ret = await this._pipeline.run(uniteConfiguration, engineVariables);
+                }
+
+                if (ret === 0) {
+                    ret = await this.addRoute(uniteConfiguration, engineVariables, unitePackageConfiguration);
+                }
+
+                if (ret === 0) {
+                    this.displayCompletionMessage(engineVariables, true);
+                }
+            } else {
+                this._logger.error("This package can not be added to your current setup, the following conditions must be met");
+                this.conditionsToText(unitePackageConfiguration.conditions).map(conditionText => this._logger.error(`   ${conditionText}`));
+                ret = 1;
             }
-        }
-
-        if (ret === 0) {
-            ret = await this.addPackages(uniteConfiguration, engineVariables, unitePackageConfiguration);
-        }
-
-        if (ret === 0) {
-            this._pipeline.add("content", "packageJson");
-            this._pipeline.add("unite", "uniteConfigurationJson");
-
-            ret = await this._pipeline.run(uniteConfiguration, engineVariables);
-        }
-
-        if (ret === 0) {
-            ret = await this.addRoute(uniteConfiguration, engineVariables, unitePackageConfiguration);
-        }
-
-        if (ret === 0) {
-            this.displayCompletionMessage(engineVariables, true);
         }
 
         return ret;
@@ -270,7 +282,7 @@ export class PackageCommand extends EngineCommandBase implements IEngineCommand<
                     if (conditions[i].value !== undefined) {
                         let matches = this.propertyMatches(uniteConfiguration, conditions[i].property, conditions[i].value);
 
-                        if (conditions[i].not) {
+                        if (conditions[i].negate) {
                             matches = !matches;
                         }
 
@@ -309,5 +321,21 @@ export class PackageCommand extends EngineCommandBase implements IEngineCommand<
         } else {
             return false;
         }
+    }
+
+    private conditionsToText(conditions: UnitePackageCondition[]) : string[] {
+        const ret: string[] = [];
+
+        if (conditions && conditions.length > 0) {
+            conditions.forEach(condition => {
+                if (condition.negate) {
+                    ret.push(`${condition.property} must not be ${condition.value}`);
+                } else {
+                    ret.push(`${condition.property} must be ${condition.value}`);
+                }
+            });
+        }
+
+        return ret;
     }
 }
