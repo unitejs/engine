@@ -10,8 +10,8 @@ function getModuleIds(uniteConfig, includeModes) {
     const moduleIds = [];
     Object.keys(uniteConfig.clientPackages).forEach(key => {
         const pkg = uniteConfig.clientPackages[key];
-        if (includeModes.indexOf(pkg.includeMode) >= 0 &&
-            (!pkg.scriptIncludeMode || pkg.scriptIncludeMode === "none")) {
+        if (includeModes.indexOf(pkg.includeMode || "both") >= 0 &&
+            ((pkg.scriptIncludeMode || "none") === "none")) {
             if (pkg.main || pkg.mainMinified) {
                 moduleIds.push(pkg.name);
             }
@@ -75,7 +75,7 @@ function getDistFiles(uniteConfig, includeModes, isBundled, isMinified) {
     let files = [];
     Object.keys(uniteConfig.clientPackages).forEach(key => {
         const pkg = uniteConfig.clientPackages[key];
-        if (includeModes.indexOf(pkg.includeMode) >= 0) {
+        if (includeModes.indexOf(pkg.includeMode || "both") >= 0) {
             if (!isBundled ||
                 (isBundled && (pkg.scriptIncludeMode === "bundled" || pkg.scriptIncludeMode === "both"))) {
                 files = files.concat(getPackageFiles(uniteConfig, pkg, isMinified));
@@ -90,8 +90,8 @@ function getRequires(uniteConfig, includeModes, isMinified) {
     const requires = [];
     Object.keys(uniteConfig.clientPackages).forEach(key => {
         const pkg = uniteConfig.clientPackages[key];
-        if (includeModes.indexOf(pkg.includeMode) >= 0 &&
-            (!pkg.scriptIncludeMode || pkg.scriptIncludeMode === "none")) {
+        if (includeModes.indexOf(pkg.includeMode || "both") >= 0 &&
+            ((pkg.scriptIncludeMode || "none") === "none")) {
             const pkgMain = isMinified && pkg.mainMinified ? pkg.mainMinified : pkg.main;
             if (pkgMain && pkgMain !== "*") {
                 requires.push(pkg.name);
@@ -107,8 +107,9 @@ async function getBundleVendorPackages(uniteConfig) {
     const keys = Object.keys(uniteConfig.clientPackages);
     for (let i = 0; i < keys.length; i++) {
         const pkg = uniteConfig.clientPackages[keys[i]];
-        if ((pkg.includeMode === "app" || pkg.includeMode === "both") &&
-            (!pkg.scriptIncludeMode || pkg.scriptIncludeMode === "none")) {
+        const includeMode = pkg.includeMode || "both";
+        if ((includeMode === "app" || includeMode === "both") &&
+            ((pkg.scriptIncludeMode || "none") === "none")) {
             const pkgMain = pkg.mainMinified ? pkg.mainMinified : pkg.main;
             if (pkgMain) {
                 const pkgLocation = pkg.transpile && pkg.transpile.alias ? pkg.transpile.alias : pkg.name;
@@ -168,7 +169,8 @@ function getTestPackages(uniteConfig) {
     const testPackages = {};
     Object.keys(uniteConfig.clientPackages).forEach(key => {
         const pkg = uniteConfig.clientPackages[key];
-        if (pkg.includeMode === "test" || pkg.includeMode === "both") {
+        const includeMode = pkg.includeMode || "both";
+        if (includeMode === "test" || includeMode === "both") {
             testPackages[key] = pkg;
         }
     });
@@ -197,8 +199,8 @@ function buildModuleConfig(uniteConfig, includeModes, isMinified) {
     const isTest = includeModes.indexOf("test") >= 0;
     Object.keys(uniteConfig.clientPackages).forEach(key => {
         const pkg = uniteConfig.clientPackages[key];
-        if (includeModes.indexOf(pkg.includeMode) >= 0 &&
-            (!pkg.scriptIncludeMode || pkg.scriptIncludeMode === "none")) {
+        if (includeModes.indexOf(pkg.includeMode || "both") >= 0 &&
+            ((pkg.scriptIncludeMode || "none") === "none")) {
             const pkgMain = isMinified && pkg.mainMinified ? pkg.mainMinified : pkg.main;
             if (pkgMain) {
                 const pkgLocation = pkg.transpile && pkg.transpile.alias ? pkg.transpile.alias : pkg.name;

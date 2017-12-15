@@ -117,19 +117,6 @@ export class ClientPackageCommand extends EngineCommandBase implements IEngineCo
             return 1;
         }
 
-        clientPackage.includeMode = clientPackage.includeMode === undefined ||
-            clientPackage.includeMode === null ||
-            clientPackage.includeMode.length === 0 ?
-            "both" : clientPackage.includeMode;
-
-        clientPackage.scriptIncludeMode = clientPackage.scriptIncludeMode === undefined ||
-            clientPackage.scriptIncludeMode === null ||
-            clientPackage.scriptIncludeMode.length === 0 ?
-            "none" : clientPackage.scriptIncludeMode;
-
-        clientPackage.preload = clientPackage.preload === undefined ? false : clientPackage.preload;
-        clientPackage.isPackage = clientPackage.isPackage === undefined ? false : clientPackage.isPackage;
-
         if (!ParameterValidation.notEmpty(this._logger, "packageName", clientPackage.name)) {
             return 1;
         }
@@ -142,14 +129,20 @@ export class ClientPackageCommand extends EngineCommandBase implements IEngineCo
             this._logger.info("version", { version: clientPackage.version });
         }
 
-        this._logger.info("preload", { preload: clientPackage.preload });
-
-        if (!ParameterValidation.checkOneOf<IncludeMode>(this._logger, "includeMode", clientPackage.includeMode, ["app", "test", "both"])) {
-            return 1;
+        if (clientPackage.preload !== undefined) {
+            this._logger.info("preload", { preload: clientPackage.preload });
         }
 
-        if (!ParameterValidation.checkOneOf<ScriptIncludeMode>(this._logger, "scriptIncludeMode", clientPackage.scriptIncludeMode, ["none", "bundled", "notBundled", "both"])) {
-            return 1;
+        if (clientPackage.includeMode) {
+            if (!ParameterValidation.checkOneOf<IncludeMode>(this._logger, "includeMode", clientPackage.includeMode, ["app", "test", "both"])) {
+                return 1;
+            }
+        }
+
+        if (clientPackage.scriptIncludeMode) {
+            if (!ParameterValidation.checkOneOf<ScriptIncludeMode>(this._logger, "scriptIncludeMode", clientPackage.scriptIncludeMode, ["none", "bundled", "notBundled", "both"])) {
+                return 1;
+            }
         }
 
         if (clientPackage.main) {

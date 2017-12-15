@@ -17,7 +17,6 @@ export class RJS extends PipelineStepBase {
         engineVariables.toggleClientPackage("requirejs", {
                                                 name: "requirejs",
                                                 main: "require.js",
-                                                includeMode: "both",
                                                 scriptIncludeMode: "both",
                                                 isModuleLoader: true
                                             },

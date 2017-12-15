@@ -54,7 +54,6 @@ export class Polymer extends SharedAppFramework implements IApplicationFramework
                                                 name: "@webcomponents/webcomponentsjs",
                                                 main: "custom-elements-es5-adapter.js",
                                                 mainMinified: "custom-elements-es5-adapter.js",
-                                                includeMode: "both",
                                                 scriptIncludeMode: "both"
                                             },
                                             mainCondition);
@@ -63,7 +62,6 @@ export class Polymer extends SharedAppFramework implements IApplicationFramework
                                                 name: "@webcomponents/webcomponentsjs",
                                                 main: "webcomponents-lite.js",
                                                 mainMinified: "webcomponents-lite.js",
-                                                includeMode: "both",
                                                 scriptIncludeMode: "both"
                                             },
                                             mainCondition);
@@ -75,8 +73,7 @@ export class Polymer extends SharedAppFramework implements IApplicationFramework
                                                     sources: ["entrypoints/*.js", "src/**/*.js"],
                                                     language: "JavaScript"
                                                 },
-                                                main: "*",
-                                                includeMode: "both"
+                                                main: "*"
                                             },
                                             mainCondition);
 
@@ -89,8 +86,7 @@ export class Polymer extends SharedAppFramework implements IApplicationFramework
                                                     stripExt: true,
                                                     modules: ["@webcomponents"]
                                                 },
-                                                main: "*",
-                                                includeMode: "both"
+                                                main: "*"
                                             },
                                             mainCondition);
 
@@ -101,8 +97,7 @@ export class Polymer extends SharedAppFramework implements IApplicationFramework
                                                     language: "TypeScript",
                                                     sources: ["src/*.ts"]
                                                 },
-                                                main: "*",
-                                                includeMode: "both"
+                                                main: "*"
                                             },
                                             mainCondition);
 
@@ -116,8 +111,7 @@ export class Polymer extends SharedAppFramework implements IApplicationFramework
                                                         language: "JavaScript",
                                                         sources: ["*.js"]
                                                     },
-                                                    main: "*",
-                                                    includeMode: "both"
+                                                    main: "*"
                                                 },
                                                 mainCondition);
         });
@@ -125,14 +119,12 @@ export class Polymer extends SharedAppFramework implements IApplicationFramework
         engineVariables.toggleClientPackage("requirejs-text", {
                                                 name: "requirejs-text",
                                                 main: "text.js",
-                                                includeMode: "both",
                                                 map: { text: "requirejs-text" }
                                             },
                                             mainCondition && super.condition(uniteConfiguration.moduleType, "AMD"));
 
         engineVariables.toggleClientPackage("systemjs-plugin-text", {
                                                 name: "systemjs-plugin-text",
-                                                includeMode: "both",
                                                 main: "text.js",
                                                 map: {
                                                     text: "systemjs-plugin-text"

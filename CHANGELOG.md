@@ -4,6 +4,8 @@
 
 * Change e2e-transpile and unit-transpile tasks to include all files that are not *.spec
 * Change e2e-clean and unit-clean tasks clean all transpiled files not just *.spec
+* Change client package includeMode and scriptInclude mode defaults calculated in tasks
+* Fixed package.json could contain entries in dependency and devDependency
 
 ## 1.7.8
 

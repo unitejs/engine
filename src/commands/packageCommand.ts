@@ -229,28 +229,30 @@ export class PackageCommand extends EngineCommandBase implements IEngineCommand<
                 if (matches === null) {
                     ret = 1;
                 } else {
-                    let finalClientPackage: UnitePackageClientConfiguration = new UnitePackageClientConfiguration();
-                    if (clientPackage.profile) {
-                        const profilePackage = await this.loadProfile<UniteClientPackage>("unitejs-packages", "assets", "clientPackage.json", clientPackage.profile);
-                        if (profilePackage === null) {
-                            ret = 1;
-                        } else {
-                            delete clientPackage.profile;
-                            finalClientPackage = {...finalClientPackage, ...profilePackage};
+                    if (matches) {
+                        let finalClientPackage: UnitePackageClientConfiguration = new UnitePackageClientConfiguration();
+                        if (clientPackage.profile) {
+                            const profilePackage = await this.loadProfile<UniteClientPackage>("unitejs-packages", "assets", "clientPackage.json", clientPackage.profile);
+                            if (profilePackage === null) {
+                                ret = 1;
+                            } else {
+                                delete clientPackage.profile;
+                                finalClientPackage = {...finalClientPackage, ...profilePackage};
+                            }
                         }
-                    }
-
-                    if (ret === 0) {
-                        finalClientPackage = {...finalClientPackage, ...clientPackage};
-
-                        ret = await ClientPackageCommand.retrievePackageDetails(this._logger, this._fileSystem, engineVariables, finalClientPackage);
 
                         if (ret === 0) {
-                            if (finalClientPackage.isDevDependency) {
-                                engineVariables.addVersionedDevDependency(finalClientPackage.name, finalClientPackage.version);
-                            } else {
-                                uniteConfiguration.clientPackages = uniteConfiguration.clientPackages || {};
-                                uniteConfiguration.clientPackages[finalClientPackage.name] = finalClientPackage;
+                            finalClientPackage = {...finalClientPackage, ...clientPackage};
+
+                            ret = await ClientPackageCommand.retrievePackageDetails(this._logger, this._fileSystem, engineVariables, finalClientPackage);
+
+                            if (ret === 0) {
+                                if (finalClientPackage.isDevDependency) {
+                                    engineVariables.addVersionedDevDependency(finalClientPackage.name, finalClientPackage.version);
+                                } else {
+                                    uniteConfiguration.clientPackages = uniteConfiguration.clientPackages || {};
+                                    uniteConfiguration.clientPackages[finalClientPackage.name] = finalClientPackage;
+                                }
                             }
                         }
                     }

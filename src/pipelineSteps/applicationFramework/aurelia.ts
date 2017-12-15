@@ -278,7 +278,6 @@ export class Aurelia extends SharedAppFramework implements IApplicationFramework
             engineVariables.toggleClientPackage(clientPackage.name, {
                 name: clientPackage.name,
                 main: `${location}${clientPackage.name}.js`,
-                includeMode: "both",
                 isPackage: clientPackage.isPackage ? true : false
             },
                                                 mainCondition);
@@ -286,15 +285,13 @@ export class Aurelia extends SharedAppFramework implements IApplicationFramework
 
         engineVariables.toggleClientPackage("whatwg-fetch", {
             name: "whatwg-fetch",
-            main: "fetch.js",
-            includeMode: "both"
+            main: "fetch.js"
         },
                                             mainCondition);
 
         engineVariables.toggleClientPackage("requirejs-text", {
             name: "requirejs-text",
             main: "text.js",
-            includeMode: "both",
             map: { text: "requirejs-text" }
         },
                                             mainCondition && super.condition(uniteConfiguration.moduleType, "AMD"));
@@ -302,7 +299,6 @@ export class Aurelia extends SharedAppFramework implements IApplicationFramework
         engineVariables.toggleClientPackage("systemjs-plugin-text", {
             name: "systemjs-plugin-text",
             main: "text.js",
-            includeMode: "both",
             map: { text: "systemjs-plugin-text" }
         },
                                             mainCondition && super.condition(uniteConfiguration.moduleType, "SystemJS"));

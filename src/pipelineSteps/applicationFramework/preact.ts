@@ -54,15 +54,13 @@ export class Preact extends SharedAppFramework implements IApplicationFramework 
         const preactPackage: UniteClientPackage = {
             name: "preact",
             main: "dist/preact.dev.js",
-            mainMinified: "dist/preact.min.js",
-            includeMode: "both"
+            mainMinified: "dist/preact.min.js"
         };
 
         const preactRouterPackage: UniteClientPackage = {
             name: "preact-router",
             main: "dist/preact-router.js",
-            mainMinified: "dist/preact-router.js",
-            includeMode: "both"
+            mainMinified: "dist/preact-router.js"
         };
 
         if (isTranspiled) {
@@ -87,7 +85,6 @@ export class Preact extends SharedAppFramework implements IApplicationFramework 
         engineVariables.toggleClientPackage("require-css", {
             name: "require-css",
             main: "css.js",
-            includeMode: "both",
             map: { css: "require-css" }
         },
                                             mainCondition && super.condition(uniteConfiguration.bundler, "RequireJS"));
@@ -95,7 +92,6 @@ export class Preact extends SharedAppFramework implements IApplicationFramework 
         engineVariables.toggleClientPackage("systemjs-plugin-css", {
             name: "systemjs-plugin-css",
             main: "css.js",
-            includeMode: "both",
             map: { css: "systemjs-plugin-css" },
             loaders: { "*.css": "css" }
         },

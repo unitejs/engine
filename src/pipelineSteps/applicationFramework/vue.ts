@@ -44,31 +44,27 @@ export class Vue extends SharedAppFramework implements IApplicationFramework {
         engineVariables.toggleClientPackage("vue", {
                                                 name: "vue",
                                                 main: "dist/vue.runtime.js",
-                                                mainMinified: "dist/vue.runtime.min.js",
-                                                includeMode: "both"
+                                                mainMinified: "dist/vue.runtime.min.js"
                                             },
                                             mainCondition);
 
         engineVariables.toggleClientPackage("vue-router", {
                                                 name: "vue-router",
                                                 main: "dist/vue-router.js",
-                                                mainMinified: "dist/vue-router.min.js",
-                                                includeMode: "both"
+                                                mainMinified: "dist/vue-router.min.js"
                                             },
                                             mainCondition);
 
         engineVariables.toggleClientPackage("vue-class-component", {
                                                 name: "vue-class-component",
                                                 main: "dist/vue-class-component.js",
-                                                mainMinified: "dist/vue-class-component.min.js",
-                                                includeMode: "both"
+                                                mainMinified: "dist/vue-class-component.min.js"
                                             },
                                             mainCondition);
 
         engineVariables.toggleClientPackage("require-css", {
                                                 name: "require-css",
                                                 main: "css.js",
-                                                includeMode: "both",
                                                 map: { css: "require-css" }
                                             },
                                             mainCondition && super.condition(uniteConfiguration.bundler, "RequireJS"));
@@ -76,7 +72,6 @@ export class Vue extends SharedAppFramework implements IApplicationFramework {
         engineVariables.toggleClientPackage("systemjs-plugin-css", {
                                                 name: "systemjs-plugin-css",
                                                 main: "css.js",
-                                                includeMode: "both",
                                                 map: { css: "systemjs-plugin-css" },
                                                 loaders: { "*.css" : "css" }
                                             },

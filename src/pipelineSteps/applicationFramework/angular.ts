@@ -170,8 +170,7 @@ export class Angular extends SharedAppFramework implements IApplicationFramework
                 name: `@angular/${pkg}`,
                 main: `bundles/${pkg}.umd.js`,
                 mainMinified: `bundles/${pkg}.umd.min.js`,
-                testingAdditions: testAdditions,
-                includeMode: "both"
+                testingAdditions: testAdditions
             },
                                                 mainCondition);
         });
@@ -188,8 +187,7 @@ export class Angular extends SharedAppFramework implements IApplicationFramework
                 "symbol/**/*.js",
                 "testing/**/*.js",
                 "util/**/*.js"
-            ],
-            includeMode: "both"
+            ]
         },
                                             mainCondition);
 
@@ -197,7 +195,6 @@ export class Angular extends SharedAppFramework implements IApplicationFramework
             name: "core-js",
             main: "client/shim.js",
             mainMinified: "client/shim.min.js",
-            includeMode: "both",
             scriptIncludeMode: "both"
         },
                                             mainCondition);
@@ -214,7 +211,6 @@ export class Angular extends SharedAppFramework implements IApplicationFramework
                 "async-test": "dist/async-test.js",
                 "fake-async-test": "dist/fake-async-test.js"
             },
-            includeMode: "both",
             scriptIncludeMode: "both"
         },
                                             mainCondition);

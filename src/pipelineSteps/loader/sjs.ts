@@ -33,7 +33,6 @@ export class SJS extends PipelineStepBase {
                                                 name: "systemjs",
                                                 main: "dist/system.src.js",
                                                 mainMinified: "dist/system.js",
-                                                includeMode: "both",
                                                 scriptIncludeMode,
                                                 isModuleLoader: true
                                             },

@@ -616,7 +616,6 @@ describe("ClientPackageCommand", () => {
             Chai.expect(uniteJsonWritten.clientPackages.bluebird.version).to.be.equal("^1.2.3");
             Chai.expect(uniteJsonWritten.clientPackages.bluebird.main).to.be.equal("/js/browser/bluebird.js");
             Chai.expect(uniteJsonWritten.clientPackages.bluebird.mainMinified).to.be.equal("/js/browser/bluebird.min.js");
-            Chai.expect(uniteJsonWritten.clientPackages.bluebird.includeMode).to.be.equal("both");
             Chai.expect(uniteJsonWritten.clientPackages.bluebird.scriptIncludeMode).to.be.equal("both");
         });
 
@@ -688,7 +687,6 @@ describe("ClientPackageCommand", () => {
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
             Chai.expect(uniteJsonWritten.clientPackages.package.version).to.be.equal("^0.0.1");
             Chai.expect(uniteJsonWritten.clientPackages.package.main).to.be.equal(undefined);
-            Chai.expect(uniteJsonWritten.clientPackages.package.includeMode).to.be.equal("both");
         });
 
         it("can succeed with noScript", async () => {
@@ -911,7 +909,6 @@ describe("ClientPackageCommand", () => {
             Chai.expect(uniteJsonWritten.clientPackages.package.version).to.be.equal("^1.2.3");
             Chai.expect(uniteJsonWritten.clientPackages.package.main).to.be.equal("index.js");
             Chai.expect(uniteJsonWritten.clientPackages.package.mainMinified).to.be.equal("mainMinified.js");
-            Chai.expect(uniteJsonWritten.clientPackages.package.includeMode).to.be.equal("both");
         });
 
         it("can succeed with all parameters", async () => {

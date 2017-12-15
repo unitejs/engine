@@ -191,25 +191,25 @@ export class EngineVariables {
             }
         }
 
-        const addedTestDependencies = [];
-        const removedTestDependencies = [];
+        const addedDevDependencies = [];
+        const removedDevDependencies = [];
         for (const key in this._requiredClientPackages) {
             const pkg = this._requiredClientPackages[key];
 
             uniteConfiguration.clientPackages[key] = pkg;
-            if (pkg.includeMode === "app" || pkg.includeMode === "both") {
+            if (pkg.includeMode === undefined || pkg.includeMode === "app" || pkg.includeMode === "both") {
                 packageJsonDependencies[pkg.name] = pkg.version;
 
                 if (this._requiredDevDependencies[pkg.name]) {
                     delete this._requiredDevDependencies[pkg.name];
-                    removedTestDependencies.push(pkg.name);
                 }
+                removedDevDependencies.push(pkg.name);
             } else {
-                addedTestDependencies.push(pkg.name);
+                addedDevDependencies.push(pkg.name);
             }
         }
-        this.toggleDevDependency(addedTestDependencies, true);
-        this.toggleDevDependency(removedTestDependencies, false);
+        this.toggleDevDependency(addedDevDependencies, true);
+        this.toggleDevDependency(removedDevDependencies, false);
     }
 
     public buildDevDependencies(packageJsonDevDependencies: { [id: string]: string }): void {

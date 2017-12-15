@@ -54,31 +54,27 @@ export class React extends SharedAppFramework implements IApplicationFramework {
         engineVariables.toggleClientPackage("react", {
                                                 name: "react",
                                                 main: "umd/react.development.js",
-                                                mainMinified: "umd/react.production.min.js",
-                                                includeMode: "both"
+                                                mainMinified: "umd/react.production.min.js"
                                             },
                                             mainCondition);
 
         engineVariables.toggleClientPackage("react-dom", {
                                                 name: "react-dom",
                                                 main: "umd/react-dom.development.js",
-                                                mainMinified: "umd/react-dom.production.min.js",
-                                                includeMode: "both"
+                                                mainMinified: "umd/react-dom.production.min.js"
                                             },
                                             mainCondition);
 
         engineVariables.toggleClientPackage("react-router-dom", {
                                                 name: "react-router-dom",
                                                 main: "umd/react-router-dom.js",
-                                                mainMinified: "umd/react-router-dom.min.js",
-                                                includeMode: "both"
+                                                mainMinified: "umd/react-router-dom.min.js"
                                             },
                                             mainCondition);
 
         engineVariables.toggleClientPackage("require-css", {
                                                 name: "require-css",
                                                 main: "css.js",
-                                                includeMode: "both",
                                                 map: { css: "require-css" }
                                             },
                                             mainCondition && super.condition(uniteConfiguration.bundler, "RequireJS"));
@@ -86,7 +82,6 @@ export class React extends SharedAppFramework implements IApplicationFramework {
         engineVariables.toggleClientPackage("systemjs-plugin-css", {
                                                 name: "systemjs-plugin-css",
                                                 main: "css.js",
-                                                includeMode: "both",
                                                 map: { css: "systemjs-plugin-css" },
                                                 loaders: { "*.css" : "css" }
                                             },
