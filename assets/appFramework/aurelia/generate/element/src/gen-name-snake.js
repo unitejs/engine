@@ -12,7 +12,7 @@ export class GenNamePascal {
      * @type {string}
      */
     @bindable
-    value;
+    value = undefined;
 
     /**
      * Element value has changed.
