@@ -16,7 +16,7 @@ export class GenNamePascal extends PolymerElement {
      * @type {string}
      */
     @property({type: String})
-    message;
+    message = undefined;
 
     /**
      * Creates an instance of GenNamePascal.
