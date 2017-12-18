@@ -504,6 +504,61 @@ describe("PackageCommand", () => {
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
         });
 
+        it("can complete with global conditions error", async () => {
+            sandbox.stub(PackageUtils, "exec").resolves("{}");
+
+            const obj = new PackageCommand();
+            unitePackageJson.conditions = [ {
+                property: "sourceLanguage",
+                value: undefined
+            }];
+
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "moment",
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("Can not match");
+        });
+
+        it("can complete with failing global conditions", async () => {
+            sandbox.stub(PackageUtils, "exec").resolves("{}");
+
+            const obj = new PackageCommand();
+            unitePackageJson.conditions = [ {
+                property: "sourceLanguage",
+                value: "JavaScript"
+            }];
+
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "moment",
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("can not be added");
+        });
+
+        it("can complete with failing negated global conditions", async () => {
+            sandbox.stub(PackageUtils, "exec").resolves("{}");
+
+            const obj = new PackageCommand();
+            unitePackageJson.conditions = [ {
+                property: "sourceLanguage",
+                value: "TypeScript",
+                negate: true
+            }];
+
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "moment",
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("can not be added");
+        });
+
         it("can complete with client packages unknown property", async () => {
             sandbox.stub(PackageUtils, "exec").resolves("{}");
 

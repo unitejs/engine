@@ -147,7 +147,7 @@ export class PackageCommand extends EngineCommandBase implements IEngineCommand<
                     this.displayCompletionMessage(engineVariables, true);
                 }
             } else {
-                this._logger.error("This package can not be added to your current setup, the following conditions must be met");
+                this._logger.error("This package can not be added to your current setup, the following conditions must be met:");
                 this.conditionsToText(unitePackageConfiguration.conditions).map(conditionText => this._logger.error(`   ${conditionText}`));
                 ret = 1;
             }
@@ -326,15 +326,13 @@ export class PackageCommand extends EngineCommandBase implements IEngineCommand<
     private conditionsToText(conditions: UnitePackageCondition[]) : string[] {
         const ret: string[] = [];
 
-        if (conditions && conditions.length > 0) {
-            conditions.forEach(condition => {
-                if (condition.negate) {
-                    ret.push(`${condition.property} must not be ${condition.value}`);
-                } else {
-                    ret.push(`${condition.property} must be ${condition.value}`);
-                }
-            });
-        }
+        conditions.forEach(condition => {
+            if (condition.negate) {
+                ret.push(`${condition.property} must not be ${condition.value}`);
+            } else {
+                ret.push(`${condition.property} must be ${condition.value}`);
+            }
+        });
 
         return ret;
     }
