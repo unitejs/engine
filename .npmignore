@@ -22,3 +22,4 @@ assets/gulp/package.json
 assets/gulp/gulpfile.js
 assets/gulp/customTypes
 .github
+jsconfig.json
