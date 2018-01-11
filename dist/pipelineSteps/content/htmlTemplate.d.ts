@@ -8,8 +8,8 @@ import { UniteConfiguration } from "../../configuration/models/unite/uniteConfig
 import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 export declare class HtmlTemplate extends PipelineStepBase {
-    private static FILENAME_NO_BUNDLE;
-    private static FILENAME_BUNDLE;
+    private static readonly FILENAME_NO_BUNDLE;
+    private static readonly FILENAME_BUNDLE;
     private _htmlNoBundle;
     private _htmlBundle;
     initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number>;

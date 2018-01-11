@@ -12,7 +12,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class TypeScript extends PipelineStepBase {
-    private static FILENAME: string = "tsconfig.json";
+    private static readonly FILENAME: string = "tsconfig.json";
 
     private _configuration: TypeScriptConfiguration;
 

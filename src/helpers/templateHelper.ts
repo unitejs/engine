@@ -23,7 +23,8 @@ export class TemplateHelper {
         const words: string[] = [];
 
         if (name !== undefined && name !== null) {
-            const justAlphaNum = name.replace(/[^a-zA-Z0-9 ]/g, " ").trim();
+            const justAlphaNum = name.replace(/[^a-zA-Z0-9 ]/g, " ")
+                                    .trim();
 
             if (justAlphaNum.length > 0) {
                 for (let i = 0; i < justAlphaNum.length; i++) {
@@ -80,7 +81,8 @@ export class TemplateHelper {
     }
 
     public static createSnake(words: string[]): string {
-        return words.join("-").toLowerCase();
+        return words.join("-")
+                    .toLowerCase();
     }
 
     public static createPascal(words: string[]): string {
@@ -92,22 +94,26 @@ export class TemplateHelper {
     }
 
     public static createCamel(words: string[]): string {
-        return words[0][0].toLowerCase() + words[0].substring(1) + words.slice(1).join("");
+        return words[0][0].toLowerCase() +
+               words[0].substring(1) +
+               words.slice(1)
+                    .join("");
     }
 
     public static replaceSubstitutions(substitutions: { [id: string]: string | string[] }, input: string): string {
         let output = input;
 
         if (input !== null && input !== undefined && substitutions !== undefined && substitutions !== null) {
-            Object.keys(substitutions).forEach(key => {
-                let rep: string[];
-                if (Array.isArray(substitutions[key])) {
-                    rep = <string[]>substitutions[key];
-                } else {
-                    rep = [<string>substitutions[key]];
-                }
-                output = output.replace(new RegExp(`${key}`, "gm"), rep.join("\r\n"));
-            });
+            Object.keys(substitutions)
+                .forEach(key => {
+                    let rep: string[];
+                    if (Array.isArray(substitutions[key])) {
+                        rep = <string[]>substitutions[key];
+                    } else {
+                        rep = [<string>substitutions[key]];
+                    }
+                    output = output.replace(new RegExp(`${key}`, "gm"), rep.join("\r\n"));
+                });
         }
 
         return output;

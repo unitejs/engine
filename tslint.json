@@ -242,6 +242,8 @@
         "no-unnecessary-class": false,
         "no-implicit-dependencies": false,
         "no-redundant-jsdoc": false,
+        "no-dynamic-delete": false,
+        "newline-per-chained-call": false,
 
         /**
          * Deprecated rules.  The following rules are deprecated for various reasons.

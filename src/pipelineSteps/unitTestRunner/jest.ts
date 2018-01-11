@@ -10,8 +10,8 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class Jest extends PipelineStepBase {
-    private static FILENAME: string = "jest.config.json";
-    private static FILENAME_MOCK_DUMMY: string = "dummy.mock.js";
+    private static readonly FILENAME: string = "jest.config.json";
+    private static readonly FILENAME_MOCK_DUMMY: string = "dummy.mock.js";
 
     private _configuration: JestConfiguration;
 

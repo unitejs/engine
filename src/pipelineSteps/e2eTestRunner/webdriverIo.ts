@@ -13,7 +13,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class WebdriverIo extends PipelineStepBase {
-    private static FILENAME: string = "wdio.conf.js";
+    private static readonly FILENAME: string = "wdio.conf.js";
 
     private _configuration: WebdriverIoConfiguration;
     private _plugins: string[];

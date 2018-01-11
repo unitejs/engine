@@ -8,7 +8,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class UniteConfigurationJson extends PipelineStepBase {
-    private static FILENAME: string = "unite.json";
+    private static readonly FILENAME: string = "unite.json";
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         return super.fileToggleJson(logger,

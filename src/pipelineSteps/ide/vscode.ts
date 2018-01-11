@@ -11,7 +11,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class VsCode extends PipelineStepBase {
-    private static FILENAME: string = "jsconfig.json";
+    private static readonly FILENAME: string = "jsconfig.json";
 
     private _configuration: JavaScriptConfiguration;
 

@@ -8,7 +8,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class Less extends PipelineStepBase {
-    private static FOLDER: string = "less";
+    private static readonly FOLDER: string = "less";
 
     private _cssSrcFolder: string;
 

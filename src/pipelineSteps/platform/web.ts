@@ -8,8 +8,8 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class Web extends PipelineStepBase {
-    private static PLATFORM: string = "Web";
-    private static FILENAME: string = "platform-web.js";
+    private static readonly PLATFORM: string = "Web";
+    private static readonly FILENAME: string = "platform-web.js";
 
     public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
         return super.objectCondition(uniteConfiguration.platforms, Web.PLATFORM);

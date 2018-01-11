@@ -148,7 +148,8 @@ export class PackageCommand extends EngineCommandBase implements IEngineCommand<
                 }
             } else {
                 this._logger.error("This package can not be added to your current setup, the following conditions must be met:");
-                this.conditionsToText(unitePackageConfiguration.conditions).map(conditionText => this._logger.error(`   ${conditionText}`));
+                this.conditionsToText(unitePackageConfiguration.conditions)
+                    .map(conditionText => this._logger.error(`   ${conditionText}`));
                 ret = 1;
             }
         }
@@ -308,7 +309,8 @@ export class PackageCommand extends EngineCommandBase implements IEngineCommand<
     private propertyMatches(uniteConfigurationObject: any, property: string, value: string): boolean {
         const propertyLower = property.toLowerCase();
 
-        const actualProperty: string = Object.keys(uniteConfigurationObject).find(key => key.toLowerCase() === propertyLower);
+        const actualProperty: string = Object.keys(uniteConfigurationObject)
+                                                .find(key => key.toLowerCase() === propertyLower);
 
         if (actualProperty) {
             const configValue = uniteConfigurationObject[actualProperty];

@@ -10,7 +10,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class PostCss extends PipelineStepBase {
-    private static FILENAME: string = ".postcssrc.json";
+    private static readonly FILENAME: string = ".postcssrc.json";
 
     private _configuration: PostCssConfiguration;
 

@@ -10,7 +10,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class LessHint extends PipelineStepBase {
-    private static FILENAME: string = ".lesshintrc";
+    private static readonly FILENAME: string = ".lesshintrc";
 
     private _configuration: LessHintConfiguration;
 

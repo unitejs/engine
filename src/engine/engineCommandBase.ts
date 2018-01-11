@@ -47,16 +47,16 @@ export abstract class EngineCommandBase {
 
                     // Convert the old comma separated assets into an array
                     if (existing.clientPackages) {
-                        Object.keys(existing.clientPackages).forEach(key => {
-                            const pkg = existing.clientPackages[key];
-                            if (pkg.assets) {
-                                if (StringHelper.isString(pkg.assets)) {
-                                    const assetsString = <string><any>pkg.assets;
-                                    pkg.assets = assetsString.split(",");
+                        Object.keys(existing.clientPackages)
+                            .forEach(key => {
+                                const pkg = existing.clientPackages[key];
+                                if (pkg.assets) {
+                                    if (StringHelper.isString(pkg.assets)) {
+                                        const assetsString = <string><any>pkg.assets;
+                                        pkg.assets = assetsString.split(",");
+                                    }
                                 }
-                            }
-                        });
-
+                            });
                     }
 
                     uniteConfiguration = existing;

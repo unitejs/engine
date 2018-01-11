@@ -11,13 +11,13 @@ import { PipelineKey } from "./pipelineKey";
 import { PipelineLocator } from "./pipelineLocator";
 
 export class Pipeline {
-    private _logger: ILogger;
-    private _fileSystem: IFileSystem;
-    private _engineRootFolder: string;
+    private readonly _logger: ILogger;
+    private readonly _fileSystem: IFileSystem;
+    private readonly _engineRootFolder: string;
 
-    private _steps: PipelineKey[];
-    private _moduleIdMap: { [id: string]: string };
-    private _loadedStepCache: { [id: string]: IPipelineStep };
+    private readonly _steps: PipelineKey[];
+    private readonly _moduleIdMap: { [id: string]: string };
+    private readonly _loadedStepCache: { [id: string]: IPipelineStep };
 
     constructor(logger: ILogger, fileSystem: IFileSystem, engineRootFolder: string) {
         this._logger = logger;

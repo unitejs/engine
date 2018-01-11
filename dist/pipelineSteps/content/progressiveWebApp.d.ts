@@ -7,6 +7,6 @@ import { UniteConfiguration } from "../../configuration/models/unite/uniteConfig
 import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 export declare class ProgressiveWebApp extends PipelineStepBase {
-    private static FILENAME;
+    private static readonly FILENAME;
     finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number>;
 }

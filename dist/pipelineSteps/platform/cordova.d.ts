@@ -4,9 +4,9 @@ import { UniteConfiguration } from "../../configuration/models/unite/uniteConfig
 import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 export declare class Cordova extends PipelineStepBase {
-    private static PLATFORM;
-    private static FILENAME;
-    private static FILENAME_PROJ;
+    private static readonly PLATFORM;
+    private static readonly FILENAME;
+    private static readonly FILENAME_PROJ;
     mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined;
     configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number>;
     finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number>;

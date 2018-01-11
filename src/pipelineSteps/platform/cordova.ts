@@ -10,9 +10,9 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class Cordova extends PipelineStepBase {
-    private static PLATFORM: string = "Cordova";
-    private static FILENAME: string = "platform-cordova.js";
-    private static FILENAME_PROJ: string = "cordova.jsproj";
+    private static readonly PLATFORM: string = "Cordova";
+    private static readonly FILENAME: string = "platform-cordova.js";
+    private static readonly FILENAME_PROJ: string = "cordova.jsproj";
 
     public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined {
         return super.objectCondition(uniteConfiguration.platforms, Cordova.PLATFORM);

@@ -47,11 +47,11 @@ export declare class EngineVariables {
     moduleId: string;
     packageManager: IPackageManager;
     additionalCompletionMessages: string[];
-    private _configuration;
-    private _requiredDevDependencies;
-    private _removedDevDependencies;
-    private _requiredClientPackages;
-    private _removedClientPackages;
+    private readonly _configuration;
+    private readonly _requiredDevDependencies;
+    private readonly _removedDevDependencies;
+    private readonly _requiredClientPackages;
+    private readonly _removedClientPackages;
     private _existingClientPackages;
     constructor();
     setConfiguration(name: string, config: any): void;

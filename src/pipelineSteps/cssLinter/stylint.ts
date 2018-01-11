@@ -9,7 +9,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class Stylint extends PipelineStepBase {
-    private static FILENAME: string = ".stylintrc";
+    private static readonly FILENAME: string = ".stylintrc";
 
     private _configuration: StylintConfiguration;
 

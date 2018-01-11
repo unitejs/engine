@@ -174,7 +174,8 @@ export class Aurelia extends SharedAppFramework implements IApplicationFramework
                 if (routerResults && routerResults.length > 4) {
                     const currentRouters = routerResults[4].trim();
 
-                    routerItems = routerItems.filter(ri => currentRouters.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
+                    routerItems = routerItems.filter(ri => currentRouters.replace(/\s/g, "")
+                                                                         .indexOf(ri.replace(/\s/g, "")) < 0);
 
                     if (routerItems.length > 0) {
                         const routerIndent = routerResults[1];
@@ -183,7 +184,8 @@ export class Aurelia extends SharedAppFramework implements IApplicationFramework
                         const routerEnd = routerResults[5];
 
                         let replaceRouters = `${routerNewline}${currentRouters},${routerNewline}`;
-                        replaceRouters += `${routerItems.map(ri => ri.replace(/\n/g, routerNewline)).join(`,${routerNewline}`)}\n`;
+                        replaceRouters += `${routerItems.map(ri => ri.replace(/\n/g, routerNewline))
+                                                                     .join(`,${routerNewline}`)}\n`;
                         content = content.replace(routerResults[0], `${routerIndent}${routerVar}${replaceRouters}${routerIndent}${routerEnd}`);
                     }
                 } else {
@@ -206,7 +208,8 @@ export class Aurelia extends SharedAppFramework implements IApplicationFramework
                     if (navigationResults && navigationResults.length > 4) {
                         const currentLinks = navigationResults[3].trim();
 
-                        navigationLinks = navigationLinks.filter(ri => currentLinks.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
+                        navigationLinks = navigationLinks.filter(ri => currentLinks.replace(/\s/g, "")
+                                                                                   .indexOf(ri.replace(/\s/g, "")) < 0);
 
                         if (navigationLinks.length > 0) {
                             const navigationStart = navigationResults[1];
@@ -214,7 +217,8 @@ export class Aurelia extends SharedAppFramework implements IApplicationFramework
                             const navigationEnd = navigationResults[4];
 
                             let replaceRouters = `${navigationNewline}${currentLinks}${navigationNewline}`;
-                            replaceRouters += `${navigationLinks.map(ri => ri.replace(/\n/g, navigationNewline)).join(`${navigationNewline}`)}`;
+                            replaceRouters += `${navigationLinks.map(ri => ri.replace(/\n/g, navigationNewline))
+                                                                             .join(`${navigationNewline}`)}`;
                             content = content.replace(navigationResults[0], `${navigationStart}${replaceRouters}${navigationEnd}`);
                         }
                     } else {

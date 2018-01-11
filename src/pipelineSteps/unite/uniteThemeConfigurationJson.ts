@@ -11,7 +11,7 @@ import { EngineVariablesMeta } from "../../engine/engineVariablesMeta";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class UniteThemeConfigurationJson extends PipelineStepBase {
-    private static FILENAME: string = "unite-theme.json";
+    private static readonly FILENAME: string = "unite-theme.json";
 
     private _configuration: UniteThemeConfiguration;
 

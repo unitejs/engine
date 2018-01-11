@@ -54,12 +54,12 @@ export class EngineVariables {
     public packageManager: IPackageManager;
     public additionalCompletionMessages: string[];
 
-    private _configuration: { [id: string]: any };
+    private readonly _configuration: { [id: string]: any };
 
-    private _requiredDevDependencies: { [id: string]: UniteClientPackage };
-    private _removedDevDependencies: { [id: string]: UniteClientPackage };
-    private _requiredClientPackages: { [id: string]: UniteClientPackage };
-    private _removedClientPackages: { [id: string]: UniteClientPackage };
+    private readonly _requiredDevDependencies: { [id: string]: UniteClientPackage };
+    private readonly _removedDevDependencies: { [id: string]: UniteClientPackage };
+    private readonly _requiredClientPackages: { [id: string]: UniteClientPackage };
+    private readonly _removedClientPackages: { [id: string]: UniteClientPackage };
     private _existingClientPackages: { [id: string]: UniteClientPackage };
 
     constructor() {
@@ -213,19 +213,21 @@ export class EngineVariables {
     }
 
     public buildDevDependencies(packageJsonDevDependencies: { [id: string]: string }): void {
-        Object.keys(this._removedDevDependencies).forEach(dependency => {
-            if (packageJsonDevDependencies[dependency]) {
-                delete packageJsonDevDependencies[dependency];
-            }
-        });
+        Object.keys(this._removedDevDependencies)
+            .forEach(dependency => {
+                if (packageJsonDevDependencies[dependency]) {
+                    delete packageJsonDevDependencies[dependency];
+                }
+            });
 
-        Object.keys(this._requiredDevDependencies).forEach(requiredDependency => {
-            if (this._requiredDevDependencies[requiredDependency].version) {
-                packageJsonDevDependencies[requiredDependency] = this._requiredDevDependencies[requiredDependency].version;
-            } else {
-                packageJsonDevDependencies[requiredDependency] = this.findDependencyVersion(requiredDependency);
-            }
-        });
+        Object.keys(this._requiredDevDependencies)
+            .forEach(requiredDependency => {
+                if (this._requiredDevDependencies[requiredDependency].version) {
+                    packageJsonDevDependencies[requiredDependency] = this._requiredDevDependencies[requiredDependency].version;
+                } else {
+                    packageJsonDevDependencies[requiredDependency] = this.findDependencyVersion(requiredDependency);
+                }
+            });
     }
 
     public findDependencyVersion(requiredDependency: string): string {

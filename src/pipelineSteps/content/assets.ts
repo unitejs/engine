@@ -8,10 +8,10 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class Assets extends PipelineStepBase {
-    private static FILENAME_TILE: string = "logo-tile.svg";
-    private static FILENAME_TILE_TRANSPARENT: string = "logo-transparent.svg";
-    private static FILENAME_LOADER_CSS: string = "loader.css";
-    private static FILENAME_LOADER_HTML: string = "loader.html";
+    private static readonly FILENAME_TILE: string = "logo-tile.svg";
+    private static readonly FILENAME_TILE_TRANSPARENT: string = "logo-transparent.svg";
+    private static readonly FILENAME_LOADER_CSS: string = "loader.css";
+    private static readonly FILENAME_LOADER_HTML: string = "loader.html";
 
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         engineVariables.toggleDevDependency(["unitejs-image-cli"], mainCondition);

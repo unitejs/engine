@@ -4,7 +4,7 @@ import { UniteConfiguration } from "../../configuration/models/unite/uniteConfig
 import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 export declare class Protractor extends PipelineStepBase {
-    private static FILENAME;
+    private static readonly FILENAME;
     private _configuration;
     private _scriptStart;
     private _scriptEnd;

@@ -10,7 +10,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class SassLint extends PipelineStepBase {
-    private static FILENAME: string = ".sasslintrc";
+    private static readonly FILENAME: string = ".sasslintrc";
 
     private _configuration: SassLintConfiguration;
 

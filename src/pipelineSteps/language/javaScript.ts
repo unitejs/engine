@@ -11,7 +11,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class JavaScript extends PipelineStepBase {
-    private static FILENAME: string = ".babelrc";
+    private static readonly FILENAME: string = ".babelrc";
 
     private _configuration: BabelConfiguration;
 

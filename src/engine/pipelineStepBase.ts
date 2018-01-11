@@ -153,7 +153,8 @@ export abstract class PipelineStepBase implements IPipelineStep {
                 const markerLower = PipelineStepBase.MARKER.toLowerCase();
 
                 for (let i = existingLines.length - 1; i >= 0 && i >= existingLines.length - 5 && !hasMarker; i--) {
-                    hasMarker = existingLines[i].toLowerCase().indexOf(markerLower) >= 0;
+                    hasMarker = existingLines[i].toLowerCase()
+                                                .indexOf(markerLower) >= 0;
                 }
 
                 markerState = hasMarker ? "HasMarker" : "NoMarker";
@@ -397,7 +398,9 @@ export abstract class PipelineStepBase implements IPipelineStep {
             uniteConfigurationObject !== null &&
             value !== undefined &&
             value !== null &&
-            Object.keys(uniteConfigurationObject).map(key => key.toLowerCase()).indexOf(value.toLowerCase()) >= 0;
+            Object.keys(uniteConfigurationObject)
+                .map(key => key.toLowerCase())
+                .indexOf(value.toLowerCase()) >= 0;
     }
 
     public arrayCondition(uniteConfigurationArray: string[], value: string): boolean {
@@ -405,7 +408,9 @@ export abstract class PipelineStepBase implements IPipelineStep {
             uniteConfigurationArray !== null &&
             value !== undefined &&
             value !== null &&
-            uniteConfigurationArray.map(key => key.toLowerCase()).indexOf(value.toLowerCase()) >= 0;
+            uniteConfigurationArray
+                .map(key => key.toLowerCase())
+                .indexOf(value.toLowerCase()) >= 0;
     }
 
     public async internalDeleteFolder(logger: ILogger, fileSystem: IFileSystem,

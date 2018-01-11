@@ -8,7 +8,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class Stylus extends PipelineStepBase {
-    private static FOLDER: string = "stylus";
+    private static readonly FOLDER: string = "stylus";
 
     private _cssSrcFolder: string;
 

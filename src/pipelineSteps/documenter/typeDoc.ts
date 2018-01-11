@@ -10,7 +10,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class TypeDoc extends PipelineStepBase {
-    private static FILENAME: string = "typedoc.json";
+    private static readonly FILENAME: string = "typedoc.json";
 
     private _configuration: TypeDocConfiguration;
 

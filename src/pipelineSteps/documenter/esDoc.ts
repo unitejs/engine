@@ -11,7 +11,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class EsDoc extends PipelineStepBase {
-    private static FILENAME: string = ".esdoc.json";
+    private static readonly FILENAME: string = ".esdoc.json";
 
     private _configuration: EsDocConfiguration;
 

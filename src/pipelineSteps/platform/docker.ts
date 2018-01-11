@@ -8,8 +8,8 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class Docker extends PipelineStepBase {
-    private static PLATFORM: string = "Docker";
-    private static FILENAME: string = "platform-docker.js";
+    private static readonly PLATFORM: string = "Docker";
+    private static readonly FILENAME: string = "platform-docker.js";
 
     public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
         return super.objectCondition(uniteConfiguration.platforms, Docker.PLATFORM);

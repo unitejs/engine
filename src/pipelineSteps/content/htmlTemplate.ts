@@ -9,8 +9,8 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class HtmlTemplate extends PipelineStepBase {
-    private static FILENAME_NO_BUNDLE: string = "index-no-bundle.html";
-    private static FILENAME_BUNDLE: string = "index-bundle.html";
+    private static readonly FILENAME_NO_BUNDLE: string = "index-no-bundle.html";
+    private static readonly FILENAME_BUNDLE: string = "index-bundle.html";
 
     private _htmlNoBundle: HtmlTemplateConfiguration;
     private _htmlBundle: HtmlTemplateConfiguration;

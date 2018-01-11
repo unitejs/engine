@@ -9,7 +9,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class GitIgnore extends PipelineStepBase {
-    private static FILENAME: string = ".gitignore";
+    private static readonly FILENAME: string = ".gitignore";
 
     private _ignore: string[];
 

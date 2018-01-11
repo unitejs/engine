@@ -10,7 +10,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class TsLint extends PipelineStepBase {
-    private static FILENAME: string = "tslint.json";
+    private static readonly FILENAME: string = "tslint.json";
 
     private _configuration: TsLintConfiguration;
 

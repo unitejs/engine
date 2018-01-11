@@ -20,7 +20,8 @@ export class PipelineLocator {
         const fullFolder = fileSystem.pathCombine(pipelineStepFolder, category);
         const files = await fileSystem.directoryGetFiles(fullFolder);
 
-        return files.filter(file => file.endsWith(".js")).map(file => file.replace(".js", ""));
+        return files.filter(file => file.endsWith(".js"))
+                    .map(file => file.replace(".js", ""));
     }
 
     public static async loadItem(fileSystem: IFileSystem, engineRootFolder: string, category: string, item: string): Promise<any> {

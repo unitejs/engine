@@ -6,8 +6,8 @@ import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { IEngine } from "../interfaces/IEngine";
 import { IEngineCommandParams } from "../interfaces/IEngineCommandParams";
 export declare class Engine implements IEngine {
-    private _logger;
-    private _fileSystem;
+    private readonly _logger;
+    private readonly _fileSystem;
     private _engineRootFolder;
     private _engineVersion;
     private _engineDependencies;

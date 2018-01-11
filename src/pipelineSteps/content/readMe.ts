@@ -8,8 +8,8 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class ReadMe extends PipelineStepBase {
-    private static FILENAMEROOT: string = "README-ROOT.md";
-    private static FILENAME: string = "README.md";
+    private static readonly FILENAMEROOT: string = "README-ROOT.md";
+    private static readonly FILENAME: string = "README.md";
 
     public async finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         let ret = await super.fileToggleLines(logger,

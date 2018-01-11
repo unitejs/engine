@@ -12,7 +12,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class Karma extends PipelineStepBase {
-    private static FILENAME: string = "karma.conf.js";
+    private static readonly FILENAME: string = "karma.conf.js";
 
     private _configuration: KarmaConfiguration;
 

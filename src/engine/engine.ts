@@ -11,8 +11,8 @@ import { IEngineCommandParams } from "../interfaces/IEngineCommandParams";
 import { ConfigHelper } from "./configHelper";
 
 export class Engine implements IEngine {
-    private _logger: ILogger;
-    private _fileSystem: IFileSystem;
+    private readonly _logger: ILogger;
+    private readonly _fileSystem: IFileSystem;
     private _engineRootFolder: string;
     private _engineVersion: string;
     private _engineDependencies: { [id: string]: string };
@@ -24,7 +24,9 @@ export class Engine implements IEngine {
 
     public async initialise(): Promise<number> {
         try {
-            const nodeVersionParts = process.version.replace("v", "").split(".");
+            const nodeVersionParts = process.version
+                                            .replace("v", "")
+                                            .split(".");
 
             if (parseInt(nodeVersionParts[0], 10) < 8) {
                 this._logger.error("Node Version 8 or higher is required", undefined, { nodeVersion: process.version });

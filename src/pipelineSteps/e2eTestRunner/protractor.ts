@@ -12,7 +12,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class Protractor extends PipelineStepBase {
-    private static FILENAME: string = "protractor.conf.js";
+    private static readonly FILENAME: string = "protractor.conf.js";
 
     private _configuration: ProtractorConfiguration;
     private _scriptStart: string[];

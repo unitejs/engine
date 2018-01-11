@@ -4,8 +4,8 @@ import { UniteConfiguration } from "../../configuration/models/unite/uniteConfig
 import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 export declare class EsLint extends PipelineStepBase {
-    private static FILENAME;
-    private static FILENAME2;
+    private static readonly FILENAME;
+    private static readonly FILENAME2;
     private _configuration;
     private _ignore;
     mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined;

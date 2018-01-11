@@ -4,7 +4,7 @@ import { UniteConfiguration } from "../../configuration/models/unite/uniteConfig
 import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 export declare class WebdriverIo extends PipelineStepBase {
-    private static FILENAME;
+    private static readonly FILENAME;
     private _configuration;
     private _plugins;
     mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables): boolean | undefined;

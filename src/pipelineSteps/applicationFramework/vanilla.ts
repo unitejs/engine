@@ -145,7 +145,8 @@ export class Vanilla extends SharedAppFramework implements IApplicationFramework
                 if (routerResults && routerResults.length > 4) {
                     const currentRouters = routerResults[4].trim();
 
-                    routerItems = routerItems.filter(ri => currentRouters.replace(/\s/g, "").indexOf(ri.replace(/\s/g, "")) < 0);
+                    routerItems = routerItems.filter(ri => currentRouters.replace(/\s/g, "")
+                                                                         .indexOf(ri.replace(/\s/g, "")) < 0);
 
                     if (routerItems.length > 0) {
                         const routerIndent = routerResults[1];
@@ -154,7 +155,8 @@ export class Vanilla extends SharedAppFramework implements IApplicationFramework
                         const routerEnd = routerResults[5];
 
                         let replaceRouters = `${routerNewline}${currentRouters},${routerNewline}`;
-                        replaceRouters += `${routerItems.map(ri => ri.replace(/\n/g, routerNewline)).join(`,${routerNewline}`)}\n`;
+                        replaceRouters += `${routerItems.map(ri => ri.replace(/\n/g, routerNewline))
+                                                                     .join(`,${routerNewline}`)}\n`;
                         content = content.replace(routerResults[0], `${routerIndent}${routerVar}${replaceRouters}${routerIndent}${routerEnd}`);
                     }
                 } else {

@@ -10,7 +10,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class StyleLint extends PipelineStepBase {
-    private static FILENAME: string = ".stylelintrc";
+    private static readonly FILENAME: string = ".stylelintrc";
 
     private _configuration: StyleLintConfiguration;
 

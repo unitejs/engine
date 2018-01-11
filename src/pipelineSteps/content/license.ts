@@ -11,8 +11,8 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class License extends PipelineStepBase {
-    private static FILENAME: string = "LICENSE";
-    private static FILENAME_SPDX: string = "spdx-full.json";
+    private static readonly FILENAME: string = "LICENSE";
+    private static readonly FILENAME_SPDX: string = "spdx-full.json";
 
     private _spdxLicense: ISpdxLicense;
 
@@ -50,7 +50,8 @@ export class License extends PipelineStepBase {
                                     true,
                                     mainCondition,
                                     async() => {
-            const yearString = new Date().getFullYear().toString();
+            const yearString = new Date().getFullYear()
+                                         .toString();
             return this._spdxLicense.licenseText.replace(/<year>/gi, yearString);
         });
     }

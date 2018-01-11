@@ -8,10 +8,10 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class Electron extends PipelineStepBase {
-    private static PLATFORM: string = "Electron";
-    private static FILENAME: string = "platform-electron.js";
-    private static FILENAME_MAIN_DEV: string = "main-dev.js";
-    private static FILENAME_MAIN_PROD: string = "main.js";
+    private static readonly PLATFORM: string = "Electron";
+    private static readonly FILENAME: string = "platform-electron.js";
+    private static readonly FILENAME_MAIN_DEV: string = "main-dev.js";
+    private static readonly FILENAME_MAIN_PROD: string = "main.js";
 
     public mainCondition(uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables) : boolean | undefined {
         return super.objectCondition(uniteConfiguration.platforms, Electron.PLATFORM);

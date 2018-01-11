@@ -10,7 +10,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class PackageJson extends PipelineStepBase {
-    private static FILENAME: string = "package.json";
+    private static readonly FILENAME: string = "package.json";
 
     private _configuration: PackageConfiguration;
 

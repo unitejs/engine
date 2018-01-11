@@ -11,8 +11,8 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class EsLint extends PipelineStepBase {
-    private static FILENAME: string = ".eslintrc.json";
-    private static FILENAME2: string = ".eslintignore";
+    private static readonly FILENAME: string = ".eslintrc.json";
+    private static readonly FILENAME2: string = ".eslintignore";
 
     private _configuration: EsLintConfiguration;
     private _ignore: string[];

@@ -8,7 +8,7 @@ import { EngineVariables } from "../../engine/engineVariables";
 import { PipelineStepBase } from "../../engine/pipelineStepBase";
 
 export class Css extends PipelineStepBase {
-    private static FOLDER: string = "cssSrc";
+    private static readonly FOLDER: string = "cssSrc";
 
     private _cssSrcFolder: string;
 
