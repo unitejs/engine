@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.10
+
+* Updated dependencies
+
 ## 1.7.9
 
 * Change e2e-transpile and unit-transpile tasks to include all files that are not *.spec
