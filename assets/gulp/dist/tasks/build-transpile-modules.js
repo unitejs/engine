@@ -76,6 +76,7 @@ gulp.task("build-transpile-modules", async () => {
                 } else if (clientPackage.transpile.language === "TypeScript") {
                     const tsProject = typescript.createProject({
                         target: "es5",
+                        lib: ["es5", "es6", "dom"],
                         experimentalDecorators: true,
                         module: lowerModule === "systemjs" ? "system" : lowerModule
                     });

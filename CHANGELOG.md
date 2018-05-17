@@ -3,6 +3,7 @@
 ## 1.7.10
 
 * Updated dependencies
+* Added additional TypeScript libs to transpile module tasks
 
 ## 1.7.9
 
