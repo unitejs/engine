@@ -4,8 +4,8 @@
  * @export
  * @class Router
  */
-import /* Synthetic Import */ Vue from "vue";
-import /* Synthetic Import */ Router from "vue-router";
+import Vue from "vue";
+import Router from "vue-router";
 import { Child } from "./child/child";
 
 Vue.use(Router);

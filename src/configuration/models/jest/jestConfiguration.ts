@@ -16,7 +16,6 @@ export class JestConfiguration {
     public coverageReporters: string[];
     public coverageThreshold: { [id: string]: JestConfigurationCoverageThreshold};
     public globals: { [id: string]: any};
-    public mapCoverage: boolean;
     public moduleFileExtensions: string[];
     public moduleDirectories: string[];
     public moduleNameMapper: { [id: string]: string};

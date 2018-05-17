@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.11
+
+* Updated Vue TypeScript config to have esModuleInterop = true
+* Removed jest mapCoverage option
+
 ## 1.7.10
 
 * Updated dependencies

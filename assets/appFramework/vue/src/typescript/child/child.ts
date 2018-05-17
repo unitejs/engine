@@ -4,7 +4,7 @@
  * @export
  * @class Child
  */
-import /* Synthetic Import */ Vue from "vue";
+import Vue from "vue";
 import Component from "vue-class-component";
 import "./child.css";
 

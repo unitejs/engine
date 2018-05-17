@@ -46,6 +46,7 @@ export class TypeScriptCompilerOptions {
     public typeRoots: string[];
     public types: string[];
     public allowSyntheticDefaultImports: boolean;
+    public esModuleInterop: boolean;
     // Source Maps
     public sourceRoot: string;
     public mapRoot: string;

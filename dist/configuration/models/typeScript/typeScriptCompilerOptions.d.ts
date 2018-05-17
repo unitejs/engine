@@ -25,6 +25,7 @@ export declare class TypeScriptCompilerOptions {
     importHelpers: boolean;
     downlevelIteration: boolean;
     isolatedModules: boolean;
+    esModuleInterop: boolean;
     strict: boolean;
     noImplicitAny: boolean;
     strictNullChecks: boolean;

@@ -1,7 +1,7 @@
 /**
  * Main entry point for app.
  */
-import /* Synthetic Import */ Vue from "vue";
+import Vue from "vue";
 import { App } from "./app";
 import router from "./router";
 
