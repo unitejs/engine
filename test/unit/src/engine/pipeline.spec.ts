@@ -61,7 +61,7 @@ describe("Pipeline", () => {
     let modulePath: string;
 
     beforeEach(async () => {
-        sandbox = Sinon.sandbox.create();
+        sandbox = Sinon.createSandbox();
         loggerStub = <ILogger>{};
         loggerStub.info = () => { };
         loggerStub.error = () => { };

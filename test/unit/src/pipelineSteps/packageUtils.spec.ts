@@ -17,7 +17,7 @@ describe("PackageUtils", () => {
     let childSpawnProcess: any;
 
     beforeEach(async () => {
-        sandbox = Sinon.sandbox.create();
+        sandbox = Sinon.createSandbox();
         loggerStub = <ILogger>{};
         loggerStub.info = () => { };
         loggerStub.error = () => { };

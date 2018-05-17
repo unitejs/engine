@@ -27,7 +27,7 @@ describe("ConfigureCommand", () => {
     let enginePeerPackages: { [id: string]: string};
 
     beforeEach(async () => {
-        sandbox = Sinon.sandbox.create();
+        sandbox = Sinon.createSandbox();
         loggerStub = <ILogger>{};
         loggerStub.banner = () => { };
         loggerStub.info = () => { };

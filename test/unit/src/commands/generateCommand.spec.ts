@@ -25,7 +25,7 @@ describe("GenerateCommand", () => {
     let sharedGenerateTemplatesExist: boolean;
 
     beforeEach(async () => {
-        sandbox = Sinon.sandbox.create();
+        sandbox = Sinon.createSandbox();
         loggerStub = <ILogger>{};
         loggerStub.banner = () => { };
         loggerStub.info = () => { };

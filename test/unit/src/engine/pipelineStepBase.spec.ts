@@ -24,7 +24,7 @@ describe("PipelineStepBase", () => {
     let loggerWarningSpy: Sinon.SinonSpy;
 
     beforeEach(async () => {
-        sandbox = Sinon.sandbox.create();
+        sandbox = Sinon.createSandbox();
         loggerStub = <ILogger>{};
         loggerStub.info = () => { };
         loggerStub.error = () => { };

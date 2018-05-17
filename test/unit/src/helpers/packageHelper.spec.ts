@@ -14,7 +14,7 @@ describe("PackageHelper", () => {
     let fileSystemStub: IFileSystem;
 
     beforeEach(() => {
-        sandbox = Sinon.sandbox.create();
+        sandbox = Sinon.createSandbox();
         loggerStub = <ILogger>{};
         loggerStub.banner = () => { };
         loggerStub.info = () => { };

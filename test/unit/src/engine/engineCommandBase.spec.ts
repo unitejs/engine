@@ -45,7 +45,7 @@ describe("EngineCommandBase", () => {
     let loggerBannerSpy: Sinon.SinonSpy;
 
     beforeEach(() => {
-        sandbox = Sinon.sandbox.create();
+        sandbox = Sinon.createSandbox();
         loggerStub = <ILogger>{};
         loggerStub.banner = () => { };
         loggerStub.info = () => { };

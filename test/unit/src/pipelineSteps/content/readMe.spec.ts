@@ -21,7 +21,7 @@ describe("ReadMe", () => {
     let engineVariablesStub: EngineVariables;
 
     beforeEach(() => {
-        sandbox = Sinon.sandbox.create();
+        sandbox = Sinon.createSandbox();
         loggerStub = <ILogger>{};
         loggerStub.info = () => { };
         loggerStub.error = () => { };
