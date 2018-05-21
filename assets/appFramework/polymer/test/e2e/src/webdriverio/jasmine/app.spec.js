@@ -2,33 +2,36 @@
  * Tests for App.
  */
 describe("App", () => {
-    it("the title is set", async () => {
+    it("the title is set", (done) => {
         const uniteThemeJson = require("../../../assetsSrc/theme/unite-theme.json");
-        await browser
+        browser
             .uniteLoadAndWaitForPage("/")
             .getTitle()
             .then((title) => {
                 expect(title).toEqual(uniteThemeJson.title);
+                done();
             });
     });
 
-    it("the root text is set", async () => {
-        await browser
+    it("the root text is set", (done) => {
+        browser
             .uniteLoadAndWaitForPage("/")
             .customShadowRoot("#root unite-app::sr iron-pages unite-child::sr span")
             .getText()
             .then((rootContent) => {
                 expect(rootContent).toEqual("Hello UniteJS World!");
+                done();
             });
     });
 
-    it("the font size is set", async () => {
-        await browser
+    it("the font size is set", (done) => {
+        browser
             .uniteLoadAndWaitForPage("/")
             .customShadowRoot("#root unite-app::sr iron-pages unite-child::sr span")
             .getCssProperty("font-size")
             .then((fontSize) => {
                 expect(fontSize.value).toEqual("20px");
+                done();
             });
     });
 });

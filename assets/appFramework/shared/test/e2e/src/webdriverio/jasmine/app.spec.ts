@@ -4,33 +4,36 @@
 /// <reference types="unitejs-webdriver-plugin"/>
 
 describe("App", () => {
-    it("the title is set", async () => {
+    it("the title is set", (done) => {
         const uniteThemeJson = require("../../../assetsSrc/theme/unite-theme.json");
-        await browser
+        browser
             .uniteLoadAndWaitForPage("/")
             .getTitle()
             .then((title) => {
                 expect(title).toEqual(uniteThemeJson.title);
+                done();
             });
     });
 
-    it("the child text is set", async () => {
-        await browser
+    it("the child text is set", (done) => {
+        browser
             .uniteLoadAndWaitForPage("/")
             .element(".child")
             .getText()
             .then((rootContent) => {
                 expect(rootContent).toEqual("Hello UniteJS World!");
+                done();
             });
     });
 
-    it("the font size is set", async () => {
-        await browser
+    it("the font size is set", (done) => {
+        browser
             .uniteLoadAndWaitForPage("/")
             .element(".child")
             .getCssProperty("font-size")
             .then((fontSize) => {
                 expect(fontSize.value).toEqual("20px");
+                done();
             });
     });
 });
