@@ -2,9 +2,9 @@
  * Tests for App.
  */
 describe("App", () => {
-    it("the title is set", () => {
+    it("the title is set", async () => {
         const uniteThemeJson = require("../../../assetsSrc/theme/unite-theme.json");
-        return browser
+        await browser
             .uniteLoadAndWaitForPage("/")
             .getTitle()
             .then((title) => {
@@ -12,8 +12,8 @@ describe("App", () => {
             });
     });
 
-    it("the root text is set", () => {
-        return browser
+    it("the root text is set", async () => {
+        await browser
             .uniteLoadAndWaitForPage("/")
             .customShadowRoot("#root unite-app::sr iron-pages unite-child::sr span")
             .getText()
@@ -22,8 +22,8 @@ describe("App", () => {
             });
     });
 
-    it("the font size is set", () => {
-        return browser
+    it("the font size is set", async () => {
+        await browser
             .uniteLoadAndWaitForPage("/")
             .customShadowRoot("#root unite-app::sr iron-pages unite-child::sr span")
             .getCssProperty("font-size")
