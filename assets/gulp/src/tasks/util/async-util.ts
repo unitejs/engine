@@ -53,9 +53,9 @@ export async function zipFolder (sourceFolder: string, destFile: string) : Promi
 
         archive.on("warning", (err) => {
             if (err.code === "ENOENT") {
-                display.warning(err);
+                display.warning(err.toString());
             } else {
-                display.error(err);
+                display.error(err.toString());
                 process.exit(1);
             }
         });
