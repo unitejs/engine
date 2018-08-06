@@ -8,5 +8,5 @@ export declare class PackageJson extends PipelineStepBase {
     private _configuration;
     initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number>;
     finalise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number>;
-    private configDefaults(uniteConfiguration, engineVariables);
+    private configDefaults;
 }

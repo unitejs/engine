@@ -3,6 +3,6 @@ import { IBuildConfigurationCommandParams } from "../interfaces/IBuildConfigurat
 import { IEngineCommand } from "../interfaces/IEngineCommand";
 export declare class BuildConfigurationCommand extends EngineCommandBase implements IEngineCommand<IBuildConfigurationCommandParams> {
     run(args: IBuildConfigurationCommandParams): Promise<number>;
-    private buildConfigurationAdd(args, uniteConfiguration);
-    private buildConfigurationRemove(args, uniteConfiguration);
+    private buildConfigurationAdd;
+    private buildConfigurationRemove;
 }

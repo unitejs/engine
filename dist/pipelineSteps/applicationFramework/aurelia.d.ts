@@ -13,5 +13,5 @@ export declare class Aurelia extends SharedAppFramework implements IApplicationF
     insertRoutes(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, routes: {
         [id: string]: UnitePackageRouteConfiguration;
     }): Promise<number>;
-    private toggleAllPackages(uniteConfiguration, engineVariables, mainCondition);
+    private toggleAllPackages;
 }

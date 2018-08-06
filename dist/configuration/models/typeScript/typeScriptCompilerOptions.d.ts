@@ -25,7 +25,6 @@ export declare class TypeScriptCompilerOptions {
     importHelpers: boolean;
     downlevelIteration: boolean;
     isolatedModules: boolean;
-    esModuleInterop: boolean;
     strict: boolean;
     noImplicitAny: boolean;
     strictNullChecks: boolean;
@@ -44,6 +43,7 @@ export declare class TypeScriptCompilerOptions {
     typeRoots: string[];
     types: string[];
     allowSyntheticDefaultImports: boolean;
+    esModuleInterop: boolean;
     sourceRoot: string;
     mapRoot: string;
     inlineSourceMap: boolean;

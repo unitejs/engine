@@ -8,6 +8,6 @@ import { IEngineCommand } from "../interfaces/IEngineCommand";
 export declare class ClientPackageCommand extends EngineCommandBase implements IEngineCommand<IClientPackageCommandParams> {
     static retrievePackageDetails(logger: ILogger, fileSystem: IFileSystem, engineVariables: EngineVariables, clientPackage: UniteClientPackage): Promise<number>;
     run(args: IClientPackageCommandParams): Promise<number>;
-    private clientPackageAdd(args, uniteConfiguration);
-    private clientPackageRemove(args, uniteConfiguration);
+    private clientPackageAdd;
+    private clientPackageRemove;
 }

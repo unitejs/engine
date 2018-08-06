@@ -19,7 +19,6 @@ export declare class JestConfiguration {
     globals: {
         [id: string]: any;
     };
-    mapCoverage: boolean;
     moduleFileExtensions: string[];
     moduleDirectories: string[];
     moduleNameMapper: {
