@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.7.12
+
+* UnitTestFramework and UnitTestEngine disabled if using profile and then disabling UnitTestRunner
+* E2ETestFramework disabled if using profile and then disabling E2ETestRunner
+* Changed preact requireJS/systemJS transpilation to use .mjs module
+* Added explicit reference to @types/webcomponents.js for polymer
+
 ## 1.7.11
 
 * Updated Vue TypeScript config to have esModuleInterop = true

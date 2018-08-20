@@ -64,12 +64,12 @@ export class Preact extends SharedAppFramework implements IApplicationFramework 
         };
 
         if (isTranspiled) {
-            preactPackage.main = "dist/preact.esm.js";
+            preactPackage.main = "dist/preact.js";
             preactPackage.mainMinified = undefined;
             preactPackage.transpile = new UniteClientPackageTranspile();
             preactPackage.transpile.alias = "preact-transpiled";
             preactPackage.transpile.language = "JavaScript";
-            preactPackage.transpile.sources = ["dist/preact.esm.js"];
+            preactPackage.transpile.sources = ["dist/preact.mjs"];
 
             preactRouterPackage.main = "dist/preact-router.es.js";
             preactRouterPackage.mainMinified = undefined;

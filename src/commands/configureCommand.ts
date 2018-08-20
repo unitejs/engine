@@ -43,6 +43,9 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
         meta.authorWebSite = args.authorWebSite;
         meta.namespace = args.namespace;
 
+        const unitTestRunnerSetByProfile = uniteConfiguration.unitTestRunner !== undefined && uniteConfiguration.unitTestRunner !== null;
+        const e2eTestRunnerSetByProfile = uniteConfiguration.e2eTestRunner !== undefined && uniteConfiguration.e2eTestRunner !== null;
+
         uniteConfiguration.license = args.license || uniteConfiguration.license;
         uniteConfiguration.sourceLanguage = args.sourceLanguage || uniteConfiguration.sourceLanguage;
         uniteConfiguration.moduleType = args.moduleType || uniteConfiguration.moduleType;
@@ -92,13 +95,20 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
             return 1;
         }
         if (/none/i.test(uniteConfiguration.unitTestRunner)) {
-            if (uniteConfiguration.unitTestFramework !== null && uniteConfiguration.unitTestFramework !== undefined) {
-                this._logger.error("unitTestFramework is not valid if unitTestRunner is None");
-                return 1;
-            }
-            if (uniteConfiguration.unitTestEngine !== null && uniteConfiguration.unitTestEngine !== undefined) {
-                this._logger.error("unitTestEngine is not valid if unitTestRunner is None");
-                return 1;
+            // If profile had unitTestRunner set and now unitTestRunner is disabled
+            // turn off the other unit test components
+            if (unitTestRunnerSetByProfile) {
+                uniteConfiguration.unitTestFramework = undefined;
+                uniteConfiguration.unitTestEngine = undefined;
+            } else {
+                if (uniteConfiguration.unitTestFramework !== null && uniteConfiguration.unitTestFramework !== undefined) {
+                    this._logger.error("unitTestFramework is not valid if unitTestRunner is None");
+                    return 1;
+                }
+                if (uniteConfiguration.unitTestEngine !== null && uniteConfiguration.unitTestEngine !== undefined) {
+                    this._logger.error("unitTestEngine is not valid if unitTestRunner is None");
+                    return 1;
+                }
             }
         } else {
             if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("unitTestRunner", uniteConfiguration.unitTestRunner))) {
@@ -112,9 +122,15 @@ export class ConfigureCommand extends EngineCommandBase implements IEngineComman
             }
         }
         if (/none/i.test(uniteConfiguration.e2eTestRunner)) {
-            if (uniteConfiguration.e2eTestFramework !== null && uniteConfiguration.e2eTestFramework !== undefined) {
-                this._logger.error("e2eTestFramework is not valid if e2eTestRunner is None");
-                return 1;
+            // If profile had e2eTestRunner set and now e2eTestRunner is disabled
+            // turn off the other e2e test components
+            if (e2eTestRunnerSetByProfile) {
+                uniteConfiguration.e2eTestFramework = undefined;
+            } else {
+                if (uniteConfiguration.e2eTestFramework !== null && uniteConfiguration.e2eTestFramework !== undefined) {
+                    this._logger.error("e2eTestFramework is not valid if e2eTestRunner is None");
+                    return 1;
+                }
             }
         } else {
             if (!await this._pipeline.tryLoad(uniteConfiguration, new PipelineKey("e2eTestRunner", uniteConfiguration.e2eTestRunner))) {
