@@ -99,7 +99,7 @@
         "cssPost": "PostCss",
         "cssLinter": "StyleLint",
         "documenter": "ESDoc",
-        "packageManager": "Yarn",
+        "packageManager": "Npm",
         "taskManager": "Gulp",
         "server": "BrowserSync",
         "ide": "VSCode"
@@ -119,7 +119,7 @@
         "cssPre": "Sass",
         "cssPost": "PostCss",
         "documenter": "ESDoc",
-        "packageManager": "Yarn",
+        "packageManager": "Npm",
         "taskManager": "Gulp",
         "server": "BrowserSync",
         "ide": "VSCode"
