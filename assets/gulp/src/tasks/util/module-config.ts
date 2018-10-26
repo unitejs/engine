@@ -2,8 +2,8 @@
  * Gulp utils for module configuration.
  */
 import * as os from "os";
-import { IncludeMode } from "src/types/includeMode";
 import { IModuleConfig } from "../../types/IModuleConfig";
+import { IncludeMode } from "../../types/includeMode";
 import { IRequireJsConfig } from "../../types/IRequireJsConfig";
 import { ISystemJsConfig } from "../../types/ISystemJsConfig";
 import { IUniteConfiguration } from "../../types/IUniteConfiguration";
