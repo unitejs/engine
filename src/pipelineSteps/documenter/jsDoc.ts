@@ -4,7 +4,6 @@
 import { ObjectHelper } from "unitejs-framework/dist/helpers/objectHelper";
 import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
-import { BabelConfiguration } from "../../configuration/models/babel/babelConfiguration";
 import { JsDocConfiguration } from "../../configuration/models/jsDoc/jsDocConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
@@ -86,14 +85,6 @@ export class JsDoc extends PipelineStepBase {
             "plugins/markdown",
             "node_modules/jsdoc-babel"
         ];
-
-        defaultConfiguration.babel = new BabelConfiguration();
-        defaultConfiguration.babel.plugins = [
-            "transform-decorators-legacy",
-            "transform-class-properties"
-        ];
-
-        defaultConfiguration.babel.babelrc = false;
 
         defaultConfiguration.sourceType = "module";
         defaultConfiguration.source = {
