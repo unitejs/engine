@@ -44,12 +44,12 @@ export function getPackageFiles(uniteConfig: IUniteConfiguration, pkg: IUniteCli
         } else if (main === "*" && pkg.mainLib) {
             files.push(`./${path.join(
                 uniteConfig.dirs.www.package,
-                `${pkgLocation}/${location}/*.${pkg.libExtension}`
+                `${pkgLocation}/${location}/*.${pkg.libExtension || "js"}`
             )}`);
             for (let i = 0; i < pkg.mainLib.length; i++) {
                 files.push(`./${path.join(
                     uniteConfig.dirs.www.package,
-                    `${pkgLocation}/${location}${pkg.mainLib[i]}/*.${pkg.libExtension}`
+                    `${pkgLocation}/${location}${pkg.mainLib[i]}/*.${pkg.libExtension || "js"}`
                 )}`);
             }
         } else {

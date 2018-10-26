@@ -69,8 +69,7 @@ gulp.task("build-bundle-app", async () => {
                             enforce: true
                         }
                     }
-                },
-                runtimeChunk: true
+                }
             }
         };
         newModule.rules.push({

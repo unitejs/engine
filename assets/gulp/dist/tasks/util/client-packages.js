@@ -32,9 +32,9 @@ function getPackageFiles(uniteConfig, pkg, isMinified) {
         if (pkg.isPackage) {
             files.push(path.join(`${uniteConfig.dirs.www.package}${pkgLocation}/${location}`, "**/*.{js,html,css}"));
         } else if (main === "*" && pkg.mainLib) {
-            files.push(`./${path.join(uniteConfig.dirs.www.package, `${pkgLocation}/${location}/*.${pkg.libExtension}`)}`);
+            files.push(`./${path.join(uniteConfig.dirs.www.package, `${pkgLocation}/${location}/*.${pkg.libExtension || "js"}`)}`);
             for (let i = 0; i < pkg.mainLib.length; i++) {
-                files.push(`./${path.join(uniteConfig.dirs.www.package, `${pkgLocation}/${location}${pkg.mainLib[i]}/*.${pkg.libExtension}`)}`);
+                files.push(`./${path.join(uniteConfig.dirs.www.package, `${pkgLocation}/${location}${pkg.mainLib[i]}/*.${pkg.libExtension || "js"}`)}`);
             }
         } else {
             if (main === "*") {

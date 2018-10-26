@@ -216,16 +216,8 @@ export class Angular extends SharedAppFramework implements IApplicationFramework
                                                     "observable",
                                                     "scheduler",
                                                     "symbol",
-                                                    "testing",
                                                     "add/operator",
                                                     "add/observable",
-                                                    "internal",
-                                                    "internal/observable",
-                                                    "internal/operators",
-                                                    "internal/scheduler",
-                                                    "internal/symbol",
-                                                    "internal/testing",
-                                                    "internal/util",
                                                     "util"
                                                   ]
                                             },
