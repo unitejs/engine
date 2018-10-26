@@ -209,7 +209,25 @@ export class Angular extends SharedAppFramework implements IApplicationFramework
         engineVariables.toggleClientPackage("rxjs-compat",
                                             {
                                                 name: "rxjs-compat",
-                                                main: "*"
+                                                main: "*",
+                                                mainLib: [
+                                                    "operator",
+                                                    "operators",
+                                                    "observable",
+                                                    "scheduler",
+                                                    "symbol",
+                                                    "testing",
+                                                    "add/operator",
+                                                    "add/observable",
+                                                    "internal",
+                                                    "internal/observable",
+                                                    "internal/operators",
+                                                    "internal/scheduler",
+                                                    "internal/symbol",
+                                                    "internal/testing",
+                                                    "internal/util",
+                                                    "util"
+                                                  ]
                                             },
                                             mainCondition);
 
