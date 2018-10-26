@@ -54,7 +54,8 @@ export class Jest extends PipelineStepBase {
     }
 
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
-        engineVariables.toggleDevDependency(["jest", "jest-cli"], mainCondition);
+        // Jest needs the babel-core bridge now that we are using babel@7 for our other tasks
+        engineVariables.toggleDevDependency(["jest", "jest-cli", "babel-core"], mainCondition);
 
         return 0;
     }
