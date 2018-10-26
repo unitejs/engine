@@ -157,7 +157,7 @@ describe("React", () => {
             Chai.expect(packageJsonDevDependencies["@babel/preset-react"]).to.be.equal("1.2.3");
             Chai.expect(packageJsonDevDependencies["eslint-plugin-react"]).to.be.equal("1.2.3");
 
-            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").presets).contains("react");
+            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").presets).contains("@babel/preset-react");
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parserOptions.ecmaFeatures.jsx).to.be.equal(true);
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").extends).contains("plugin:react/recommended");
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").plugins).contains("react");
@@ -178,7 +178,7 @@ describe("React", () => {
             const obj = new React();
             engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/unitejs-protractor-plugin" } ] });
             engineVariablesStub.setConfiguration("WebdriverIO.Plugins", ["unitejs-webdriver-plugin"]);
-            engineVariablesStub.setConfiguration("Babel", { presets: ["react"]});
+            engineVariablesStub.setConfiguration("Babel", { plugins: [["@babel/plugin-proposal-decorators"], ["@babel/plugin-proposal-class-properties"]], presets: ["@babel/preset-react"]});
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: { jsx: true }});
             engineVariablesStub.setConfiguration("ESLint", { parserOptions: { ecmaFeatures: { jsx: "react"}}, extends: ["plugin:react/recommended", "react"], plugins: ["react"]});
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
@@ -186,7 +186,7 @@ describe("React", () => {
             Chai.expect(res).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<ProtractorConfiguration>("Protractor").plugins.length).to.be.equal(0);
             Chai.expect(engineVariablesStub.getConfiguration<string[]>("WebdriverIO.Plugins").length).to.be.equal(0);
-            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").presets).not.contains("react");
+            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").presets).not.contains("@babel/preset-react");
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parserOptions.ecmaFeatures.jsx).to.be.equal(undefined);
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").extends).not.contains("plugin:react/recommended");
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").plugins).not.contains("react");

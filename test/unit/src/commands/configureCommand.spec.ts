@@ -1976,6 +1976,105 @@ describe("ConfigureCommand", () => {
             Chai.expect(uniteJsonThemeWritten.metaAuthorEmail).to.be.equal("authE");
             Chai.expect(uniteJsonThemeWritten.metaAuthorWebSite).to.be.equal("authW");
         });
+
+        it("can disable unit test options if switched off after profile", async () => {
+            uniteJson = undefined;
+            const obj = new ConfigureCommand();
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "my-package",
+                title: "My Package",
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
+                license: undefined,
+                sourceLanguage: undefined,
+                moduleType: undefined,
+                bundler: undefined,
+                unitTestRunner: "None",
+                unitTestFramework: undefined,
+                unitTestEngine: undefined,
+                e2eTestRunner: undefined,
+                e2eTestFramework: undefined,
+                linter: undefined,
+                cssPre: undefined,
+                cssPost: undefined,
+                cssLinter: undefined,
+                documenter: undefined,
+                ides: undefined,
+                taskManager: undefined,
+                server: undefined,
+                packageManager: undefined,
+                applicationFramework: undefined,
+                profile: "AureliaTypeScript",
+                force: undefined,
+                noCreateSource: undefined,
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(uniteJsonWritten.packageName).to.be.equal("my-package");
+            Chai.expect(uniteJsonWritten.applicationFramework).to.be.equal("Aurelia");
+            Chai.expect(uniteJsonWritten.sourceLanguage).to.be.equal("TypeScript");
+            Chai.expect(uniteJsonWritten.unitTestRunner).to.be.equal("None");
+            Chai.expect(uniteJsonWritten.unitTestFramework).to.be.equal(undefined);
+            Chai.expect(uniteJsonWritten.unitTestEngine).to.be.equal(undefined);
+        });
+
+        it("can disable e2e test options if switched off after profile", async () => {
+            uniteJson = undefined;
+            const obj = new ConfigureCommand();
+            obj.create(loggerStub, fileSystemStub, fileSystemStub.pathCombine(__dirname, "../../../../"), "0.0.1", enginePeerPackages);
+            const res = await obj.run({
+                packageName: "my-package",
+                title: "My Package",
+                shortName: undefined,
+                description: undefined,
+                keywords: undefined,
+                organization: undefined,
+                copyright: undefined,
+                webSite: undefined,
+                author: undefined,
+                authorEmail: undefined,
+                authorWebSite: undefined,
+                namespace: undefined,
+                license: undefined,
+                sourceLanguage: undefined,
+                moduleType: undefined,
+                bundler: undefined,
+                unitTestRunner: undefined,
+                unitTestFramework: undefined,
+                unitTestEngine: undefined,
+                e2eTestRunner: "None",
+                e2eTestFramework: undefined,
+                linter: undefined,
+                cssPre: undefined,
+                cssPost: undefined,
+                cssLinter: undefined,
+                documenter: undefined,
+                ides: undefined,
+                taskManager: undefined,
+                server: undefined,
+                packageManager: undefined,
+                applicationFramework: undefined,
+                profile: "AureliaTypeScript",
+                force: undefined,
+                noCreateSource: undefined,
+                outputDirectory: undefined
+            });
+            Chai.expect(res).to.be.equal(0);
+            Chai.expect(uniteJsonWritten.packageName).to.be.equal("my-package");
+            Chai.expect(uniteJsonWritten.applicationFramework).to.be.equal("Aurelia");
+            Chai.expect(uniteJsonWritten.sourceLanguage).to.be.equal("TypeScript");
+            Chai.expect(uniteJsonWritten.e2eTestRunner).to.be.equal("None");
+            Chai.expect(uniteJsonWritten.e2eTestFramework).to.be.equal(undefined);
+        });
     });
 
 });

@@ -178,7 +178,7 @@ describe("Aurelia", () => {
         it("can be called with configurations with false mainCondition", async () => {
             engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/unitejs-protractor-plugin" } ] });
             engineVariablesStub.setConfiguration("WebdriverIO.Plugins", [ "unitejs-webdriver-plugin" ]);
-            engineVariablesStub.setConfiguration("Babel", { plugins: ["transform-decorators-legacy"] });
+            engineVariablesStub.setConfiguration("Babel", { plugins: [["@babel/plugin-proposal-decorators"], ["@babel/plugin-proposal-class-properties"]]});
             engineVariablesStub.setConfiguration("ESLint", { parser: "babel-eslint" });
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {} });
             const obj = new Aurelia();

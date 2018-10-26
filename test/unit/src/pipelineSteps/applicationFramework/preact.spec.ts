@@ -151,9 +151,9 @@ describe("Preact", () => {
 
             Chai.expect(packageJsonDevDependencies["eslint-plugin-react"]).to.be.equal("1.2.3");
 
-            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins[0]).to.be.equal("transform-decorators-legacy");
-            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins[1]).to.be.equal("transform-class-properties");
-            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins[2]).to.be.deep.equal(["transform-react-jsx", { pragma: "h"} ]);
+            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins[0][0]).to.be.equal("@babel/plugin-proposal-decorators");
+            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins[1][0]).to.be.equal("@babel/plugin-proposal-class-properties");
+            Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").plugins[2]).to.be.deep.equal(["@babel/plugin-transform-react-jsx", { pragma: "h"} ]);
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").parserOptions.ecmaFeatures.jsx).to.be.equal(true);
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").extends).contains("plugin:react/recommended");
             Chai.expect(engineVariablesStub.getConfiguration<EsLintConfiguration>("ESLint").plugins).contains("react");
@@ -194,7 +194,7 @@ describe("Preact", () => {
             const obj = new Preact();
             engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/unitejs-protractor-plugin" } ] });
             engineVariablesStub.setConfiguration("WebdriverIO.Plugins", ["unitejs-webdriver-plugin"]);
-            engineVariablesStub.setConfiguration("Babel", { plugins: [[ "transform-react-jsx", { pragma: "h"} ]]});
+            engineVariablesStub.setConfiguration("Babel", { plugins: [[ "@babel/plugin-transform-react-jsx", { pragma: "h"} ]]});
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: { jsx: true }});
             engineVariablesStub.setConfiguration("ESLint", { parserOptions: { ecmaFeatures: { jsx: "react"}}, extends: ["plugin:react/recommended", "react"], plugins: ["react"], settings: {}});
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);

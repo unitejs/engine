@@ -181,7 +181,7 @@ describe("Polymer", () => {
             const obj = new Polymer();
             engineVariablesStub.setConfiguration("Protractor", { plugins: [ { path: "./node_modules/unitejs-protractor-plugin" } ] });
             engineVariablesStub.setConfiguration("WebdriverIO.Plugins", ["unitejs-webdriver-plugin"]);
-            engineVariablesStub.setConfiguration("Babel", { plugins: []});
+            engineVariablesStub.setConfiguration("Babel", { plugins: [["@babel/plugin-proposal-decorators"], ["@babel/plugin-proposal-class-properties"]]});
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
 
             Chai.expect(res).to.be.equal(0);
