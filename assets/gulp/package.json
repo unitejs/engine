@@ -28,6 +28,7 @@
     "@types/run-sequence": "0.0.30",
     "@types/stylelint": "^9.4.1",
     "@types/tapable": "^1.0.4",
+    "@types/through2": "^2.0.34",
     "@types/vinyl": "^2.0.2",
     "@types/vinyl-buffer": "^1.0.0",
     "@types/vinyl-source-stream": "0.0.30",
