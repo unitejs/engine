@@ -222,7 +222,7 @@ export class Gulp extends PipelineStepBase {
     }
 
     private generateUtilsDependencies(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): void {
-        engineVariables.toggleDevDependency(["gulp-util", "gulp-rename"], mainCondition);
+        engineVariables.toggleDevDependency(["fancy-log", "ansi-colors", "gulp-rename"], mainCondition);
     }
 
     private generateUtilsFiles(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): void {

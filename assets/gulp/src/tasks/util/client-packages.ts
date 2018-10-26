@@ -42,10 +42,14 @@ export function getPackageFiles(uniteConfig: IUniteConfiguration, pkg: IUniteCli
                 "**/*.{js,html,css}"
             ));
         } else if (main === "*" && pkg.mainLib) {
+            files.push(`./${path.join(
+                uniteConfig.dirs.www.package,
+                `${pkgLocation}/${location}/*.${pkg.libExtension}`
+            )}`);
             for (let i = 0; i < pkg.mainLib.length; i++) {
                 files.push(`./${path.join(
                     uniteConfig.dirs.www.package,
-                    `${pkgLocation}/${location}${pkg.mainLib[i]}`
+                    `${pkgLocation}/${location}${pkg.mainLib[i]}/*.${pkg.libExtension}`
                 )}`);
             }
         } else {
@@ -150,7 +154,7 @@ export async function getBundleVendorPackages(uniteConfig: IUniteConfiguration):
                         for (let j = 0; j < pkg.mainLib.length; j++) {
                             files = files.concat(await globAsync(path.join(
                                 uniteConfig.dirs.www.package,
-                                `${pkgLocation}/${pkg.mainLib[j]}`
+                                `${pkgLocation}/${pkg.mainLib[j]}/${pkg.libFile ? pkg.libFile : "*.js"}`
                             )));
                         }
                     } else {
@@ -256,7 +260,14 @@ export function buildModuleConfig(uniteConfig: IUniteConfiguration, includeModes
 
                 if (pkgMain === "*") {
                     moduleConfig.map[pkg.name] = `${uniteConfig.dirs.www.package}${pkgLocation}`;
-                } else {
+                    moduleConfig.packages.push({
+                        name: pkg.name,
+                        location: `${uniteConfig.dirs.www.package}${pkgLocation}`,
+                        main: pkg.libFile,
+                        libExtension: pkg.libExtension,
+                        mainLib: pkg.mainLib
+                    });
+            } else {
                     const mainSplit = pkgMain.split("/");
                     const main = regExUtil.stripJsExtension(mainSplit.pop());
                     let location = mainSplit.join("/");

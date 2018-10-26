@@ -36,11 +36,11 @@ export class CommonJs extends PipelineStepBase {
 
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
         if (babelConfiguration) {
-            const foundPreset = babelConfiguration.presets.find(preset => Array.isArray(preset) && preset.length > 0 && preset[0] === "env");
+            const foundPreset = babelConfiguration.presets.find(preset => Array.isArray(preset) && preset.length > 0 && preset[0] === "@babel/preset-env");
             if (foundPreset) {
                 foundPreset[1] = { modules: mainCondition ? "commonjs" : undefined };
             } else {
-                babelConfiguration.presets.push(["env", { modules: mainCondition ? "commonjs" : undefined }]);
+                babelConfiguration.presets.push(["@babel/preset-env", { modules: mainCondition ? "commonjs" : undefined }]);
             }
         }
 

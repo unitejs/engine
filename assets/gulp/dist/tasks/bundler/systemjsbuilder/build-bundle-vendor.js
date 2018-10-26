@@ -16,7 +16,7 @@ gulp.task("build-bundle-vendor", async () => {
         display.info("Running", "Systemjs builder for Vendor");
         const keys = clientPackages.getRequires(uniteConfig, ["app", "both"], true);
         try {
-            await util.promisify(fs.writeFile)(path.join(uniteConfig.dirs.www.dist, "vendor-bundle-init.js"), `System.register(${JSON.stringify(keys)}, function () {});`);
+            await util.promisify(fs.writeFile)(path.join(uniteConfig.dirs.www.dist, "vendor-bundle-init.js"), `SystemJS.register(${JSON.stringify(keys)}, function () {});`);
         } catch (err) {
             display.error("Writing vendor-bundle-init.js", err);
             process.exit(1);

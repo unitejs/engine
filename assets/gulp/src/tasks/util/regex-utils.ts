@@ -3,7 +3,7 @@
  * Gulp utils for reg ex.
  */
 import * as stream from "stream";
-import * as through from "through2";
+import * as through2 from "through2";
 
 export function toWebUrl(file: string): string {
     return file.replace(/\\/g, "/");
@@ -22,7 +22,7 @@ export function replaceLeadingSlash(file: string, replace: string): string {
 }
 
 export function multiReplace(replacements: { [id: string]: string }): stream.Transform {
-    return through.obj((file, encode, callback) => {
+    return through2.obj((file, encode, callback) => {
         let contents = file.contents.toString();
 
         if (replacements) {

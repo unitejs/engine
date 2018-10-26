@@ -11,6 +11,9 @@ export class UniteClientPackage {
     public main?: string;
     public mainMinified?: string;
     public mainLib?: string[];
+    public libFile?: string;
+    public libExtension?: string;
+    public childPackages?: string[];
     public testingAdditions?: { [id: string]: string };
     public preload?: boolean;
     public includeMode?: IncludeMode;

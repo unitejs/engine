@@ -16,7 +16,7 @@ const exec = require("../util/exec");
 const packageConfig = require("../util/package-config");
 const platformUtils = require("../util/platform-utils");
 const uc = require("../util/unite-config");
-const DEF_RUNTIME_VERSION = "1.7.9";
+const DEF_RUNTIME_VERSION = "3.0.5";
 
 function getDefaultArchs() {
     let defArch = [];

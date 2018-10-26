@@ -85,8 +85,8 @@ describe("JavaScript", () => {
             const packageJsonDevDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
 
-            Chai.expect(packageJsonDevDependencies["babel-core"]).to.be.equal("1.2.3");
-            Chai.expect(packageJsonDevDependencies["babel-preset-env"]).to.be.equal("1.2.3");
+            Chai.expect(packageJsonDevDependencies["@babel/core"]).to.be.equal("1.2.3");
+            Chai.expect(packageJsonDevDependencies["@babel/preset-env"]).to.be.equal("1.2.3");
         });
 
         it("can be called with false mainCondition", async () => {
@@ -95,13 +95,13 @@ describe("JavaScript", () => {
             Chai.expect(res).to.be.equal(0);
 
             const packageJsonDevDependencies: { [id: string]: string } = {
-                "babel-core": "1.2.3",
-                "babel-preset-env": "1.2.3"
+                "@babel/core": "1.2.3",
+                "@babel/preset-env": "1.2.3"
             };
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
 
-            Chai.expect(packageJsonDevDependencies["babel-core"]).to.be.equal("1.2.3");
-            Chai.expect(packageJsonDevDependencies["babel-preset-env"]).to.be.equal("1.2.3");
+            Chai.expect(packageJsonDevDependencies["@babel/core"]).to.be.equal("1.2.3");
+            Chai.expect(packageJsonDevDependencies["@babel/preset-env"]).to.be.equal("1.2.3");
         });
     });
 

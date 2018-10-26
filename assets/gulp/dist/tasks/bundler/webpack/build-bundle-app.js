@@ -35,10 +35,6 @@ gulp.task("build-bundle-app", async () => {
         if (vendorKeys.length > 0) {
             entry.vendor = vendorKeys;
         }
-        plugins.push(new webpack.optimize.CommonsChunkPlugin({
-            filename: "vendor-bundle.js",
-            name: "vendor"
-        }));
         if (buildConfiguration.minify) {
             plugins.push(new UglifyJSPlugin());
         }
@@ -55,12 +51,26 @@ gulp.task("build-bundle-app", async () => {
             entry,
             output: {
                 devtoolModuleFilenameTemplate: "[resource-path]",
-                filename: "app-bundle.js"
+                filename: "app-bundle.js",
+                chunkFilename: "[name]-bundle.js"
             },
             plugins,
             module: newModule,
             resolve: {
                 alias: vendorAliases
+            },
+            optimization: {
+                splitChunks: {
+                    cacheGroups: {
+                        vendor: {
+                            chunks: "initial",
+                            name: "vendor",
+                            test: "vendor",
+                            enforce: true
+                        }
+                    }
+                },
+                runtimeChunk: true
             }
         };
         newModule.rules.push({

@@ -5,8 +5,8 @@ const browserify = require("browserify");
 const gulp = require("gulp");
 const sourcemaps = require("gulp-sourcemaps");
 const uglify = require("gulp-uglify");
-const gutil = require("gulp-util");
 const path = require("path");
+const through2 = require("through2");
 const buffer = require("vinyl-buffer");
 const source = require("vinyl-source-stream");
 const asyncUtil = require("../../util/async-util");
@@ -51,15 +51,15 @@ gulp.task("build-bundle-app", async () => {
             .pipe(buildConfiguration.minify ? uglify()
                 .on("error", (err) => {
                     display.error(err.toString());
-                }) : gutil.noop())
+                }) : through2.obj())
             .pipe(buildConfiguration.sourcemaps ? sourcemaps.init({
                 loadMaps: true
-            }) : gutil.noop())
+            }) : through2.obj())
             .pipe(buildConfiguration.sourcemaps ?
-                sourcemaps.mapSources((sourcePath) => sourcePath.replace(/dist\//, "./")) : gutil.noop())
+                sourcemaps.mapSources((sourcePath) => sourcePath.replace(/dist\//, "./")) : through2.obj())
             .pipe(buildConfiguration.sourcemaps ? sourcemaps.write({
                 includeContent: true
-            }) : gutil.noop())
+            }) : through2.obj())
             .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
     }
 });

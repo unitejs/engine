@@ -45,10 +45,10 @@ export class JsDoc extends PipelineStepBase {
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         engineVariables.toggleDevDependency(["jsdoc",
                                             "jsdoc-babel",
-                                            "babel-core",
-                                            "babel-preset-env",
-                                            "babel-plugin-transform-decorators-legacy",
-                                            "babel-plugin-transform-class-properties"],
+                                            "@babel/core",
+                                            "@babel/preset-env",
+                                            "@babel/plugin-proposal-decorators",
+                                            "@babel/plugin-proposal-class-properties"],
                                             mainCondition);
 
         return 0;

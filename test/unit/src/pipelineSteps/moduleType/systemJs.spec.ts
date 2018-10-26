@@ -87,7 +87,7 @@ describe("SystemJs", () => {
 
         it("can be called with configurations already set", async () => {
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {} });
-            engineVariablesStub.setConfiguration("Babel", { presets: [ ["env", { modules: "blah" }] ] });
+            engineVariablesStub.setConfiguration("Babel", { presets: [ ["@babel/preset-env", { modules: "blah" }] ] });
 
             const obj = new SystemJs();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
@@ -129,7 +129,7 @@ describe("SystemJs", () => {
 
         it("can be called with configurations with false mainCondition", async () => {
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: { module: "system"} });
-            engineVariablesStub.setConfiguration("Babel", { presets: [ ["env", { modules: "systemjs" }] ] });
+            engineVariablesStub.setConfiguration("Babel", { presets: [ ["@babel/preset-env", { modules: "systemjs" }] ] });
 
             const obj = new SystemJs();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);

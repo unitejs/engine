@@ -93,7 +93,9 @@ export class EsLint extends PipelineStepBase {
         defaultConfiguration.parserOptions = new EsLintParserOptions();
         defaultConfiguration.parserOptions.ecmaVersion = 6;
         defaultConfiguration.parserOptions.sourceType = "module";
-        defaultConfiguration.parserOptions.ecmaFeatures = {};
+        defaultConfiguration.parserOptions.ecmaFeatures = {
+            legacyDecorators: true
+        };
 
         defaultConfiguration.extends = ["eslint:recommended"];
         defaultConfiguration.env = {

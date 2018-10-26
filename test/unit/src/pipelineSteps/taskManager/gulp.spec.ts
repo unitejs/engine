@@ -88,7 +88,8 @@ describe("Gulp", () => {
             Chai.expect(packageJsonDevDependencies.gulp).to.be.equal("1.2.3");
             Chai.expect(packageJsonDevDependencies.del).to.be.equal("1.2.3");
             Chai.expect(packageJsonDevDependencies["browser-sync"]).to.be.equal("1.2.3");
-            Chai.expect(packageJsonDevDependencies["gulp-util"]).to.be.equal("1.2.3");
+            Chai.expect(packageJsonDevDependencies["fancy-log"]).to.be.equal("1.2.3");
+            Chai.expect(packageJsonDevDependencies["ansi-colors"]).to.be.equal("1.2.3");
         });
 
         it("can be called with false mainCondition", async () => {
@@ -100,13 +101,15 @@ describe("Gulp", () => {
                 gulp: "1.2.3",
                 del: "1.2.3",
                 "browser-sync": "1.2.3",
-                "gulp-util": "1.2.3"
+                "fancy-log": "1.2.3",
+                "ansi-colors": "1.2.3"
             };
             engineVariablesStub.buildDevDependencies(packageJsonDevDependencies);
             Chai.expect(packageJsonDevDependencies.gulp).to.be.equal(undefined);
             Chai.expect(packageJsonDevDependencies.del).to.be.equal(undefined);
             Chai.expect(packageJsonDevDependencies["browser-sync"]).to.be.equal(undefined);
-            Chai.expect(packageJsonDevDependencies["gulp-util"]).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["fancy-log"]).to.be.equal(undefined);
+            Chai.expect(packageJsonDevDependencies["ansi-colors"]).to.be.equal(undefined);
         });
     });
 

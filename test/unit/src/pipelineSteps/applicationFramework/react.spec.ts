@@ -154,7 +154,7 @@ describe("React", () => {
             Chai.expect(packageJsonDevDependencies["@types/react-dom"]).to.be.equal(undefined);
             Chai.expect(packageJsonDevDependencies["@types/react-router-dom"]).to.be.equal(undefined);
 
-            Chai.expect(packageJsonDevDependencies["babel-preset-react"]).to.be.equal("1.2.3");
+            Chai.expect(packageJsonDevDependencies["@babel/preset-react"]).to.be.equal("1.2.3");
             Chai.expect(packageJsonDevDependencies["eslint-plugin-react"]).to.be.equal("1.2.3");
 
             Chai.expect(engineVariablesStub.getConfiguration<BabelConfiguration>("Babel").presets).contains("react");

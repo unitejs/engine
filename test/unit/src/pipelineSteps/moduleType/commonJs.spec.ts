@@ -86,7 +86,7 @@ describe("CommonJs", () => {
 
         it("can be called with configurations already set", async () => {
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: {} });
-            engineVariablesStub.setConfiguration("Babel", { presets: [ ["env", { modules: "blah" }] ] });
+            engineVariablesStub.setConfiguration("Babel", { presets: [ ["@babel/preset-env", { modules: "blah" }] ] });
 
             const obj = new CommonJs();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
@@ -128,7 +128,7 @@ describe("CommonJs", () => {
 
         it("can be called with configurations with false mainCondition", async () => {
             engineVariablesStub.setConfiguration("TypeScript", { compilerOptions: { module: "commonjs"} });
-            engineVariablesStub.setConfiguration("Babel", { presets: [ ["env", { modules: "commonjs" }] ] });
+            engineVariablesStub.setConfiguration("Babel", { presets: [ ["@babel/preset-env", { modules: "commonjs" }] ] });
 
             const obj = new CommonJs();
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);

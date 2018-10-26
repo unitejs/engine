@@ -4,8 +4,8 @@
 const gulp = require("gulp");
 const sass = require("gulp-sass");
 const sourcemaps = require("gulp-sourcemaps");
-const gutil = require("gulp-util");
 const path = require("path");
+const through2 = require("through2");
 const asyncUtil = require("../../util/async-util");
 const display = require("../../util/display");
 const errorUtil = require("../../util/error-util");
@@ -16,14 +16,14 @@ gulp.task("build-css-app", async () => {
     const buildConfiguration = uc.getBuildConfiguration(uniteConfig, false);
     let errorCount = 0;
     return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.cssSrc, `main.${uniteConfig.styleExtension}`))
-        .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : gutil.noop())
+        .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : through2.obj())
         .pipe(sass())
         .on("error", (err) => {
             display.error(err.message);
             errorCount++;
         })
         .on("error", errorUtil.handleErrorEvent)
-        .pipe(buildConfiguration.sourcemaps ? sourcemaps.write() : gutil.noop())
+        .pipe(buildConfiguration.sourcemaps ? sourcemaps.write() : through2.obj())
         .pipe(gulp.dest(uniteConfig.dirs.www.cssDist))
         .on("end", () => {
             errorUtil.handleErrorCount(errorCount);

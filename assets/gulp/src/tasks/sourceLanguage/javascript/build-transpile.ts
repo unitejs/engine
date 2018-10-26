@@ -5,9 +5,9 @@ import * as gulp from "gulp";
 import * as babel from "gulp-babel";
 import * as sourcemaps from "gulp-sourcemaps";
 import * as uglify from "gulp-uglify";
-import * as gutil from "gulp-util";
 import * as path from "path";
 import * as stream from "stream";
+import * as through2 from "through2";
 import * as asyncUtil from "../../util/async-util";
 import * as display from "../../util/display";
 import * as errorUtil from "../../util/error-util";
@@ -26,7 +26,7 @@ gulp.task("build-transpile", async () => {
         uniteConfig.dirs.www.src,
         `**/*.${uc.extensionMap(uniteConfig.sourceExtensions)}`
     ))
-        .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : gutil.noop())
+        .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : through2.obj())
         .pipe(<stream.Transform><any>"{TRANSPILEPREBUILD}")
         .pipe(babel())
         .on("error", (err) => {
@@ -41,13 +41,13 @@ gulp.task("build-transpile", async () => {
         .pipe(buildConfiguration.minify ? uglify()
             .on("error", (err) => {
                 display.error(err.toString());
-            }) : gutil.noop())
+            }) : through2.obj())
         .pipe(buildConfiguration.sourcemaps
-            ? sourcemaps.mapSources((sourcePath) => `./src/${sourcePath}`) : gutil.noop())
+            ? sourcemaps.mapSources((sourcePath) => `./src/${sourcePath}`) : through2.obj())
         .pipe(buildConfiguration.sourcemaps ? sourcemaps.write({
             includeContent: true,
             sourceRoot: ""
-        }) : gutil.noop())
+        }) : through2.obj())
         .pipe(gulp.dest(uniteConfig.dirs.www.dist))
         .on("end", () => {
             errorUtil.handleErrorCount(errorCount);

@@ -39,10 +39,13 @@ export class React extends SharedAppFramework implements IApplicationFramework {
     }
 
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
-        engineVariables.toggleDevDependency(["babel-preset-react",
-                                            "babel-plugin-transform-decorators-legacy",
-                                            "babel-plugin-transform-class-properties"],
-                                            mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
+        engineVariables.toggleDevDependency(
+            [
+                "@babel/preset-react",
+                "@babel/plugin-proposal-decorators",
+                "@babel/plugin-proposal-class-properties"
+            ],
+            mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
         engineVariables.toggleDevDependency(["eslint-plugin-react", "babel-eslint"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
 
         engineVariables.toggleDevDependency(["@types/react", "@types/react-dom", "@types/react-router-dom"],
@@ -112,9 +115,11 @@ export class React extends SharedAppFramework implements IApplicationFramework {
 
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
         if (babelConfiguration) {
-            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", mainCondition);
-            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-class-properties", mainCondition);
-            ArrayHelper.addRemove(babelConfiguration.presets, "react", mainCondition);
+            ArrayHelper.addRemove(babelConfiguration.plugins, ["@babel/plugin-proposal-decorators", { legacy: true }], mainCondition,
+                                  (obj, item) => Array.isArray(item) && item.length > 0 && item[0] === obj[0]);
+            ArrayHelper.addRemove(babelConfiguration.plugins, ["@babel/plugin-proposal-class-properties", { loose: true }], mainCondition,
+                                  (obj, item) => Array.isArray(item) && item.length > 0 && item[0] === obj[0]);
+            ArrayHelper.addRemove(babelConfiguration.presets, "@babel/preset-react", mainCondition);
         }
 
         const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");

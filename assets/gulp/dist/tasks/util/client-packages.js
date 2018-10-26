@@ -32,8 +32,9 @@ function getPackageFiles(uniteConfig, pkg, isMinified) {
         if (pkg.isPackage) {
             files.push(path.join(`${uniteConfig.dirs.www.package}${pkgLocation}/${location}`, "**/*.{js,html,css}"));
         } else if (main === "*" && pkg.mainLib) {
+            files.push(`./${path.join(uniteConfig.dirs.www.package, `${pkgLocation}/${location}/*.${pkg.libExtension}`)}`);
             for (let i = 0; i < pkg.mainLib.length; i++) {
-                files.push(`./${path.join(uniteConfig.dirs.www.package, `${pkgLocation}/${location}${pkg.mainLib[i]}`)}`);
+                files.push(`./${path.join(uniteConfig.dirs.www.package, `${pkgLocation}/${location}${pkg.mainLib[i]}/*.${pkg.libExtension}`)}`);
             }
         } else {
             if (main === "*") {
@@ -117,7 +118,7 @@ async function getBundleVendorPackages(uniteConfig) {
                     let files = [];
                     if (pkg.mainLib) {
                         for (let j = 0; j < pkg.mainLib.length; j++) {
-                            files = files.concat(await globAsync(path.join(uniteConfig.dirs.www.package, `${pkgLocation}/${pkg.mainLib[j]}`)));
+                            files = files.concat(await globAsync(path.join(uniteConfig.dirs.www.package, `${pkgLocation}/${pkg.mainLib[j]}/${pkg.libFile ? pkg.libFile : "*.js"}`)));
                         }
                     } else {
                         files = await globAsync(path.join(uniteConfig.dirs.www.package, `${pkgLocation}/${pkgMain}*/*.js`));
@@ -206,6 +207,13 @@ function buildModuleConfig(uniteConfig, includeModes, isMinified) {
                 const pkgLocation = pkg.transpile && pkg.transpile.alias ? pkg.transpile.alias : pkg.name;
                 if (pkgMain === "*") {
                     moduleConfig.map[pkg.name] = `${uniteConfig.dirs.www.package}${pkgLocation}`;
+                    moduleConfig.packages.push({
+                        name: pkg.name,
+                        location: `${uniteConfig.dirs.www.package}${pkgLocation}`,
+                        main: pkg.libFile,
+                        libExtension: pkg.libExtension,
+                        mainLib: pkg.mainLib
+                    });
                 } else {
                     const mainSplit = pkgMain.split("/");
                     const main = regExUtil.stripJsExtension(mainSplit.pop());

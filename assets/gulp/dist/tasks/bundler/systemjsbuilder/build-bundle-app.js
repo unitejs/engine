@@ -6,9 +6,9 @@ const gulp = require("gulp");
 const insert = require("gulp-insert");
 const sourcemaps = require("gulp-sourcemaps");
 const uglify = require("gulp-uglify");
-const gutil = require("gulp-util");
 const path = require("path");
 const Builder = require("systemjs-builder");
+const through2 = require("through2");
 const util = require("util");
 const asyncUtil = require("../../util/async-util");
 const clientPackages = require("../../util/client-packages");
@@ -29,7 +29,7 @@ async function addBootstrap(uniteConfig, buildConfiguration) {
         process.exit(1);
     }
     await asyncUtil.stream(gulp.src(bootstrapFile)
-        .pipe(buildConfiguration.minify ? uglify() : gutil.noop())
+        .pipe(buildConfiguration.minify ? uglify() : through2.obj())
         .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
     let bootstrap2 = null;
     try {
@@ -42,12 +42,12 @@ async function addBootstrap(uniteConfig, buildConfiguration) {
         .pipe(buildConfiguration.sourcemaps ?
             sourcemaps.init({
                 loadMaps: true
-            }) : gutil.noop())
+            }) : through2.obj())
         .pipe(insert.append(bootstrap2.toString()))
         .pipe(buildConfiguration.sourcemaps ?
             sourcemaps.write({
                 includeContent: true
-            }) : gutil.noop())
+            }) : through2.obj())
         .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
 }
 gulp.task("build-bundle-app", async () => {

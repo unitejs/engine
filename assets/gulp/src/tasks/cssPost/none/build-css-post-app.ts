@@ -4,8 +4,8 @@
 import * as gulp from "gulp";
 import * as cssnano from "gulp-cssnano";
 import * as rename from "gulp-rename";
-import * as gutil from "gulp-util";
 import * as path from "path";
+import * as through2 from "through2";
 import * as asyncUtil from "../../util/async-util";
 import * as display from "../../util/display";
 import * as uc from "../../util/unite-config";
@@ -18,7 +18,7 @@ gulp.task("build-css-post-app", async () => {
 
     await asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.cssDist, "main.css"))
         .pipe(rename("style.css"))
-        .pipe(buildConfiguration.minify ? cssnano() : gutil.noop())
+        .pipe(buildConfiguration.minify ? cssnano() : through2.obj())
         .pipe(gulp.dest(uniteConfig.dirs.www.cssDist)));
 
     if (buildConfiguration.minify) {

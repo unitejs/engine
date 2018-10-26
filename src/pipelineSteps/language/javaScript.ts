@@ -45,9 +45,31 @@ export class JavaScript extends PipelineStepBase {
 
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         // Removing and old dependency always false
-        engineVariables.toggleDevDependency(["babel-preset-es2015"], false);
+        engineVariables.toggleDevDependency(
+            [
+                "babel-preset-es2015",
+                "babel-core",
+                "babel-plugin-transform-class-properties",
+                "babel-plugin-transform-decorators",
+                "babel-plugin-transform-decorators-legacy",
+                "babel-plugin-transform-react-jsx",
+                "babel-preset-env",
+                "babel-preset-react"
+            ],
+            false);
+
+        // Remove old config for plugins
+        const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
+        if (babelConfiguration) {
+            ArrayHelper.addRemove(babelConfiguration.presets, "env", false, (obj, item) => Array.isArray(item) && item.length > 0 && item[0] === obj[0]);
+            ArrayHelper.addRemove(babelConfiguration.presets, "react", false, (obj, item) => Array.isArray(item) && item.length > 0 && item[0] === obj[0]);
+            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-react-jsx", false);
+            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", false);
+            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-class-properties", false);
+        }
+
         // We always include babel as we might need to transpile client packages
-        engineVariables.toggleDevDependency(["babel-core", "babel-preset-env"], true);
+        engineVariables.toggleDevDependency(["@babel/core", "@babel/preset-env"], true);
 
         return 0;
     }

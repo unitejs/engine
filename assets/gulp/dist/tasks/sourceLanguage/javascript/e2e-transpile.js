@@ -32,7 +32,7 @@ gulp.task("e2e-transpile", async () => {
             babelrc: false,
             presets: [
                 [
-                    "env",
+                    "@babel/preset-env",
                     {
                         modules: "commonjs"
                     }

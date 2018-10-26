@@ -1,4 +1,4 @@
-const through = require("through2");
+const through2 = require("through2");
 
 function toWebUrl(file) {
     return file.replace(/\\/g, "/");
@@ -21,7 +21,7 @@ function replaceLeadingSlash(file, replace) {
 exports.replaceLeadingSlash = replaceLeadingSlash;
 
 function multiReplace(replacements) {
-    return through.obj((file, encode, callback) => {
+    return through2.obj((file, encode, callback) => {
         let contents = file.contents.toString();
         if (replacements) {
             Object.keys(replacements).forEach(replacement => {

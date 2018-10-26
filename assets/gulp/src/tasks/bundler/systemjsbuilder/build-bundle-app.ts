@@ -6,9 +6,9 @@ import * as gulp from "gulp";
 import * as insert from "gulp-insert";
 import * as sourcemaps from "gulp-sourcemaps";
 import * as uglify from "gulp-uglify";
-import * as gutil from "gulp-util";
 import * as path from "path";
 import * as Builder from "systemjs-builder";
+import * as through2 from "through2";
 import * as util from "util";
 import { IUniteBuildConfiguration } from "../../../types/IUniteBuildConfiguration";
 import { IUniteConfiguration } from "../../../types/IUniteConfiguration";
@@ -35,7 +35,7 @@ async function addBootstrap(uniteConfig: IUniteConfiguration, buildConfiguration
     }
 
     await asyncUtil.stream(gulp.src(bootstrapFile)
-        .pipe(buildConfiguration.minify ? uglify() : gutil.noop())
+        .pipe(buildConfiguration.minify ? uglify() : through2.obj())
         .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
 
     let bootstrap2 = null;
@@ -48,10 +48,10 @@ async function addBootstrap(uniteConfig: IUniteConfiguration, buildConfiguration
 
     return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.dist, "app-bundle.js"))
         .pipe(buildConfiguration.sourcemaps
-            ? sourcemaps.init({ loadMaps: true }) : gutil.noop())
+            ? sourcemaps.init({ loadMaps: true }) : through2.obj())
         .pipe(insert.append(bootstrap2.toString()))
         .pipe(buildConfiguration.sourcemaps
-            ? sourcemaps.write({ includeContent: true }) : gutil.noop())
+            ? sourcemaps.write({ includeContent: true }) : through2.obj())
         .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
 }
 

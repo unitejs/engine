@@ -6,9 +6,9 @@ const glob = require("glob");
 const gulp = require("gulp");
 const insert = require("gulp-insert");
 const sourcemaps = require("gulp-sourcemaps");
-const gutil = require("gulp-util");
 const path = require("path");
 const requireJs = require("requirejs");
+const through2 = require("through2");
 const util = require("util");
 const asyncUtil = require("../../util/async-util");
 const clientPackages = require("../../util/client-packages");
@@ -83,12 +83,12 @@ async function performAppOptimize(uniteConfig, buildConfiguration, moduleConfig)
                     .pipe(buildConfiguration.sourcemaps ?
                         sourcemaps.init({
                             loadMaps: true
-                        }) : gutil.noop())
+                        }) : through2.obj())
                     .pipe(insert.append(bootstrap))
                     .pipe(buildConfiguration.sourcemaps ?
                         sourcemaps.write({
                             includeContent: true
-                        }) : gutil.noop())
+                        }) : through2.obj())
                     .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
                 resolve();
             }, async (err) => {

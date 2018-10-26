@@ -23,7 +23,7 @@ gulp.task("build-bundle-vendor", async () => {
         try {
             await util.promisify(fs.writeFile)(
                 path.join(uniteConfig.dirs.www.dist, "vendor-bundle-init.js"),
-                `System.register(${JSON.stringify(keys)}, function () {});`
+                `SystemJS.register(${JSON.stringify(keys)}, function () {});`
             );
         } catch (err) {
             display.error("Writing vendor-bundle-init.js", err);

@@ -5,8 +5,8 @@ const gulp = require("gulp");
 const babel = require("gulp-babel");
 const typescript = require("gulp-typescript");
 const uglify = require("gulp-uglify");
-const gutil = require("gulp-util");
 const path = require("path");
+const through2 = require("through2");
 const asyncUtil = require("./util/async-util");
 const display = require("./util/display");
 const errorUtil = require("./util/error-util");
@@ -49,7 +49,7 @@ gulp.task("build-transpile-modules", async () => {
                         .pipe(babel({
                             presets: [
                                 [
-                                    "env",
+                                    "@babel/preset-env",
                                     {
                                         modules: lowerModule
                                     }
@@ -68,7 +68,7 @@ gulp.task("build-transpile-modules", async () => {
                         .pipe(buildConfiguration.minify ? uglify()
                             .on("error", (err) => {
                                 display.error(err.toString());
-                            }) : gutil.noop())
+                            }) : through2.obj())
                         .pipe(gulp.dest(destFolder))
                         .on("end", () => {
                             errorUtil.handleErrorCount(errorCount);

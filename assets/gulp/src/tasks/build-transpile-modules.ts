@@ -5,8 +5,8 @@ import * as gulp from "gulp";
 import * as babel from "gulp-babel";
 import * as typescript from "gulp-typescript";
 import * as uglify from "gulp-uglify";
-import * as gutil from "gulp-util";
 import * as path from "path";
+import * as through2 from "through2";
 import * as asyncUtil from "./util/async-util";
 import * as display from "./util/display";
 import * as errorUtil from "./util/error-util";
@@ -62,7 +62,7 @@ gulp.task("build-transpile-modules", async () => {
                         .pipe(babel({
                             presets: [
                                 [
-                                    "env",
+                                    "@babel/preset-env",
                                     {
                                         modules: lowerModule
                                     }
@@ -81,7 +81,7 @@ gulp.task("build-transpile-modules", async () => {
                         .pipe(buildConfiguration.minify ? uglify()
                             .on("error", (err) => {
                                 display.error(err.toString());
-                            }) : gutil.noop())
+                            }) : through2.obj())
 
                         .pipe(gulp.dest(destFolder))
                         .on("end", () => {

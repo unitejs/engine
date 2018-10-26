@@ -18,7 +18,7 @@ import * as packageConfig from "../util/package-config";
 import * as platformUtils from "../util/platform-utils";
 import * as uc from "../util/unite-config";
 
-const DEF_RUNTIME_VERSION = "1.7.9";
+const DEF_RUNTIME_VERSION = "3.0.5";
 
 function getDefaultArchs(): string[] {
     let defArch: string[] = [];

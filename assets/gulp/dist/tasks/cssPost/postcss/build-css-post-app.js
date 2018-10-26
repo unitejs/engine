@@ -6,8 +6,8 @@ const cssnano = require("gulp-cssnano");
 const postcss = require("gulp-postcss");
 const rename = require("gulp-rename");
 const sourcemaps = require("gulp-sourcemaps");
-const gutil = require("gulp-util");
 const path = require("path");
+const through2 = require("through2");
 const asyncUtil = require("../../util/async-util");
 const display = require("../../util/display");
 const errorUtil = require("../../util/error-util");
@@ -19,18 +19,18 @@ gulp.task("build-css-post-app", async () => {
     let errorCount = 0;
     return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.cssDist, "main.css"))
         .pipe(rename("style.css"))
-        .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : gutil.noop())
+        .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : through2.obj())
         .pipe(postcss())
         .on("error", (err) => {
             display.error(err.message);
             errorCount++;
         })
         .on("error", errorUtil.handleErrorEvent)
-        .pipe(buildConfiguration.minify ? cssnano() : gutil.noop())
+        .pipe(buildConfiguration.minify ? cssnano() : through2.obj())
         .pipe(buildConfiguration.sourcemaps ? sourcemaps.write({
             includeContent: true,
             sourceRoot: "./src"
-        }) : gutil.noop())
+        }) : through2.obj())
         .pipe(gulp.dest(uniteConfig.dirs.www.cssDist))
         .on("end", () => {
             errorUtil.handleErrorCount(errorCount);

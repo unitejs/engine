@@ -6,9 +6,9 @@ import * as glob from "glob";
 import * as gulp from "gulp";
 import * as insert from "gulp-insert";
 import * as sourcemaps from "gulp-sourcemaps";
-import * as gutil from "gulp-util";
 import * as path from "path";
 import * as requireJs from "requirejs";
+import * as through2 from "through2";
 import * as util from "util";
 import { IModuleConfig } from "../../../types/IModuleConfig";
 import { IUniteBuildConfiguration } from "../../../types/IUniteBuildConfiguration";
@@ -104,10 +104,10 @@ async function performAppOptimize(uniteConfig: IUniteConfiguration, buildConfigu
 
                                     await asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.dist, "app-bundle.js"))
                                         .pipe(buildConfiguration.sourcemaps
-                                            ? sourcemaps.init({ loadMaps: true }) : gutil.noop())
+                                            ? sourcemaps.init({ loadMaps: true }) : through2.obj())
                                         .pipe(insert.append(bootstrap))
                                         .pipe(buildConfiguration.sourcemaps
-                                            ? sourcemaps.write({ includeContent: true }) : gutil.noop())
+                                            ? sourcemaps.write({ includeContent: true }) : through2.obj())
                                         .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
 
                                     resolve();

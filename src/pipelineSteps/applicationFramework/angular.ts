@@ -47,13 +47,13 @@ export class Angular extends SharedAppFramework implements IApplicationFramework
             engineVariables.buildTranspilePreBuild.push("                removeLineBreaks: true,");
             engineVariables.buildTranspilePreBuild.push("                customFilePath: (ext, inlinePath) => ext[0] === \".css\" ?");
             engineVariables.buildTranspilePreBuild.push("                    inlinePath.replace(`\${path.sep}src\${path.sep}`, `\${path.sep}dist\${path.sep}`) : inlinePath");
-            engineVariables.buildTranspilePreBuild.push("        }) : gutil.noop())");
+            engineVariables.buildTranspilePreBuild.push("        }) : through2.obj())");
 
             const moduleIdRegEx = engineVariables.moduleId.replace(/\./g, "\\.")
                                                             .replace(/\(/g, "\\(")
                                                             .replace(/\)/g, "\\)");
 
-            engineVariables.buildTranspilePreBuild.push(`        .pipe(buildConfiguration.bundle ? replace(/moduleId: ${moduleIdRegEx},/, "") : gutil.noop())`);
+            engineVariables.buildTranspilePreBuild.push(`        .pipe(buildConfiguration.bundle ? replace(/moduleId: ${moduleIdRegEx},/, "") : through2.obj())`);
         }
 
         engineVariables.toggleDevDependency(["gulp-inline-ng2-template"], mainCondition && usingGulp);
@@ -61,7 +61,7 @@ export class Angular extends SharedAppFramework implements IApplicationFramework
         engineVariables.toggleDevDependency(["unitejs-protractor-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
         engineVariables.toggleDevDependency(["unitejs-webdriver-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
 
-        engineVariables.toggleDevDependency(["babel-plugin-transform-decorators-legacy", "babel-plugin-transform-class-properties"],
+        engineVariables.toggleDevDependency(["@babel/plugin-proposal-decorators", "@babel/plugin-proposal-class-properties"],
                                             mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
         engineVariables.toggleDevDependency(["babel-eslint"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
         engineVariables.toggleDevDependency(["@types/systemjs"],
@@ -80,8 +80,10 @@ export class Angular extends SharedAppFramework implements IApplicationFramework
 
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
         if (babelConfiguration) {
-            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", mainCondition);
-            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-class-properties", mainCondition);
+            ArrayHelper.addRemove(babelConfiguration.plugins, ["@babel/plugin-proposal-decorators", { legacy: true }], mainCondition,
+                                  (obj, item) => Array.isArray(item) && item.length > 0 && item[0] === obj[0]);
+            ArrayHelper.addRemove(babelConfiguration.plugins, ["@babel/plugin-proposal-class-properties", { loose: true }], mainCondition,
+                                  (obj, item) => Array.isArray(item) && item.length > 0 && item[0] === obj[0]);
         }
 
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
@@ -177,20 +179,38 @@ export class Angular extends SharedAppFramework implements IApplicationFramework
                                                 mainCondition);
         });
 
-        engineVariables.toggleClientPackage("rxjs", {
-            name: "rxjs",
-            main: "*",
-            mainLib: ["*.js",
-                "add/**/*.js",
-                "observable/**/*.js",
-                "operator/**/*.js",
-                "operators/**/*.js",
-                "scheduler/**/*.js",
-                "symbol/**/*.js",
-                "testing/**/*.js",
-                "util/**/*.js"
-            ]
-        },
+        engineVariables.toggleClientPackage("rxjs",
+                                            {
+                                                name: "rxjs",
+                                                main: "*",
+                                                libFile: "index.js",
+                                                libExtension: "js",
+                                                mainLib: [
+                                                    "operator",
+                                                    "operators",
+                                                    "observable",
+                                                    "scheduler",
+                                                    "symbol",
+                                                    "testing",
+                                                    "add/operator",
+                                                    "add/observable",
+                                                    "internal",
+                                                    "internal/observable",
+                                                    "internal/operators",
+                                                    "internal/scheduler",
+                                                    "internal/symbol",
+                                                    "internal/testing",
+                                                    "internal/util",
+                                                    "util"
+                                                  ]
+                                            },
+                                            mainCondition);
+
+        engineVariables.toggleClientPackage("rxjs-compat",
+                                            {
+                                                name: "rxjs-compat",
+                                                main: "*"
+                                            },
                                             mainCondition);
 
         engineVariables.toggleClientPackage("core-js", {

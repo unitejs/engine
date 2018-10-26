@@ -36,7 +36,7 @@ export class Vue extends SharedAppFramework implements IApplicationFramework {
         engineVariables.toggleDevDependency(["unitejs-protractor-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
         engineVariables.toggleDevDependency(["unitejs-webdriver-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
 
-        engineVariables.toggleDevDependency(["babel-plugin-transform-decorators-legacy", "babel-plugin-transform-class-properties"],
+        engineVariables.toggleDevDependency(["@babel/plugin-proposal-decorators", "@babel/plugin-proposal-class-properties"],
                                             mainCondition && super.condition(uniteConfiguration.sourceLanguage, "JavaScript"));
 
         engineVariables.toggleDevDependency(["babel-eslint"], mainCondition && super.condition(uniteConfiguration.linter, "ESLint"));
@@ -120,8 +120,10 @@ export class Vue extends SharedAppFramework implements IApplicationFramework {
 
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
         if (babelConfiguration) {
-            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-decorators-legacy", mainCondition);
-            ArrayHelper.addRemove(babelConfiguration.plugins, "transform-class-properties", mainCondition);
+            ArrayHelper.addRemove(babelConfiguration.plugins, ["@babel/plugin-proposal-decorators", { legacy: true }], mainCondition,
+                                  (obj, item) => Array.isArray(item) && item.length > 0 && item[0] === obj[0]);
+            ArrayHelper.addRemove(babelConfiguration.plugins, ["@babel/plugin-proposal-class-properties", { loose: true }], mainCondition,
+                                  (obj, item) => Array.isArray(item) && item.length > 0 && item[0] === obj[0]);
         }
 
         const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");

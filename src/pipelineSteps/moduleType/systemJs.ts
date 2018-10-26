@@ -25,7 +25,7 @@ export class SystemJs extends PipelineStepBase {
 
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         if (mainCondition) {
-            uniteConfiguration.srcDistReplace = "(System.register.*?)(\.\.\/src\/)";
+            uniteConfiguration.srcDistReplace = "(SystemJS.register.*?)(\.\.\/src\/)";
             uniteConfiguration.srcDistReplaceWith = "$1../dist/";
         }
 
@@ -36,11 +36,11 @@ export class SystemJs extends PipelineStepBase {
 
         const babelConfiguration = engineVariables.getConfiguration<BabelConfiguration>("Babel");
         if (babelConfiguration) {
-            const foundPreset = babelConfiguration.presets.find(preset => Array.isArray(preset) && preset.length > 0 && preset[0] === "env");
+            const foundPreset = babelConfiguration.presets.find(preset => Array.isArray(preset) && preset.length > 0 && preset[0] === "@babel/preset-env");
             if (foundPreset) {
                 foundPreset[1] = { modules: mainCondition ? "systemjs" : undefined };
             } else {
-                babelConfiguration.presets.push(["env", { modules: mainCondition ? "systemjs" : undefined }]);
+                babelConfiguration.presets.push(["@babel/preset-env", { modules: mainCondition ? "systemjs" : undefined }]);
             }
         }
 

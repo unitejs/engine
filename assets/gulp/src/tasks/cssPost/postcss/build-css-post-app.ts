@@ -6,8 +6,8 @@ import * as cssnano from "gulp-cssnano";
 import * as postcss from "gulp-postcss";
 import * as rename from "gulp-rename";
 import * as sourcemaps from "gulp-sourcemaps";
-import * as gutil from "gulp-util";
 import * as path from "path";
+import * as through2 from "through2";
 import * as asyncUtil from "../../util/async-util";
 import * as display from "../../util/display";
 import * as errorUtil from "../../util/error-util";
@@ -23,18 +23,18 @@ gulp.task("build-css-post-app", async () => {
 
     return asyncUtil.stream(gulp.src(path.join(uniteConfig.dirs.www.cssDist, "main.css"))
         .pipe(rename("style.css"))
-        .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : gutil.noop())
+        .pipe(buildConfiguration.sourcemaps ? sourcemaps.init() : through2.obj())
         .pipe(postcss())
         .on("error", (err) => {
             display.error(err.message);
             errorCount++;
         })
         .on("error", errorUtil.handleErrorEvent)
-        .pipe(buildConfiguration.minify ? cssnano() : gutil.noop())
+        .pipe(buildConfiguration.minify ? cssnano() : through2.obj())
         .pipe(buildConfiguration.sourcemaps ? sourcemaps.write({
             includeContent: true,
             sourceRoot: "./src"
-        }) : gutil.noop())
+        }) : through2.obj())
         .pipe(gulp.dest(uniteConfig.dirs.www.cssDist))
         .on("end", () => {
             errorUtil.handleErrorCount(errorCount);

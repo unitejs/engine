@@ -5,8 +5,8 @@ import * as browserify from "browserify";
 import * as gulp from "gulp";
 import * as sourcemaps from "gulp-sourcemaps";
 import * as uglify from "gulp-uglify";
-import * as gutil from "gulp-util";
 import * as path from "path";
+import * as through2 from "through2";
 import * as buffer from "vinyl-buffer";
 import * as source from "vinyl-source-stream";
 import * as asyncUtil from "../../util/async-util";
@@ -54,11 +54,11 @@ gulp.task("build-bundle-app", async () => {
             .pipe(buildConfiguration.minify ? uglify()
                 .on("error", (err) => {
                     display.error(err.toString());
-                }) : gutil.noop())
-            .pipe(buildConfiguration.sourcemaps ? sourcemaps.init({loadMaps: true}) : gutil.noop())
+                }) : through2.obj())
+            .pipe(buildConfiguration.sourcemaps ? sourcemaps.init({loadMaps: true}) : through2.obj())
             .pipe(buildConfiguration.sourcemaps
-                ? sourcemaps.mapSources((sourcePath) => sourcePath.replace(/dist\//, "./")) : gutil.noop())
-            .pipe(buildConfiguration.sourcemaps ? sourcemaps.write({includeContent: true}) : gutil.noop())
+                ? sourcemaps.mapSources((sourcePath) => sourcePath.replace(/dist\//, "./")) : through2.obj())
+            .pipe(buildConfiguration.sourcemaps ? sourcemaps.write({includeContent: true}) : through2.obj())
             .pipe(gulp.dest(uniteConfig.dirs.www.dist)));
     }
 });
