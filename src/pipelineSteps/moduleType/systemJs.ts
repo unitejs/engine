@@ -25,7 +25,7 @@ export class SystemJs extends PipelineStepBase {
 
     public async configure(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         if (mainCondition) {
-            uniteConfiguration.srcDistReplace = "(SystemJS.register.*?)(\.\.\/src\/)";
+            uniteConfiguration.srcDistReplace = "(System.register.*?)(\.\.\/src\/)";
             uniteConfiguration.srcDistReplaceWith = "$1../dist/";
         }
 
