@@ -11,7 +11,6 @@
 * Jsdom v12
 * Karma v3
 * Mocha v5
-* Polymer v3
 * Rxjs v6
 * Webpack v4
 * Removed all gulp-util usage

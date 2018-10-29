@@ -361,8 +361,8 @@ Information tags passed as args into the unite configure command are stored in u
     "backgroundColor": "#339933",
     "themeColor": "#339933",
     "shortName": "UJS",
-    "organization": "2017 Obany Ltd",
-    "copyright": "2017 Obany Ltd",
+    "organization": "2018 Obany Ltd",
+    "copyright": "2018 Obany Ltd",
     "webSite": "http://unitejs.com",
     "metaAuthor": "Unite JS", // author
     "metaAuthorEmail": "fake@unitejs.com", //authorEmail
