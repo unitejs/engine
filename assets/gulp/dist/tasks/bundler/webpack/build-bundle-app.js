@@ -59,6 +59,7 @@ gulp.task("build-bundle-app", async () => {
             resolve: {
                 alias: vendorAliases
             },
+            mode: buildConfiguration.minify ? "production" : "development",
             optimization: {
                 splitChunks: {
                     cacheGroups: {
