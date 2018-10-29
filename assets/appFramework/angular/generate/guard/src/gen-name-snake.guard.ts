@@ -6,7 +6,7 @@
  */
 import { Injectable } from "@angular/core";
 import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot } from "@angular/router";
-import { Observable } from "rxjs/Observable";
+import { Observable } from "rxjs";
 
 @Injectable()
 export class GenNamePascalGuard implements CanActivate {
