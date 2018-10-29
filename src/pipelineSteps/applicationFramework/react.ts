@@ -104,6 +104,11 @@ export class React extends SharedAppFramework implements IApplicationFramework {
             ArrayHelper.addRemove(esLintConfiguration.extends, "plugin:react/recommended", mainCondition);
             ArrayHelper.addRemove(esLintConfiguration.plugins, "react", mainCondition);
             ObjectHelper.addRemove(esLintConfiguration.rules, "no-unused-vars", 1, mainCondition);
+            ObjectHelper.addRemove(esLintConfiguration.settings, "react",
+                                   {
+                                        version: "16.0"
+                                   },
+                                   mainCondition);
         }
 
         const tsLintConfiguration = engineVariables.getConfiguration<TsLintConfiguration>("TSLint");
