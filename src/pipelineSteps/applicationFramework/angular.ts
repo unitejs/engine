@@ -206,23 +206,6 @@ export class Angular extends SharedAppFramework implements IApplicationFramework
                                             },
                                             mainCondition);
 
-        engineVariables.toggleClientPackage("rxjs-compat",
-                                            {
-                                                name: "rxjs-compat",
-                                                main: "*",
-                                                mainLib: [
-                                                    "operator",
-                                                    "operators",
-                                                    "observable",
-                                                    "scheduler",
-                                                    "symbol",
-                                                    "add/operator",
-                                                    "add/observable",
-                                                    "util"
-                                                  ]
-                                            },
-                                            mainCondition);
-
         engineVariables.toggleClientPackage("core-js", {
             name: "core-js",
             main: "client/shim.js",
