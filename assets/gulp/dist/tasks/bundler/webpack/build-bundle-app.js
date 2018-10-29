@@ -3,7 +3,6 @@
  */
 const gulp = require("gulp");
 const path = require("path");
-const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
 const webpack = require("webpack");
 const webpackStream = require("webpack-stream");
 const asyncUtil = require("../../util/async-util");
@@ -35,9 +34,6 @@ gulp.task("build-bundle-app", async () => {
         if (vendorKeys.length > 0) {
             entry.vendor = vendorKeys;
         }
-        if (buildConfiguration.minify) {
-            plugins.push(new UglifyJSPlugin());
-        }
         plugins.push(new webpack.DefinePlugin({
             "process.env": {
                 NODE_ENV: JSON.stringify(buildConfiguration.minify ? "production" : "development")
@@ -61,6 +57,7 @@ gulp.task("build-bundle-app", async () => {
             },
             mode: buildConfiguration.minify ? "production" : "development",
             optimization: {
+                minimize: buildConfiguration.minify,
                 splitChunks: {
                     cacheGroups: {
                         vendor: {
@@ -71,6 +68,9 @@ gulp.task("build-bundle-app", async () => {
                         }
                     }
                 }
+            },
+            performance: {
+                hints: false
             }
         };
         newModule.rules.push({
