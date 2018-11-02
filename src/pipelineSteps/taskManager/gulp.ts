@@ -151,7 +151,8 @@ export class Gulp extends PipelineStepBase {
         this.toggleFile(assetTasksDocumenter, "doc-generate.js", this._tasksFolder, "doc-generate.js", mainCondition && hasDocumenter);
 
         this.toggleFile(this._distFolder, "build.js", this._tasksFolder, "build.js", mainCondition);
-        this.toggleFile(this._distFolder, "build-transpile-modules.js", this._tasksFolder, "build-transpile-modules.js", mainCondition);
+        // No longer used
+        this.toggleFile(this._distFolder, "build-transpile-modules.js", this._tasksFolder, "build-transpile-modules.js", false);
         this.toggleFile(this._distFolder, "version.js", this._tasksFolder, "version.js", mainCondition);
         this.toggleFile(this._distFolder, "doc.js", this._tasksFolder, "doc.js", mainCondition && hasDocumenter);
     }

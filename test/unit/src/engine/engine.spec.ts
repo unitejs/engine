@@ -270,12 +270,6 @@ describe("Engine", () => {
                 loaders: undefined,
                 noScript: undefined,
                 profile: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined,
                 packageManager: undefined,
                 outputDirectory: "./test/unit/temp"
             });

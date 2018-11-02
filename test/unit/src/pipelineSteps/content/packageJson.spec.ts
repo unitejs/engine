@@ -7,7 +7,6 @@ import { IFileSystem } from "unitejs-framework/dist/interfaces/IFileSystem";
 import { ILogger } from "unitejs-framework/dist/interfaces/ILogger";
 import { PackageConfiguration } from "../../../../../src/configuration/models/packages/packageConfiguration";
 import { UniteClientPackage } from "../../../../../src/configuration/models/unite/uniteClientPackage";
-import { UniteClientPackageTranspile } from "../../../../../src/configuration/models/unite/uniteClientPackageTranspile";
 import { UniteConfiguration } from "../../../../../src/configuration/models/unite/uniteConfiguration";
 import { EngineVariables } from "../../../../../src/engine/engineVariables";
 import { PackageJson } from "../../../../../src/pipelineSteps/content/packageJson";
@@ -145,53 +144,6 @@ describe("PackageJson", () => {
             Chai.expect(json.dependencies).to.be.deep.equal({ "my-package": "1.0.1", "a-package": "1.0.1" });
             Chai.expect(json.devDependencies).to.be.deep.equal({ "a-dev-package": "2.0.2", "dev-package": "2.0.2" });
             Chai.expect(json.engines).to.be.deep.equal({ "my-engine": "3.0.0", node: ">=8.0.0" });
-        });
-
-        it("can fail removing transpiled packages", async () => {
-            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
-            sandbox.stub(fileSystemMock, "directoryExists").throws();
-
-            uniteConfigurationStub.clientPackages = {};
-            uniteConfigurationStub.clientPackages.package = new UniteClientPackage();
-            uniteConfigurationStub.clientPackages.package.transpile = new UniteClientPackageTranspile();
-            uniteConfigurationStub.clientPackages.package.transpile.alias = "alias";
-
-            const obj = new PackageJson();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
-            Chai.expect(res).to.be.equal(1);
-            Chai.expect(loggerErrorSpy.args[0][0]).contains("failed");
-        });
-
-        it("can succeed if transpiled packages folder does not exist", async () => {
-            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
-            sandbox.stub(fileSystemMock, "directoryExists").resolves(false);
-
-            uniteConfigurationStub.clientPackages = {};
-            uniteConfigurationStub.clientPackages.package = new UniteClientPackage();
-            uniteConfigurationStub.clientPackages.package.transpile = new UniteClientPackageTranspile();
-            uniteConfigurationStub.clientPackages.package.transpile.alias = "alias";
-
-            const obj = new PackageJson();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
-            Chai.expect(res).to.be.equal(0);
-        });
-
-        it("can succeed if transpiled packages folder does exist", async () => {
-            await fileSystemMock.directoryCreate("./test/unit/temp/www/");
-            sandbox.stub(fileSystemMock, "directoryExists").resolves(true);
-            sandbox.stub(fileSystemMock, "directoryDelete").resolves();
-
-            uniteConfigurationStub.clientPackages = {};
-            uniteConfigurationStub.clientPackages.package = new UniteClientPackage();
-            uniteConfigurationStub.clientPackages.package.transpile = new UniteClientPackageTranspile();
-            uniteConfigurationStub.clientPackages.package.transpile.alias = "alias";
-
-            const obj = new PackageJson();
-            await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
-            const res = await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
-            Chai.expect(res).to.be.equal(0);
         });
     });
 });

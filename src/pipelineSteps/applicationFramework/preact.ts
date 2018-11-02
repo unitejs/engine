@@ -12,7 +12,6 @@ import { TsLintConfiguration } from "../../configuration/models/tslint/tsLintCon
 import { TypeDocConfiguration } from "../../configuration/models/typeDoc/typeDocConfiguration";
 import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteClientPackage } from "../../configuration/models/unite/uniteClientPackage";
-import { UniteClientPackageTranspile } from "../../configuration/models/unite/uniteClientPackageTranspile";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { UnitePackageRouteConfiguration } from "../../configuration/models/unitePackages/unitePackageRouteConfiguration";
 import { JavaScriptConfiguration } from "../../configuration/models/vscode/javaScriptConfiguration";
@@ -69,17 +68,9 @@ export class Preact extends SharedAppFramework implements IApplicationFramework 
         if (isTranspiled) {
             preactPackage.main = "dist/preact.js";
             preactPackage.mainMinified = undefined;
-            preactPackage.transpile = new UniteClientPackageTranspile();
-            preactPackage.transpile.alias = "preact-transpiled";
-            preactPackage.transpile.language = "JavaScript";
-            preactPackage.transpile.sources = ["dist/preact.mjs"];
 
-            preactRouterPackage.main = "dist/preact-router.es.js";
+            preactRouterPackage.main = "dist/preact-router.js";
             preactRouterPackage.mainMinified = undefined;
-            preactRouterPackage.transpile = new UniteClientPackageTranspile();
-            preactRouterPackage.transpile.alias = "preact-router-transpiled";
-            preactRouterPackage.transpile.language = "JavaScript";
-            preactRouterPackage.transpile.sources = ["dist/preact-router.es.js"];
         }
 
         engineVariables.toggleClientPackage("preact", preactPackage, mainCondition);

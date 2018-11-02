@@ -161,13 +161,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("no unite.json");
@@ -194,13 +188,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("operation");
@@ -227,13 +215,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("packageName");
@@ -261,13 +243,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("packageManager");
@@ -295,13 +271,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("includeMode");
@@ -329,13 +299,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("scriptIncludeMode");
@@ -363,13 +327,7 @@ describe("ClientPackageCommand", () => {
                 noScript: true,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("main and noScript");
@@ -397,13 +355,7 @@ describe("ClientPackageCommand", () => {
                 noScript: true,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("mainMinified and noScript");
@@ -431,13 +383,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("already");
@@ -465,13 +411,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("Package Information");
@@ -500,13 +440,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("failed");
@@ -534,13 +468,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("failure");
@@ -569,13 +497,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("failed");
@@ -603,13 +525,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: "bluebird",
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
@@ -641,13 +557,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: "blah",
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("does not exist");
@@ -675,13 +585,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
@@ -711,13 +615,7 @@ describe("ClientPackageCommand", () => {
                 noScript: true,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
@@ -748,13 +646,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
@@ -785,13 +677,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
@@ -822,13 +708,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
@@ -859,13 +739,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
@@ -896,13 +770,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
@@ -932,12 +800,6 @@ describe("ClientPackageCommand", () => {
                 loaders: ["text=*.html", "css=*.css"],
                 noScript: undefined,
                 profile: undefined,
-                transpileAlias: "TAlias",
-                transpileLanguage: "JavaScript",
-                transpileSources: ["src/**/*.js"],
-                transpileTransforms: ["a", "b"],
-                transpileModules: ["c", "d"],
-                transpileStripExt: true,
                 packageManager: undefined,
                 outputDirectory: undefined
             });
@@ -955,12 +817,6 @@ describe("ClientPackageCommand", () => {
             Chai.expect(uniteJsonWritten.clientPackages.package.assets).to.be.deep.equal(["**/*.css", "**/*.otf"]);
             Chai.expect(uniteJsonWritten.clientPackages.package.map).to.be.deep.equal({ a: "b", c: "d" });
             Chai.expect(uniteJsonWritten.clientPackages.package.loaders).to.be.deep.equal({ text: "*.html", css: "*.css" });
-            Chai.expect(uniteJsonWritten.clientPackages.package.transpile.alias).to.be.equal("TAlias");
-            Chai.expect(uniteJsonWritten.clientPackages.package.transpile.language).to.be.equal("JavaScript");
-            Chai.expect(uniteJsonWritten.clientPackages.package.transpile.sources).to.be.deep.equal(["src/**/*.js"]);
-            Chai.expect(uniteJsonWritten.clientPackages.package.transpile.modules).to.be.deep.equal(["c", "d"]);
-            Chai.expect(uniteJsonWritten.clientPackages.package.transpile.stripExt).to.be.equal(true);
-            Chai.expect(uniteJsonWritten.clientPackages.package.transpile.transforms).to.be.deep.equal({ a: "b" });
         });
 
         it("can succeed with all existing profile parameters", async () => {
@@ -980,15 +836,7 @@ describe("ClientPackageCommand", () => {
                 assets: ["**/*.css", "**/*.otf"],
                 map: {a: "b", c: "d"},
                 loaders: {text: "*.html", css: "*.css"},
-                noScript: undefined,
-                transpile: {
-                    alias: "TAlias",
-                    language: "JavaScript",
-                    sources: ["src/**/*.js"],
-                    transforms: {a: "b"},
-                    modules: ["c", "d"],
-                    stripExt: true
-                }
+                noScript: undefined
             };
 
             const obj = new ClientPackageCommand();
@@ -1009,12 +857,6 @@ describe("ClientPackageCommand", () => {
                 map: undefined,
                 loaders: undefined,
                 noScript: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileTransforms: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
                 packageManager: undefined,
                 profile: "testProfile",
                 outputDirectory: undefined
@@ -1033,12 +875,6 @@ describe("ClientPackageCommand", () => {
             Chai.expect(uniteJsonWritten.clientPackages.package.assets).to.be.deep.equal(["**/*.css", "**/*.otf"]);
             Chai.expect(uniteJsonWritten.clientPackages.package.map).to.be.deep.equal({ a: "b", c: "d" });
             Chai.expect(uniteJsonWritten.clientPackages.package.loaders).to.be.deep.equal({ text: "*.html", css: "*.css" });
-            Chai.expect(uniteJsonWritten.clientPackages.package.transpile.alias).to.be.equal("TAlias");
-            Chai.expect(uniteJsonWritten.clientPackages.package.transpile.language).to.be.equal("JavaScript");
-            Chai.expect(uniteJsonWritten.clientPackages.package.transpile.sources).to.be.deep.equal(["src/**/*.js"]);
-            Chai.expect(uniteJsonWritten.clientPackages.package.transpile.modules).to.be.deep.equal(["c", "d"]);
-            Chai.expect(uniteJsonWritten.clientPackages.package.transpile.stripExt).to.be.equal(true);
-            Chai.expect(uniteJsonWritten.clientPackages.package.transpile.transforms).to.be.deep.equal({ a: "b" });
         });
 
         it("can succeed with all existing profile parameters empty transpile options", async () => {
@@ -1058,10 +894,7 @@ describe("ClientPackageCommand", () => {
                 assets: ["**/*.css", "**/*.otf"],
                 map: {a: "b", c: "d"},
                 loaders: {text: "*.html", css: "*.css"},
-                noScript: undefined,
-                transpile: {
-                    alias: undefined
-                }
+                noScript: undefined
             };
 
             const obj = new ClientPackageCommand();
@@ -1082,12 +915,6 @@ describe("ClientPackageCommand", () => {
                 map: undefined,
                 loaders: undefined,
                 noScript: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileTransforms: undefined,
-                transpileModules: undefined,
-                transpileStripExt: true,
                 packageManager: undefined,
                 profile: "testProfile",
                 outputDirectory: undefined
@@ -1106,12 +933,6 @@ describe("ClientPackageCommand", () => {
             Chai.expect(uniteJsonWritten.clientPackages.package.assets).to.be.deep.equal(["**/*.css", "**/*.otf"]);
             Chai.expect(uniteJsonWritten.clientPackages.package.map).to.be.deep.equal({ a: "b", c: "d" });
             Chai.expect(uniteJsonWritten.clientPackages.package.loaders).to.be.deep.equal({ text: "*.html", css: "*.css" });
-            Chai.expect(uniteJsonWritten.clientPackages.package.transpile.alias).to.be.equal(undefined);
-            Chai.expect(uniteJsonWritten.clientPackages.package.transpile.language).to.be.equal(undefined);
-            Chai.expect(uniteJsonWritten.clientPackages.package.transpile.sources).to.be.deep.equal(undefined);
-            Chai.expect(uniteJsonWritten.clientPackages.package.transpile.modules).to.be.deep.equal(undefined);
-            Chai.expect(uniteJsonWritten.clientPackages.package.transpile.stripExt).to.be.equal(undefined);
-            Chai.expect(uniteJsonWritten.clientPackages.package.transpile.transforms).to.be.deep.equal(undefined);
         });
     });
 
@@ -1138,13 +959,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("no unite.json");
@@ -1171,13 +986,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("operation");
@@ -1204,13 +1013,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("packageName");
@@ -1238,13 +1041,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("packageManager");
@@ -1271,13 +1068,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("not been");
@@ -1307,13 +1098,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(1);
             Chai.expect(loggerErrorSpy.args[0][0]).to.contain("failed");
@@ -1342,13 +1127,7 @@ describe("ClientPackageCommand", () => {
                 noScript: undefined,
                 profile: undefined,
                 packageManager: undefined,
-                outputDirectory: undefined,
-                transpileAlias: undefined,
-                transpileLanguage: undefined,
-                transpileSources: undefined,
-                transpileModules: undefined,
-                transpileStripExt: undefined,
-                transpileTransforms: undefined
+                outputDirectory: undefined
             });
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");

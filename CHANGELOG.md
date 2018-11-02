@@ -3,6 +3,8 @@
 ## 1.8.1
 
 * Polymer updated to v3 release branch
+* Removed module transpile options
+* Added SystemJS transpile options for ES modules
 
 ## 1.8.0
 

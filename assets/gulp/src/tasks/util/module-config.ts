@@ -62,6 +62,7 @@ function createSystemConfig(uniteConfig: IUniteConfiguration, moduleConfig: IMod
 
     const sjsConfig: ISystemJsConfig = {
         baseURL: mapBase,
+        transpiler: "unitejs-systemjs-plugin-babel",
         paths: moduleConfig.paths,
         packages: {},
         map: {},
@@ -90,18 +91,20 @@ function createSystemConfig(uniteConfig: IUniteConfiguration, moduleConfig: IMod
     });
     moduleConfig.packages.forEach((pkg) => {
         moduleConfig.paths[pkg.name] = regExUtils.replaceLeadingSlash(pkg.location, "");
-        if (pkg.mainLib) {
-            pkg.mainLib.forEach(childPackage => {
-                sjsConfig.packages[`${pkg.name}/${childPackage}`] = {
-                    main: pkg.main,
-                    defaultExtension: pkg.libExtension
-                };
-            });
+        if (pkg.main || pkg.libExtension) {
+            if (pkg.mainLib) {
+                pkg.mainLib.forEach(childPackage => {
+                    sjsConfig.packages[`${pkg.name}/${childPackage}`] = {
+                        main: pkg.main,
+                        defaultExtension: pkg.libExtension
+                    };
+                });
+            }
+            sjsConfig.packages[pkg.name] = {
+                main: pkg.main,
+                defaultExtension: pkg.libExtension
+            };
         }
-        sjsConfig.packages[pkg.name] = {
-            main: pkg.main,
-            defaultExtension: pkg.libExtension
-        };
     });
     Object.keys(moduleConfig.map).forEach(key => {
         sjsConfig.map[key] = moduleConfig.map[key];

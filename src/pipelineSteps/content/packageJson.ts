@@ -61,22 +61,6 @@ export class PackageJson extends PipelineStepBase {
 
                 // Fill in package name for any that used to be just addressed by their key
                 pkg.name = pkg.name || keys[i];
-
-                if (pkg.transpile && pkg.transpile.alias) {
-                    const parts = pkg.transpile.alias.split("/");
-                    const transpileFolder = fileSystem.pathCombine(engineVariables.www.package, parts[0]);
-                    try {
-                        const exists = await fileSystem.directoryExists(transpileFolder);
-
-                        if (exists) {
-                            logger.info(`Removing transpiled package ${transpileFolder}`);
-                            await fileSystem.directoryDelete(transpileFolder);
-                        }
-                    } catch (err) {
-                        logger.error(`Removing ${transpileFolder} failed`, err);
-                        return 1;
-                    }
-                }
             }
         }
 

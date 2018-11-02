@@ -69,35 +69,18 @@ export class Polymer extends SharedAppFramework implements IApplicationFramework
 
         engineVariables.toggleClientPackage("@webcomponents/shadycss", {
                                                 name: "@webcomponents/shadycss",
-                                                transpile: {
-                                                    alias: "@webcomponents-transpiled/shadycss",
-                                                    sources: ["entrypoints/*.js", "src/**/*.js"],
-                                                    language: "JavaScript"
-                                                },
                                                 main: "*"
                                             },
                                             mainCondition);
 
         engineVariables.toggleClientPackage("@polymer/polymer", {
                                                 name: "@polymer/polymer",
-                                                transpile: {
-                                                    alias: "@polymer-transpiled/polymer",
-                                                    sources: ["polymer-legacy.js", "polymer-element.js", "lib/**/*.js"],
-                                                    language: "JavaScript",
-                                                    stripExt: true,
-                                                    modules: ["@webcomponents"]
-                                                },
                                                 main: "*"
                                             },
                                             mainCondition);
 
         engineVariables.toggleClientPackage("@polymer/decorators", {
                                                 name: "@polymer/decorators",
-                                                transpile: {
-                                                    alias: "@polymer-transpiled/decorators",
-                                                    language: "JavaScript",
-                                                    sources: ["lib/*.js"]
-                                                },
                                                 main: "lib/decorators.js"
                                             },
                                             mainCondition);
@@ -107,11 +90,6 @@ export class Polymer extends SharedAppFramework implements IApplicationFramework
         components.forEach(component => {
             engineVariables.toggleClientPackage(`@polymer/${component}`, {
                                                     name: `@polymer/${component}`,
-                                                    transpile: {
-                                                        alias: `@polymer-transpiled/${component}`,
-                                                        language: "JavaScript",
-                                                        sources: ["*.js"]
-                                                    },
                                                     main: "*"
                                                 },
                                                 mainCondition);

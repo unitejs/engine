@@ -176,9 +176,7 @@ describe("Preact", () => {
             const packageJsonDependencies: { [id: string]: string } = {};
             engineVariablesStub.buildDependencies(uniteConfigurationStub, packageJsonDependencies);
 
-            Chai.expect(uniteConfigurationStub.clientPackages.preact.transpile.alias).to.be.equal("preact-transpiled");
             Chai.expect(uniteConfigurationStub.clientPackages.preact.mainMinified).to.be.equal(undefined);
-            Chai.expect(uniteConfigurationStub.clientPackages["preact-router"].transpile.alias).to.be.equal("preact-router-transpiled");
             Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(2);
             Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(1);
         });

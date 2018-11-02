@@ -3,7 +3,6 @@
  */
 import { IncludeMode } from "./includeMode";
 import { ScriptIncludeMode } from "./scriptIncludeMode";
-import { UniteClientPackageTranspile } from "./uniteClientPackageTranspile";
 
 export class UniteClientPackage {
     public name: string;
@@ -24,7 +23,6 @@ export class UniteClientPackage {
     public loaders?: { [id: string]: string };
     public isModuleLoader?: boolean;
     public noScript?: boolean;
-    public transpile?: UniteClientPackageTranspile;
     public hasOverrides?: boolean;
     public isDevDependency?: boolean;
 }

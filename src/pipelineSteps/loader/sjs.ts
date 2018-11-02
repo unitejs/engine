@@ -38,6 +38,24 @@ export class SJS extends PipelineStepBase {
                                             },
                                             mainCondition);
 
+        engineVariables.toggleClientPackage("unitejs-systemjs-plugin-babel", {
+                                                name: "unitejs-systemjs-plugin-babel",
+                                                main: "plugin-babel.js",
+                                                map: {
+                                                    "unitejs-plugin-babel": "node_modules/unitejs-systemjs-plugin-babel/plugin-babel"
+                                                }
+                                            },
+                                            mainCondition);
+
+        engineVariables.toggleClientPackage("systemjs-plugin-babel", {
+                                                name: "systemjs-plugin-babel",
+                                                main: "plugin-babel.js",
+                                                map: {
+                                                    "plugin-babel": "node_modules/systemjs-plugin-babel/plugin-babel",
+                                                    "systemjs-babel-build": "node_modules/systemjs-plugin-babel/systemjs-babel-browser"
+                                                }
+                                            },
+                                            mainCondition);
         if (mainCondition) {
             const htmlNoBundle = engineVariables.getConfiguration<HtmlTemplateConfiguration>("HTMLNoBundle");
             if (htmlNoBundle) {

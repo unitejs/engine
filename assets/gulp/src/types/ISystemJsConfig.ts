@@ -3,11 +3,10 @@
  */
 export interface ISystemJsConfig {
     baseURL: string;
+    transpiler: string;
     paths: { [id: string]: string };
     packages: { [id: string]: { defaultExtension?: string; main?: string } };
-    // preload: string[];
     map: { [id: string]: string };
-    // loaders: { [id: string]: string };
     meta: { [id: string]: { format?: string; loader?: string } };
 }
 

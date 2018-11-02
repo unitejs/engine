@@ -19,7 +19,6 @@ import * as platformUtils from "./util/platform-utils";
 import * as themeUtils from "./util/theme-utils";
 import * as uc from "./util/unite-config";
 require("./build-transpile");
-require("./build-transpile-modules");
 require("./build-bundle-app");
 require("./build-bundle-vendor");
 require("./build-lint");
@@ -229,7 +228,6 @@ gulp.task("build", async () => {
             "build-css-components",
             "build-css-lint-components",
             "build-css-post-components",
-            "build-transpile-modules",
             "build-transpile",
             "build-lint",
             "build-css-app",
