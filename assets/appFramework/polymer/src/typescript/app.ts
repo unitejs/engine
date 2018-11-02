@@ -6,10 +6,10 @@
  */
 import "@polymer/app-route/app-location";
 import "@polymer/app-route/app-route";
-import {customElement} from "@polymer/decorators/src/decorators";
+import {customElement} from "@polymer/decorators";
 import "@polymer/iron-pages/iron-pages";
-import {Element as PolymerElement} from "@polymer/polymer/polymer-element";
-import /* Synthetic Import */ template from "./app.html";
+import {PolymerElement} from "@polymer/polymer/polymer-element";
+import template from "./app.html";
 import "./child/child";
 
 @customElement("unite-app")
@@ -18,10 +18,12 @@ export class App extends PolymerElement {
      * Get the template.
      * @readonly
      * @static
-     * @returns {string}
+     * @returns {HTMLTemplateElement}
      */
-    static get template(): string {
-        return `${template}`;
+    static get template(): HTMLTemplateElement {
+        const temp = document.createElement("template");
+        temp.innerHTML = template.trim();
+        return temp;
     }
 }
 

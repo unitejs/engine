@@ -4,10 +4,10 @@
  * @export
  * @class Child
  */
-import { customElement, property } from "@polymer/decorators/src/decorators";
-import { Element as PolymerElement } from "@polymer/polymer/polymer-element";
-import /* Synthetic Import */ style from "./child.css";
-import /* Synthetic Import */ template from "./child.html";
+import { customElement, property } from "@polymer/decorators";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
+import style from "./child.css";
+import template from "./child.html";
 
 @customElement("unite-child")
 export class Child extends PolymerElement {
@@ -30,11 +30,12 @@ export class Child extends PolymerElement {
      * Get the template.
      * @readonly
      * @static
-     * @returns {string}
+     * @returns {HTMLTemplateElement}
      */
-    static get template(): string {
-        return `<style>${style}</style>
-        ${template}`;
+    static get template(): HTMLTemplateElement {
+        const temp = document.createElement("template");
+        temp.innerHTML = `<style>${style.trim()}</style>${template.trim()}`;
+        return temp;
     }
 }
 

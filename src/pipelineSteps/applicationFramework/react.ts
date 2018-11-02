@@ -142,6 +142,7 @@ export class React extends SharedAppFramework implements IApplicationFramework {
         if (typeScriptConfiguration) {
             ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "jsx", "react", mainCondition);
             ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "experimentalDecorators", true, mainCondition);
+            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "esModuleInterop", true, mainCondition);
         }
 
         const javaScriptConfiguration = engineVariables.getConfiguration<JavaScriptConfiguration>("JavaScript");

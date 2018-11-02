@@ -150,6 +150,7 @@ export class Preact extends SharedAppFramework implements IApplicationFramework 
             ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "jsx", "react", mainCondition);
             ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "jsxFactory", "h", mainCondition);
             ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "experimentalDecorators", true, mainCondition);
+            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "esModuleInterop", true, mainCondition);
         }
 
         const javaScriptConfiguration = engineVariables.getConfiguration<JavaScriptConfiguration>("JavaScript");

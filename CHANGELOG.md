@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.1
+
+* Polymer updated to v3 release branch
+
 ## 1.8.0
 
 * Major dependency update

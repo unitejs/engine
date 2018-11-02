@@ -61,8 +61,8 @@ export class Polymer extends SharedAppFramework implements IApplicationFramework
 
         engineVariables.toggleClientPackage("@webcomponents/webcomponentsjs", {
                                                 name: "@webcomponents/webcomponentsjs",
-                                                main: "webcomponents-lite.js",
-                                                mainMinified: "webcomponents-lite.js",
+                                                main: "webcomponents-bundle.js",
+                                                mainMinified: "webcomponents-bundle.js",
                                                 scriptIncludeMode: "both"
                                             },
                                             mainCondition);
@@ -82,7 +82,7 @@ export class Polymer extends SharedAppFramework implements IApplicationFramework
                                                 name: "@polymer/polymer",
                                                 transpile: {
                                                     alias: "@polymer-transpiled/polymer",
-                                                    sources: ["polymer.js", "polymer-element.js", "lib/**/*.js"],
+                                                    sources: ["polymer-legacy.js", "polymer-element.js", "lib/**/*.js"],
                                                     language: "JavaScript",
                                                     stripExt: true,
                                                     modules: ["@webcomponents"]
@@ -95,10 +95,10 @@ export class Polymer extends SharedAppFramework implements IApplicationFramework
                                                 name: "@polymer/decorators",
                                                 transpile: {
                                                     alias: "@polymer-transpiled/decorators",
-                                                    language: "TypeScript",
-                                                    sources: ["src/*.ts"]
+                                                    language: "JavaScript",
+                                                    sources: ["lib/*.js"]
                                                 },
-                                                main: "*"
+                                                main: "lib/decorators.js"
                                             },
                                             mainCondition);
 
@@ -180,6 +180,7 @@ export class Polymer extends SharedAppFramework implements IApplicationFramework
         const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
         if (typeScriptConfiguration) {
             ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "experimentalDecorators", true, mainCondition);
+            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "esModuleInterop", true, mainCondition);
         }
 
         const javaScriptConfiguration = engineVariables.getConfiguration<JavaScriptConfiguration>("JavaScript");
@@ -203,7 +204,6 @@ export class Polymer extends SharedAppFramework implements IApplicationFramework
 
             if (isTypeScript) {
                 srcFiles.push("customTypes/polymer-module.d.ts");
-                srcFiles.push("customTypes/polymer-element.d.ts");
             }
 
             let ret = await this.generateAppSource(logger, fileSystem, uniteConfiguration, engineVariables, srcFiles, false);

@@ -7,8 +7,8 @@
 import "@polymer/app-route/app-location";
 import "@polymer/app-route/app-route";
 import "@polymer/iron-pages/iron-pages";
-import {customElement} from "@polymer/decorators/src/decorators";
-import {Element as PolymerElement} from "@polymer/polymer/polymer-element";
+import {customElement} from "@polymer/decorators";
+import {PolymerElement} from "@polymer/polymer/polymer-element";
 import template from "./app.html";
 import "./child/child";
 
@@ -18,10 +18,12 @@ export class App extends PolymerElement {
      * Get the template.
      * @readonly
      * @static
-     * @returns {string}
+     * @returns {HTMLTemplateElement}
      */
-    static get template () {
-        return `${template}`;
+    static get template() {
+        const temp = document.createElement("template");
+        temp.innerHTML = template.trim();
+        return temp;
     }
 }
 

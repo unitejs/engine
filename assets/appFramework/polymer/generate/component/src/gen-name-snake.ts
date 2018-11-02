@@ -4,10 +4,10 @@
  * @export
  * @class GenNamePascal
  */
-import {customElement, property} from "@polymer/decorators/src/decorators";
-import {Element as PolymerElement} from "@polymer/polymer/polymer-element";
-import /* Synthetic Import */ style from "./gen-name-snake.css";
-import /* Synthetic Import */ template from "./gen-name-snake.html";
+import {customElement, property} from "@polymer/decorators";
+import {PolymerElement} from "@polymer/polymer/polymer-element";
+import style from "./gen-name-snake.css";
+import template from "./gen-name-snake.html";
 
 @customElement("co-gen-name-snake")
 export class GenNamePascal extends PolymerElement {
@@ -30,11 +30,12 @@ export class GenNamePascal extends PolymerElement {
      * Get the template.
      * @readonly
      * @static
-     * @returns {string}
+     * @returns {HTMLTemplateElement}
      */
-    static get template(): string {
-        return `<style>${style}</style>
-        ${template}`;
+    static get template(): HTMLTemplateElement {
+        const temp = document.createElement("template");
+        temp.innerHTML = `<style>${style.trim()}</style>${template.trim()}`;
+        return temp;
     }
 }
 
