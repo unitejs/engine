@@ -91,18 +91,16 @@ function createSystemConfig(uniteConfig: IUniteConfiguration, moduleConfig: IMod
     });
     moduleConfig.packages.forEach((pkg) => {
         moduleConfig.paths[pkg.name] = regExUtils.replaceLeadingSlash(pkg.location, "");
-        if (pkg.main || pkg.libExtension) {
+        if (pkg.main) {
             if (pkg.mainLib) {
                 pkg.mainLib.forEach(childPackage => {
                     sjsConfig.packages[`${pkg.name}/${childPackage}`] = {
-                        main: pkg.main,
-                        defaultExtension: pkg.libExtension
+                        main: pkg.main
                     };
                 });
             }
             sjsConfig.packages[pkg.name] = {
-                main: pkg.main,
-                defaultExtension: pkg.libExtension
+                main: pkg.main
             };
         }
     });

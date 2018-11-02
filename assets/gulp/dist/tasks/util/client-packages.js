@@ -32,9 +32,12 @@ function getPackageFiles(uniteConfig, pkg, isMinified) {
         if (pkg.isPackage) {
             files.push(path.join(`${uniteConfig.dirs.www.package}${pkgLocation}/${location}`, "**/*.{js,html,css}"));
         } else if (main === "*" && pkg.mainLib) {
-            files.push(`./${path.join(uniteConfig.dirs.www.package, `${pkgLocation}/${location}/*.${pkg.libExtension || "js"}`)}`);
+            files.push(`./${path.join(uniteConfig.dirs.www.package, `${pkgLocation}/${location}${location.indexOf(".js") < 0 ? "/*.js" : ""}`)}`);
             for (let i = 0; i < pkg.mainLib.length; i++) {
-                files.push(`./${path.join(uniteConfig.dirs.www.package, `${pkgLocation}/${location}${pkg.mainLib[i]}/*.${pkg.libExtension || "js"}`)}`);
+                const child = `./${path.join(uniteConfig.dirs.www.package, `${pkgLocation}/${location}${pkg.mainLib[i]}${pkg.mainLib[i].indexOf(".js") < 0 ? "/*.js" : ""}`)}`;
+                if (files.indexOf(child) < 0) {
+                    files.push(child);
+                }
             }
         } else {
             if (main === "*") {
@@ -211,7 +214,6 @@ function buildModuleConfig(uniteConfig, includeModes, isMinified) {
                         name: pkg.name,
                         location: `${uniteConfig.dirs.www.package}${pkgLocation}`,
                         main: pkg.libFile,
-                        libExtension: pkg.libExtension,
                         mainLib: pkg.mainLib
                     });
                 } else {

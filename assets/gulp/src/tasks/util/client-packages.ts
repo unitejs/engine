@@ -44,13 +44,16 @@ export function getPackageFiles(uniteConfig: IUniteConfiguration, pkg: IUniteCli
         } else if (main === "*" && pkg.mainLib) {
             files.push(`./${path.join(
                 uniteConfig.dirs.www.package,
-                `${pkgLocation}/${location}/*.${pkg.libExtension || "js"}`
+                `${pkgLocation}/${location}${location.indexOf(".js") < 0 ? "/*.js" : ""}`
             )}`);
             for (let i = 0; i < pkg.mainLib.length; i++) {
-                files.push(`./${path.join(
+                const child = `./${path.join(
                     uniteConfig.dirs.www.package,
-                    `${pkgLocation}/${location}${pkg.mainLib[i]}/*.${pkg.libExtension || "js"}`
-                )}`);
+                    `${pkgLocation}/${location}${pkg.mainLib[i]}${pkg.mainLib[i].indexOf(".js") < 0 ? "/*.js" : ""}`
+                )}`;
+                if (files.indexOf(child) < 0) {
+                    files.push(child);
+                }
             }
         } else {
             if (main === "*") {
@@ -264,7 +267,6 @@ export function buildModuleConfig(uniteConfig: IUniteConfiguration, includeModes
                         name: pkg.name,
                         location: `${uniteConfig.dirs.www.package}${pkgLocation}`,
                         main: pkg.libFile,
-                        libExtension: pkg.libExtension,
                         mainLib: pkg.mainLib
                     });
             } else {

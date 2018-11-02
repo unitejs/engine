@@ -69,13 +69,25 @@ export class Polymer extends SharedAppFramework implements IApplicationFramework
 
         engineVariables.toggleClientPackage("@webcomponents/shadycss", {
                                                 name: "@webcomponents/shadycss",
-                                                main: "*"
+                                                main: "*",
+                                                mainLib: [
+                                                    "entrypoints/*.js",
+                                                    "src/*.js"
+                                                ]
                                             },
                                             mainCondition);
 
         engineVariables.toggleClientPackage("@polymer/polymer", {
                                                 name: "@polymer/polymer",
-                                                main: "*"
+                                                main: "*",
+                                                mainLib: [
+                                                    "externs/*.js",
+                                                    "lib/elements/*.js",
+                                                    "lib/legacy/*.js",
+                                                    "lib/mixins/*.js",
+                                                    "lib/utils/*.js",
+                                                    "*.js"
+                                                ]
                                             },
                                             mainCondition);
 
@@ -90,7 +102,10 @@ export class Polymer extends SharedAppFramework implements IApplicationFramework
         components.forEach(component => {
             engineVariables.toggleClientPackage(`@polymer/${component}`, {
                                                     name: `@polymer/${component}`,
-                                                    main: "*"
+                                                    main: "*",
+                                                    mainLib: [
+                                                        "*.js"
+                                                    ]
                                                 },
                                                 mainCondition);
         });

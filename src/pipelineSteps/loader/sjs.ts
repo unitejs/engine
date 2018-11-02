@@ -53,6 +53,9 @@ export class SJS extends PipelineStepBase {
                                                 map: {
                                                     "plugin-babel": "node_modules/systemjs-plugin-babel/plugin-babel",
                                                     "systemjs-babel-build": "node_modules/systemjs-plugin-babel/systemjs-babel-browser"
+                                                },
+                                                testingAdditions: {
+                                                    "systemjs-babel-browser.js": "**/*.js"
                                                 }
                                             },
                                             mainCondition);

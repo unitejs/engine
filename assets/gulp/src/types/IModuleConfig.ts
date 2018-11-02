@@ -3,7 +3,7 @@
  */
 export interface IModuleConfig {
     paths: { [id: string]: string };
-    packages: { name: string; location: string; main: string; libExtension?: string; mainLib?: string[] }[];
+    packages: { name: string; location: string; main: string; mainLib?: string[] }[];
     preload: string[];
     map: { [id: string]: string };
     loaders: { [id: string]: string };

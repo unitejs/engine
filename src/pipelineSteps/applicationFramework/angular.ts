@@ -185,7 +185,6 @@ export class Angular extends SharedAppFramework implements IApplicationFramework
                                                 name: "rxjs",
                                                 main: "*",
                                                 libFile: "index.js",
-                                                libExtension: "js",
                                                 mainLib: [
                                                     "operator",
                                                     "operators",

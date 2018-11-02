@@ -12,7 +12,6 @@ export interface IUniteClientPackage {
     mainMinified?: string;
     mainLib?: string[];
     libFile?: string;
-    libExtension?: string;
     testingAdditions?: { [id: string]: string };
     preload?: boolean;
     includeMode?: IncludeMode;

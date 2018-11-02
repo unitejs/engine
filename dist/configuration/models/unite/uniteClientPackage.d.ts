@@ -10,7 +10,6 @@ export declare class UniteClientPackage {
     mainMinified?: string;
     mainLib?: string[];
     libFile?: string;
-    libExtension?: string;
     childPackages?: string[];
     testingAdditions?: {
         [id: string]: string;
