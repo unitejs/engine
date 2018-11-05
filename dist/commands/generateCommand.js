@@ -62,7 +62,7 @@ class GenerateCommand extends engineCommandBase_1.EngineCommandBase {
                                 return 1;
                             }
                         }
-                        // need this for synthetic import flags
+                        // need this for module id flags
                         this._pipeline.add("moduleType", "CommonJS");
                         this._pipeline.add("moduleType", "SystemJS");
                         this._pipeline.add("moduleType", "AMD");

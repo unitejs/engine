@@ -1,7 +1,7 @@
 /**
  * Tests for Bootstrapper.
  */
-import /* Synthetic Import */ chai from "chai";
+import chai from "chai";
 import { bootstrap } from "../../../src/bootstrapper";
 
 describe("Bootstrapper", () => {

@@ -62,19 +62,19 @@ describe("SystemJs", () => {
 
     describe("initialise", () => {
         it("can be called with not matching condition", async () => {
-            engineVariablesStub.syntheticImport = "foo";
+            engineVariablesStub.moduleId = "foo";
             const obj = new SystemJs();
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, false);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.syntheticImport).to.be.equal("foo");
+            Chai.expect(engineVariablesStub.moduleId).to.be.equal("foo");
         });
 
         it("can be called with matching condition", async () => {
-            engineVariablesStub.syntheticImport = "foo";
+            engineVariablesStub.moduleId = "foo";
             const obj = new SystemJs();
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
             Chai.expect(res).to.be.equal(0);
-            Chai.expect(engineVariablesStub.syntheticImport).to.be.equal("");
+            Chai.expect(engineVariablesStub.moduleId).to.be.equal("__moduleName");
         });
     });
 

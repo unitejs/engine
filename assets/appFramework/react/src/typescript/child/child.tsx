@@ -4,7 +4,7 @@
  * @export
  * @class Child
  */
-import /* Synthetic Import */ React from "react";
+import React from "react";
 import "./child.css";
 
 export class Child extends React.Component<any, { message: string }> {

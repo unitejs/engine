@@ -121,7 +121,6 @@ export class TemplateHelper {
 
     public static createCodeSubstitutions(engineVariables: EngineVariables): { [id: string]: string[] } {
         return {
-            "/\\* Synthetic Import \\*/ ": [engineVariables.syntheticImport],
             "\"genModuleId\"": [engineVariables.moduleId]
         };
     }

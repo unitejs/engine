@@ -48,7 +48,6 @@ export class EngineVariables {
     public buildTranspilePreBuild: string[];
     public buildTranspilePostBuild: string[];
 
-    public syntheticImport: string;
     public moduleId: string;
 
     public packageManager: IPackageManager;
@@ -65,7 +64,6 @@ export class EngineVariables {
     constructor() {
         this._configuration = {};
 
-        this.syntheticImport = "";
         this.moduleId = "";
 
         this.buildTranspileInclude = [];

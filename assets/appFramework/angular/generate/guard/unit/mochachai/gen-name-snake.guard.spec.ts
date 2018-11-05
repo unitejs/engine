@@ -1,7 +1,7 @@
 /**
  * Tests for GenNamePascal guard.
  */
-import /* Synthetic Import */ chai from "chai";
+import chai from "chai";
 import { GenNamePascalGuard } from "../../src/gen-name-snake.guard";
 
 describe("GenNamePascalGuard", () => {

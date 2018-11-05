@@ -1,7 +1,7 @@
 /**
  * Tests for GenNamePascal service.
  */
-import /* Synthetic Import */ chai from "chai";
+import chai from "chai";
 import { GenNamePascalService } from "../../src/gen-name-snake.service";
 
 describe("GenNamePascalService", () => {

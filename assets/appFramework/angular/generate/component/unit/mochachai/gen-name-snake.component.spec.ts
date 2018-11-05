@@ -1,7 +1,7 @@
 /**
  * Tests for GenNamePascalComponent.
  */
-import /* Synthetic Import */ chai from "chai";
+import chai from "chai";
 import { GenNamePascalComponent } from "../../src/gen-name-snake.component";
 
 describe("GenNamePascalComponent", () => {

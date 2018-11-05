@@ -1,7 +1,7 @@
 /**
  * Tests for GenNamePascal enum.
  */
-import /* Synthetic Import */ chai from "chai";
+import chai from "chai";
 import { GenNamePascal } from "../../src/gen-name-snake";
 
 describe("GenNamePascal", () => {

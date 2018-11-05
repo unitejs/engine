@@ -1,7 +1,7 @@
 /**
  * Tests for GenNamePascalBindingBehavior.
  */
-import /* Synthetic Import */ chai from "chai";
+import chai from "chai";
 import { GenNamePascalBindingBehavior } from "../../src/gen-name-snake";
 
 describe("GenNamePascalBindingBehavior", () => {

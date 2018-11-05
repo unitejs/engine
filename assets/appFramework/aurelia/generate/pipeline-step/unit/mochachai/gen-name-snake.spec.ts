@@ -1,7 +1,7 @@
 /**
  * Tests for GenNamePascalPipelineStep.
  */
-import /* Synthetic Import */ chai from "chai";
+import chai from "chai";
 import { GenNamePascalPipelineStep } from "../../src/gen-name-snake";
 
 describe("GenNamePascalValueConverter", () => {

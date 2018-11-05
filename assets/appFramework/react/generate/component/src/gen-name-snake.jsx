@@ -4,7 +4,7 @@
  * @export
  * @class GenNamePascal
  */
-import /* Synthetic Import */ React from "react";
+import React from "react";
 import "./gen-name-snake.css";
 
 export class GenNamePascal extends React.Component {

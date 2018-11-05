@@ -4,8 +4,8 @@
  * @export
  * @class App
  */
-import /* Synthetic Import */ React from "react";
-import /* Synthetic Import */ ReactDOM from "react-dom";
+import React from "react";
+import ReactDOM from "react-dom";
 import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
 import { Child } from "./child/child";
 

@@ -1,7 +1,7 @@
 /**
  * Tests for App.
  */
-import /* Synthetic Import */ chai from "chai";
+import chai from "chai";
 import { App } from "../../../src/app";
 
 describe("App", () => {
