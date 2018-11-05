@@ -38,6 +38,11 @@ gulp.task("build-bundle-vendor", async () => {
             }
         });
 
+        bVendor.transform("babelify", {
+            global: true,
+            presets: ["@babel/preset-env"]
+        });
+
         if (buildConfiguration.minify) {
             bVendor.transform("uglifyify", {sourceMap: buildConfiguration.sourcemaps, x: excludeMinify});
         }

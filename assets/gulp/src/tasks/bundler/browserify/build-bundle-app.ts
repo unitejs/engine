@@ -46,6 +46,11 @@ gulp.task("build-bundle-app", async () => {
             appliesTo: {includeExtensions: uniteConfig.viewExtensions.map(ext => `.${ext}`)}
         });
 
+        bApp.transform("babelify", {
+            global: true,
+            presets: ["@babel/preset-env"]
+        });
+
         return asyncUtil.stream(bApp.bundle().on("error", (err) => {
             display.error(err);
         })
