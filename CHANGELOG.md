@@ -5,6 +5,8 @@
 * Polymer updated to v3 release branch
 * Removed module transpile options
 * Added SystemJS transpile options for ES modules
+* Added babelify to browserify bundling
+* Added babel-loader to webpack bundling
 
 ## 1.8.0
 
