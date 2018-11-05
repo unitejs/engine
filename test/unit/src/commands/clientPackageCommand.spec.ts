@@ -590,7 +590,7 @@ describe("ClientPackageCommand", () => {
             Chai.expect(res).to.be.equal(0);
             Chai.expect(loggerBannerSpy.args[0][0]).to.contain("Success");
             Chai.expect(uniteJsonWritten.clientPackages.package.version).to.be.equal("^0.0.1");
-            Chai.expect(uniteJsonWritten.clientPackages.package.main).to.be.equal(undefined);
+            Chai.expect(uniteJsonWritten.clientPackages.package.main).to.be.equal("*");
         });
 
         it("can succeed with noScript", async () => {

@@ -37,6 +37,8 @@ export class ClientPackageCommand extends EngineCommandBase implements IEngineCo
             if (clientPackage.main) {
                 clientPackage.main = clientPackage.main.replace(/\\/g, "/");
                 clientPackage.main = clientPackage.main.replace(/^\.\//, "/");
+            } else {
+                clientPackage.main = "*";
             }
             if (clientPackage.mainMinified) {
                 clientPackage.mainMinified = clientPackage.mainMinified.replace(/\\/g, "/");
