@@ -9,6 +9,7 @@
 * Added babel-loader to webpack bundling
 * Change clientPackage add command defaults to * for main if none exists in package.json
 * Replaced synthetic import generation with TypeScript esModuleInterop option
+* Added esModuleInterop to all TypeScript options
 
 ## 1.8.0
 

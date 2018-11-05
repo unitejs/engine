@@ -9,6 +9,7 @@ import { BabelConfiguration } from "../../configuration/models/babel/babelConfig
 import { EsLintConfiguration } from "../../configuration/models/eslint/esLintConfiguration";
 import { ProtractorConfiguration } from "../../configuration/models/protractor/protractorConfiguration";
 import { TsLintConfiguration } from "../../configuration/models/tslint/tsLintConfiguration";
+import { TypeScriptConfiguration } from "../../configuration/models/typeScript/typeScriptConfiguration";
 import { UniteConfiguration } from "../../configuration/models/unite/uniteConfiguration";
 import { UnitePackageRouteConfiguration } from "../../configuration/models/unitePackages/unitePackageRouteConfiguration";
 import { EngineVariables } from "../../engine/engineVariables";
@@ -57,6 +58,12 @@ export class Vanilla extends SharedAppFramework implements IApplicationFramework
             ObjectHelper.addRemove(tsLintConfiguration.rules, "no-empty", { severity: "warning" }, mainCondition);
             ObjectHelper.addRemove(tsLintConfiguration.rules, "no-empty-interface", { severity: "warning" }, mainCondition);
             ObjectHelper.addRemove(tsLintConfiguration.rules, "variable-name", [ true, "allow-leading-underscore" ], mainCondition);
+        }
+
+        const typeScriptConfiguration = engineVariables.getConfiguration<TypeScriptConfiguration>("TypeScript");
+        if (typeScriptConfiguration) {
+            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "experimentalDecorators", true, mainCondition);
+            ObjectHelper.addRemove(typeScriptConfiguration.compilerOptions, "esModuleInterop", true, mainCondition);
         }
 
         const protractorConfiguration = engineVariables.getConfiguration<ProtractorConfiguration>("Protractor");
