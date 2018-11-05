@@ -76,6 +76,15 @@ gulp.task("build-bundle-app", async () => {
             }
         };
         newModule.rules.push({
+            test: new RegExp(".js$"),
+            use: {
+                loader: "babel-loader",
+                options: {
+                    presets: ["@babel/preset-env"]
+                }
+            }
+        });
+        newModule.rules.push({
             test: new RegExp(".css$"),
             use: hasStyleLoader ? ["style-loader", "css-loader"] : ["raw-loader"]
         });
