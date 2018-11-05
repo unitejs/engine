@@ -80,7 +80,14 @@ function createSystemConfig(uniteConfig: IUniteConfiguration, moduleConfig: IMod
 
     Object.keys(moduleConfig.paths).forEach(key => {
         moduleConfig.paths[key] = regExUtils.stripLeadingSlash(moduleConfig.paths[key]);
+
+        if (moduleConfig.paths[key].endsWith(".mjs")) {
+            sjsConfig.packages[key] = {
+                defaultExtension: ""
+            };
+        }
     });
+
     Object.keys(moduleConfig.map).forEach(key => {
         moduleConfig.map[key] = regExUtils.replaceLeadingSlash(moduleConfig.map[key], mapBase);
 

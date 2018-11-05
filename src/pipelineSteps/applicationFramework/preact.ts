@@ -27,6 +27,11 @@ export class Preact extends SharedAppFramework implements IApplicationFramework 
 
     public async initialise(logger: ILogger, fileSystem: IFileSystem, uniteConfiguration: UniteConfiguration, engineVariables: EngineVariables, mainCondition: boolean): Promise<number> {
         if (mainCondition) {
+            if (super.condition(uniteConfiguration.bundler, "RequireJS")) {
+                logger.error(`Preact does not currently support bundling with ${uniteConfiguration.bundler}`);
+                return 1;
+            }
+
             ArrayHelper.addRemove(uniteConfiguration.viewExtensions, "html", true);
 
             ArrayHelper.addRemove(uniteConfiguration.sourceExtensions, "tsx",
@@ -52,7 +57,7 @@ export class Preact extends SharedAppFramework implements IApplicationFramework 
         engineVariables.toggleDevDependency(["unitejs-protractor-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "Protractor"));
         engineVariables.toggleDevDependency(["unitejs-webdriver-plugin"], mainCondition && super.condition(uniteConfiguration.e2eTestRunner, "WebdriverIO"));
 
-        const isTranspiled = super.condition(uniteConfiguration.moduleType, "AMD") || super.condition(uniteConfiguration.moduleType, "SystemJS");
+        const isTranspiled = super.condition(uniteConfiguration.moduleType, "SystemJS");
         const preactPackage: UniteClientPackage = {
             name: "preact",
             main: "dist/preact.dev.js",
@@ -66,10 +71,10 @@ export class Preact extends SharedAppFramework implements IApplicationFramework 
         };
 
         if (isTranspiled) {
-            preactPackage.main = "dist/preact.js";
+            preactPackage.main = "dist/preact.mjs";
             preactPackage.mainMinified = undefined;
 
-            preactRouterPackage.main = "dist/preact-router.js";
+            preactRouterPackage.main = "dist/preact-router.es.js";
             preactRouterPackage.mainMinified = undefined;
         }
 
@@ -94,10 +99,6 @@ export class Preact extends SharedAppFramework implements IApplicationFramework 
                 super.condition(uniteConfiguration.bundler, "SystemJSBuilder") ||
                 super.condition(uniteConfiguration.bundler, "Webpack")));
 
-        if (mainCondition && super.condition(uniteConfiguration.taskManager, "Gulp") && super.condition(uniteConfiguration.bundler, "RequireJS")) {
-            super.createLoaderTypeMapReplacement(engineVariables, "css", "css");
-        }
-
         const esLintConfiguration = engineVariables.getConfiguration<EsLintConfiguration>("ESLint");
         if (esLintConfiguration) {
             ObjectHelper.addRemove(esLintConfiguration, "parser", "babel-eslint", mainCondition);
@@ -105,7 +106,7 @@ export class Preact extends SharedAppFramework implements IApplicationFramework 
             ArrayHelper.addRemove(esLintConfiguration.extends, "plugin:react/recommended", mainCondition);
             ArrayHelper.addRemove(esLintConfiguration.plugins, "react", mainCondition);
             ObjectHelper.addRemove(esLintConfiguration.rules, "no-unused-vars", 1, mainCondition);
-            ObjectHelper.addRemove(esLintConfiguration.settings, "react", { pragma: "h" }, mainCondition);
+            ObjectHelper.addRemove(esLintConfiguration.settings, "react", { pragma: "h", version: "16.0" }, mainCondition);
         }
 
         const tsLintConfiguration = engineVariables.getConfiguration<TsLintConfiguration>("TSLint");

@@ -97,6 +97,15 @@ describe("Preact", () => {
             Chai.expect(uniteConfigurationStub.viewExtensions.length).to.be.equal(0);
         });
 
+        it("can be called with application framework matching but failing bundler", async () => {
+            const obj = new Preact();
+            uniteConfigurationStub.bundler = "RequireJS";
+            const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
+            Chai.expect(res).to.be.equal(1);
+            Chai.expect(loggerErrorSpy.args[0][0]).to.contain("not currently support");
+            Chai.expect(uniteConfigurationStub.viewExtensions.length).to.be.equal(0);
+        });
+
         it("can be called with application framework matching and javascript", async () => {
             const obj = new Preact();
             const res = await obj.initialise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
@@ -166,8 +175,8 @@ describe("Preact", () => {
 
         it("can be called width transpiling module type", async () => {
             const obj = new Preact();
-            uniteConfigurationStub.moduleType = "AMD";
-            uniteConfigurationStub.bundler = "RequireJS";
+            uniteConfigurationStub.moduleType = "SystemJS";
+            uniteConfigurationStub.bundler = "SystemJsBuilder";
 
             const res = await obj.configure(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
 
@@ -177,8 +186,6 @@ describe("Preact", () => {
             engineVariablesStub.buildDependencies(uniteConfigurationStub, packageJsonDependencies);
 
             Chai.expect(uniteConfigurationStub.clientPackages.preact.mainMinified).to.be.equal(undefined);
-            Chai.expect(engineVariablesStub.buildTranspileInclude.length).to.be.equal(2);
-            Chai.expect(engineVariablesStub.buildTranspilePreBuild.length).to.be.equal(1);
         });
 
         it("can be called with no configurations with false mainCondition", async () => {

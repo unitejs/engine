@@ -10,6 +10,7 @@
 * Change clientPackage add command defaults to * for main if none exists in package.json
 * Replaced synthetic import generation with TypeScript esModuleInterop option
 * Added esModuleInterop to all TypeScript options
+* Preact no longer supports RequireJS as it required module loader transpilation
 
 ## 1.8.0
 
