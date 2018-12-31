@@ -105,7 +105,7 @@ describe("Engine", () => {
                     return Promise.resolve(packageInfo);
                 }
             } else {
-                return failPackageAdd ? Promise.reject("error") : Promise.resolve();
+                return failPackageAdd ? Promise.reject("error") : Promise.resolve("");
             }
         });
 

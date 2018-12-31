@@ -356,8 +356,9 @@ describe("SharedAppFramework", () => {
             let written = "";
             sandbox.stub(fileSystemMock, "fileExists").resolves(true);
             sandbox.stub(fileSystemMock, "fileReadText").resolves("content");
-            sandbox.stub(fileSystemMock, "fileWriteText").callsFake((folder, file, content) => {
+            sandbox.stub(fileSystemMock, "fileWriteText").callsFake(async (folder, file, content) => {
                 written = content;
+                return Promise.resolve();
             });
 
             const res = await obj.testInsertContent(loggerStub, fileSystemMock, engineVariablesStub, "myfile.txt", (content) => "blah");

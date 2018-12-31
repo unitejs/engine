@@ -76,7 +76,7 @@ export class Jest extends PipelineStepBase {
                                              Jest.FILENAME_MOCK_DUMMY,
                                              engineVariables.force,
                                              mainCondition,
-                                             async () => super.wrapGeneratedMarker("/* ", " */"));
+                                             async () => this.wrapGeneratedMarker("/* ", " */"));
         }
 
         return ret;

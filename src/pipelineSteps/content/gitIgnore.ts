@@ -34,7 +34,7 @@ export class GitIgnore extends PipelineStepBase {
                                      engineVariables.force,
                                      mainCondition,
                                      async () => {
-                                        this._ignore.push(super.wrapGeneratedMarker("# ", ""));
+                                        this._ignore.push(this.wrapGeneratedMarker("# ", ""));
                                         return this._ignore;
                                     });
     }
@@ -44,7 +44,7 @@ export class GitIgnore extends PipelineStepBase {
 
         this._ignore = ObjectHelper.merge(defaultIgnore, this._ignore);
 
-        const markerLine = super.wrapGeneratedMarker("# ", "");
+        const markerLine = this.wrapGeneratedMarker("# ", "");
         const idx = this._ignore.indexOf(markerLine);
         if (idx >= 0) {
             this._ignore.splice(idx, 1);

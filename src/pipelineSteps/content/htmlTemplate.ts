@@ -94,7 +94,7 @@ export class HtmlTemplate extends PipelineStepBase {
             this.addLine(indent, lines, "</body>");
             indent--;
             this.addLine(indent, lines, "</html>");
-            this.addLine(indent, lines, super.wrapGeneratedMarker("<!-- ", " -->"));
+            this.addLine(indent, lines, this.wrapGeneratedMarker("<!-- ", " -->"));
             return lines;
         });
     }

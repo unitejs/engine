@@ -369,12 +369,13 @@ describe("Angular", () => {
 
             let writtenApp: string;
             let writtenHtml: string;
-            sandbox.stub(fileSystemMock, "fileWriteText").callsFake((folder, file, content) => {
+            sandbox.stub(fileSystemMock, "fileWriteText").callsFake(async (folder, file, content) => {
                 if (!writtenApp) {
                     writtenApp = content;
                 } else {
                     writtenHtml = content;
                 }
+                return Promise.resolve();
             });
 
             const res = await obj.insertRoutes(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, {
@@ -404,12 +405,13 @@ describe("Angular", () => {
 
             let writtenApp: string;
             let writtenHtml: string;
-            sandbox.stub(fileSystemMock, "fileWriteText").callsFake((folder, file, content) => {
+            sandbox.stub(fileSystemMock, "fileWriteText").callsFake(async (folder, file, content) => {
                 if (!writtenApp) {
                     writtenApp = content;
                 } else {
                     writtenHtml = content;
                 }
+                return Promise.resolve();
             });
 
             const res = await obj.insertRoutes(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, {

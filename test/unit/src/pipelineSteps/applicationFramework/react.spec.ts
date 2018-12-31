@@ -324,10 +324,11 @@ describe("React", () => {
             await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
 
             let writtenApp: string;
-            sandbox.stub(fileSystemMock, "fileWriteText").callsFake((folder, file, content) => {
+            sandbox.stub(fileSystemMock, "fileWriteText").callsFake(async (folder, file, content) => {
                 if (!writtenApp) {
                     writtenApp = content;
                 }
+                return Promise.resolve();
             });
 
             const res = await obj.insertRoutes(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, {
@@ -356,10 +357,11 @@ describe("React", () => {
             await obj.finalise(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, true);
 
             let writtenApp: string;
-            sandbox.stub(fileSystemMock, "fileWriteText").callsFake((folder, file, content) => {
+            sandbox.stub(fileSystemMock, "fileWriteText").callsFake(async (folder, file, content) => {
                 if (!writtenApp) {
                     writtenApp = content;
                 }
+                return Promise.resolve();
             });
 
             const res = await obj.insertRoutes(loggerStub, fileSystemMock, uniteConfigurationStub, engineVariablesStub, {

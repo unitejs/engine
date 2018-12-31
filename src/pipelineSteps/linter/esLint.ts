@@ -39,12 +39,12 @@ export class EsLint extends PipelineStepBase {
                                                            engineVariables.force,
                                                            async (obj) => {
                     this._configuration = obj;
-                    return super.fileReadLines(logger,
-                                               fileSystem,
-                                               engineVariables.wwwRootFolder,
-                                               EsLint.FILENAME2,
-                                               engineVariables.force,
-                                               async (lines) => {
+                    return this.fileReadLines(logger,
+                                              fileSystem,
+                                              engineVariables.wwwRootFolder,
+                                              EsLint.FILENAME2,
+                                              engineVariables.force,
+                                              async (lines) => {
                             this._ignore = lines;
                             this.configDefaults(engineVariables);
                             return 0;
@@ -78,7 +78,7 @@ export class EsLint extends PipelineStepBase {
                                               engineVariables.force,
                                               mainCondition,
                                               async () => {
-                    this._ignore.push(super.wrapGeneratedMarker("# ", ""));
+                    this._ignore.push(this.wrapGeneratedMarker("# ", ""));
                     return this._ignore;
                 });
         }
