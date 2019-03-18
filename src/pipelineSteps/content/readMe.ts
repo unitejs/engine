@@ -21,7 +21,7 @@ export class ReadMe extends PipelineStepBase {
                                               async () => {
             const lines = await fileSystem.fileReadLines(engineVariables.engineAssetsFolder, ReadMe.FILENAMEROOT);
 
-            if (engineVariables.meta && engineVariables.meta) {
+            if (engineVariables.meta && engineVariables.meta.title) {
                 lines[0] = `# ${engineVariables.meta.title}`;
             }
 
@@ -38,7 +38,7 @@ export class ReadMe extends PipelineStepBase {
                                               async () => {
                 const lines = await fileSystem.fileReadLines(engineVariables.engineAssetsFolder, ReadMe.FILENAME);
 
-                if (engineVariables.meta && engineVariables.meta) {
+                if (engineVariables.meta && engineVariables.meta.title) {
                     lines[0] = `# ${engineVariables.meta.title}`;
                 }
 
