@@ -110,6 +110,6 @@
     },
     "dependencies": {
         "unitejs-framework": "1.0.5",
-        "unitejs-packages": "1.1.2"
+        "unitejs-packages": "1.1.3"
     }
 }
